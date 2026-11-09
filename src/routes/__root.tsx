@@ -4,12 +4,13 @@ import type { ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { fetchMe } from "@/lib/api/fetch-me";
 import type { Me } from "@/lib/api/me";
+import { loadMe } from "@/lib/api/me-query";
 import appCss from "@/styles.css?url";
 
 export type RouterContext = { me: Me | null; queryClient: QueryClient };
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  beforeLoad: async () => ({ me: await fetchMe() }),
+  beforeLoad: async ({ context }) => ({ me: await loadMe(context.queryClient, () => fetchMe()) }),
   head: () => ({
     meta: [
       { charSet: "utf-8" },

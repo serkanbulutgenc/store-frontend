@@ -1,10 +1,12 @@
 import { useForm } from "@tanstack/react-form";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ME_KEY } from "@/lib/api/me-query";
 import { apiErrorToFormErrors } from "../forms/api-errors";
 import { authenticateTotp, login } from "./allauth";
 
@@ -141,10 +143,12 @@ function CodeStep({ onDone }: { onDone: () => void }) {
 
 export function LoginForm({ redirectTo }: { redirectTo: string }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [step, setStep] = useState<"credentials" | "mfa">("credentials");
   // The session cookie is set by the proxy; re-running the guards loads `/me` and redirects.
   async function done() {
     try {
+      queryClient.removeQueries({ queryKey: ME_KEY }); // the cached signed-out answer is stale now
       await router.invalidate();
       await router.navigate({ href: redirectTo });
     } catch {
