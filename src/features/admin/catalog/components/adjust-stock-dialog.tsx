@@ -1,10 +1,9 @@
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { apiErrorToFormErrors } from "../../forms/api-errors";
-import { bind, Field, FormMessage } from "../../forms/field";
+import { bind, Field, FormActions, FormMessage } from "../../forms/field";
 import { useAdjustStock } from "../queries";
 import { stockAdjustmentSchema } from "../schemas";
 
@@ -74,18 +73,9 @@ function AdjustForm({ target, onClose }: { target: AdjustTarget; onClose: () => 
       <form.Subscribe selector={(s) => s.errorMap.onSubmit}>
         {(err) => <FormMessage error={err} />}
       </form.Subscribe>
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline" size="sm" onClick={onClose}>
-          Vazgeç
-        </Button>
-        <form.Subscribe selector={(s) => s.isSubmitting}>
-          {(submitting) => (
-            <Button type="submit" size="sm" disabled={submitting}>
-              Kaydet
-            </Button>
-          )}
-        </form.Subscribe>
-      </div>
+      <form.Subscribe selector={(s) => s.isSubmitting}>
+        {(submitting) => <FormActions submitting={submitting} onClose={onClose} />}
+      </form.Subscribe>
     </form>
   );
 }

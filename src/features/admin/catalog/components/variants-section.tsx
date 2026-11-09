@@ -18,7 +18,7 @@ import {
 import { can, type Me } from "@/lib/api/me";
 import { formatTry } from "@/lib/format";
 import { apiErrorToFormErrors } from "../../forms/api-errors";
-import { bind, Field, FormMessage } from "../../forms/field";
+import { bind, Field, FormActions, FormMessage } from "../../forms/field";
 import {
   coloursQuery,
   type ProductOut,
@@ -26,7 +26,7 @@ import {
   useUpdateVariant,
   type VariantOut,
 } from "../queries";
-import { toVariantBody, variantFormSchema } from "../schemas";
+import { toVariantBody, variantEditSchema, variantFormSchema } from "../schemas";
 import { AdjustStockDialog, type AdjustTarget } from "./adjust-stock-dialog";
 
 export function VariantsSection({ product, me }: { product: ProductOut; me: Me }) {
@@ -137,19 +137,6 @@ export function VariantsSection({ product, me }: { product: ProductOut; me: Me }
   );
 }
 
-function Actions({ submitting, onClose }: { submitting: boolean; onClose: () => void }) {
-  return (
-    <div className="flex justify-end gap-2">
-      <Button type="button" variant="outline" size="sm" onClick={onClose}>
-        Vazgeç
-      </Button>
-      <Button type="submit" size="sm" disabled={submitting}>
-        Kaydet
-      </Button>
-    </div>
-  );
-}
-
 function NewVariantForm({ product, onClose }: { product: ProductOut; onClose: () => void }) {
   const { data: colours } = useSuspenseQuery(coloursQuery);
   const create = useCreateVariant(product.id);
@@ -252,7 +239,7 @@ function NewVariantForm({ product, onClose }: { product: ProductOut; onClose: ()
         {(err) => <FormMessage error={err} />}
       </form.Subscribe>
       <form.Subscribe selector={(s) => s.isSubmitting}>
-        {(sub) => <Actions submitting={sub} onClose={onClose} />}
+        {(sub) => <FormActions submitting={sub} onClose={onClose} />}
       </form.Subscribe>
     </form>
   );
@@ -268,14 +255,16 @@ function EditVariantForm({ variant, onClose }: { variant: VariantOut; onClose: (
       price_override: variant.price_override ?? "",
     },
     validators: {
+      onSubmit: variantEditSchema,
       onSubmitAsync: async ({ value }) => {
         try {
+          const v = variantEditSchema.parse(value);
           await update.mutateAsync({
             id: variant.id,
             body: {
-              sku: value.sku.trim() || null,
-              barcode: value.barcode.trim() || null,
-              price_override: value.price_override.trim() || null,
+              sku: v.sku,
+              barcode: v.barcode || null,
+              price_override: v.price_override || null,
             },
           });
         } catch (e) {
@@ -325,7 +314,7 @@ function EditVariantForm({ variant, onClose }: { variant: VariantOut; onClose: (
         {(err) => <FormMessage error={err} />}
       </form.Subscribe>
       <form.Subscribe selector={(s) => s.isSubmitting}>
-        {(sub) => <Actions submitting={sub} onClose={onClose} />}
+        {(sub) => <FormActions submitting={sub} onClose={onClose} />}
       </form.Subscribe>
     </form>
   );

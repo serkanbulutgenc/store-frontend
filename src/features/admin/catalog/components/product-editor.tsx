@@ -1,15 +1,13 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { can, type Me } from "@/lib/api/me";
-import { statusLabel } from "../labels";
+import { statusLabel, statusTone } from "../labels";
 import { type ProductStatus, productQuery, useSetStatus } from "../queries";
 import { ProductForm } from "./product-form";
 import { VariantsSection } from "./variants-section";
-
-const TONE = { draft: "neutral", published: "good", archived: "warn" } as const;
 
 /** Which status moves the user may make from the current one. Archive is Owner-only. */
 export function statusActions(status: ProductStatus, perms: { manage: boolean; archive: boolean }) {
@@ -45,11 +43,11 @@ export function ProductEditor({ productId, me }: { productId: number; me: Me }) 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
-        <Link to={"/admin/products" as "/admin"} className="text-muted-foreground underline">
+        <Link to="/admin/products" className="text-muted-foreground underline">
           Ürünler
         </Link>
         <h1 className="text-lg font-semibold">{product.title}</h1>
-        <Badge tone={TONE[product.status]}>{statusLabel(product.status)}</Badge>
+        <Badge tone={statusTone[product.status]}>{statusLabel(product.status)}</Badge>
         <div className="ml-auto flex gap-2">
           {actions.map((a) => (
             <Button
@@ -64,7 +62,7 @@ export function ProductEditor({ productId, me }: { productId: number; me: Me }) 
           ))}
         </div>
       </div>
-      <ProductForm key={product.id} product={product} me={me} onSaved={() => undefined} />
+      <ProductForm product={product} me={me} />
       <VariantsSection product={product} me={me} />
       <section className="space-y-1">
         <h2 className="text-base font-semibold">Fotoğraflar</h2>
@@ -74,9 +72,4 @@ export function ProductEditor({ productId, me }: { productId: number; me: Me }) 
       </section>
     </div>
   );
-}
-
-export function useGoToProduct() {
-  const navigate = useNavigate();
-  return (id: number) => navigate({ href: `/admin/products/${id}` });
 }

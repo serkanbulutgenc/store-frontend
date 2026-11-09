@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { apiErrorToFormErrors } from "../../forms/api-errors";
-import { bind, Field, FormMessage } from "../../forms/field";
+import { bind, Field, FormActions, FormMessage } from "../../forms/field";
 
 export type FieldDef = {
   name: string;
@@ -25,6 +25,8 @@ export type FieldDef = {
   hint?: string;
   /** Only shown when creating (the API cannot change it afterwards). */
   createOnly?: boolean;
+  /** Only shown when editing (the API cannot set it on create). */
+  editOnly?: boolean;
 };
 
 export type ReferenceProps<Row extends { id: number }> = {
@@ -137,7 +139,7 @@ function RefForm<Row extends { id: number }>({
       }}
     >
       {props.fields
-        .filter((f) => !(f.createOnly && row))
+        .filter((f) => !(f.createOnly && row) && !(f.editOnly && !row))
         .map((def, i) => (
           <form.Field key={def.name} name={def.name}>
             {(f) => (
@@ -160,18 +162,9 @@ function RefForm<Row extends { id: number }>({
       <form.Subscribe selector={(s) => s.errorMap.onSubmit}>
         {(err) => <FormMessage error={err} />}
       </form.Subscribe>
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline" size="sm" onClick={onClose}>
-          Vazgeç
-        </Button>
-        <form.Subscribe selector={(s) => s.isSubmitting}>
-          {(sub) => (
-            <Button type="submit" size="sm" disabled={sub}>
-              Kaydet
-            </Button>
-          )}
-        </form.Subscribe>
-      </div>
+      <form.Subscribe selector={(s) => s.isSubmitting}>
+        {(submitting) => <FormActions submitting={submitting} onClose={onClose} />}
+      </form.Subscribe>
     </form>
   );
 }

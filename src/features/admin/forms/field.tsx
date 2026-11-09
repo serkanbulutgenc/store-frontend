@@ -1,5 +1,6 @@
 import type { AnyFieldApi } from "@tanstack/react-form";
 import type { ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 
 export function errorText(e: unknown): string {
   return typeof e === "string"
@@ -54,4 +55,18 @@ export function FormMessage({ error }: { error: unknown }) {
       {msg}
     </p>
   ) : null;
+}
+
+/** Dialog footer: cancel and save, with save disabled while submitting. */
+export function FormActions({ submitting, onClose }: { submitting: boolean; onClose: () => void }) {
+  return (
+    <div className="flex justify-end gap-2">
+      <Button type="button" variant="outline" size="sm" onClick={onClose}>
+        Vazgeç
+      </Button>
+      <Button type="submit" size="sm" disabled={submitting}>
+        Kaydet
+      </Button>
+    </div>
+  );
 }

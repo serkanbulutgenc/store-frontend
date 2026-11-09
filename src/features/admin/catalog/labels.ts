@@ -17,3 +17,14 @@ const STATUS: Record<ProductStatus, string> = {
   archived: "Arşivlenmiş",
 };
 export const statusLabel = (s: ProductStatus) => STATUS[s];
+
+export const statusTone = { draft: "neutral", published: "good", archived: "warn" } as const;
+
+/** Whether `term` is exactly one of the product's SKUs (any case) or barcodes. */
+export function isExactCode(
+  variants: { sku: string; barcode: string | null }[],
+  term: string,
+): boolean {
+  const t = term.trim();
+  return variants.some((v) => v.sku.toLowerCase() === t.toLowerCase() || v.barcode === t);
+}

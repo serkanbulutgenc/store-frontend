@@ -4,6 +4,7 @@ import {
   productFormSchema,
   stockAdjustmentSchema,
   toProductBody,
+  variantEditSchema,
   variantFormSchema,
 } from "./schemas";
 
@@ -125,5 +126,51 @@ describe("stockAdjustmentSchema", () => {
       delta: -2,
       reason: "Sayım farkı",
     });
+  });
+});
+
+describe("toProductBody on edit", () => {
+  it("omits a blank slug and a blank threshold instead of sending null (the API would rename to 'none' / reject)", () => {
+    const body = toProductBody(
+      productFormSchema.parse(product),
+      { cost: false, supplier: false },
+      "edit",
+    );
+    expect(body).not.toHaveProperty("slug");
+    expect(body).not.toHaveProperty("low_stock_threshold");
+  });
+  it("still sends them when filled", () => {
+    const v = productFormSchema.parse({ ...product, slug: "pamuklu", low_stock_threshold: "3" });
+    expect(toProductBody(v, { cost: false, supplier: false }, "edit")).toMatchObject({
+      slug: "pamuklu",
+      low_stock_threshold: 3,
+    });
+  });
+});
+
+describe("variantEditSchema", () => {
+  it("requires a SKU and a valid optional price", () => {
+    expect(variantEditSchema.safeParse({ sku: "", barcode: "", price_override: "" }).success).toBe(
+      false,
+    );
+    expect(
+      variantEditSchema.safeParse({ sku: "A-1", barcode: "", price_override: "12,5" }).success,
+    ).toBe(false);
+    expect(
+      variantEditSchema.safeParse({ sku: "A-1", barcode: "", price_override: "12.50" }).success,
+    ).toBe(true);
+  });
+});
+
+describe("stockAdjustmentSchema limits", () => {
+  it("matches the server: delta within +-100000, reason up to 200 characters", () => {
+    expect(stockAdjustmentSchema.safeParse({ delta: "100001", reason: "x" }).success).toBe(false);
+    expect(stockAdjustmentSchema.safeParse({ delta: "-100001", reason: "x" }).success).toBe(false);
+    expect(stockAdjustmentSchema.safeParse({ delta: "5", reason: "x".repeat(201) }).success).toBe(
+      false,
+    );
+    expect(
+      stockAdjustmentSchema.safeParse({ delta: "100000", reason: "x".repeat(200) }).success,
+    ).toBe(true);
   });
 });

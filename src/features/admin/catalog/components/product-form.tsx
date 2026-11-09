@@ -61,7 +61,7 @@ export function ProductForm({
 }: {
   product?: ProductOut;
   me: Me;
-  onSaved: (p: ProductOut) => void;
+  onSaved?: (p: ProductOut) => void;
 }) {
   const canEdit = can(me, "manage_products");
   const canSeeCost = can(me, "view_cost_prices");
@@ -82,15 +82,16 @@ export function ProductForm({
       onSubmit: productFormSchema,
       onSubmitAsync: async ({ value }) => {
         try {
-          const body = toProductBody(productFormSchema.parse(value), {
-            cost: canSeeCost,
-            supplier: canSeeSupplier,
-          });
+          const body = toProductBody(
+            productFormSchema.parse(value),
+            { cost: canSeeCost, supplier: canSeeSupplier },
+            product ? "edit" : "create",
+          );
           const saved = product ? await update.mutateAsync(body) : await create.mutateAsync(body);
           // Reset first so the dirty-leave guard does not block the navigation that follows.
           form.reset(toFormValues(saved));
           toast.success("Ürün kaydedildi.");
-          onSaved(saved);
+          onSaved?.(saved);
         } catch (e) {
           return apiErrorToFormErrors(e);
         }

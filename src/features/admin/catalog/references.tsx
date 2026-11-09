@@ -22,7 +22,13 @@ function useSave<V>(fn: (v: V) => Promise<unknown>) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: fn,
-    onSuccess: () => qc.invalidateQueries({ queryKey: keys.refs }),
+    // Products and stock rows embed category, brand, supplier and colour names.
+    onSuccess: () =>
+      Promise.all(
+        [keys.refs, keys.products, keys.stock].map((queryKey) =>
+          qc.invalidateQueries({ queryKey }),
+        ),
+      ),
   }).mutateAsync;
 }
 
@@ -197,6 +203,7 @@ export function ColoursScreen({ me }: { me: Me }) {
           name: "is_active",
           label: "Durum",
           kind: "select",
+          editOnly: true,
           options: [
             { value: "true", label: "Aktif" },
             { value: "false", label: "Pasif" },

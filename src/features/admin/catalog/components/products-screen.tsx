@@ -6,7 +6,7 @@ import { Select } from "@/components/ui/select";
 import { can, type Me } from "@/lib/api/me";
 import { formatTry } from "@/lib/format";
 import { type Column, columnHelper, DataTable } from "../../data-table/data-table";
-import { categoryLabels, statusLabel } from "../labels";
+import { categoryLabels, statusLabel, statusTone } from "../labels";
 import {
   categoriesQuery,
   type ProductListOut,
@@ -16,15 +16,14 @@ import {
 } from "../queries";
 
 const helper = columnHelper<ProductListOut>();
-const TONE = { draft: "neutral", published: "good", archived: "warn" } as const;
 
 const columns: Column<ProductListOut>[] = [
   helper.accessor("title", {
     header: "Ürün",
     cell: (c) => (
       <Link
-        to={"/admin/products/$productId" as "/admin"}
-        params={{ productId: String(c.row.original.id) } as never}
+        to="/admin/products/$productId"
+        params={{ productId: String(c.row.original.id) }}
         className="font-medium underline-offset-2 hover:underline"
       >
         {c.getValue()}
@@ -43,7 +42,7 @@ const columns: Column<ProductListOut>[] = [
     header: "Durum",
     cell: (c) => {
       const status = c.getValue() as ProductStatus;
-      return <Badge tone={TONE[status]}>{statusLabel(status)}</Badge>;
+      return <Badge tone={statusTone[status]}>{statusLabel(status)}</Badge>;
     },
   }),
 ];
@@ -65,7 +64,7 @@ export function ProductsScreen({
         <h1 className="text-lg font-semibold">Ürünler</h1>
         {can(me, "manage_products") && (
           <Button size="sm" asChild>
-            <Link to={"/admin/products/new" as "/admin"}>Yeni ürün</Link>
+            <Link to="/admin/products/new">Yeni ürün</Link>
           </Button>
         )}
       </div>
