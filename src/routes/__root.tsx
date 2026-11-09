@@ -17,7 +17,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       context.queryClient.ensureQueryData({
         queryKey: ["site-origin"],
         staleTime: Number.POSITIVE_INFINITY,
-        queryFn: () => fetchSiteOrigin(),
+        queryFn: () => fetchSiteOrigin().catch(() => ""),
       }),
     ]);
     return { me, siteOrigin };

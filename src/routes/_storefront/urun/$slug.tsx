@@ -8,7 +8,12 @@ export const Route = createFileRoute("/_storefront/urun/$slug")({
     const product = await context.queryClient.query(productQuery(params.slug));
     // The API resolves an old slug to its Product; send the Shopper and crawlers to the new URL.
     if (product.slug !== params.slug)
-      throw redirect({ to: "/urun/$slug", params: { slug: product.slug }, statusCode: 301 });
+      throw redirect({
+        to: "/urun/$slug",
+        params: { slug: product.slug },
+        search: true,
+        statusCode: 301,
+      });
     return product;
   },
   head: ({ loaderData, match }) =>

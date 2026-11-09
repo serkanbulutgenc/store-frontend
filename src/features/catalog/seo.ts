@@ -195,8 +195,8 @@ export function listingHead(o: {
       ...(indexable ? [] : [{ name: "robots", content: "noindex, follow" }]),
       ...openGraph({ title, description, url, type: "website" }),
     ],
-    // Filtered views point at the unfiltered category; search has no indexable twin.
-    links: o.kind === "category" ? [{ rel: "canonical", href: url }] : [],
+    // Only indexable views self-canonicalise; noindex views carry no conflicting canonical.
+    links: o.kind === "category" && indexable ? [{ rel: "canonical", href: url }] : [],
     scripts: o.trail?.length
       ? [
           jsonLdScript(

@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
+import { getEnv } from "@/env";
 
 /** Public origin from the request the reverse proxy forwarded, e.g. `https://shop.example`. */
 export function originFrom(req: Request): string {
@@ -13,6 +14,8 @@ export function originFrom(req: Request): string {
   return `${proto}://${host}`;
 }
 
-export const fetchSiteOrigin = createServerFn({ method: "GET" }).handler(async () =>
-  originFrom(getRequest()),
-);
+/** Configured `SITE_URL` wins, so a spoofed Host header cannot steer canonical URLs. */
+export const fetchSiteOrigin = createServerFn({ method: "GET" }).handler(async () => {
+  const configured = getEnv().SITE_URL;
+  return configured ? new URL(configured).origin : originFrom(getRequest());
+});

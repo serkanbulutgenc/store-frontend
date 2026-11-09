@@ -4,6 +4,8 @@ const schema = z.object({
   API_INTERNAL_URL: z.url(),
   SESSION_COOKIE_NAME: z.string().min(1),
   /** Django's CSRF cookie name; `__Secure-csrftoken` in production. */
+  /** Public origin, e.g. https://auratekstil.com. Set in production; canonicals use it, not request headers. */
+  SITE_URL: z.url().optional(),
   CSRF_COOKIE_NAME: z.string().min(1).default("csrftoken"),
 });
 

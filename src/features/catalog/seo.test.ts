@@ -153,3 +153,29 @@ describe("jsonLdScript", () => {
     expect(JSON.parse(s.children)).toEqual({ name: "</script><b>" });
   });
 });
+
+import { listingHead } from "./seo";
+
+describe("listingHead canonical", () => {
+  it("has no canonical on noindex views", () => {
+    const h = listingHead({
+      title: "T",
+      path: "/kategori/g",
+      search: { colour: [1] },
+      kind: "category",
+      origin: ORIGIN,
+    });
+    expect(h.links).toEqual([]);
+    expect(h.meta).toContainEqual({ name: "robots", content: "noindex, follow" });
+  });
+  it("self-canonicalises indexable views", () => {
+    const h = listingHead({
+      title: "T",
+      path: "/kategori/g",
+      search: { page: 2 },
+      kind: "category",
+      origin: ORIGIN,
+    });
+    expect(h.links).toEqual([{ rel: "canonical", href: `${ORIGIN}/kategori/g?page=2` }]);
+  });
+});
