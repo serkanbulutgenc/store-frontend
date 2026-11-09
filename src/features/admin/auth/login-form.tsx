@@ -41,6 +41,7 @@ function CredentialsStep({ onDone, onMfa }: { onDone: () => void; onMfa: () => v
         {(field) => (
           <Labelled id="email" label="E-posta" errors={field.state.meta.errors}>
             <Input
+              id="email"
               type="email"
               autoComplete="username"
               value={field.state.value}
@@ -55,6 +56,7 @@ function CredentialsStep({ onDone, onMfa }: { onDone: () => void; onMfa: () => v
         {(field) => (
           <Labelled id="password" label="Parola" errors={field.state.meta.errors}>
             <Input
+              id="password"
               type="password"
               autoComplete="current-password"
               value={field.state.value}
@@ -107,6 +109,7 @@ function CodeStep({ onDone }: { onDone: () => void }) {
         {(field) => (
           <Labelled id="code" label="Doğrulama kodu" errors={field.state.meta.errors}>
             <Input
+              id="code"
               inputMode="numeric"
               autoComplete="one-time-code"
               maxLength={6}
@@ -187,13 +190,12 @@ function FormError({
   return (
     <form.Subscribe selector={(s) => s.errorMap.onSubmit}>
       {(err) => {
-        const msg =
-          err && typeof err === "object" && "form" in err
-            ? String((err as { form: string }).form)
-            : typeof err === "string"
-              ? err
-              : null;
-        return msg ? (
+        const e = err as { form?: string; fields?: Record<string, string> } | string | undefined;
+        const msg = typeof e === "string" ? e : (e?.form ?? null);
+        // A field that already shows this exact message does not need it repeated.
+        const repeated =
+          typeof e === "object" && Object.values(e?.fields ?? {}).includes(msg ?? "");
+        return msg && !repeated ? (
           <p role="alert" className="text-red-700">
             {msg}
           </p>
