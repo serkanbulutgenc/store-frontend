@@ -5,12 +5,11 @@ import type { ProductImageOut } from "../catalog/queries";
 export function uploadPhoto(
   productId: number,
   file: File,
-  opts: { colourId?: number | null; onProgress: (fraction: number) => void },
+  opts: { onProgress: (fraction: number) => void },
 ): Promise<ProductImageOut> {
   return new Promise((resolve, reject) => {
     const form = new FormData();
     form.append("file", file);
-    if (opts.colourId != null) form.append("colour_id", String(opts.colourId));
     const xhr = new XMLHttpRequest();
     xhr.open("POST", `/api/admin/products/${productId}/images`);
     xhr.responseType = "json";
