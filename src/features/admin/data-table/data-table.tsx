@@ -29,7 +29,9 @@ import {
 
 export const features = tableFeatures({ rowPaginationFeature, rowSortingFeature });
 export const columnHelper = <T extends RowData>() => createColumnHelper<typeof features, T>();
-export type Column<T extends RowData> = ColumnDef<typeof features, T>;
+// A table mixes columns with different cell value types, so the value type is `any` here.
+// biome-ignore lint/suspicious/noExplicitAny: heterogeneous column values
+export type Column<T extends RowData> = ColumnDef<typeof features, T, any>;
 
 /**
  * Table v9 in manual (server-side) mode. The URL search params are the only source of
@@ -82,10 +84,13 @@ export type DataTableProps<T extends RowData> = {
   emptyMessage?: string;
   /** Extra filter controls rendered next to the search box. */
   toolbar?: React.ReactNode;
+  /** Show the `q` search box. Off for lists whose endpoint has no search. */
+  searchable?: boolean;
 };
 
 export function DataTable<T extends RowData>({
   isFetching,
+  searchable = true,
   emptyMessage = "Kayıt bulunamadı.",
   toolbar,
   ...args
@@ -97,18 +102,20 @@ export function DataTable<T extends RowData>({
   return (
     <div className="space-y-2" aria-busy={isFetching}>
       <div className="flex items-center gap-2">
-        <Input
-          key={args.search.q ?? ""}
-          type="search"
-          placeholder="Ara…"
-          aria-label="Ara"
-          className="max-w-64"
-          defaultValue={args.search.q ?? ""}
-          onKeyDown={(e) => {
-            if (e.key === "Enter")
-              args.onSearchChange({ q: e.currentTarget.value || undefined, page: 1 });
-          }}
-        />
+        {searchable && (
+          <Input
+            key={args.search.q ?? ""}
+            type="search"
+            placeholder="Ara…"
+            aria-label="Ara"
+            className="max-w-64"
+            defaultValue={args.search.q ?? ""}
+            onKeyDown={(e) => {
+              if (e.key === "Enter")
+                args.onSearchChange({ q: e.currentTarget.value || undefined, page: 1 });
+            }}
+          />
+        )}
         {toolbar}
       </div>
       <div className="rounded-md border border-border bg-card">

@@ -25,7 +25,7 @@ export function getRouter() {
     defaultPreload: "intent",
     defaultPendingComponent: PendingState,
     defaultErrorComponent: ErrorState,
-    defaultNotFoundComponent: NotFoundState,
+    defaultNotFoundComponent: () => <NotFoundState />,
     // biome-ignore lint/correctness/noComponentHookFactories: closes over the per-request QueryClient
     Wrap: ({ children }: { children: ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>

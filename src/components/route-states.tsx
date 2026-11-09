@@ -27,11 +27,11 @@ export function ErrorState({ error, reset }: ErrorComponentProps) {
 }
 
 /** Shared `notFoundComponent`. */
-export function NotFoundState() {
+export function NotFoundState({ home = "/" }: { home?: "/" | "/admin" }) {
   return (
     <div className="space-y-2 p-4">
       <h2 className="text-lg font-semibold">Sayfa bulunamadı</h2>
-      <Link to="/" className="underline">
+      <Link to={home} className="underline">
         Ana sayfaya dön
       </Link>
     </div>
