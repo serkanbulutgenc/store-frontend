@@ -20,7 +20,7 @@ export function getRouter() {
   });
   const router = createRouter({
     routeTree,
-    context: { me: null, queryClient },
+    context: { me: null, siteOrigin: "", queryClient },
     scrollRestoration: true,
     defaultPreload: "intent",
     defaultPendingComponent: PendingState,

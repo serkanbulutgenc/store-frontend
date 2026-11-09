@@ -2,6 +2,7 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { browseSearchSchema, pageNumbers } from "@/features/catalog/browse-search";
 import { ListingRoute } from "@/features/catalog/components/listing-route";
 import { categoriesQuery, productsPageQuery } from "@/features/catalog/queries";
+import { categoryTrail, listingHead } from "@/features/catalog/seo";
 import { ApiError } from "@/lib/api/errors";
 
 export const Route = createFileRoute("/_storefront/kategori/$slug")({
@@ -19,9 +20,20 @@ export const Route = createFileRoute("/_storefront/kategori/$slug")({
       throw e;
     }
     const categories = await context.queryClient.query(categoriesQuery);
-    const all = categories.flatMap((c) => [c, ...c.children]);
-    return { categories, title: all.find((c) => c.slug === params.slug)?.name ?? "Ürünler" };
+    const trail = categoryTrail(categories, params.slug);
+    return { categories, trail, title: trail.at(-1)?.name ?? "Ürünler" };
   },
+  head: ({ loaderData, match, params }) =>
+    loaderData
+      ? listingHead({
+          title: loaderData.title,
+          path: `/kategori/${params.slug}`,
+          search: match.search,
+          kind: "category",
+          origin: match.context.siteOrigin,
+          trail: loaderData.trail,
+        })
+      : {},
   component: function CategoryPage() {
     const { title, categories } = Route.useLoaderData();
     const { slug } = Route.useParams();

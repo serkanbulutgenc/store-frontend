@@ -5,12 +5,23 @@ import { Toaster } from "@/components/ui/sonner";
 import { fetchMe } from "@/lib/api/fetch-me";
 import type { Me } from "@/lib/api/me";
 import { loadMe } from "@/lib/api/me-query";
+import { fetchSiteOrigin } from "@/lib/site-origin";
 import appCss from "@/styles.css?url";
 
-export type RouterContext = { me: Me | null; queryClient: QueryClient };
+export type RouterContext = { me: Me | null; siteOrigin: string; queryClient: QueryClient };
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  beforeLoad: async ({ context }) => ({ me: await loadMe(context.queryClient, () => fetchMe()) }),
+  beforeLoad: async ({ context }) => {
+    const [me, siteOrigin] = await Promise.all([
+      loadMe(context.queryClient, () => fetchMe()),
+      context.queryClient.ensureQueryData({
+        queryKey: ["site-origin"],
+        staleTime: Number.POSITIVE_INFINITY,
+        queryFn: () => fetchSiteOrigin(),
+      }),
+    ]);
+    return { me, siteOrigin };
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },

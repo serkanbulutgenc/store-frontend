@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ProductGrid } from "@/features/catalog/components/product-card";
 import { categoriesQuery, productsPageQuery } from "@/features/catalog/queries";
+import { homeHead } from "@/features/catalog/seo";
 
 const NEW_ARRIVALS = 8;
 
@@ -12,6 +13,7 @@ export const Route = createFileRoute("/_storefront/")({
     ]);
     return { arrivals: page.items.slice(0, NEW_ARRIVALS), categories };
   },
+  head: ({ match }) => homeHead(match.context.siteOrigin),
   component: function Home() {
     const { arrivals, categories } = Route.useLoaderData();
     return (
