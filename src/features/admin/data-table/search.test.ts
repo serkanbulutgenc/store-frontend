@@ -24,6 +24,11 @@ describe("listSearchSchema", () => {
     });
   });
 
+  it("keeps a numeric search term (the URL parser turns ?q=12345 into a number)", () => {
+    expect(listSearchSchema.parse({ q: 12345 })).toMatchObject({ q: "12345" });
+    expect(listSearchSchema.parse({ q: "abc" })).toMatchObject({ q: "abc" });
+  });
+
   it("can be extended with screen filters", () => {
     const s = listSearchSchema.extend({ status: z.string().optional() });
     expect(s.parse({ status: "draft" })).toMatchObject({ status: "draft" });

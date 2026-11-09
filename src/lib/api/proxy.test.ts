@@ -119,4 +119,70 @@ describe("forward", () => {
     expect(res.status).toBe(404);
     expect(f).not.toHaveBeenCalled();
   });
+
+  it("forwards the browser's real Origin instead of inventing one", async () => {
+    const f = upstream(Response.json({}));
+    await forward(
+      new Request("http://web/api/store/basket/lines", {
+        method: "POST",
+        body: "{}",
+        headers: { origin: "http://web" },
+      }),
+      config,
+      f,
+    );
+    expect(headersOf(f).get("origin")).toBe("http://web");
+  });
+
+  it("rejects unsafe requests from another origin without calling Django", async () => {
+    const f = upstream(Response.json({}));
+    const res = await forward(
+      new Request("http://web/api/store/basket/lines", {
+        method: "POST",
+        body: "{}",
+        headers: { origin: "https://evil.example", cookie: "csrftoken=abc" },
+      }),
+      config,
+      f,
+    );
+    expect(res.status).toBe(403);
+    expect(f).not.toHaveBeenCalled();
+  });
+
+  it("rejects unsafe requests flagged cross-site by the browser", async () => {
+    const f = upstream(Response.json({}));
+    const res = await forward(
+      new Request("http://web/api/store/basket/lines", {
+        method: "POST",
+        body: "{}",
+        headers: { "sec-fetch-site": "cross-site" },
+      }),
+      config,
+      f,
+    );
+    expect(res.status).toBe(403);
+  });
+
+  it("does not leak the internal API origin in Location", async () => {
+    const up = new Response(null, {
+      status: 301,
+      headers: { location: "http://api:8000/api/store/csrf/" },
+    });
+    const res = await forward(new Request("https://web/api/store/csrf"), config, upstream(up));
+    expect(res.headers.get("location")).toBe("https://web/api/store/csrf/");
+  });
+
+  it("uses the first x-forwarded-proto value for the Secure flag", async () => {
+    const f = upstream(Response.json({ meta: { session_token: "t" } }));
+    const res = await forward(
+      new Request("http://web/api/auth/auth/login", {
+        method: "POST",
+        body: "{}",
+        headers: { "x-forwarded-proto": "https,http" },
+      }),
+      config,
+      f,
+    );
+    expect(res.headers.getSetCookie().join(";")).toMatch(/Secure/);
+  });
 });

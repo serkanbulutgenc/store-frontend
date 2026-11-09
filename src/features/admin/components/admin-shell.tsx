@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, Outlet, useRouter } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import type { Me } from "@/lib/api/me";
@@ -6,8 +7,10 @@ import { visibleNav } from "../nav";
 
 export function AdminShell({ me }: { me: Me }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   async function signOut() {
     await logout();
+    queryClient.clear();
     await router.invalidate();
   }
   return (

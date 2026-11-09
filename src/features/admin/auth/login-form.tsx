@@ -1,6 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,19 +16,23 @@ const totp = z.object({ code: z.string().regex(/^\d{6}$/, "6 haneli kodu girin."
 
 /** Step 1: email and password. Returns to the caller with `"mfa"` when 2FA is pending. */
 function CredentialsStep({ onDone, onMfa }: { onDone: () => void; onMfa: () => void }) {
+  // The validator only reports errors; what to do on success runs in `onSubmit`, after the
+  // form has finished submitting and before any navigation or unmount.
+  const result = useRef<"done" | "mfa">("done");
   const form = useForm({
     defaultValues: { email: "", password: "" },
     validators: {
       onSubmit: credentials,
       onSubmitAsync: async ({ value }) => {
         try {
-          (await login(value.email, value.password)) === "mfa" ? onMfa() : onDone();
+          result.current = await login(value.email, value.password);
         } catch (e) {
           return apiErrorToFormErrors(e);
         }
         return undefined;
       },
     },
+    onSubmit: () => (result.current === "mfa" ? onMfa() : onDone()),
   });
   return (
     <form
@@ -88,13 +93,13 @@ function CodeStep({ onDone }: { onDone: () => void }) {
       onSubmitAsync: async ({ value }) => {
         try {
           await authenticateTotp(value.code);
-          onDone();
         } catch (e) {
           return apiErrorToFormErrors(e);
         }
         return undefined;
       },
     },
+    onSubmit: () => onDone(),
   });
   return (
     <form
@@ -139,8 +144,12 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
   const [step, setStep] = useState<"credentials" | "mfa">("credentials");
   // The session cookie is set by the proxy; re-running the guards loads `/me` and redirects.
   async function done() {
-    await router.invalidate();
-    await router.navigate({ to: redirectTo });
+    try {
+      await router.invalidate();
+      await router.navigate({ href: redirectTo });
+    } catch {
+      toast.error("Giriş yapıldı ancak sayfa yüklenemedi. Lütfen sayfayı yenileyin.");
+    }
   }
   return step === "credentials" ? (
     <CredentialsStep onDone={done} onMfa={() => setStep("mfa")} />

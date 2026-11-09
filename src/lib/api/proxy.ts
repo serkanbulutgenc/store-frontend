@@ -36,7 +36,7 @@ function upstreamPath(pathname: string): string | null {
   return null;
 }
 
-function parseCookies(header: string | null): Map<string, string> {
+export function parseCookies(header: string | null): Map<string, string> {
   const jar = new Map<string, string>();
   for (const part of (header ?? "").split(";")) {
     const i = part.indexOf("=");
@@ -54,7 +54,25 @@ export function clearedSessionCookie(config: ProxyConfig, secure: boolean): stri
 }
 
 function isSecure(url: URL, request: Request): boolean {
-  return (request.headers.get("x-forwarded-proto") ?? url.protocol.replace(":", "")) === "https";
+  const forwarded = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim().toLowerCase();
+  return (forwarded || url.protocol.replace(":", "")) === "https";
+}
+
+/**
+ * The proxy echoes the HttpOnly CSRF cookie as `X-CSRFToken`, so Django's token check can
+ * no longer tell a cross-site request apart. This is the check that replaces it: an unsafe
+ * request must come from our own origin.
+ */
+function isSameSite(request: Request, url: URL): boolean {
+  if (request.headers.get("sec-fetch-site") === "cross-site") return false;
+  const origin = request.headers.get("origin");
+  if (!origin) return true; // non-browser callers and same-origin GET-less fetches
+  const host = request.headers.get("x-forwarded-host") ?? url.host;
+  try {
+    return new URL(origin).host === host;
+  } catch {
+    return false;
+  }
 }
 
 export async function forward(
@@ -70,6 +88,14 @@ export async function forward(
       { status: 404 },
     );
 
+  const unsafe = !SAFE_METHODS.has(request.method);
+  if (unsafe && !isSameSite(request, url)) {
+    return Response.json(
+      { code: "forbidden", message: "Bu işlem için yetkiniz yok.", fields: {} },
+      { status: 403 },
+    );
+  }
+
   const secure = isSecure(url, request);
   const jar = parseCookies(request.headers.get("cookie"));
   const token = jar.get(config.sessionCookie);
@@ -83,14 +109,15 @@ export async function forward(
   const rest = [...jar].filter(([k]) => k !== config.sessionCookie).map(([k, v]) => `${k}=${v}`);
   if (rest.length) headers.set("cookie", rest.join("; "));
   if (token) headers.set("x-session-token", token);
-  headers.set("origin", url.origin);
+  const origin = request.headers.get("origin");
+  if (origin) headers.set("origin", origin);
   headers.set("x-forwarded-proto", secure ? "https" : "http");
   headers.set("x-forwarded-host", url.host);
   // The CSRF cookie is HttpOnly, so the browser cannot echo it; do it here.
   const csrf = jar.get(config.csrfCookie);
   if (csrf && !SAFE_METHODS.has(request.method)) headers.set("x-csrftoken", csrf);
 
-  const hasBody = !SAFE_METHODS.has(request.method);
+  const hasBody = unsafe;
   const upstream = await doFetch(`${config.apiUrl}${path}${url.search}`, {
     method: request.method,
     headers,
@@ -102,6 +129,10 @@ export async function forward(
   upstream.headers.forEach((v, k) => {
     if (!DROP_RESPONSE_HEADERS.includes(k)) out.set(k, v);
   });
+  const location = out.get("location");
+  if (location?.startsWith(config.apiUrl)) {
+    out.set("location", `${url.origin}${location.slice(config.apiUrl.length)}`);
+  }
   for (const c of upstream.headers.getSetCookie()) out.append("set-cookie", c);
 
   let body: BodyInit | null = upstream.body;

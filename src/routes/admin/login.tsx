@@ -7,7 +7,7 @@ export const Route = createFileRoute("/admin/login")({
     redirect: z.string().startsWith("/admin").optional().catch(undefined),
   }),
   beforeLoad: ({ context, search }) => {
-    if (context.me) throw redirect({ to: search.redirect ?? "/admin" });
+    if (context.me) throw redirect({ href: search.redirect ?? "/admin" });
   },
   component: LoginPage,
 });

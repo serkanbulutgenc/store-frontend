@@ -4,6 +4,7 @@ import { getEnv } from "@/env";
 import { adminApi } from "./clients";
 import { ApiError } from "./errors";
 import type { Me } from "./me";
+import { parseCookies } from "./proxy";
 
 /**
  * The signed-in staff member, or null. Skips the upstream call when there is no session
@@ -11,7 +12,7 @@ import type { Me } from "./me";
  */
 export const fetchMe = createServerFn({ method: "GET" }).handler(async (): Promise<Me | null> => {
   const cookies = getRequest().headers.get("cookie") ?? "";
-  if (!new RegExp(`(?:^|;\\s*)${getEnv().SESSION_COOKIE_NAME}=`).test(cookies)) return null;
+  if (!parseCookies(cookies).has(getEnv().SESSION_COOKIE_NAME)) return null;
   try {
     const { data } = await adminApi.GET("/api/admin/me");
     return (data as Me | undefined) ?? null;

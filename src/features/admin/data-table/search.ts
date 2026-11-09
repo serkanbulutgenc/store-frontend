@@ -13,7 +13,10 @@ export const listSearchSchema = z.object({
     .refine((n): n is (typeof PAGE_SIZES)[number] => (PAGE_SIZES as readonly number[]).includes(n))
     .catch(25)
     .default(25),
-  q: z.string().min(1).optional().catch(undefined),
+  q: z
+    .union([z.string().min(1), z.number().transform(String)])
+    .optional()
+    .catch(undefined),
   ordering: z.string().min(1).optional().catch(undefined),
 });
 

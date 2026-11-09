@@ -6,7 +6,13 @@ import { createErrorHandler } from "@/lib/api/handle-error";
 import { routeTree } from "./routeTree.gen";
 
 export function getRouter() {
-  const onError = createErrorHandler({ onUnauthorized: () => void router.invalidate() });
+  const onError = createErrorHandler({
+    // The proxy already cleared the cookie; drop cached data so the next user never sees it.
+    onUnauthorized: () => {
+      queryClient.clear();
+      void router.invalidate();
+    },
+  });
   const queryClient = new QueryClient({
     queryCache: new QueryCache({ onError }),
     mutationCache: new MutationCache({ onError }),
