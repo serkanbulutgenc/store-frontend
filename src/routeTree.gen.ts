@@ -25,6 +25,7 @@ import { Route as AdminAppSuppliersRouteImport } from './routes/admin/_app/suppl
 import { Route as AdminAppProductsIndexRouteImport } from './routes/admin/_app/products/index'
 import { Route as AdminAppProductsProductIdRouteImport } from './routes/admin/_app/products/$productId'
 import { Route as AdminAppProductsNewRouteImport } from './routes/admin/_app/products/new'
+import { Route as AdminAppProductsProductIdPhotosRouteImport } from './routes/admin/_app/products/$productId_.photos'
 
 const StorefrontRouteRoute = StorefrontRouteRouteImport.update({
   id: '/_storefront',
@@ -105,6 +106,12 @@ const AdminAppProductsNewRoute = AdminAppProductsNewRouteImport.update({
   path: '/products/new',
   getParentRoute: () => AdminAppRouteRoute,
 } as any)
+const AdminAppProductsProductIdPhotosRoute =
+  AdminAppProductsProductIdPhotosRouteImport.update({
+    id: '/products/$productId_/photos',
+    path: '/products/$productId/photos',
+    getParentRoute: () => AdminAppRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof StorefrontIndexRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/admin/products/$productId': typeof AdminAppProductsProductIdRoute
   '/admin/products/new': typeof AdminAppProductsNewRoute
   '/admin/products/': typeof AdminAppProductsIndexRoute
+  '/admin/products/$productId/photos': typeof AdminAppProductsProductIdPhotosRoute
 }
 export interface FileRoutesByTo {
   '/admin': typeof AdminAppIndexRoute
@@ -136,6 +144,7 @@ export interface FileRoutesByTo {
   '/admin/products/$productId': typeof AdminAppProductsProductIdRoute
   '/admin/products/new': typeof AdminAppProductsNewRoute
   '/admin/products': typeof AdminAppProductsIndexRoute
+  '/admin/products/$productId/photos': typeof AdminAppProductsProductIdPhotosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -155,6 +164,7 @@ export interface FileRoutesById {
   '/admin/_app/products/$productId': typeof AdminAppProductsProductIdRoute
   '/admin/_app/products/new': typeof AdminAppProductsNewRoute
   '/admin/_app/products/': typeof AdminAppProductsIndexRoute
+  '/admin/_app/products/$productId_/photos': typeof AdminAppProductsProductIdPhotosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/admin/products/$productId'
     | '/admin/products/new'
     | '/admin/products/'
+    | '/admin/products/$productId/photos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/admin'
@@ -188,6 +199,7 @@ export interface FileRouteTypes {
     | '/admin/products/$productId'
     | '/admin/products/new'
     | '/admin/products'
+    | '/admin/products/$productId/photos'
   id:
     | '__root__'
     | '/_storefront'
@@ -206,6 +218,7 @@ export interface FileRouteTypes {
     | '/admin/_app/products/$productId'
     | '/admin/_app/products/new'
     | '/admin/_app/products/'
+    | '/admin/_app/products/$productId_/photos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -328,6 +341,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAppProductsNewRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
+    '/admin/_app/products/$productId_/photos': {
+      id: '/admin/_app/products/$productId_/photos'
+      path: '/products/$productId/photos'
+      fullPath: '/admin/products/$productId/photos'
+      preLoaderRoute: typeof AdminAppProductsProductIdPhotosRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
   }
 }
 
@@ -354,6 +374,7 @@ interface AdminAppRouteRouteChildren {
   AdminAppProductsProductIdRoute: typeof AdminAppProductsProductIdRoute
   AdminAppProductsNewRoute: typeof AdminAppProductsNewRoute
   AdminAppProductsIndexRoute: typeof AdminAppProductsIndexRoute
+  AdminAppProductsProductIdPhotosRoute: typeof AdminAppProductsProductIdPhotosRoute
 }
 
 const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
@@ -367,6 +388,7 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppProductsProductIdRoute: AdminAppProductsProductIdRoute,
   AdminAppProductsNewRoute: AdminAppProductsNewRoute,
   AdminAppProductsIndexRoute: AdminAppProductsIndexRoute,
+  AdminAppProductsProductIdPhotosRoute: AdminAppProductsProductIdPhotosRoute,
 }
 
 const AdminAppRouteRouteWithChildren = AdminAppRouteRoute._addFileChildren(

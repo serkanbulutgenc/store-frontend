@@ -21,6 +21,7 @@ export const keys = {
   products: [...ROOT, "products"] as const,
   product: (id: number) => [...ROOT, "products", "detail", id] as const,
   stock: [...ROOT, "stock"] as const,
+  images: (id: number) => [...ROOT, "products", "detail", id, "images"] as const,
   refs: [...ROOT, "refs"] as const,
 };
 
@@ -174,3 +175,79 @@ export const useAdjustStock = () =>
         })
       ).data as VariantOut,
   );
+
+export type ProductImageOut = components["schemas"]["ProductImageOut"];
+
+export const imagesQuery = (productId: number) =>
+  queryOptions({
+    queryKey: keys.images(productId),
+    // While any image is still being processed, poll until its derivatives exist.
+    refetchInterval: (q) => (q.state.data?.some((i) => i.status === "processing") ? 2500 : false),
+    queryFn: async () =>
+      (
+        await adminApi.GET("/api/admin/products/{product_id}/images", {
+          params: { path: { product_id: productId } },
+        })
+      ).data as ProductImageOut[],
+  });
+
+function useImageMutation<V, R>(productId: number, fn: (v: V) => Promise<R>) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: fn,
+    onSuccess: async () => {
+      await Promise.all(
+        [keys.images(productId), keys.product(productId), keys.products].map((queryKey) =>
+          qc.invalidateQueries({ queryKey }),
+        ),
+      );
+    },
+  });
+}
+
+export const useUpdateImage = (productId: number) =>
+  useImageMutation(
+    productId,
+    async (v: { id: number; body: components["schemas"]["ProductImagePatch"] }) =>
+      (
+        await adminApi.PATCH("/api/admin/images/{image_id}", {
+          params: { path: { image_id: v.id } },
+          body: v.body,
+        })
+      ).data as ProductImageOut,
+  );
+
+export const useDeleteImage = (productId: number) =>
+  useImageMutation(productId, async (id: number) => {
+    await adminApi.DELETE("/api/admin/images/{image_id}", {
+      params: { path: { image_id: id } },
+    });
+  });
+
+export const useReorderImages = (productId: number) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (ids: number[]) =>
+      (
+        await adminApi.POST("/api/admin/products/{product_id}/images/order", {
+          params: { path: { product_id: productId } },
+          body: { ids },
+        })
+      ).data as ProductImageOut[],
+    // Show the new order straight away; the response (or a refetch on error) settles it.
+    onMutate: async (ids) => {
+      await qc.cancelQueries({ queryKey: keys.images(productId) });
+      const prev = qc.getQueryData<ProductImageOut[]>(keys.images(productId));
+      if (prev)
+        qc.setQueryData(
+          keys.images(productId),
+          ids.map((id) => prev.find((i) => i.id === id)).filter(Boolean),
+        );
+      return { prev };
+    },
+    onError: (_e, _ids, ctx) => {
+      if (ctx?.prev) qc.setQueryData(keys.images(productId), ctx.prev);
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: keys.images(productId) }),
+  });
+};

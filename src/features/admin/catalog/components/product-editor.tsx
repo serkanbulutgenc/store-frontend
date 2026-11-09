@@ -67,7 +67,16 @@ export function ProductEditor({ productId, me }: { productId: number; me: Me }) 
       <section className="space-y-1">
         <h2 className="text-base font-semibold">Fotoğraflar</h2>
         <p className="text-muted-foreground">
-          Fotoğraf yükleme ayrı bir ekranda eklenecek. Fotoğrafsız ürün yayınlanamaz.
+          Fotoğrafsız ürün yayınlanamaz.{" "}
+          {can(me, "manage_products") && (
+            <Link
+              to="/admin/products/$productId/photos"
+              params={{ productId: String(productId) }}
+              className="underline"
+            >
+              Fotoğrafları yönet
+            </Link>
+          )}
         </p>
       </section>
     </div>

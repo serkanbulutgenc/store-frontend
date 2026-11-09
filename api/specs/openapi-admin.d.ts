@@ -109,6 +109,24 @@ export interface paths {
         patch: operations["catalog_update_colour"];
         trace?: never;
     };
+    "/api/admin/images/{image_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Product Image */
+        delete: operations["catalog_delete_product_image"];
+        options?: never;
+        head?: never;
+        /** Update Product Image */
+        patch: operations["catalog_update_product_image"];
+        trace?: never;
+    };
     "/api/admin/me": {
         parameters: {
             query?: never;
@@ -184,6 +202,45 @@ export interface paths {
         head?: never;
         /** Update Product */
         patch: operations["catalog_update_product"];
+        trace?: never;
+    };
+    "/api/admin/products/{product_id}/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Product Images */
+        get: operations["catalog_list_product_images"];
+        put?: never;
+        /**
+         * Upload Product Image
+         * @description One photo per request (JPEG, PNG or WebP); processing continues in the
+         *     background and the image reports `processing` until its derivatives exist.
+         */
+        post: operations["catalog_upload_product_image"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/products/{product_id}/images/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reorder Product Images */
+        post: operations["catalog_reorder_product_images"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/admin/products/{product_id}/status": {
@@ -395,6 +452,18 @@ export interface components {
             /** Name */
             name?: string | null;
         };
+        /** ImageDerivativeOut */
+        ImageDerivativeOut: {
+            /** Url */
+            url: string;
+            /** Width */
+            width: number;
+        };
+        /** ImageOrderIn */
+        ImageOrderIn: {
+            /** Ids */
+            ids: number[];
+        };
         /** Input */
         Input: {
             /**
@@ -521,6 +590,43 @@ export interface components {
             size_scheme: string;
             /** Sizes */
             sizes: string[];
+        };
+        /** ProductImageOut */
+        ProductImageOut: {
+            /** Alt Text */
+            alt_text: string;
+            colour: components["schemas"]["ColourOut"] | null;
+            /** Custom Alt Text */
+            custom_alt_text: string;
+            /** Derivatives */
+            derivatives: components["schemas"]["ImageDerivativeOut"][];
+            /** Error */
+            error: string;
+            /** Height */
+            height: number;
+            /** Id */
+            id: number;
+            /** Is Primary */
+            is_primary: boolean;
+            /** Original Url */
+            original_url: string;
+            /** Product Id */
+            product_id: number;
+            /** Sort Order */
+            sort_order: number;
+            /** Status */
+            status: string;
+            /** Width */
+            width: number;
+        };
+        /** ProductImagePatch */
+        ProductImagePatch: {
+            /** Alt Text */
+            alt_text?: string | null;
+            /** Colour Id */
+            colour_id?: number | null;
+            /** Is Primary */
+            is_primary?: boolean | null;
         };
         /** ProductIn */
         ProductIn: {
@@ -960,6 +1066,52 @@ export interface operations {
             };
         };
     };
+    catalog_delete_product_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                image_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    catalog_update_product_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                image_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProductImagePatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductImageOut"];
+                };
+            };
+        };
+    };
     staff_get_me: {
         parameters: {
             query?: never;
@@ -1095,6 +1247,88 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductOut"];
+                };
+            };
+        };
+    };
+    catalog_list_product_images: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductImageOut"][];
+                };
+            };
+        };
+    };
+    catalog_upload_product_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Colour Id */
+                    colour_id?: number | null;
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductImageOut"];
+                };
+            };
+        };
+    };
+    catalog_reorder_product_images: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImageOrderIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductImageOut"][];
                 };
             };
         };
