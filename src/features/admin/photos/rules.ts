@@ -5,7 +5,8 @@ const TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/heic", "i
 
 export function validateFile(file: Pick<File, "type" | "size" | "name">): string | null {
   const heicByName = !file.type && /\.(heic|heif)$/i.test(file.name);
-  if (!TYPES.has(file.type) && !heicByName) return "Yalnızca JPEG, PNG, WebP veya HEIC yüklenebilir.";
+  if (!TYPES.has(file.type) && !heicByName)
+    return "Yalnızca JPEG, PNG, WebP veya HEIC yüklenebilir.";
   if (file.size > MAX_BYTES) return "Dosya 15 MB'tan büyük olamaz.";
   return null;
 }
