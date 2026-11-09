@@ -61,6 +61,15 @@ export function FilterPanel({
   const id = useId();
   const [min, setMin] = useState(search.price_min?.toString() ?? "");
   const [max, setMax] = useState(search.price_max?.toString() ?? "");
+  // Back/forward or "temizle" change the URL under us; follow it.
+  const urlMin = search.price_min?.toString() ?? "";
+  const urlMax = search.price_max?.toString() ?? "";
+  const [seen, setSeen] = useState({ urlMin, urlMax });
+  if (seen.urlMin !== urlMin || seen.urlMax !== urlMax) {
+    setSeen({ urlMin, urlMax });
+    setMin(urlMin);
+    setMax(urlMax);
+  }
   const hasFilters = Boolean(
     search.colour?.length ||
       search.size?.length ||
@@ -71,7 +80,10 @@ export function FilterPanel({
 
   function applyPrice(e: React.FormEvent) {
     e.preventDefault();
-    const num = (v: string) => (v.trim() === "" || Number.isNaN(Number(v)) ? undefined : Number(v));
+    const num = (v: string) => {
+      const n = Number(v.trim().replace(",", "."));
+      return v.trim() === "" || Number.isNaN(n) ? undefined : n;
+    };
     onChange({ price_min: num(min), price_max: num(max) });
   }
 

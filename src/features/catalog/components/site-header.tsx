@@ -8,9 +8,9 @@ import type { CategoryNode } from "../queries";
 function CategoryMenu({ categories }: { categories: CategoryNode[] }) {
   return (
     <nav aria-label="Kategoriler" className="border-t border-border">
-      <ul className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4">
+      <ul className="mx-auto flex max-w-6xl flex-wrap gap-1 px-4">
         {categories.map((c) => (
-          <li key={c.slug} className="group relative shrink-0">
+          <li key={c.slug} className="group relative">
             <Link
               to="/kategori/$slug"
               params={{ slug: c.slug }}

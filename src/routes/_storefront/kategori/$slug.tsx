@@ -20,20 +20,19 @@ export const Route = createFileRoute("/_storefront/kategori/$slug")({
     }
     const categories = await context.queryClient.query(categoriesQuery);
     const all = categories.flatMap((c) => [c, ...c.children]);
-    return { title: all.find((c) => c.slug === params.slug)?.name ?? "Ürünler" };
+    return { categories, title: all.find((c) => c.slug === params.slug)?.name ?? "Ürünler" };
   },
   component: function CategoryPage() {
-    const { title } = Route.useLoaderData();
+    const { title, categories } = Route.useLoaderData();
     const { slug } = Route.useParams();
     const search = Route.useSearch();
     const navigate = Route.useNavigate();
-    const categories = Route.useRouteContext().queryClient.getQueryData(categoriesQuery.queryKey);
     return (
       <ListingRoute
         title={title}
         category={slug}
         search={search}
-        categories={categories ?? []}
+        categories={categories}
         navigate={navigate}
       />
     );

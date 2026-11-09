@@ -5,6 +5,7 @@ import { Select } from "@/components/ui/select";
 import {
   type BrowseSearch,
   effectiveSort,
+  MAX_PAGES,
   pageNumbers,
   SORT_LABELS,
   type Sort,
@@ -36,7 +37,7 @@ export function ProductListing({
   const first = results[0]?.data;
   if (!first) return null;
   const items = results.flatMap((r) => r.data.items);
-  const hasMore = items.length < first.total && pages.length < 10;
+  const hasMore = items.length < first.total && pages.length < MAX_PAGES;
   const sort = effectiveSort(search);
   const sorts: Sort[] = search.q
     ? ["relevance", "newest", "price_asc", "price_desc"]
