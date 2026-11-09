@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+    "/api/store/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Categories
+         * @description The two-level category tree for the header menu and the homepage.
+         */
+        get: operations["catalog_list_categories"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/store/csrf": {
         parameters: {
             query?: never;
@@ -24,14 +44,286 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Products
+         * @description Product cards, 24 per page, with facet counts that respect the other filters.
+         */
+        get: operations["catalog_list_products"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/products/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Product */
+        get: operations["catalog_get_product"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** BrandFacet */
+        BrandFacet: {
+            /** Count */
+            count: number;
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+        };
+        /** BrandOut */
+        BrandOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+        };
+        /** CardImageOut */
+        CardImageOut: {
+            /** Alt */
+            alt: string;
+            /** Sizes */
+            sizes: components["schemas"]["ImageSizeOut"][];
+        };
+        /** CategoryChildOut */
+        CategoryChildOut: {
+            /** Name */
+            name: string;
+            /** Slug */
+            slug: string;
+        };
+        /** CategoryNodeOut */
+        CategoryNodeOut: {
+            /** Children */
+            children: components["schemas"]["CategoryChildOut"][];
+            /** Name */
+            name: string;
+            /** Slug */
+            slug: string;
+        };
+        /** ColourFacet */
+        ColourFacet: {
+            /** Count */
+            count: number;
+            /** Hex Code */
+            hex_code: string;
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+        };
+        /** CrumbOut */
+        CrumbOut: {
+            /** Name */
+            name: string;
+            /** Slug */
+            slug: string;
+        };
         /** CsrfOut */
         CsrfOut: {
             /** Csrf Token */
             csrf_token: string;
+        };
+        /** FacetsOut */
+        FacetsOut: {
+            /** Brands */
+            brands: components["schemas"]["BrandFacet"][];
+            /** Colours */
+            colours: components["schemas"]["ColourFacet"][];
+            price: components["schemas"]["PriceFacet"];
+            /** Sizes */
+            sizes: components["schemas"]["SizeFacet"][];
+        };
+        /** ImageSizeOut */
+        ImageSizeOut: {
+            /** Url */
+            url: string;
+            /** Width */
+            width: number;
+        };
+        /** PagePhotoOut */
+        PagePhotoOut: {
+            /** Alt */
+            alt: string;
+            /** Colour Id */
+            colour_id: number | null;
+            /** Id */
+            id: number;
+            /** Is Primary */
+            is_primary: boolean;
+            /** Sizes */
+            sizes: components["schemas"]["ImageSizeOut"][];
+        };
+        /** PageVariantOut */
+        PageVariantOut: {
+            /** Available */
+            available: number;
+            colour: components["schemas"]["SwatchOut"];
+            /** Id */
+            id: number;
+            /** In Stock */
+            in_stock: boolean;
+            /**
+             * Price
+             * @example 349.90
+             */
+            price: string;
+            /** Remaining */
+            remaining: number | null;
+            /** Size */
+            size: string;
+            /** Sku */
+            sku: string;
+        };
+        /** PriceFacet */
+        PriceFacet: {
+            /** Max */
+            max: string | null;
+            /** Min */
+            min: string | null;
+        };
+        /** ProductCardOut */
+        ProductCardOut: {
+            /** Colours */
+            colours: components["schemas"]["SwatchOut"][];
+            /** Id */
+            id: number;
+            image: components["schemas"]["CardImageOut"] | null;
+            /** Old Price */
+            old_price: string | null;
+            /**
+             * Price
+             * @example 349.90
+             */
+            price: string;
+            /** Slug */
+            slug: string;
+            /** Sold Out */
+            sold_out: boolean;
+            /** Title */
+            title: string;
+        };
+        /** ProductDetailOut */
+        ProductDetailOut: {
+            brand: components["schemas"]["BrandOut"] | null;
+            /** Breadcrumbs */
+            breadcrumbs: components["schemas"]["CrumbOut"][];
+            /** Colours */
+            colours: components["schemas"]["SwatchOut"][];
+            /** Description */
+            description: string;
+            /** Id */
+            id: number;
+            image: components["schemas"]["CardImageOut"] | null;
+            /** Is Hygiene */
+            is_hygiene: boolean;
+            /** Old Price */
+            old_price: string | null;
+            /** Photos */
+            photos: components["schemas"]["PagePhotoOut"][];
+            /**
+             * Price
+             * @example 349.90
+             */
+            price: string;
+            /** Slug */
+            slug: string;
+            /** Sold Out */
+            sold_out: boolean;
+            /** Title */
+            title: string;
+            /** Variants */
+            variants: components["schemas"]["PageVariantOut"][];
+        };
+        /** ProductListQuery */
+        ProductListQuery: {
+            /** Brand */
+            brand?: number[];
+            /**
+             * Category
+             * @description Category slug, children included.
+             */
+            category?: string | null;
+            /** Colour */
+            colour?: number[];
+            /**
+             * In Stock
+             * @default true
+             */
+            in_stock: boolean;
+            /**
+             * Page
+             * @default 1
+             */
+            page: number;
+            /** Price Max */
+            price_max?: number | string | null;
+            /** Price Min */
+            price_min?: number | string | null;
+            /**
+             * Q
+             * @default
+             */
+            q: string;
+            /** Size */
+            size?: string[];
+            /**
+             * Sort
+             * @default newest
+             * @enum {string}
+             */
+            sort: "newest" | "price_asc" | "price_desc" | "relevance";
+        };
+        /** ProductPageOut */
+        ProductPageOut: {
+            facets: components["schemas"]["FacetsOut"];
+            /** Items */
+            items: components["schemas"]["ProductCardOut"][];
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total */
+            total: number;
+        };
+        /** SizeFacet */
+        SizeFacet: {
+            /** Count */
+            count: number;
+            /** Size */
+            size: string;
+        };
+        /** SwatchOut */
+        SwatchOut: {
+            /** Hex Code */
+            hex_code: string;
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
         };
     };
     responses: never;
@@ -42,6 +334,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    catalog_list_categories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryNodeOut"][];
+                };
+            };
+        };
+    };
     auth_get_csrf: {
         parameters: {
             query?: never;
@@ -58,6 +370,60 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CsrfOut"];
+                };
+            };
+        };
+    };
+    catalog_list_products: {
+        parameters: {
+            query?: {
+                /** @description Category slug, children included. */
+                category?: string | null;
+                q?: string;
+                colour?: number[];
+                size?: string[];
+                brand?: number[];
+                price_min?: number | string | null;
+                price_max?: number | string | null;
+                in_stock?: boolean;
+                sort?: "newest" | "price_asc" | "price_desc" | "relevance";
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductPageOut"];
+                };
+            };
+        };
+    };
+    catalog_get_product: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductDetailOut"];
                 };
             };
         };

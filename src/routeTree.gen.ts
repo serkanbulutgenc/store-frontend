@@ -12,9 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as StorefrontRouteRouteImport } from './routes/_storefront/route'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as StorefrontIndexRouteImport } from './routes/_storefront/index'
+import { Route as StorefrontAraRouteImport } from './routes/_storefront/ara'
 import { Route as AdminAppRouteRouteImport } from './routes/admin/_app/route'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
+import { Route as StorefrontKategoriSlugRouteImport } from './routes/_storefront/kategori/$slug'
+import { Route as StorefrontUrunSlugRouteImport } from './routes/_storefront/urun/$slug'
 import { Route as AdminAppIndexRouteImport } from './routes/admin/_app/index'
 import { Route as AdminAppSplatRouteImport } from './routes/admin/_app/$'
 import { Route as AdminAppBrandsRouteImport } from './routes/admin/_app/brands'
@@ -41,6 +44,11 @@ const StorefrontIndexRoute = StorefrontIndexRouteImport.update({
   path: '/',
   getParentRoute: () => StorefrontRouteRoute,
 } as any)
+const StorefrontAraRoute = StorefrontAraRouteImport.update({
+  id: '/ara',
+  path: '/ara',
+  getParentRoute: () => StorefrontRouteRoute,
+} as any)
 const AdminAppRouteRoute = AdminAppRouteRouteImport.update({
   id: '/_app',
   getParentRoute: () => AdminRouteRoute,
@@ -54,6 +62,16 @@ const ApiSplatRoute = ApiSplatRouteImport.update({
   id: '/api/$',
   path: '/api/$',
   getParentRoute: () => rootRouteImport,
+} as any)
+const StorefrontKategoriSlugRoute = StorefrontKategoriSlugRouteImport.update({
+  id: '/kategori/$slug',
+  path: '/kategori/$slug',
+  getParentRoute: () => StorefrontRouteRoute,
+} as any)
+const StorefrontUrunSlugRoute = StorefrontUrunSlugRouteImport.update({
+  id: '/urun/$slug',
+  path: '/urun/$slug',
+  getParentRoute: () => StorefrontRouteRoute,
 } as any)
 const AdminAppIndexRoute = AdminAppIndexRouteImport.update({
   id: '/',
@@ -116,8 +134,11 @@ const AdminAppProductsProductIdPhotosRoute =
 export interface FileRoutesByFullPath {
   '/': typeof StorefrontIndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
+  '/ara': typeof StorefrontAraRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/$': typeof ApiSplatRoute
+  '/kategori/$slug': typeof StorefrontKategoriSlugRoute
+  '/urun/$slug': typeof StorefrontUrunSlugRoute
   '/admin/$': typeof AdminAppSplatRoute
   '/admin/brands': typeof AdminAppBrandsRoute
   '/admin/categories': typeof AdminAppCategoriesRoute
@@ -132,9 +153,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/admin': typeof AdminAppIndexRoute
+  '/ara': typeof StorefrontAraRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/$': typeof ApiSplatRoute
   '/': typeof StorefrontIndexRoute
+  '/kategori/$slug': typeof StorefrontKategoriSlugRoute
+  '/urun/$slug': typeof StorefrontUrunSlugRoute
   '/admin/$': typeof AdminAppSplatRoute
   '/admin/brands': typeof AdminAppBrandsRoute
   '/admin/categories': typeof AdminAppCategoriesRoute
@@ -151,9 +175,12 @@ export interface FileRoutesById {
   '/_storefront': typeof StorefrontRouteRouteWithChildren
   '/admin': typeof AdminRouteRouteWithChildren
   '/admin/_app': typeof AdminAppRouteRouteWithChildren
+  '/_storefront/ara': typeof StorefrontAraRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/$': typeof ApiSplatRoute
   '/_storefront/': typeof StorefrontIndexRoute
+  '/_storefront/kategori/$slug': typeof StorefrontKategoriSlugRoute
+  '/_storefront/urun/$slug': typeof StorefrontUrunSlugRoute
   '/admin/_app/$': typeof AdminAppSplatRoute
   '/admin/_app/brands': typeof AdminAppBrandsRoute
   '/admin/_app/categories': typeof AdminAppCategoriesRoute
@@ -171,8 +198,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/ara'
     | '/admin/login'
     | '/api/$'
+    | '/kategori/$slug'
+    | '/urun/$slug'
     | '/admin/$'
     | '/admin/brands'
     | '/admin/categories'
@@ -187,9 +217,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/admin'
+    | '/ara'
     | '/admin/login'
     | '/api/$'
     | '/'
+    | '/kategori/$slug'
+    | '/urun/$slug'
     | '/admin/$'
     | '/admin/brands'
     | '/admin/categories'
@@ -205,9 +238,12 @@ export interface FileRouteTypes {
     | '/_storefront'
     | '/admin'
     | '/admin/_app'
+    | '/_storefront/ara'
     | '/admin/login'
     | '/api/$'
     | '/_storefront/'
+    | '/_storefront/kategori/$slug'
+    | '/_storefront/urun/$slug'
     | '/admin/_app/$'
     | '/admin/_app/brands'
     | '/admin/_app/categories'
@@ -250,6 +286,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StorefrontIndexRouteImport
       parentRoute: typeof StorefrontRouteRoute
     }
+    '/_storefront/ara': {
+      id: '/_storefront/ara'
+      path: '/ara'
+      fullPath: '/ara'
+      preLoaderRoute: typeof StorefrontAraRouteImport
+      parentRoute: typeof StorefrontRouteRoute
+    }
     '/admin/_app': {
       id: '/admin/_app'
       path: ''
@@ -270,6 +313,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/$'
       preLoaderRoute: typeof ApiSplatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_storefront/kategori/$slug': {
+      id: '/_storefront/kategori/$slug'
+      path: '/kategori/$slug'
+      fullPath: '/kategori/$slug'
+      preLoaderRoute: typeof StorefrontKategoriSlugRouteImport
+      parentRoute: typeof StorefrontRouteRoute
+    }
+    '/_storefront/urun/$slug': {
+      id: '/_storefront/urun/$slug'
+      path: '/urun/$slug'
+      fullPath: '/urun/$slug'
+      preLoaderRoute: typeof StorefrontUrunSlugRouteImport
+      parentRoute: typeof StorefrontRouteRoute
     }
     '/admin/_app/': {
       id: '/admin/_app/'
@@ -352,11 +409,17 @@ declare module '@tanstack/react-router' {
 }
 
 interface StorefrontRouteRouteChildren {
+  StorefrontAraRoute: typeof StorefrontAraRoute
   StorefrontIndexRoute: typeof StorefrontIndexRoute
+  StorefrontKategoriSlugRoute: typeof StorefrontKategoriSlugRoute
+  StorefrontUrunSlugRoute: typeof StorefrontUrunSlugRoute
 }
 
 const StorefrontRouteRouteChildren: StorefrontRouteRouteChildren = {
+  StorefrontAraRoute: StorefrontAraRoute,
   StorefrontIndexRoute: StorefrontIndexRoute,
+  StorefrontKategoriSlugRoute: StorefrontKategoriSlugRoute,
+  StorefrontUrunSlugRoute: StorefrontUrunSlugRoute,
 }
 
 const StorefrontRouteRouteWithChildren = StorefrontRouteRoute._addFileChildren(
