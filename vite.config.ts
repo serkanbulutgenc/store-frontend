@@ -7,5 +7,11 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   server: { port: 3000 },
-  plugins: [tsconfigPaths(), tailwindcss(), tanstackStart(), nitro(), viteReact()],
+  plugins: [
+    tsconfigPaths(),
+    tailwindcss(),
+    tanstackStart(),
+    nitro({ plugins: ["./server/plugins/sentry.ts"] }),
+    viteReact(),
+  ],
 });

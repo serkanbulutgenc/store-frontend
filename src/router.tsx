@@ -3,6 +3,7 @@ import { createRouter } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { ErrorState, NotFoundState, PendingState } from "@/components/route-states";
 import { createErrorHandler } from "@/lib/api/handle-error";
+import { reportServerError } from "@/lib/observability/capture";
 import { routeTree } from "./routeTree.gen";
 
 export function getRouter() {
@@ -25,6 +26,7 @@ export function getRouter() {
     defaultPreload: "intent",
     defaultPendingComponent: PendingState,
     defaultErrorComponent: ErrorState,
+    defaultOnCatch: reportServerError,
     defaultNotFoundComponent: () => <NotFoundState />,
     // biome-ignore lint/correctness/noComponentHookFactories: closes over the per-request QueryClient
     Wrap: ({ children }: { children: ReactNode }) => (

@@ -1,6 +1,7 @@
 import { type ErrorComponentProps, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { ApiError } from "@/lib/api/errors";
+import { reportServerError } from "@/lib/observability/capture";
 
 /** Shared `pendingComponent`: a skeleton block, no spinner flash. */
 export function PendingState() {
@@ -14,6 +15,7 @@ export function PendingState() {
 
 /** Shared `errorComponent`. Shows the API's Turkish message when there is one. */
 export function ErrorState({ error, reset }: ErrorComponentProps) {
+  reportServerError(error);
   const message = error instanceof ApiError ? error.message : "Beklenmeyen bir hata oluştu.";
   return (
     <div className="space-y-2 p-4" role="alert">
