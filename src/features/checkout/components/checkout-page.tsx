@@ -123,10 +123,14 @@ export function CheckoutPage() {
   useEffect(() => {
     if (prefilled.current || !account || !book) return;
     prefilled.current = true;
-    for (const [name, value] of Object.entries(checkoutPrefill(account, book))) {
-      const key = name as keyof typeof emptyCheckout;
-      if (!form.getFieldMeta(key)?.isDirty) form.setFieldValue(key, value as never);
-    }
+    const fill = checkoutPrefill(account, book);
+    const untouched = (name: string) =>
+      !form.getFieldMeta(name as keyof typeof emptyCheckout)?.isDirty;
+    for (const key of ["full_name", "email", "phone"] as const)
+      if (fill[key] && untouched(key)) form.setFieldValue(key, fill[key]);
+    for (const [part, value] of Object.entries(fill.shipping_address ?? {}))
+      if (untouched(`shipping_address.${part}`))
+        form.setFieldValue(`shipping_address.${part}` as "shipping_address.il", value);
   }, [account, book, form]);
 
   if (!basket || !settings)

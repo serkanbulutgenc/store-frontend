@@ -18,7 +18,16 @@ import {
 function AddressForm({ address, onDone }: { address: SavedAddress | null; onDone: () => void }) {
   const save = useSaveAddress();
   const initial: AddressValues = address
-    ? { ...emptyAddress, ...address, postal_code: address.postal_code }
+    ? {
+        full_name: address.full_name,
+        phone: address.phone,
+        il: address.il,
+        ilce: address.ilce,
+        mahalle: address.mahalle,
+        street: address.street,
+        postal_code: address.postal_code,
+        is_default: address.is_default,
+      }
     : emptyAddress;
   const form = useForm({
     defaultValues: initial,

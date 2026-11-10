@@ -8,3 +8,8 @@ describe("safeRedirect", () => {
     expect(safeRedirect(v)).toBe("/hesap"),
   );
 });
+
+describe("safeRedirect control characters", () => {
+  it("rejects a tab that browsers strip", () =>
+    expect(safeRedirect("/\t/evil.com")).toBe("/hesap"));
+});

@@ -5,17 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { apiErrorToFormErrors } from "@/features/admin/forms/api-errors";
 import { bind, Field, FormMessage } from "@/features/admin/forms/field";
-import { accountQuery, useUpdateProfile } from "../queries";
+import { type Account, accountQuery, useUpdateProfile } from "../queries";
 import { profileSchema } from "../schemas";
 
-export function ProfilePage() {
-  const { data: account } = useQuery(accountQuery);
+function ProfileForm({ account }: { account: Account }) {
   const update = useUpdateProfile();
   const form = useForm({
     defaultValues: {
-      name: account?.name ?? "",
-      phone: account?.phone ?? "",
-      marketing_consent: account?.marketing_consent ?? false,
+      name: account.name,
+      phone: account.phone,
+      marketing_consent: account.marketing_consent,
     },
     validators: {
       onSubmit: profileSchema,
@@ -30,7 +29,6 @@ export function ProfilePage() {
       },
     },
   });
-  if (!account) return null;
   return (
     <section aria-labelledby="profile" className="max-w-md space-y-4">
       <h1 id="profile" className="text-2xl font-semibold">
@@ -94,4 +92,9 @@ export function ProfilePage() {
       </form>
     </section>
   );
+}
+
+export function ProfilePage() {
+  const { data: account } = useQuery(accountQuery);
+  return account ? <ProfileForm account={account} /> : null;
 }

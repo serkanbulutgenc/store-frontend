@@ -39,9 +39,10 @@ export const logIn = (email: string, password: string) =>
 /** A used or expired link is a 400; a verified link is a 200, or a 401 asking to log in. */
 export async function verifyEmail(key: string): Promise<void> {
   const r = await run("auth/email/verify", { key });
-  if (r.status !== 200 && r.status !== 401) throw toApiError(r.status, r.body);
-  if (r.status === 401 && !r.outcome && (r.body as Body)?.data?.flows === undefined)
-    throw toApiError(r.status, r.body);
+  // 401 is allauth asking a not-yet-signed-in user to log in after a verified key.
+  const flows = (r.body as Body)?.data?.flows;
+  const ok = r.status === 200 || (r.status === 401 && Array.isArray(flows) && flows.length > 0);
+  if (!ok) throw toApiError(r.status, r.body);
 }
 
 export async function requestPasswordReset(email: string): Promise<void> {

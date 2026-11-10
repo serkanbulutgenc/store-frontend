@@ -1,18 +1,19 @@
 import { useForm } from "@tanstack/react-form";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { apiErrorToFormErrors } from "@/features/admin/forms/api-errors";
 import { bind, Field, FormMessage } from "@/features/admin/forms/field";
 import { signUp } from "../auth";
-import { accountQuery } from "../queries";
+import { ACCOUNT_KEY, accountQuery } from "../queries";
 import { offerSchema } from "../schemas";
 import { CheckEmailNotice } from "./auth-forms";
 
 /** On the confirmation page: sign up with the Order's email, asking for a password only. */
 export function CreateAccountOffer({ email }: { email: string }) {
   const { data: account } = useQuery(accountQuery);
+  const qc = useQueryClient();
   const [sent, setSent] = useState(false);
   const form = useForm({
     defaultValues: { password: "", confirm: "" },
@@ -20,8 +21,9 @@ export function CreateAccountOffer({ email }: { email: string }) {
       onSubmit: offerSchema,
       onSubmitAsync: async ({ value }) => {
         try {
-          await signUp(email, value.password);
-          setSent(true);
+          const result = await signUp(email, value.password);
+          if (result === "signed_in") qc.removeQueries({ queryKey: ACCOUNT_KEY });
+          else setSent(true);
           return undefined;
         } catch (e) {
           return apiErrorToFormErrors(e);

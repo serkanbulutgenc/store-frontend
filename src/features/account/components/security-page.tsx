@@ -70,13 +70,15 @@ function EmailChange({ current }: { current: string }) {
 function PasswordChange() {
   const form = useForm({
     defaultValues: { current: "", password: "", confirm: "" },
+    onSubmit: ({ formApi }) => {
+      toast.success("Parolanız değiştirildi.");
+      formApi.reset();
+    },
     validators: {
       onSubmit: passwordChangeSchema,
       onSubmitAsync: async ({ value }) => {
         try {
           await changePassword(value.current, value.password);
-          toast.success("Parolanız değiştirildi.");
-          form.reset();
           return undefined;
         } catch (e) {
           return apiErrorToFormErrors(e);

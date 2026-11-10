@@ -1,4 +1,4 @@
-import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
 import { storeApi } from "@/lib/api/clients";
 import { ApiError } from "@/lib/api/errors";
 import type { components } from "../../../api/specs/openapi-store";
@@ -18,7 +18,7 @@ export const accountQuery = queryOptions({
     try {
       return (await storeApi.GET("/api/store/account")).data as Account;
     } catch (e) {
-      if (e instanceof ApiError && e.status === 401) return null;
+      if (e instanceof ApiError && (e.status === 401 || e.status === 403)) return null;
       throw e;
     }
   },
@@ -32,6 +32,7 @@ export const addressesQuery = queryOptions({
 export const ordersQuery = (page: number) =>
   queryOptions({
     queryKey: [...ACCOUNT_KEY, "orders", page],
+    placeholderData: keepPreviousData,
     queryFn: async () =>
       (await storeApi.GET("/api/store/account/orders", { params: { query: { page } } })).data,
   });
