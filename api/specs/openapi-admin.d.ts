@@ -167,6 +167,47 @@ export interface paths {
         patch: operations["catalog_update_colour"];
         trace?: never;
     };
+    "/api/admin/exports/accountant.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Accountant Csv
+         * @description Owner only. One row per invoice line for Orders placed from `date_from` to
+         *     `date_to` (inclusive, at most 366 days). No email, phone or notes. Audit-logged.
+         */
+        get: operations["exports_accountant_csv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/home": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Home
+         * @description Each list shows at most 20 rows and counts all of them.
+         */
+        get: operations["home_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/images/{image_id}": {
         parameters: {
             query?: never;
@@ -301,6 +342,27 @@ export interface paths {
         patch: operations["orders_correct_email"];
         trace?: never;
     };
+    "/api/admin/orders/{number}/invoice": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Invoice
+         * @description Record the invoice Staff issued by hand in the GIB portal. Replaces the whole
+         *     record; a number already used by another Order is 409.
+         */
+        put: operations["orders_set_invoice"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/orders/{number}/invoice-details": {
         parameters: {
             query?: never;
@@ -318,6 +380,26 @@ export interface paths {
         patch: operations["orders_set_invoice_details"];
         trace?: never;
     };
+    "/api/admin/orders/{number}/invoice-sheet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Invoice Sheet
+         * @description Buyer, lines and KDV split laid out for typing into the portal.
+         */
+        get: operations["orders_invoice_sheet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/orders/{number}/mark-returned": {
         parameters: {
             query?: never;
@@ -329,6 +411,26 @@ export interface paths {
         put?: never;
         /** Mark Returned */
         post: operations["orders_mark_returned"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders/{number}/messages/{message_id}/resend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resend Message
+         * @description Queue a fresh copy of a logged email; the original stays in the log.
+         */
+        post: operations["orders_resend_message"];
         delete?: never;
         options?: never;
         head?: never;
@@ -772,6 +874,61 @@ export interface components {
             /** Status */
             status: string;
         };
+        /** ExpiringRow */
+        ExpiringRow: {
+            /** Customer */
+            customer: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Number */
+            number: string;
+            /**
+             * Placed At
+             * Format: date-time
+             */
+            placed_at: string;
+            /**
+             * Total
+             * @example 349.90
+             */
+            total: string;
+        };
+        /** ExpiringTransfers */
+        ExpiringTransfers: {
+            /** Count */
+            count: number;
+            /** Rows */
+            rows: components["schemas"]["ExpiringRow"][];
+        };
+        /** HomeOrderRow */
+        HomeOrderRow: {
+            /** Customer */
+            customer: string;
+            /** Number */
+            number: string;
+            /**
+             * Placed At
+             * Format: date-time
+             */
+            placed_at: string;
+            /**
+             * Total
+             * @example 349.90
+             */
+            total: string;
+        };
+        /** HomeOut */
+        HomeOut: {
+            invoice_attention: components["schemas"]["InvoiceFlags"];
+            low_stock: components["schemas"]["LowStock"];
+            new_orders: components["schemas"]["NewOrders"];
+            products_without_photos: components["schemas"]["ProductsWithoutPhotos"];
+            shipped_without_invoice: components["schemas"]["NewOrders"];
+            unpaid_transfers_near_expiry: components["schemas"]["ExpiringTransfers"];
+        };
         /** ImageDerivativeOut */
         ImageDerivativeOut: {
             /** Url */
@@ -807,6 +964,120 @@ export interface components {
              */
             name: string;
         };
+        /** InvoiceFlagRow */
+        InvoiceFlagRow: {
+            /** Cancel By */
+            cancel_by: string | null;
+            /** Customer */
+            customer: string;
+            /** Invoice Date */
+            invoice_date: string | null;
+            /** Invoice Number */
+            invoice_number: string;
+            /**
+             * Needed
+             * @enum {string}
+             */
+            needed: "cancel_invoice" | "credit_note";
+            /** Number */
+            number: string;
+            /**
+             * Placed At
+             * Format: date-time
+             */
+            placed_at: string;
+            /**
+             * Total
+             * @example 349.90
+             */
+            total: string;
+        };
+        /** InvoiceFlags */
+        InvoiceFlags: {
+            /** Count */
+            count: number;
+            /** Rows */
+            rows: components["schemas"]["InvoiceFlagRow"][];
+        };
+        /**
+         * InvoiceIn
+         * @description The whole record, as it stands in the GIB portal.
+         */
+        InvoiceIn: {
+            /** Credit Note Date */
+            credit_note_date?: string | null;
+            /**
+             * Credit Note Number
+             * @default
+             */
+            credit_note_number: string;
+            /** Date */
+            date?: string | null;
+            /**
+             * Number
+             * @description Invoice number.
+             * @default
+             */
+            number: string;
+            status: components["schemas"]["InvoiceStatus"];
+        };
+        /** InvoiceOut */
+        InvoiceOut: {
+            /**
+             * Cancel By
+             * @description Last day the portal lets Staff cancel the invoice (8 days).
+             */
+            cancel_by: string | null;
+            /** Credit Note Date */
+            credit_note_date: string | null;
+            /** Credit Note Number */
+            credit_note_number: string;
+            /** Date */
+            date: string | null;
+            /** Number */
+            number: string;
+            status: components["schemas"]["InvoiceStatus"];
+        };
+        /** InvoiceSheet */
+        InvoiceSheet: {
+            buyer: components["schemas"]["SheetBuyer"];
+            /** Lines */
+            lines: components["schemas"]["SheetLine"][];
+            /**
+             * Order Date
+             * Format: date-time
+             */
+            order_date: string;
+            /** Order Number */
+            order_number: string;
+            /**
+             * Total Excl
+             * @example 349.90
+             */
+            total_excl: string;
+            /**
+             * Total Incl
+             * @example 349.90
+             */
+            total_incl: string;
+            /**
+             * Total Kdv
+             * @example 349.90
+             */
+            total_kdv: string;
+        };
+        /**
+         * InvoiceStatus
+         * @enum {string}
+         */
+        InvoiceStatus: "not_issued" | "issued" | "cancelled";
+        /** LowStock */
+        LowStock: {
+            /** Count */
+            count: number;
+            /** Rows */
+            rows: components["schemas"]["LowStockRow"][];
+        };
         /** LowStockOut */
         LowStockOut: {
             /** Colour */
@@ -823,6 +1094,23 @@ export interface components {
             sku: string;
             /** Threshold */
             threshold: number;
+            /** Variant Id */
+            variant_id: number;
+        };
+        /** LowStockRow */
+        LowStockRow: {
+            /** Colour */
+            colour: string;
+            /** On Hand */
+            on_hand: number;
+            /** Product Id */
+            product_id: number;
+            /** Size */
+            size: string;
+            /** Sku */
+            sku: string;
+            /** Title */
+            title: string;
             /** Variant Id */
             variant_id: number;
         };
@@ -859,6 +1147,13 @@ export interface components {
             id: number;
             /** Name */
             name: string;
+        };
+        /** NewOrders */
+        NewOrders: {
+            /** Count */
+            count: number;
+            /** Rows */
+            rows: components["schemas"]["HomeOrderRow"][];
         };
         /** OrderAuditOut */
         OrderAuditOut: {
@@ -904,6 +1199,7 @@ export interface components {
             delivered_at: string | null;
             /** Email */
             email: string;
+            invoice: components["schemas"]["InvoiceOut"];
             /**
              * Items Total
              * @example 349.90
@@ -916,6 +1212,8 @@ export interface components {
             kdv_total: string;
             /** Lines */
             lines: components["schemas"]["OrderLineOut"][];
+            /** Messages */
+            messages: components["schemas"]["OrderMessageOut"][];
             /** Number */
             number: string;
             /** Paid Amount */
@@ -993,6 +1291,37 @@ export interface components {
              * @example 349.90
              */
             unit_price: string;
+        };
+        /** OrderMessageOut */
+        OrderMessageOut: {
+            /** Attempts */
+            attempts: number;
+            /** Body Html */
+            body_html: string;
+            /** Body Text */
+            body_text: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Error */
+            error: string;
+            /** Id */
+            id: number;
+            /** Recipient */
+            recipient: string;
+            /** Sent At */
+            sent_at: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "pending" | "sent" | "failed" | "bounced";
+            /** Subject */
+            subject: string;
+            /** Template */
+            template: string;
         };
         /** OrderPayIn */
         OrderPayIn: {
@@ -1318,6 +1647,13 @@ export interface components {
          * @enum {string}
          */
         ProductStatus: "draft" | "published" | "archived";
+        /** ProductsWithoutPhotos */
+        ProductsWithoutPhotos: {
+            /** Count */
+            count: number;
+            /** Rows */
+            rows: components["schemas"]["UnphotographedRow"][];
+        };
         /**
          * RefundMethod
          * @enum {string}
@@ -1422,6 +1758,62 @@ export interface components {
             /** Shipping Fee */
             shipping_fee?: string | null;
         };
+        /** SheetBuyer */
+        SheetBuyer: {
+            /** Company Title */
+            company_title: string;
+            /** Il */
+            il: string;
+            /** Ilce */
+            ilce: string;
+            /** Mahalle */
+            mahalle: string;
+            /** Name */
+            name: string;
+            /** Postal Code */
+            postal_code: string;
+            /** Street */
+            street: string;
+            /** Tax Number */
+            tax_number: string;
+        };
+        /** SheetLine */
+        SheetLine: {
+            /** Description */
+            description: string;
+            /**
+             * Kdv Rate
+             * @example 349.90
+             */
+            kdv_rate: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "product" | "shipping" | "cod";
+            /** Quantity */
+            quantity: number;
+            /**
+             * Total Excl
+             * @example 349.90
+             */
+            total_excl: string;
+            /**
+             * Total Incl
+             * @example 349.90
+             */
+            total_incl: string;
+            /**
+             * Total Kdv
+             * @example 349.90
+             */
+            total_kdv: string;
+            /**
+             * Unit Price Excl
+             * @example 349.90
+             */
+            unit_price_excl: string;
+        };
         /** StaffUserOut */
         StaffUserOut: {
             /** Email */
@@ -1477,6 +1869,13 @@ export interface components {
             code?: string | null;
             /** Name */
             name?: string | null;
+        };
+        /** UnphotographedRow */
+        UnphotographedRow: {
+            /** Product Id */
+            product_id: number;
+            /** Title */
+            title: string;
         };
         /** VariantIn */
         VariantIn: {
@@ -1810,6 +2209,49 @@ export interface operations {
             };
         };
     };
+    exports_accountant_csv: {
+        parameters: {
+            query: {
+                date_from: string;
+                date_to: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    home_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HomeOut"];
+                };
+            };
+        };
+    };
     catalog_delete_product_image: {
         parameters: {
             query?: never;
@@ -1999,6 +2441,32 @@ export interface operations {
             };
         };
     };
+    orders_set_invoice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvoiceIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
     orders_set_invoice_details: {
         parameters: {
             query?: never;
@@ -2025,12 +2493,57 @@ export interface operations {
             };
         };
     };
+    orders_invoice_sheet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceSheet"];
+                };
+            };
+        };
+    };
     orders_mark_returned: {
         parameters: {
             query?: never;
             header?: never;
             path: {
                 number: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_resend_message: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+                message_id: number;
             };
             cookie?: never;
         };
