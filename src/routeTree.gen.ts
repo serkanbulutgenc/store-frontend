@@ -31,9 +31,13 @@ import { Route as StorefrontUrunSlugRouteImport } from './routes/_storefront/uru
 import { Route as StorefrontYasalSlugRouteImport } from './routes/_storefront/yasal/$slug'
 import { Route as AdminAppIndexRouteImport } from './routes/admin/_app/index'
 import { Route as AdminAppSplatRouteImport } from './routes/admin/_app/$'
+import { Route as AdminAppAccountDeletionsRouteImport } from './routes/admin/_app/account-deletions'
 import { Route as AdminAppBrandsRouteImport } from './routes/admin/_app/brands'
 import { Route as AdminAppCategoriesRouteImport } from './routes/admin/_app/categories'
 import { Route as AdminAppColoursRouteImport } from './routes/admin/_app/colours'
+import { Route as AdminAppSecurityRouteImport } from './routes/admin/_app/security'
+import { Route as AdminAppSettingsRouteImport } from './routes/admin/_app/settings'
+import { Route as AdminAppStaffRouteImport } from './routes/admin/_app/staff'
 import { Route as AdminAppStockRouteImport } from './routes/admin/_app/stock'
 import { Route as AdminAppSuppliersRouteImport } from './routes/admin/_app/suppliers'
 import { Route as StorefrontCustomerHesapIndexRouteImport } from './routes/_storefront/_customer/hesap/index'
@@ -159,6 +163,12 @@ const AdminAppSplatRoute = AdminAppSplatRouteImport.update({
   path: '/$',
   getParentRoute: () => AdminAppRouteRoute,
 } as any)
+const AdminAppAccountDeletionsRoute =
+  AdminAppAccountDeletionsRouteImport.update({
+    id: '/account-deletions',
+    path: '/account-deletions',
+    getParentRoute: () => AdminAppRouteRoute,
+  } as any)
 const AdminAppBrandsRoute = AdminAppBrandsRouteImport.update({
   id: '/brands',
   path: '/brands',
@@ -172,6 +182,21 @@ const AdminAppCategoriesRoute = AdminAppCategoriesRouteImport.update({
 const AdminAppColoursRoute = AdminAppColoursRouteImport.update({
   id: '/colours',
   path: '/colours',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
+const AdminAppSecurityRoute = AdminAppSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
+const AdminAppSettingsRoute = AdminAppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
+const AdminAppStaffRoute = AdminAppStaffRouteImport.update({
+  id: '/staff',
+  path: '/staff',
   getParentRoute: () => AdminAppRouteRoute,
 } as any)
 const AdminAppStockRoute = AdminAppStockRouteImport.update({
@@ -284,9 +309,13 @@ export interface FileRoutesByFullPath {
   '/urun/$slug': typeof StorefrontUrunSlugRoute
   '/yasal/$slug': typeof StorefrontYasalSlugRoute
   '/admin/$': typeof AdminAppSplatRoute
+  '/admin/account-deletions': typeof AdminAppAccountDeletionsRoute
   '/admin/brands': typeof AdminAppBrandsRoute
   '/admin/categories': typeof AdminAppCategoriesRoute
   '/admin/colours': typeof AdminAppColoursRoute
+  '/admin/security': typeof AdminAppSecurityRoute
+  '/admin/settings': typeof AdminAppSettingsRoute
+  '/admin/staff': typeof AdminAppStaffRoute
   '/admin/stock': typeof AdminAppStockRoute
   '/admin/suppliers': typeof AdminAppSuppliersRoute
   '/admin/': typeof AdminAppIndexRoute
@@ -323,9 +352,13 @@ export interface FileRoutesByTo {
   '/urun/$slug': typeof StorefrontUrunSlugRoute
   '/yasal/$slug': typeof StorefrontYasalSlugRoute
   '/admin/$': typeof AdminAppSplatRoute
+  '/admin/account-deletions': typeof AdminAppAccountDeletionsRoute
   '/admin/brands': typeof AdminAppBrandsRoute
   '/admin/categories': typeof AdminAppCategoriesRoute
   '/admin/colours': typeof AdminAppColoursRoute
+  '/admin/security': typeof AdminAppSecurityRoute
+  '/admin/settings': typeof AdminAppSettingsRoute
+  '/admin/staff': typeof AdminAppStaffRoute
   '/admin/stock': typeof AdminAppStockRoute
   '/admin/suppliers': typeof AdminAppSuppliersRoute
   '/hesap/adresler': typeof StorefrontCustomerHesapAdreslerRoute
@@ -366,9 +399,13 @@ export interface FileRoutesById {
   '/_storefront/urun/$slug': typeof StorefrontUrunSlugRoute
   '/_storefront/yasal/$slug': typeof StorefrontYasalSlugRoute
   '/admin/_app/$': typeof AdminAppSplatRoute
+  '/admin/_app/account-deletions': typeof AdminAppAccountDeletionsRoute
   '/admin/_app/brands': typeof AdminAppBrandsRoute
   '/admin/_app/categories': typeof AdminAppCategoriesRoute
   '/admin/_app/colours': typeof AdminAppColoursRoute
+  '/admin/_app/security': typeof AdminAppSecurityRoute
+  '/admin/_app/settings': typeof AdminAppSettingsRoute
+  '/admin/_app/staff': typeof AdminAppStaffRoute
   '/admin/_app/stock': typeof AdminAppStockRoute
   '/admin/_app/suppliers': typeof AdminAppSuppliersRoute
   '/admin/_app/': typeof AdminAppIndexRoute
@@ -408,9 +445,13 @@ export interface FileRouteTypes {
     | '/urun/$slug'
     | '/yasal/$slug'
     | '/admin/$'
+    | '/admin/account-deletions'
     | '/admin/brands'
     | '/admin/categories'
     | '/admin/colours'
+    | '/admin/security'
+    | '/admin/settings'
+    | '/admin/staff'
     | '/admin/stock'
     | '/admin/suppliers'
     | '/admin/'
@@ -447,9 +488,13 @@ export interface FileRouteTypes {
     | '/urun/$slug'
     | '/yasal/$slug'
     | '/admin/$'
+    | '/admin/account-deletions'
     | '/admin/brands'
     | '/admin/categories'
     | '/admin/colours'
+    | '/admin/security'
+    | '/admin/settings'
+    | '/admin/staff'
     | '/admin/stock'
     | '/admin/suppliers'
     | '/hesap/adresler'
@@ -489,9 +534,13 @@ export interface FileRouteTypes {
     | '/_storefront/urun/$slug'
     | '/_storefront/yasal/$slug'
     | '/admin/_app/$'
+    | '/admin/_app/account-deletions'
     | '/admin/_app/brands'
     | '/admin/_app/categories'
     | '/admin/_app/colours'
+    | '/admin/_app/security'
+    | '/admin/_app/settings'
+    | '/admin/_app/staff'
     | '/admin/_app/stock'
     | '/admin/_app/suppliers'
     | '/admin/_app/'
@@ -675,6 +724,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAppSplatRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
+    '/admin/_app/account-deletions': {
+      id: '/admin/_app/account-deletions'
+      path: '/account-deletions'
+      fullPath: '/admin/account-deletions'
+      preLoaderRoute: typeof AdminAppAccountDeletionsRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
     '/admin/_app/brands': {
       id: '/admin/_app/brands'
       path: '/brands'
@@ -694,6 +750,27 @@ declare module '@tanstack/react-router' {
       path: '/colours'
       fullPath: '/admin/colours'
       preLoaderRoute: typeof AdminAppColoursRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/security': {
+      id: '/admin/_app/security'
+      path: '/security'
+      fullPath: '/admin/security'
+      preLoaderRoute: typeof AdminAppSecurityRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/settings': {
+      id: '/admin/_app/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminAppSettingsRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/staff': {
+      id: '/admin/_app/staff'
+      path: '/staff'
+      fullPath: '/admin/staff'
+      preLoaderRoute: typeof AdminAppStaffRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
     '/admin/_app/stock': {
@@ -892,9 +969,13 @@ const StorefrontRouteRouteWithChildren = StorefrontRouteRoute._addFileChildren(
 
 interface AdminAppRouteRouteChildren {
   AdminAppSplatRoute: typeof AdminAppSplatRoute
+  AdminAppAccountDeletionsRoute: typeof AdminAppAccountDeletionsRoute
   AdminAppBrandsRoute: typeof AdminAppBrandsRoute
   AdminAppCategoriesRoute: typeof AdminAppCategoriesRoute
   AdminAppColoursRoute: typeof AdminAppColoursRoute
+  AdminAppSecurityRoute: typeof AdminAppSecurityRoute
+  AdminAppSettingsRoute: typeof AdminAppSettingsRoute
+  AdminAppStaffRoute: typeof AdminAppStaffRoute
   AdminAppStockRoute: typeof AdminAppStockRoute
   AdminAppSuppliersRoute: typeof AdminAppSuppliersRoute
   AdminAppIndexRoute: typeof AdminAppIndexRoute
@@ -908,9 +989,13 @@ interface AdminAppRouteRouteChildren {
 
 const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppSplatRoute: AdminAppSplatRoute,
+  AdminAppAccountDeletionsRoute: AdminAppAccountDeletionsRoute,
   AdminAppBrandsRoute: AdminAppBrandsRoute,
   AdminAppCategoriesRoute: AdminAppCategoriesRoute,
   AdminAppColoursRoute: AdminAppColoursRoute,
+  AdminAppSecurityRoute: AdminAppSecurityRoute,
+  AdminAppSettingsRoute: AdminAppSettingsRoute,
+  AdminAppStaffRoute: AdminAppStaffRoute,
   AdminAppStockRoute: AdminAppStockRoute,
   AdminAppSuppliersRoute: AdminAppSuppliersRoute,
   AdminAppIndexRoute: AdminAppIndexRoute,

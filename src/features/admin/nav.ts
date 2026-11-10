@@ -15,7 +15,15 @@ export const NAV: NavItem[] = [
   { label: "Müşteriler", to: "/admin/customers", permission: "view_customers" },
   { label: "Personel", to: "/admin/staff", permission: "manage_staff_users" },
   { label: "Ayarlar", to: "/admin/settings", permission: "manage_settings" },
+  {
+    label: "Hesap silme talepleri",
+    to: "/admin/account-deletions",
+    permission: "manage_account_deletions",
+  },
   { label: "Denetim günlüğü", to: "/admin/audit-log", permission: "view_audit_log" },
+  // No permission on purpose: an Owner who has not enrolled 2FA has none, and this is the
+  // only screen that lets them enrol. Do not guard this item or its route.
+  { label: "Güvenlik", to: "/admin/security" },
 ];
 
 /** Hide what the user cannot use. UX only: the API enforces every permission. */

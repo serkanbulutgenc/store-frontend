@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { can, type Me } from "@/lib/api/me";
 import { formatTry } from "@/lib/format";
+import { ActionDialog } from "../../forms/action-dialog";
 import {
   type OrderDetail,
   useCancelOrder,
@@ -26,7 +27,6 @@ import {
   shipFormSchema,
   shippingFormSchema,
 } from "../schemas";
-import { ActionDialog } from "./action-dialog";
 
 type Dialogs = "mark_paid" | "cancel" | "ship" | "refund" | "edit_shipping" | "email" | "invoice";
 const DIRECT = {

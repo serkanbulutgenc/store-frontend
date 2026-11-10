@@ -4,8 +4,8 @@ import type { ZodType } from "zod";
 import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { apiErrorToFormErrors } from "../../forms/api-errors";
-import { bind, Field, FormActions, FormMessage } from "../../forms/field";
+import { apiErrorToFormErrors } from "./api-errors";
+import { bind, Field, FormActions, FormMessage } from "./field";
 
 type Values = Record<string, string>;
 

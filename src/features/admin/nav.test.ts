@@ -14,16 +14,16 @@ const me = (permissions: string[]): Me => ({
 
 it("always shows Home and hides areas the user cannot use", () => {
   const labels = visibleNav(me(["view_products", "view_orders"])).map((i) => i.label);
-  expect(labels).toEqual(["Ana sayfa", "Ürünler", "Stok", "Siparişler"]);
+  expect(labels).toEqual(["Ana sayfa", "Ürünler", "Stok", "Siparişler", "Güvenlik"]);
 });
 
 it("shows Owner areas only with their permission", () => {
   const labels = visibleNav(me(["manage_settings", "view_audit_log", "manage_staff_users"])).map(
     (i) => i.label,
   );
-  expect(labels).toEqual(["Ana sayfa", "Personel", "Ayarlar", "Denetim günlüğü"]);
+  expect(labels).toEqual(["Ana sayfa", "Personel", "Ayarlar", "Denetim günlüğü", "Güvenlik"]);
 });
 
-it("shows only Home to an Owner who has not finished 2FA (empty permission list)", () => {
-  expect(visibleNav(me([])).map((i) => i.label)).toEqual(["Ana sayfa"]);
+it("shows only Home and Security to an Owner who has not finished 2FA (empty permission list)", () => {
+  expect(visibleNav(me([])).map((i) => i.label)).toEqual(["Ana sayfa", "Güvenlik"]);
 });
