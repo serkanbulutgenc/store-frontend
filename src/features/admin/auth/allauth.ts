@@ -17,9 +17,24 @@ export function nextStep(status: number, body: unknown): Step | null {
   return null;
 }
 
+function pendingFlow(body: unknown, id: string): boolean {
+  const flows = (body as AllauthBody | null)?.data?.flows ?? [];
+  return flows.some((f) => f.id === id && f.is_pending);
+}
+
 export function toApiError(status: number, body: unknown): ApiError {
   const errors = (body as AllauthBody | null)?.errors ?? [];
   const first = errors[0];
+  // A 401 without an error list is allauth asking for another step we cannot take here.
+  if (!first && status === 401) {
+    if (pendingFlow(body, "verify_email"))
+      return new ApiError(
+        status,
+        "verify_email",
+        "E-posta adresiniz henüz doğrulanmadı. Doğrulama bağlantısını e-postanızdan açın veya mağaza yöneticisine başvurun.",
+      );
+    return new ApiError(status, "login_incomplete", "Giriş tamamlanamadı. Lütfen tekrar deneyin.");
+  }
   const fields: Record<string, string[]> = {};
   for (const e of errors) {
     if (e.param) fields[e.param] = [...(fields[e.param] ?? []), e.message];

@@ -29,3 +29,15 @@ it("maps allauth errors to the envelope", () => {
 it("falls back to the default message", () => {
   expect(toApiError(500, "x").message).toBe("İstek işlenemedi.");
 });
+
+it("explains an unverified email instead of the generic message", () => {
+  const body = { status: 401, data: { flows: [{ id: "verify_email", is_pending: true }] } };
+  expect(toApiError(401, body)).toMatchObject({ status: 401, code: "verify_email" });
+  expect(toApiError(401, body).message).toContain("doğrulanmadı");
+});
+
+it("does not pretend a stray 401 is a server fault", () => {
+  expect(toApiError(401, { status: 401 }).message).toBe(
+    "Giriş tamamlanamadı. Lütfen tekrar deneyin.",
+  );
+});
