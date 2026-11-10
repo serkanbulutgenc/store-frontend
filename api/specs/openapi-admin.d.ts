@@ -206,6 +206,232 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Orders
+         * @description Newest first. `q` matches number, email and name. `payment_status` is one of
+         *     unpaid, paid, refunded.
+         */
+        get: operations["orders_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders/{number}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Order */
+        get: operations["orders_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders/{number}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel
+         * @description Cancel before shipping, releasing stock. A paid Order is Owner-only (403).
+         */
+        post: operations["orders_cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders/{number}/deliver": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Deliver
+         * @description Cash on delivery becomes paid here.
+         */
+        post: operations["orders_deliver"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders/{number}/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Correct Email */
+        patch: operations["orders_correct_email"];
+        trace?: never;
+    };
+    "/api/admin/orders/{number}/invoice-details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Set Invoice Details */
+        patch: operations["orders_set_invoice_details"];
+        trace?: never;
+    };
+    "/api/admin/orders/{number}/mark-returned": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark Returned */
+        post: operations["orders_mark_returned"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders/{number}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark Paid
+         * @description Record the payment. 409 when already paid or cancelled.
+         */
+        post: operations["orders_mark_paid"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders/{number}/refund": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refund
+         * @description Owner-only. For a paid Order that was returned or cancelled.
+         */
+        post: operations["orders_refund"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders/{number}/request-return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Request Return */
+        post: operations["orders_request_return"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders/{number}/ship": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ship
+         * @description Only a preparing Order ships. Consumes the reserved stock.
+         */
+        post: operations["orders_ship"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders/{number}/shipping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit Shipping
+         * @description Address and phone, only while the Order is new or preparing (409 after).
+         */
+        patch: operations["orders_edit_shipping"];
+        trace?: never;
+    };
     "/api/admin/product-classes": {
         parameters: {
             query?: never;
@@ -634,6 +860,232 @@ export interface components {
             /** Name */
             name: string;
         };
+        /** OrderAuditOut */
+        OrderAuditOut: {
+            /** Action */
+            action: string;
+            /** Actor */
+            actor: string;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Summary */
+            summary: string;
+        };
+        /** OrderCancelIn */
+        OrderCancelIn: {
+            /** Reason */
+            reason: string;
+        };
+        /** OrderDetail */
+        OrderDetail: {
+            /** Actions */
+            actions: string[];
+            /** Audit */
+            audit: components["schemas"]["OrderAuditOut"][];
+            /** Buyer Tax Number */
+            buyer_tax_number: string;
+            /** Cancel Reason */
+            cancel_reason: string;
+            /** Carrier */
+            carrier: string;
+            /**
+             * Cod Fee
+             * @example 349.90
+             */
+            cod_fee: string;
+            /** Company Title */
+            company_title: string;
+            /** Customer Id */
+            customer_id: number | null;
+            /** Delivered At */
+            delivered_at: string | null;
+            /** Email */
+            email: string;
+            /**
+             * Items Total
+             * @example 349.90
+             */
+            items_total: string;
+            /**
+             * Kdv Total
+             * @example 349.90
+             */
+            kdv_total: string;
+            /** Lines */
+            lines: components["schemas"]["OrderLineOut"][];
+            /** Number */
+            number: string;
+            /** Paid Amount */
+            paid_amount: string | null;
+            /** Paid At */
+            paid_at: string | null;
+            payment_method: components["schemas"]["PaymentMethod"];
+            /**
+             * Payment Status
+             * @enum {string}
+             */
+            payment_status: "unpaid" | "paid" | "refunded";
+            /**
+             * Placed At
+             * Format: date-time
+             */
+            placed_at: string;
+            /** Refund Amount */
+            refund_amount: string | null;
+            /** Refund Iban */
+            refund_iban: string;
+            /** Refund Method */
+            refund_method: string;
+            /** Refunded At */
+            refunded_at: string | null;
+            /** Shipped At */
+            shipped_at: string | null;
+            shipping_address: components["schemas"]["OrderShippingOut"] | null;
+            /**
+             * Shipping Fee
+             * @example 349.90
+             */
+            shipping_fee: string;
+            /** Status */
+            status: string;
+            /**
+             * Total
+             * @example 349.90
+             */
+            total: string;
+            /** Tracking Number */
+            tracking_number: string;
+        };
+        /** OrderEmailIn */
+        OrderEmailIn: {
+            /** Email */
+            email: string;
+        };
+        /** OrderInvoiceDetailsPatch */
+        OrderInvoiceDetailsPatch: {
+            /** Buyer Tax Number */
+            buyer_tax_number?: string | null;
+            /** Company Title */
+            company_title?: string | null;
+        };
+        /** OrderLineOut */
+        OrderLineOut: {
+            /** Colour */
+            colour: string;
+            /**
+             * Line Total
+             * @example 349.90
+             */
+            line_total: string;
+            /** Quantity */
+            quantity: number;
+            /** Size */
+            size: string;
+            /** Sku */
+            sku: string;
+            /** Title */
+            title: string;
+            /**
+             * Unit Price
+             * @example 349.90
+             */
+            unit_price: string;
+        };
+        /** OrderPayIn */
+        OrderPayIn: {
+            /** Amount */
+            amount: number | string;
+            /**
+             * Paid At
+             * @description Defaults to now.
+             */
+            paid_at?: string | null;
+        };
+        /** OrderRefundIn */
+        OrderRefundIn: {
+            /** Amount */
+            amount: number | string;
+            /**
+             * Iban
+             * @description Required for bank transfer.
+             * @default
+             */
+            iban: string;
+            method: components["schemas"]["RefundMethod"];
+        };
+        /** OrderRow */
+        OrderRow: {
+            /** Customer */
+            customer: string;
+            /** Email */
+            email: string;
+            /** Item Count */
+            item_count: number;
+            /** Number */
+            number: string;
+            /**
+             * Payment Status
+             * @enum {string}
+             */
+            payment_status: "unpaid" | "paid" | "refunded";
+            /**
+             * Placed At
+             * Format: date-time
+             */
+            placed_at: string;
+            /** Status */
+            status: string;
+            /**
+             * Total
+             * @example 349.90
+             */
+            total: string;
+        };
+        /** OrderShipIn */
+        OrderShipIn: {
+            /** Carrier */
+            carrier: string;
+            /** Tracking Number */
+            tracking_number: string;
+        };
+        /** OrderShippingOut */
+        OrderShippingOut: {
+            /** Full Name */
+            full_name: string;
+            /** Il */
+            il: string;
+            /** Ilce */
+            ilce: string;
+            /** Mahalle */
+            mahalle: string;
+            /** Phone */
+            phone: string;
+            /** Postal Code */
+            postal_code: string;
+            /** Street */
+            street: string;
+        };
+        /**
+         * OrderShippingPatch
+         * @description Only the fields sent change.
+         */
+        OrderShippingPatch: {
+            /** Il */
+            il?: string | null;
+            /** Ilce */
+            ilce?: string | null;
+            /** Mahalle */
+            mahalle?: string | null;
+            /** Phone */
+            phone?: string | null;
+            /** Postal Code */
+            postal_code?: string | null;
+            /** Street */
+            street?: string | null;
+        };
         /** PagedDeletionRequestOut */
         PagedDeletionRequestOut: {
             /** Items */
@@ -649,6 +1101,17 @@ export interface components {
         PagedLowStockOut: {
             /** Items */
             items: components["schemas"]["LowStockOut"][];
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total */
+            total: number;
+        };
+        /** PagedOrderRow */
+        PagedOrderRow: {
+            /** Items */
+            items: components["schemas"]["OrderRow"][];
             /** Page */
             page: number;
             /** Page Size */
@@ -678,6 +1141,11 @@ export interface components {
             /** Total */
             total: number;
         };
+        /**
+         * PaymentMethod
+         * @enum {string}
+         */
+        PaymentMethod: "bank_transfer" | "cod";
         /** ProductClassOut */
         ProductClassOut: {
             /**
@@ -850,6 +1318,11 @@ export interface components {
          * @enum {string}
          */
         ProductStatus: "draft" | "published" | "archived";
+        /**
+         * RefundMethod
+         * @enum {string}
+         */
+        RefundMethod: "bank_transfer" | "cash";
         /** SettingsOut */
         SettingsOut: {
             /** Bank Account Holder */
@@ -1399,6 +1872,303 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MeOut"];
+                };
+            };
+        };
+    };
+    orders_list: {
+        parameters: {
+            query?: {
+                q?: string | null;
+                status?: string | null;
+                payment_status?: string | null;
+                ordering?: string | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedOrderRow"];
+                };
+            };
+        };
+    };
+    orders_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderCancelIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_deliver: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_correct_email: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderEmailIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_set_invoice_details: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderInvoiceDetailsPatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_mark_returned: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_mark_paid: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderPayIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_refund: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderRefundIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_request_return: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_ship: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderShipIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_edit_shipping: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderShippingPatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
                 };
             };
         };
