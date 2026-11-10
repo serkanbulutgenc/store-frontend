@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import type { Me } from "@/lib/api/me";
 import { apiErrorToFormErrors } from "../forms/api-errors";
 import { bind, Field, FormMessage } from "../forms/field";
-import { activateTotp, fetchTotpStatus, otpauthUrl } from "./totp";
+import { activateWithReauth, fetchTotpStatus, otpauthUrl } from "./totp";
 
 export function SecurityScreen({ me }: { me: Me }) {
   const qc = useQueryClient();
@@ -19,13 +19,13 @@ export function SecurityScreen({ me }: { me: Me }) {
     refetchOnWindowFocus: false,
   });
   const form = useForm({
-    defaultValues: { code: "" },
+    defaultValues: { code: "", password: "" },
     validators: {
       onSubmitAsync: async ({ value }) => {
         if (!/^\d{6}$/.test(value.code.trim()))
           return { form: "", fields: { code: "6 haneli kodu girin." } };
         try {
-          await activateTotp(value.code.trim());
+          await activateWithReauth(value.code.trim(), value.password);
         } catch (e) {
           return apiErrorToFormErrors(e);
         }
@@ -60,11 +60,8 @@ export function SecurityScreen({ me }: { me: Me }) {
         </p>
       )}
       <p className="text-muted-foreground">
-        Kod kabul edilmezse oturumunuz eskimiş olabilir:{" "}
-        <a className="underline" href="/admin/login">
-          çıkış yapıp yeniden giriş yapın
-        </a>
-        .
+        Etkinleştirmek için kodla birlikte parolanızı da girin. Çıkış yapmayın: yeni oturumda yeni
+        bir anahtar oluşur ve uygulamanızdaki anahtar geçersiz olur.
       </p>
       {s?.active && <p>İki adımlı doğrulama etkin.</p>}
       {s && !s.active && (
@@ -93,6 +90,13 @@ export function SecurityScreen({ me }: { me: Me }) {
               {(f) => (
                 <Field field={f} label="Doğrulama kodu">
                   <Input inputMode="numeric" autoComplete="one-time-code" {...bind(f)} />
+                </Field>
+              )}
+            </form.Field>
+            <form.Field name="password">
+              {(f) => (
+                <Field field={f} label="Parola">
+                  <Input type="password" autoComplete="current-password" {...bind(f)} />
                 </Field>
               )}
             </form.Field>

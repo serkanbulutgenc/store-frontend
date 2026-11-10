@@ -28,6 +28,38 @@ export async function activateTotp(code: string): Promise<void> {
   throw toApiError(status, body);
 }
 
+/** Confirms the password for the current session (allauth's "recent login" requirement). */
+export async function reauthenticate(password: string): Promise<void> {
+  const { status, body } = await call("auth/reauthenticate", { password });
+  if (status === 200) return;
+  throw toApiError(status, body);
+}
+
+/**
+ * Activate with the code; if allauth wants a recent login, confirm the password in place
+ * and retry. Logging out instead would start a new session with a NEW secret, so the key
+ * already in the user's authenticator app would no longer match.
+ */
+export async function activateWithReauth(code: string, password: string): Promise<void> {
+  try {
+    await activateTotp(code);
+  } catch (e) {
+    if (!(e instanceof ApiError) || e.code !== "reauthentication_required") throw e;
+    if (!password)
+      throw new ApiError(401, e.code, "Güvenlik için parolanızı da girmeniz gerekiyor.", {
+        password: ["Parolanızı girin."],
+      });
+    try {
+      await reauthenticate(password);
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 400)
+        throw new ApiError(400, err.code, err.message, { password: [err.message] });
+      throw err;
+    }
+    await activateTotp(code);
+  }
+}
+
 /** The URI authenticator apps import (typed in by hand as the secret when no QR is shown). */
 export function otpauthUrl(secret: string, email: string, issuer = "Mağaza Yönetimi"): string {
   const label = encodeURIComponent(`${issuer}:${email}`);
