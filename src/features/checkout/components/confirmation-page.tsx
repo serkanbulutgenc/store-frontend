@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { buttonVariants } from "@/components/ui/button";
+import { CreateAccountOffer } from "@/features/account/components/create-account-offer";
 import { formatTry } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { type PlacedOrder, placedOrderKey } from "../queries";
@@ -113,14 +114,7 @@ export function ConfirmationPage() {
         <span className="text-muted-foreground">(bağlantı 30 gün geçerlidir)</span>
       </p>
 
-      <section className="space-y-2 rounded-md bg-muted p-4">
-        <h2 className="font-semibold">Hesap oluşturun</h2>
-        <p>
-          Siparişlerinizi takip etmek ve sonraki alışverişlerde zaman kazanmak için e-posta ve şifre
-          ile hesap oluşturabilirsiniz.
-        </p>
-        <p className="text-muted-foreground">Hesap oluşturma yakında açılacaktır.</p>
-      </section>
+      <CreateAccountOffer email={order.email} />
 
       <Link to="/" className={cn(buttonVariants({ variant: "outline" }))}>
         Alışverişe devam et

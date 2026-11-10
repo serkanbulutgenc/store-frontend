@@ -4,6 +4,64 @@
  */
 
 export interface paths {
+    "/api/admin/account-deletions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Deletions
+         * @description The Owner queue: pending requests, oldest first.
+         */
+        get: operations["account_deletions_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/account-deletions/{request_id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Complete Deletion
+         * @description Anonymise the account. Its Orders stay with the name and billing address
+         *     frozen at placement.
+         */
+        post: operations["account_deletions_complete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/account-deletions/{request_id}/decline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decline Deletion */
+        post: operations["account_deletions_decline"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/brands": {
         parameters: {
             query?: never;
@@ -470,6 +528,24 @@ export interface components {
             /** Name */
             name?: string | null;
         };
+        /** DeletionRequestOut */
+        DeletionRequestOut: {
+            /** Email */
+            email: string;
+            /** Handled At */
+            handled_at: string | null;
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /**
+             * Requested At
+             * Format: date-time
+             */
+            requested_at: string;
+            /** Status */
+            status: string;
+        };
         /** ImageDerivativeOut */
         ImageDerivativeOut: {
             /** Url */
@@ -557,6 +633,17 @@ export interface components {
             id: number;
             /** Name */
             name: string;
+        };
+        /** PagedDeletionRequestOut */
+        PagedDeletionRequestOut: {
+            /** Items */
+            items: components["schemas"]["DeletionRequestOut"][];
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total */
+            total: number;
         };
         /** PagedLowStockOut */
         PagedLowStockOut: {
@@ -973,6 +1060,73 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    account_deletions_list: {
+        parameters: {
+            query?: {
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedDeletionRequestOut"];
+                };
+            };
+        };
+    };
+    account_deletions_complete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeletionRequestOut"];
+                };
+            };
+        };
+    };
+    account_deletions_decline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeletionRequestOut"];
+                };
+            };
+        };
+    };
     catalog_list_brands: {
         parameters: {
             query?: never;

@@ -1,6 +1,6 @@
 import { ApiError } from "@/lib/api/errors";
 
-type AllauthBody = {
+export type AllauthBody = {
   status?: number;
   data?: { flows?: { id: string; is_pending?: boolean }[] };
   errors?: { message: string; code: string; param?: string }[];
@@ -32,9 +32,13 @@ export function toApiError(status: number, body: unknown): ApiError {
   );
 }
 
-async function call(path: string, payload: object): Promise<{ status: number; body: unknown }> {
+export async function call(
+  path: string,
+  payload: object,
+  method = "POST",
+): Promise<{ status: number; body: unknown }> {
   const res = await fetch(`/api/auth/${path}`, {
-    method: "POST",
+    method,
     headers: { "content-type": "application/json", accept: "application/json" },
     body: JSON.stringify(payload),
   });

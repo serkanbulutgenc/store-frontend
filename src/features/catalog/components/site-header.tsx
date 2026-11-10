@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Search, ShoppingBag } from "lucide-react";
+import { Search, ShoppingBag, User } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { accountQuery } from "@/features/account/queries";
 import { basketQuery } from "@/features/basket/queries";
 import type { CategoryNode } from "../queries";
 
@@ -97,6 +98,19 @@ function BasketLink() {
   );
 }
 
+function AccountLink() {
+  const { data } = useQuery(accountQuery);
+  return (
+    <Link
+      to={data ? "/hesap" : "/hesap/giris"}
+      className="grid size-10 place-items-center"
+      aria-label={data ? "Hesabım" : "Giriş yap"}
+    >
+      <User className="size-5" aria-hidden="true" />
+    </Link>
+  );
+}
+
 export function SiteHeader({ categories }: { categories: CategoryNode[] }) {
   return (
     <header className="bg-card">
@@ -105,7 +119,10 @@ export function SiteHeader({ categories }: { categories: CategoryNode[] }) {
           Aura Tekstil
         </Link>
         <SearchBox />
-        <BasketLink />
+        <div className="flex items-center">
+          <AccountLink />
+          <BasketLink />
+        </div>
       </div>
       <CategoryMenu categories={categories} />
     </header>

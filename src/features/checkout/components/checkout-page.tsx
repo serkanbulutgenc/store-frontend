@@ -1,8 +1,11 @@
 import { type AnyFieldApi, useForm } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { checkoutPrefill } from "@/features/account/prefill";
+import { accountQuery, addressesQuery } from "@/features/account/queries";
 import { apiErrorToFormErrors } from "@/features/admin/forms/api-errors";
 import { bind, Field, FormMessage } from "@/features/admin/forms/field";
 import { problemText } from "@/features/basket/problems";
@@ -111,6 +114,20 @@ export function CheckoutPage() {
     // Only now that the page is gone is it safe to drop the consumed basket.
     qc.removeQueries({ queryKey: basketQuery.queryKey });
   }, legalVersionsShown);
+
+  // A signed-in Customer gets contact details and the default address filled in, once, and
+  // only into fields they have not touched.
+  const { data: account } = useQuery(accountQuery);
+  const { data: book } = useQuery({ ...addressesQuery, enabled: Boolean(account) });
+  const prefilled = useRef(false);
+  useEffect(() => {
+    if (prefilled.current || !account || !book) return;
+    prefilled.current = true;
+    for (const [name, value] of Object.entries(checkoutPrefill(account, book))) {
+      const key = name as keyof typeof emptyCheckout;
+      if (!form.getFieldMeta(key)?.isDirty) form.setFieldValue(key, value as never);
+    }
+  }, [account, book, form]);
 
   if (!basket || !settings)
     return (

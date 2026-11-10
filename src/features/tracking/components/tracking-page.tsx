@@ -7,7 +7,7 @@ import { formatDate, formatTry } from "@/lib/format";
 import { paymentLabel, statusLabel } from "../labels";
 import { type TrackedOrder, trackingLinkQuery, useTrackOrder } from "../queries";
 
-function OrderView({ order }: { order: TrackedOrder }) {
+export function OrderView({ order }: { order: TrackedOrder }) {
   return (
     <section
       aria-labelledby="order"

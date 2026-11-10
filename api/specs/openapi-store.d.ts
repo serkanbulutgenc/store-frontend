@@ -4,6 +4,121 @@
  */
 
 export interface paths {
+    "/api/store/account": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Account
+         * @description The signed-in Customer. 401 when signed out, which is what the guard uses.
+         */
+        get: operations["account_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Account */
+        patch: operations["account_update"];
+        trace?: never;
+    };
+    "/api/store/account/addresses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Addresses */
+        get: operations["account_list_addresses"];
+        put?: never;
+        /**
+         * Create Address
+         * @description Up to five; the first one saved is the default. 409 `address_limit` beyond.
+         */
+        post: operations["account_create_address"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/account/addresses/{address_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update Address */
+        put: operations["account_update_address"];
+        post?: never;
+        /** Delete Address */
+        delete: operations["account_delete_address"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/account/deletion-request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Deletion
+         * @description Ask the Owner to delete the account. Personal fields are anonymised; Orders
+         *     stay for the legal retention period. 409 while a request is already open.
+         */
+        post: operations["account_request_deletion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/account/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Orders */
+        get: operations["account_list_orders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/account/orders/{number}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Order */
+        get: operations["account_get_order"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/store/basket": {
         parameters: {
             query?: never;
@@ -222,6 +337,96 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AccountOrderOut */
+        AccountOrderOut: {
+            /** Carrier */
+            carrier: string | null;
+            /**
+             * Cod Fee
+             * @example 349.90
+             */
+            cod_fee: string;
+            /**
+             * Items Total
+             * @example 349.90
+             */
+            items_total: string;
+            /** Lines */
+            lines: components["schemas"]["PlacedLineOut"][];
+            /** Number */
+            number: string;
+            payment_method: components["schemas"]["PaymentMethod"];
+            /** Payment Status */
+            payment_status: string;
+            /**
+             * Placed At
+             * Format: date-time
+             */
+            placed_at: string;
+            shipping_address?: components["schemas"]["OrderAddressOut"] | null;
+            /**
+             * Shipping Fee
+             * @example 349.90
+             */
+            shipping_fee: string;
+            /** Status */
+            status: string;
+            /**
+             * Total
+             * @example 349.90
+             */
+            total: string;
+            /** Tracking Number */
+            tracking_number: string | null;
+        };
+        /** AccountOrderRow */
+        AccountOrderRow: {
+            /** Item Count */
+            item_count: number;
+            /** Number */
+            number: string;
+            /** Payment Status */
+            payment_status: string;
+            /**
+             * Placed At
+             * Format: date-time
+             */
+            placed_at: string;
+            /** Status */
+            status: string;
+            /**
+             * Total
+             * @example 349.90
+             */
+            total: string;
+        };
+        /** AccountOut */
+        AccountOut: {
+            /** Deletion Requested */
+            deletion_requested: boolean;
+            /** Email */
+            email: string;
+            /** Id */
+            id: number;
+            /** Marketing Consent */
+            marketing_consent: boolean;
+            /** Name */
+            name: string;
+            /** Phone */
+            phone: string;
+        };
+        /**
+         * AccountPatch
+         * @description Only the fields sent change. The email changes through allauth (re-verified).
+         */
+        AccountPatch: {
+            /** Marketing Consent */
+            marketing_consent?: boolean | null;
+            /** Name */
+            name?: string | null;
+            /** Phone */
+            phone?: string | null;
+        };
         /** AddIn */
         AddIn: {
             /**
@@ -451,6 +656,36 @@ export interface components {
             /** Width */
             width: number;
         };
+        /** Input */
+        Input: {
+            /**
+             * Page
+             * @default 1
+             */
+            page: number;
+            /**
+             * Page Size
+             * @default 24
+             */
+            page_size: number;
+        };
+        /** OrderAddressOut */
+        OrderAddressOut: {
+            /** Full Name */
+            full_name: string;
+            /** Il */
+            il: string;
+            /** Ilce */
+            ilce: string;
+            /** Mahalle */
+            mahalle: string;
+            /** Phone */
+            phone: string;
+            /** Postal Code */
+            postal_code: string;
+            /** Street */
+            street: string;
+        };
         /** OrderPlacedOut */
         OrderPlacedOut: {
             bank: components["schemas"]["BankOut"] | null;
@@ -529,6 +764,17 @@ export interface components {
             size: string;
             /** Sku */
             sku: string;
+        };
+        /** PagedAccountOrderRow */
+        PagedAccountOrderRow: {
+            /** Items */
+            items: components["schemas"]["AccountOrderRow"][];
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total */
+            total: number;
         };
         /**
          * PaymentMethod
@@ -695,6 +941,52 @@ export interface components {
             /** Quantity */
             quantity: number;
         };
+        /** SavedAddressIn */
+        SavedAddressIn: {
+            /** Full Name */
+            full_name: string;
+            /** Il */
+            il: string;
+            /** Ilce */
+            ilce: string;
+            /**
+             * Is Default
+             * @default false
+             */
+            is_default: boolean;
+            /** Mahalle */
+            mahalle: string;
+            /** Phone */
+            phone: string;
+            /**
+             * Postal Code
+             * @default
+             */
+            postal_code: string;
+            /** Street */
+            street: string;
+        };
+        /** SavedAddressOut */
+        SavedAddressOut: {
+            /** Full Name */
+            full_name: string;
+            /** Id */
+            id: number;
+            /** Il */
+            il: string;
+            /** Ilce */
+            ilce: string;
+            /** Is Default */
+            is_default: boolean;
+            /** Mahalle */
+            mahalle: string;
+            /** Phone */
+            phone: string;
+            /** Postal Code */
+            postal_code: string;
+            /** Street */
+            street: string;
+        };
         /** SellerOut */
         SellerOut: {
             /** Address */
@@ -791,6 +1083,205 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    account_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountOut"];
+                };
+            };
+        };
+    };
+    account_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccountPatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountOut"];
+                };
+            };
+        };
+    };
+    account_list_addresses: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavedAddressOut"][];
+                };
+            };
+        };
+    };
+    account_create_address: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavedAddressIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavedAddressOut"];
+                };
+            };
+        };
+    };
+    account_update_address: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                address_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavedAddressIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavedAddressOut"];
+                };
+            };
+        };
+    };
+    account_delete_address: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                address_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    account_request_deletion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountOut"];
+                };
+            };
+        };
+    };
+    account_list_orders: {
+        parameters: {
+            query?: {
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedAccountOrderRow"];
+                };
+            };
+        };
+    };
+    account_get_order: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountOrderOut"];
+                };
+            };
+        };
+    };
     basket_get: {
         parameters: {
             query?: never;
