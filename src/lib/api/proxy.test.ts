@@ -175,7 +175,7 @@ describe("forward", () => {
       new Request("http://web/api/store/basket/lines", {
         method: "POST",
         body: "{}",
-        headers: { origin: "http://web" },
+        headers: { origin: "http://web", cookie: "csrftoken=abc" },
       }),
       config,
       f,
@@ -233,5 +233,82 @@ describe("forward", () => {
       f,
     );
     expect(res.headers.getSetCookie().join(";")).toMatch(/Secure/);
+  });
+
+  describe("first-time guest CSRF", () => {
+    function csrfThenOk() {
+      return vi.fn(async (url: string, _init: RequestInit) => {
+        if (url.endsWith("/api/store/csrf")) {
+          const h = new Headers();
+          h.append("set-cookie", "csrftoken=issued123; HttpOnly; Path=/; SameSite=Lax");
+          return new Response(JSON.stringify({ csrf_token: "masked" }), {
+            headers: h,
+          });
+        }
+        return Response.json({ ok: true }, { status: 201 });
+      });
+    }
+    const post = (headers: Record<string, string> = {}) =>
+      new Request("http://web/api/store/basket/lines", {
+        method: "POST",
+        body: "{}",
+        headers: { "content-type": "application/json", ...headers },
+      });
+
+    it("fetches a token when the guest has no CSRF cookie and forwards the cookie to the browser", async () => {
+      const f = csrfThenOk();
+      const res = await forward(post({ cookie: "oscar_open_basket=7_abc" }), config, f);
+      expect(f.mock.calls.map((c) => c[0])).toEqual([
+        "http://api:8000/api/store/csrf",
+        "http://api:8000/api/store/basket/lines",
+      ]);
+      const h = new Headers(f.mock.calls[1]?.[1]?.headers);
+      expect(h.get("x-csrftoken")).toBe("issued123");
+      expect(h.get("cookie")).toBe("oscar_open_basket=7_abc; csrftoken=issued123");
+      expect(res.status).toBe(201);
+      expect(res.headers.getSetCookie().join(";")).toContain("csrftoken=issued123");
+    });
+
+    it("does not fetch a token when the guest already has one", async () => {
+      const f = csrfThenOk();
+      await forward(post({ cookie: "csrftoken=have" }), config, f);
+      expect(f).toHaveBeenCalledTimes(1);
+      expect(new Headers(f.mock.calls[0]?.[1]?.headers).get("x-csrftoken")).toBe("have");
+    });
+
+    it("does not fetch a token for safe methods, signed-in users or non-store paths", async () => {
+      const get = csrfThenOk();
+      await forward(new Request("http://web/api/store/basket"), config, get);
+      expect(get).toHaveBeenCalledTimes(1);
+
+      const signedIn = csrfThenOk();
+      await forward(post({ cookie: "store_session=tok" }), config, signedIn);
+      expect(signedIn).toHaveBeenCalledTimes(1);
+
+      const admin = csrfThenOk();
+      await forward(
+        new Request("http://web/api/admin/products", { method: "POST", body: "{}" }),
+        config,
+        admin,
+      );
+      expect(admin).toHaveBeenCalledTimes(1);
+    });
+
+    it("still forwards the write, without a token, if Django issues none", async () => {
+      const f = vi.fn(async (_url: string, _init: RequestInit) =>
+        Response.json({ code: "csrf_failed" }, { status: 403 }),
+      );
+      const res = await forward(post(), config, f);
+      expect(res.status).toBe(403);
+      expect(f).toHaveBeenCalledTimes(2);
+      expect(new Headers(f.mock.calls[1]?.[1]?.headers).get("x-csrftoken")).toBeNull();
+    });
+
+    it("does not call the API from a cross-site write", async () => {
+      const f = csrfThenOk();
+      const res = await forward(post({ origin: "https://evil.example" }), config, f);
+      expect(res.status).toBe(403);
+      expect(f).not.toHaveBeenCalled();
+    });
   });
 });

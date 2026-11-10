@@ -77,6 +77,39 @@ function isSameSite(request: Request, url: URL): boolean {
   }
 }
 
+/**
+ * A first-time guest has no CSRF cookie, and the proxy can only echo one that exists. Ask
+ * Django for one (its `GET /api/store/csrf` sets the cookie) so the guest's first write,
+ * typically adding to the basket, is not rejected. Returns null if Django does not issue one.
+ */
+async function issueCsrf(
+  config: ProxyConfig,
+  doFetch: Fetch,
+  secure: boolean,
+  host: string,
+): Promise<{ value: string; setCookie: string } | null> {
+  try {
+    const res = await doFetch(`${config.apiUrl}/api/store/csrf`, {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        "x-forwarded-proto": secure ? "https" : "http",
+        "x-forwarded-host": host,
+      },
+      redirect: "manual",
+    });
+    for (const setCookie of res.headers.getSetCookie()) {
+      const pair = setCookie.split(";")[0] ?? "";
+      const i = pair.indexOf("=");
+      if (i > 0 && pair.slice(0, i).trim() === config.csrfCookie)
+        return { value: pair.slice(i + 1).trim(), setCookie };
+    }
+  } catch {
+    // Fall through: the write goes out without a token and Django answers 403.
+  }
+  return null;
+}
+
 export async function forward(
   request: Request,
   config: ProxyConfig,
@@ -116,8 +149,17 @@ export async function forward(
   headers.set("x-forwarded-proto", secure ? "https" : "http");
   headers.set("x-forwarded-host", url.host);
   // The CSRF cookie is HttpOnly, so the browser cannot echo it; do it here.
-  const csrf = jar.get(config.csrfCookie);
-  if (csrf && !SAFE_METHODS.has(request.method)) headers.set("x-csrftoken", csrf);
+  let csrf = jar.get(config.csrfCookie);
+  let issuedCsrfCookie: string | undefined;
+  if (unsafe && !csrf && !token && path.startsWith("/api/store/")) {
+    const issued = await issueCsrf(config, doFetch, secure, url.host);
+    if (issued) {
+      csrf = issued.value;
+      issuedCsrfCookie = issued.setCookie;
+      headers.set("cookie", [...rest, `${config.csrfCookie}=${issued.value}`].join("; "));
+    }
+  }
+  if (csrf && unsafe) headers.set("x-csrftoken", csrf);
 
   const hasBody = unsafe;
   const upstream = await doFetch(`${config.apiUrl}${path}${url.search}`, {
@@ -136,6 +178,7 @@ export async function forward(
     out.set("location", `${url.origin}${location.slice(config.apiUrl.length)}`);
   }
   for (const c of upstream.headers.getSetCookie()) out.append("set-cookie", c);
+  if (issuedCsrfCookie) out.append("set-cookie", issuedCsrfCookie);
 
   let body: BodyInit | null = upstream.body;
   const isJson = upstream.headers.get("content-type")?.includes("application/json");
