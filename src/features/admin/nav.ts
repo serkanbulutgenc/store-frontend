@@ -20,6 +20,7 @@ export const NAV: NavItem[] = [
     to: "/admin/account-deletions",
     permission: "manage_account_deletions",
   },
+  { label: "Muhasebe dışa aktarımı", to: "/admin/export", permission: "export_accountant_csv" },
   { label: "Denetim günlüğü", to: "/admin/audit-log", permission: "view_audit_log" },
   // No permission on purpose: an Owner who has not enrolled 2FA has none, and this is the
   // only screen that lets them enrol. Do not guard this item or its route.
