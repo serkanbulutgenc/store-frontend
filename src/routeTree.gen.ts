@@ -15,11 +15,15 @@ import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as StorefrontIndexRouteImport } from './routes/_storefront/index'
 import { Route as StorefrontAraRouteImport } from './routes/_storefront/ara'
+import { Route as StorefrontOdemeRouteImport } from './routes/_storefront/odeme'
+import { Route as StorefrontSepetRouteImport } from './routes/_storefront/sepet'
+import { Route as StorefrontSiparisOnayiRouteImport } from './routes/_storefront/siparis-onayi'
 import { Route as AdminAppRouteRouteImport } from './routes/admin/_app/route'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as StorefrontKategoriSlugRouteImport } from './routes/_storefront/kategori/$slug'
 import { Route as StorefrontUrunSlugRouteImport } from './routes/_storefront/urun/$slug'
+import { Route as StorefrontYasalSlugRouteImport } from './routes/_storefront/yasal/$slug'
 import { Route as AdminAppIndexRouteImport } from './routes/admin/_app/index'
 import { Route as AdminAppSplatRouteImport } from './routes/admin/_app/$'
 import { Route as AdminAppBrandsRouteImport } from './routes/admin/_app/brands'
@@ -61,6 +65,21 @@ const StorefrontAraRoute = StorefrontAraRouteImport.update({
   path: '/ara',
   getParentRoute: () => StorefrontRouteRoute,
 } as any)
+const StorefrontOdemeRoute = StorefrontOdemeRouteImport.update({
+  id: '/odeme',
+  path: '/odeme',
+  getParentRoute: () => StorefrontRouteRoute,
+} as any)
+const StorefrontSepetRoute = StorefrontSepetRouteImport.update({
+  id: '/sepet',
+  path: '/sepet',
+  getParentRoute: () => StorefrontRouteRoute,
+} as any)
+const StorefrontSiparisOnayiRoute = StorefrontSiparisOnayiRouteImport.update({
+  id: '/siparis-onayi',
+  path: '/siparis-onayi',
+  getParentRoute: () => StorefrontRouteRoute,
+} as any)
 const AdminAppRouteRoute = AdminAppRouteRouteImport.update({
   id: '/_app',
   getParentRoute: () => AdminRouteRoute,
@@ -83,6 +102,11 @@ const StorefrontKategoriSlugRoute = StorefrontKategoriSlugRouteImport.update({
 const StorefrontUrunSlugRoute = StorefrontUrunSlugRouteImport.update({
   id: '/urun/$slug',
   path: '/urun/$slug',
+  getParentRoute: () => StorefrontRouteRoute,
+} as any)
+const StorefrontYasalSlugRoute = StorefrontYasalSlugRouteImport.update({
+  id: '/yasal/$slug',
+  path: '/yasal/$slug',
   getParentRoute: () => StorefrontRouteRoute,
 } as any)
 const AdminAppIndexRoute = AdminAppIndexRouteImport.update({
@@ -149,10 +173,14 @@ export interface FileRoutesByFullPath {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ara': typeof StorefrontAraRoute
+  '/odeme': typeof StorefrontOdemeRoute
+  '/sepet': typeof StorefrontSepetRoute
+  '/siparis-onayi': typeof StorefrontSiparisOnayiRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/$': typeof ApiSplatRoute
   '/kategori/$slug': typeof StorefrontKategoriSlugRoute
   '/urun/$slug': typeof StorefrontUrunSlugRoute
+  '/yasal/$slug': typeof StorefrontYasalSlugRoute
   '/admin/$': typeof AdminAppSplatRoute
   '/admin/brands': typeof AdminAppBrandsRoute
   '/admin/categories': typeof AdminAppCategoriesRoute
@@ -170,11 +198,15 @@ export interface FileRoutesByTo {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ara': typeof StorefrontAraRoute
+  '/odeme': typeof StorefrontOdemeRoute
+  '/sepet': typeof StorefrontSepetRoute
+  '/siparis-onayi': typeof StorefrontSiparisOnayiRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/$': typeof ApiSplatRoute
   '/': typeof StorefrontIndexRoute
   '/kategori/$slug': typeof StorefrontKategoriSlugRoute
   '/urun/$slug': typeof StorefrontUrunSlugRoute
+  '/yasal/$slug': typeof StorefrontYasalSlugRoute
   '/admin/$': typeof AdminAppSplatRoute
   '/admin/brands': typeof AdminAppBrandsRoute
   '/admin/categories': typeof AdminAppCategoriesRoute
@@ -194,11 +226,15 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/_app': typeof AdminAppRouteRouteWithChildren
   '/_storefront/ara': typeof StorefrontAraRoute
+  '/_storefront/odeme': typeof StorefrontOdemeRoute
+  '/_storefront/sepet': typeof StorefrontSepetRoute
+  '/_storefront/siparis-onayi': typeof StorefrontSiparisOnayiRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/$': typeof ApiSplatRoute
   '/_storefront/': typeof StorefrontIndexRoute
   '/_storefront/kategori/$slug': typeof StorefrontKategoriSlugRoute
   '/_storefront/urun/$slug': typeof StorefrontUrunSlugRoute
+  '/_storefront/yasal/$slug': typeof StorefrontYasalSlugRoute
   '/admin/_app/$': typeof AdminAppSplatRoute
   '/admin/_app/brands': typeof AdminAppBrandsRoute
   '/admin/_app/categories': typeof AdminAppCategoriesRoute
@@ -219,10 +255,14 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/ara'
+    | '/odeme'
+    | '/sepet'
+    | '/siparis-onayi'
     | '/admin/login'
     | '/api/$'
     | '/kategori/$slug'
     | '/urun/$slug'
+    | '/yasal/$slug'
     | '/admin/$'
     | '/admin/brands'
     | '/admin/categories'
@@ -240,11 +280,15 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/ara'
+    | '/odeme'
+    | '/sepet'
+    | '/siparis-onayi'
     | '/admin/login'
     | '/api/$'
     | '/'
     | '/kategori/$slug'
     | '/urun/$slug'
+    | '/yasal/$slug'
     | '/admin/$'
     | '/admin/brands'
     | '/admin/categories'
@@ -263,11 +307,15 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/_app'
     | '/_storefront/ara'
+    | '/_storefront/odeme'
+    | '/_storefront/sepet'
+    | '/_storefront/siparis-onayi'
     | '/admin/login'
     | '/api/$'
     | '/_storefront/'
     | '/_storefront/kategori/$slug'
     | '/_storefront/urun/$slug'
+    | '/_storefront/yasal/$slug'
     | '/admin/_app/$'
     | '/admin/_app/brands'
     | '/admin/_app/categories'
@@ -333,6 +381,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StorefrontAraRouteImport
       parentRoute: typeof StorefrontRouteRoute
     }
+    '/_storefront/odeme': {
+      id: '/_storefront/odeme'
+      path: '/odeme'
+      fullPath: '/odeme'
+      preLoaderRoute: typeof StorefrontOdemeRouteImport
+      parentRoute: typeof StorefrontRouteRoute
+    }
+    '/_storefront/sepet': {
+      id: '/_storefront/sepet'
+      path: '/sepet'
+      fullPath: '/sepet'
+      preLoaderRoute: typeof StorefrontSepetRouteImport
+      parentRoute: typeof StorefrontRouteRoute
+    }
+    '/_storefront/siparis-onayi': {
+      id: '/_storefront/siparis-onayi'
+      path: '/siparis-onayi'
+      fullPath: '/siparis-onayi'
+      preLoaderRoute: typeof StorefrontSiparisOnayiRouteImport
+      parentRoute: typeof StorefrontRouteRoute
+    }
     '/admin/_app': {
       id: '/admin/_app'
       path: ''
@@ -366,6 +435,13 @@ declare module '@tanstack/react-router' {
       path: '/urun/$slug'
       fullPath: '/urun/$slug'
       preLoaderRoute: typeof StorefrontUrunSlugRouteImport
+      parentRoute: typeof StorefrontRouteRoute
+    }
+    '/_storefront/yasal/$slug': {
+      id: '/_storefront/yasal/$slug'
+      path: '/yasal/$slug'
+      fullPath: '/yasal/$slug'
+      preLoaderRoute: typeof StorefrontYasalSlugRouteImport
       parentRoute: typeof StorefrontRouteRoute
     }
     '/admin/_app/': {
@@ -450,16 +526,24 @@ declare module '@tanstack/react-router' {
 
 interface StorefrontRouteRouteChildren {
   StorefrontAraRoute: typeof StorefrontAraRoute
+  StorefrontOdemeRoute: typeof StorefrontOdemeRoute
+  StorefrontSepetRoute: typeof StorefrontSepetRoute
+  StorefrontSiparisOnayiRoute: typeof StorefrontSiparisOnayiRoute
   StorefrontIndexRoute: typeof StorefrontIndexRoute
   StorefrontKategoriSlugRoute: typeof StorefrontKategoriSlugRoute
   StorefrontUrunSlugRoute: typeof StorefrontUrunSlugRoute
+  StorefrontYasalSlugRoute: typeof StorefrontYasalSlugRoute
 }
 
 const StorefrontRouteRouteChildren: StorefrontRouteRouteChildren = {
   StorefrontAraRoute: StorefrontAraRoute,
+  StorefrontOdemeRoute: StorefrontOdemeRoute,
+  StorefrontSepetRoute: StorefrontSepetRoute,
+  StorefrontSiparisOnayiRoute: StorefrontSiparisOnayiRoute,
   StorefrontIndexRoute: StorefrontIndexRoute,
   StorefrontKategoriSlugRoute: StorefrontKategoriSlugRoute,
   StorefrontUrunSlugRoute: StorefrontUrunSlugRoute,
+  StorefrontYasalSlugRoute: StorefrontYasalSlugRoute,
 }
 
 const StorefrontRouteRouteWithChildren = StorefrontRouteRoute._addFileChildren(

@@ -280,6 +280,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Settings */
+        get: operations["settings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Settings */
+        patch: operations["settings_update"];
+        trace?: never;
+    };
     "/api/admin/staff": {
         parameters: {
             query?: never;
@@ -745,6 +763,105 @@ export interface components {
          * @enum {string}
          */
         ProductStatus: "draft" | "published" | "archived";
+        /** SettingsOut */
+        SettingsOut: {
+            /** Bank Account Holder */
+            bank_account_holder: string;
+            /** Bank Iban */
+            bank_iban: string;
+            /** Bank Name */
+            bank_name: string;
+            /** Banner Alt */
+            banner_alt: string;
+            /** Banner Image Url */
+            banner_image_url: string;
+            /** Banner Link */
+            banner_link: string;
+            /**
+             * Cod Fee
+             * @example 349.90
+             */
+            cod_fee: string;
+            /** Complaint Contact */
+            complaint_contact: string;
+            /** Fee Kdv Rate */
+            fee_kdv_rate: string;
+            /** Free Shipping Threshold */
+            free_shipping_threshold: string | null;
+            /** Legal Versions */
+            legal_versions: {
+                [key: string]: string;
+            };
+            /** Low Stock Default */
+            low_stock_default: number;
+            /** Notification Emails */
+            notification_emails: string[];
+            /** Return Carrier */
+            return_carrier: string;
+            /** Seller Address */
+            seller_address: string;
+            /** Seller Email */
+            seller_email: string;
+            /** Seller Name */
+            seller_name: string;
+            /** Seller Phone */
+            seller_phone: string;
+            /** Seller Tax Number */
+            seller_tax_number: string;
+            /**
+             * Shipping Fee
+             * @example 349.90
+             */
+            shipping_fee: string;
+        };
+        /**
+         * SettingsPatch
+         * @description Every field optional; only the ones sent change. Money arrives as strings.
+         */
+        SettingsPatch: {
+            /** Bank Account Holder */
+            bank_account_holder?: string | null;
+            /** Bank Iban */
+            bank_iban?: string | null;
+            /** Bank Name */
+            bank_name?: string | null;
+            /** Banner Alt */
+            banner_alt?: string | null;
+            /** Banner Image Url */
+            banner_image_url?: string | null;
+            /** Banner Link */
+            banner_link?: string | null;
+            /** Cod Fee */
+            cod_fee?: string | null;
+            /** Complaint Contact */
+            complaint_contact?: string | null;
+            /** Fee Kdv Rate */
+            fee_kdv_rate?: string | null;
+            /** Free Shipping Threshold */
+            free_shipping_threshold?: string | null;
+            /** Legal Versions */
+            legal_versions?: {
+                [key: string]: string;
+            } | null;
+            /** Low Stock Default */
+            low_stock_default?: number | null;
+            /** Notification Emails */
+            notification_emails?: string[] | null;
+            /** Return Carrier */
+            return_carrier?: string | null;
+            /** Seller Address */
+            seller_address?: string | null;
+            /** Seller Email */
+            seller_email?: string | null;
+            /** Seller Name */
+            seller_name?: string | null;
+            /** Seller Phone */
+            seller_phone?: string | null;
+            /** Seller Tax Number */
+            seller_tax_number?: string | null;
+            /** Shipping Fee */
+            shipping_fee?: string | null;
+        };
         /** StaffUserOut */
         StaffUserOut: {
             /** Email */
@@ -1381,6 +1498,50 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VariantOut"];
+                };
+            };
+        };
+    };
+    settings_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SettingsOut"];
+                };
+            };
+        };
+    };
+    settings_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SettingsPatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SettingsOut"];
                 };
             };
         };

@@ -1,6 +1,249 @@
 {
   "components": {
     "schemas": {
+      "AddIn": {
+        "properties": {
+          "quantity": {
+            "default": 1,
+            "maximum": 99,
+            "minimum": 1,
+            "title": "Quantity",
+            "type": "integer"
+          },
+          "variant_id": {
+            "title": "Variant Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "variant_id"
+        ],
+        "title": "AddIn",
+        "type": "object"
+      },
+      "AddressIn": {
+        "properties": {
+          "il": {
+            "maxLength": 100,
+            "title": "Il",
+            "type": "string"
+          },
+          "ilce": {
+            "maxLength": 100,
+            "title": "Ilce",
+            "type": "string"
+          },
+          "mahalle": {
+            "maxLength": 150,
+            "title": "Mahalle",
+            "type": "string"
+          },
+          "postal_code": {
+            "default": "",
+            "maxLength": 10,
+            "title": "Postal Code",
+            "type": "string"
+          },
+          "street": {
+            "maxLength": 200,
+            "title": "Street",
+            "type": "string"
+          }
+        },
+        "required": [
+          "il",
+          "ilce",
+          "mahalle",
+          "street"
+        ],
+        "title": "AddressIn",
+        "type": "object"
+      },
+      "BankOut": {
+        "properties": {
+          "account_holder": {
+            "title": "Account Holder",
+            "type": "string"
+          },
+          "iban": {
+            "title": "Iban",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "reference": {
+            "description": "Write this Order number in the transfer.",
+            "title": "Reference",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "account_holder",
+          "iban",
+          "reference"
+        ],
+        "title": "BankOut",
+        "type": "object"
+      },
+      "BannerOut": {
+        "properties": {
+          "alt": {
+            "title": "Alt",
+            "type": "string"
+          },
+          "image_url": {
+            "title": "Image Url",
+            "type": "string"
+          },
+          "link": {
+            "title": "Link",
+            "type": "string"
+          }
+        },
+        "required": [
+          "image_url",
+          "link",
+          "alt"
+        ],
+        "title": "BannerOut",
+        "type": "object"
+      },
+      "BasketLineOut": {
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "integer"
+          },
+          "colour": {
+            "$ref": "#/components/schemas/ColourOut"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "image": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CardImageOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_hygiene": {
+            "title": "Is Hygiene",
+            "type": "boolean"
+          },
+          "line_total": {
+            "examples": [
+              "349.90"
+            ],
+            "pattern": "^-?\\d+\\.\\d{2}$",
+            "title": "Line Total",
+            "type": "string"
+          },
+          "problem": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "sold_out, insufficient_stock or unavailable; null when fine.",
+            "title": "Problem"
+          },
+          "quantity": {
+            "title": "Quantity",
+            "type": "integer"
+          },
+          "size": {
+            "title": "Size",
+            "type": "string"
+          },
+          "sku": {
+            "title": "Sku",
+            "type": "string"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "unit_price": {
+            "examples": [
+              "349.90"
+            ],
+            "pattern": "^-?\\d+\\.\\d{2}$",
+            "title": "Unit Price",
+            "type": "string"
+          },
+          "variant_id": {
+            "title": "Variant Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "variant_id",
+          "sku",
+          "title",
+          "slug",
+          "colour",
+          "size",
+          "image",
+          "quantity",
+          "unit_price",
+          "line_total",
+          "available",
+          "is_hygiene"
+        ],
+        "title": "BasketLineOut",
+        "type": "object"
+      },
+      "BasketOut": {
+        "properties": {
+          "has_problems": {
+            "title": "Has Problems",
+            "type": "boolean"
+          },
+          "item_count": {
+            "title": "Item Count",
+            "type": "integer"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/BasketLineOut"
+            },
+            "title": "Lines",
+            "type": "array"
+          },
+          "subtotal": {
+            "examples": [
+              "349.90"
+            ],
+            "pattern": "^-?\\d+\\.\\d{2}$",
+            "title": "Subtotal",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lines",
+          "item_count",
+          "subtotal",
+          "has_problems"
+        ],
+        "title": "BasketOut",
+        "type": "object"
+      },
       "BrandFacet": {
         "properties": {
           "count": {
@@ -107,6 +350,90 @@
         "title": "CategoryNodeOut",
         "type": "object"
       },
+      "CheckoutIn": {
+        "properties": {
+          "billing_address": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AddressIn"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Omit when billing is the same as shipping."
+          },
+          "cod_fee_consent": {
+            "default": false,
+            "description": "Required for cash on delivery, even when the fee is zero.",
+            "title": "Cod Fee Consent",
+            "type": "boolean"
+          },
+          "contract_acknowledged": {
+            "description": "The unticked, mandatory distance-sales contract box.",
+            "title": "Contract Acknowledged",
+            "type": "boolean"
+          },
+          "email": {
+            "maxLength": 254,
+            "title": "Email",
+            "type": "string"
+          },
+          "full_name": {
+            "maxLength": 150,
+            "title": "Full Name",
+            "type": "string"
+          },
+          "legal_versions": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Legal page versions the Shopper was shown (from GET /settings). A page that has changed since gives 409 `legal_changed`.",
+            "title": "Legal Versions"
+          },
+          "marketing_consent": {
+            "default": false,
+            "title": "Marketing Consent",
+            "type": "boolean"
+          },
+          "payment_method": {
+            "$ref": "#/components/schemas/PaymentMethod"
+          },
+          "phone": {
+            "maxLength": 30,
+            "title": "Phone",
+            "type": "string"
+          },
+          "shipping_address": {
+            "$ref": "#/components/schemas/AddressIn"
+          },
+          "website": {
+            "default": "",
+            "description": "Honeypot: hidden from people, must stay empty.",
+            "maxLength": 200,
+            "title": "Website",
+            "type": "string"
+          }
+        },
+        "required": [
+          "full_name",
+          "email",
+          "phone",
+          "shipping_address",
+          "payment_method",
+          "contract_acknowledged"
+        ],
+        "title": "CheckoutIn",
+        "type": "object"
+      },
       "ColourFacet": {
         "properties": {
           "count": {
@@ -133,6 +460,24 @@
           "count"
         ],
         "title": "ColourFacet",
+        "type": "object"
+      },
+      "ColourOut": {
+        "properties": {
+          "hex_code": {
+            "title": "Hex Code",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "hex_code"
+        ],
+        "title": "ColourOut",
         "type": "object"
       },
       "CrumbOut": {
@@ -218,6 +563,102 @@
           "url"
         ],
         "title": "ImageSizeOut",
+        "type": "object"
+      },
+      "OrderPlacedOut": {
+        "properties": {
+          "bank": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BankOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cod_fee": {
+            "examples": [
+              "349.90"
+            ],
+            "pattern": "^-?\\d+\\.\\d{2}$",
+            "title": "Cod Fee",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "items_total": {
+            "examples": [
+              "349.90"
+            ],
+            "pattern": "^-?\\d+\\.\\d{2}$",
+            "title": "Items Total",
+            "type": "string"
+          },
+          "kdv_total": {
+            "examples": [
+              "349.90"
+            ],
+            "pattern": "^-?\\d+\\.\\d{2}$",
+            "title": "Kdv Total",
+            "type": "string"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/PlacedLineOut"
+            },
+            "title": "Lines",
+            "type": "array"
+          },
+          "number": {
+            "title": "Number",
+            "type": "string"
+          },
+          "payment_method": {
+            "$ref": "#/components/schemas/PaymentMethod"
+          },
+          "payment_status": {
+            "title": "Payment Status",
+            "type": "string"
+          },
+          "shipping_fee": {
+            "examples": [
+              "349.90"
+            ],
+            "pattern": "^-?\\d+\\.\\d{2}$",
+            "title": "Shipping Fee",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "total": {
+            "examples": [
+              "349.90"
+            ],
+            "pattern": "^-?\\d+\\.\\d{2}$",
+            "title": "Total",
+            "type": "string"
+          }
+        },
+        "required": [
+          "number",
+          "status",
+          "payment_status",
+          "payment_method",
+          "email",
+          "lines",
+          "items_total",
+          "shipping_fee",
+          "cod_fee",
+          "total",
+          "kdv_total",
+          "bank"
+        ],
+        "title": "OrderPlacedOut",
         "type": "object"
       },
       "PagePhotoOut": {
@@ -319,6 +760,65 @@
           "remaining"
         ],
         "title": "PageVariantOut",
+        "type": "object"
+      },
+      "PaymentMethod": {
+        "enum": [
+          "bank_transfer",
+          "cod"
+        ],
+        "title": "PaymentMethod",
+        "type": "string"
+      },
+      "PlacedLineOut": {
+        "properties": {
+          "colour": {
+            "title": "Colour",
+            "type": "string"
+          },
+          "line_total": {
+            "examples": [
+              "349.90"
+            ],
+            "pattern": "^-?\\d+\\.\\d{2}$",
+            "title": "Line Total",
+            "type": "string"
+          },
+          "quantity": {
+            "title": "Quantity",
+            "type": "integer"
+          },
+          "size": {
+            "title": "Size",
+            "type": "string"
+          },
+          "sku": {
+            "title": "Sku",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "unit_price": {
+            "examples": [
+              "349.90"
+            ],
+            "pattern": "^-?\\d+\\.\\d{2}$",
+            "title": "Unit Price",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sku",
+          "title",
+          "colour",
+          "size",
+          "quantity",
+          "unit_price",
+          "line_total"
+        ],
+        "title": "PlacedLineOut",
         "type": "object"
       },
       "PriceFacet": {
@@ -681,6 +1181,129 @@
         "title": "ProductPageOut",
         "type": "object"
       },
+      "PublicSettingsOut": {
+        "properties": {
+          "banner": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BannerOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cod_fee": {
+            "examples": [
+              "349.90"
+            ],
+            "pattern": "^-?\\d+\\.\\d{2}$",
+            "title": "Cod Fee",
+            "type": "string"
+          },
+          "free_shipping_threshold": {
+            "anyOf": [
+              {
+                "examples": [
+                  "349.90"
+                ],
+                "pattern": "^-?\\d+\\.\\d{2}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Free Shipping Threshold"
+          },
+          "legal_versions": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Legal Versions",
+            "type": "object"
+          },
+          "seller": {
+            "$ref": "#/components/schemas/SellerOut"
+          },
+          "shipping_fee": {
+            "examples": [
+              "349.90"
+            ],
+            "pattern": "^-?\\d+\\.\\d{2}$",
+            "title": "Shipping Fee",
+            "type": "string"
+          }
+        },
+        "required": [
+          "shipping_fee",
+          "free_shipping_threshold",
+          "cod_fee",
+          "banner",
+          "seller",
+          "legal_versions"
+        ],
+        "title": "PublicSettingsOut",
+        "type": "object"
+      },
+      "QuantityIn": {
+        "properties": {
+          "quantity": {
+            "maximum": 99,
+            "minimum": 1,
+            "title": "Quantity",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "quantity"
+        ],
+        "title": "QuantityIn",
+        "type": "object"
+      },
+      "SellerOut": {
+        "properties": {
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "complaint_contact": {
+            "title": "Complaint Contact",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "phone": {
+            "title": "Phone",
+            "type": "string"
+          },
+          "return_carrier": {
+            "title": "Return Carrier",
+            "type": "string"
+          },
+          "tax_number": {
+            "title": "Tax Number",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "tax_number",
+          "address",
+          "email",
+          "phone",
+          "return_carrier",
+          "complaint_contact"
+        ],
+        "title": "SellerOut",
+        "type": "object"
+      },
       "SizeFacet": {
         "properties": {
           "count": {
@@ -722,6 +1345,13 @@
         "title": "SwatchOut",
         "type": "object"
       }
+    },
+    "securitySchemes": {
+      "GuestAuth": {
+        "in": "header",
+        "name": "X-Session-Token",
+        "type": "apiKey"
+      }
     }
   },
   "info": {
@@ -731,6 +1361,152 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/store/basket": {
+      "get": {
+        "operationId": "basket_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasketOut"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "GuestAuth": []
+          }
+        ],
+        "summary": "Get Basket",
+        "tags": [
+          "basket"
+        ]
+      }
+    },
+    "/api/store/basket/lines": {
+      "post": {
+        "operationId": "basket_add_line",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasketOut"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "GuestAuth": []
+          }
+        ],
+        "summary": "Add Line",
+        "tags": [
+          "basket"
+        ]
+      }
+    },
+    "/api/store/basket/lines/{line_id}": {
+      "delete": {
+        "operationId": "basket_remove_line",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "line_id",
+            "required": true,
+            "schema": {
+              "title": "Line Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasketOut"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "GuestAuth": []
+          }
+        ],
+        "summary": "Remove Line",
+        "tags": [
+          "basket"
+        ]
+      },
+      "patch": {
+        "operationId": "basket_set_quantity",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "line_id",
+            "required": true,
+            "schema": {
+              "title": "Line Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuantityIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasketOut"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "GuestAuth": []
+          }
+        ],
+        "summary": "Set Quantity",
+        "tags": [
+          "basket"
+        ]
+      }
+    },
     "/api/store/categories": {
       "get": {
         "description": "The two-level category tree for the header menu and the homepage.",
@@ -755,6 +1531,44 @@
         "summary": "List Categories",
         "tags": [
           "catalog"
+        ]
+      }
+    },
+    "/api/store/checkout": {
+      "post": {
+        "description": "Place the Order for the current basket.\n\n409 when stock changed since the basket was filled (the basket is left as is);\n422 with `fields` for form errors; 429 when this address tries too often.",
+        "operationId": "checkout_place_order",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckoutIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderPlacedOut"
+                }
+              }
+            },
+            "description": "Created"
+          }
+        },
+        "security": [
+          {
+            "GuestAuth": []
+          }
+        ],
+        "summary": "Place Order",
+        "tags": [
+          "checkout"
         ]
       }
     },
@@ -972,6 +1786,29 @@
         "summary": "Get Product",
         "tags": [
           "catalog"
+        ]
+      }
+    },
+    "/api/store/settings": {
+      "get": {
+        "description": "What the storefront needs: fees, banner, seller identity and Legal versions.\nBank details, KDV rate, recipients and the stock default stay private.",
+        "operationId": "settings_get_public",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicSettingsOut"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get Public Settings",
+        "tags": [
+          "settings"
         ]
       }
     }

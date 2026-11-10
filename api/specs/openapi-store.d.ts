@@ -4,6 +4,58 @@
  */
 
 export interface paths {
+    "/api/store/basket": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Basket */
+        get: operations["basket_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/basket/lines": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Line */
+        post: operations["basket_add_line"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/basket/lines/{line_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove Line */
+        delete: operations["basket_remove_line"];
+        options?: never;
+        head?: never;
+        /** Set Quantity */
+        patch: operations["basket_set_quantity"];
+        trace?: never;
+    };
     "/api/store/categories": {
         parameters: {
             query?: never;
@@ -18,6 +70,29 @@ export interface paths {
         get: operations["catalog_list_categories"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/checkout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Place Order
+         * @description Place the Order for the current basket.
+         *
+         *     409 when stock changed since the basket was filled (the basket is left as is);
+         *     422 with `fields` for form errors; 429 when this address tries too often.
+         */
+        post: operations["checkout_place_order"];
         delete?: never;
         options?: never;
         head?: never;
@@ -81,10 +156,132 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Public Settings
+         * @description What the storefront needs: fees, banner, seller identity and Legal versions.
+         *     Bank details, KDV rate, recipients and the stock default stay private.
+         */
+        get: operations["settings_get_public"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AddIn */
+        AddIn: {
+            /**
+             * Quantity
+             * @default 1
+             */
+            quantity: number;
+            /** Variant Id */
+            variant_id: number;
+        };
+        /** AddressIn */
+        AddressIn: {
+            /** Il */
+            il: string;
+            /** Ilce */
+            ilce: string;
+            /** Mahalle */
+            mahalle: string;
+            /**
+             * Postal Code
+             * @default
+             */
+            postal_code: string;
+            /** Street */
+            street: string;
+        };
+        /** BankOut */
+        BankOut: {
+            /** Account Holder */
+            account_holder: string;
+            /** Iban */
+            iban: string;
+            /** Name */
+            name: string;
+            /**
+             * Reference
+             * @description Write this Order number in the transfer.
+             */
+            reference: string;
+        };
+        /** BannerOut */
+        BannerOut: {
+            /** Alt */
+            alt: string;
+            /** Image Url */
+            image_url: string;
+            /** Link */
+            link: string;
+        };
+        /** BasketLineOut */
+        BasketLineOut: {
+            /** Available */
+            available: number;
+            colour: components["schemas"]["ColourOut"];
+            /** Id */
+            id: number;
+            image: components["schemas"]["CardImageOut"] | null;
+            /** Is Hygiene */
+            is_hygiene: boolean;
+            /**
+             * Line Total
+             * @example 349.90
+             */
+            line_total: string;
+            /**
+             * Problem
+             * @description sold_out, insufficient_stock or unavailable; null when fine.
+             */
+            problem?: string | null;
+            /** Quantity */
+            quantity: number;
+            /** Size */
+            size: string;
+            /** Sku */
+            sku: string;
+            /** Slug */
+            slug: string;
+            /** Title */
+            title: string;
+            /**
+             * Unit Price
+             * @example 349.90
+             */
+            unit_price: string;
+            /** Variant Id */
+            variant_id: number;
+        };
+        /** BasketOut */
+        BasketOut: {
+            /** Has Problems */
+            has_problems: boolean;
+            /** Item Count */
+            item_count: number;
+            /** Lines */
+            lines: components["schemas"]["BasketLineOut"][];
+            /**
+             * Subtotal
+             * @example 349.90
+             */
+            subtotal: string;
+        };
         /** BrandFacet */
         BrandFacet: {
             /** Count */
@@ -124,6 +321,48 @@ export interface components {
             /** Slug */
             slug: string;
         };
+        /** CheckoutIn */
+        CheckoutIn: {
+            /** @description Omit when billing is the same as shipping. */
+            billing_address?: components["schemas"]["AddressIn"] | null;
+            /**
+             * Cod Fee Consent
+             * @description Required for cash on delivery, even when the fee is zero.
+             * @default false
+             */
+            cod_fee_consent: boolean;
+            /**
+             * Contract Acknowledged
+             * @description The unticked, mandatory distance-sales contract box.
+             */
+            contract_acknowledged: boolean;
+            /** Email */
+            email: string;
+            /** Full Name */
+            full_name: string;
+            /**
+             * Legal Versions
+             * @description Legal page versions the Shopper was shown (from GET /settings). A page that has changed since gives 409 `legal_changed`.
+             */
+            legal_versions?: {
+                [key: string]: string;
+            } | null;
+            /**
+             * Marketing Consent
+             * @default false
+             */
+            marketing_consent: boolean;
+            payment_method: components["schemas"]["PaymentMethod"];
+            /** Phone */
+            phone: string;
+            shipping_address: components["schemas"]["AddressIn"];
+            /**
+             * Website
+             * @description Honeypot: hidden from people, must stay empty.
+             * @default
+             */
+            website: string;
+        };
         /** ColourFacet */
         ColourFacet: {
             /** Count */
@@ -132,6 +371,13 @@ export interface components {
             hex_code: string;
             /** Id */
             id: number;
+            /** Name */
+            name: string;
+        };
+        /** ColourOut */
+        ColourOut: {
+            /** Hex Code */
+            hex_code: string;
             /** Name */
             name: string;
         };
@@ -163,6 +409,46 @@ export interface components {
             url: string;
             /** Width */
             width: number;
+        };
+        /** OrderPlacedOut */
+        OrderPlacedOut: {
+            bank: components["schemas"]["BankOut"] | null;
+            /**
+             * Cod Fee
+             * @example 349.90
+             */
+            cod_fee: string;
+            /** Email */
+            email: string;
+            /**
+             * Items Total
+             * @example 349.90
+             */
+            items_total: string;
+            /**
+             * Kdv Total
+             * @example 349.90
+             */
+            kdv_total: string;
+            /** Lines */
+            lines: components["schemas"]["PlacedLineOut"][];
+            /** Number */
+            number: string;
+            payment_method: components["schemas"]["PaymentMethod"];
+            /** Payment Status */
+            payment_status: string;
+            /**
+             * Shipping Fee
+             * @example 349.90
+             */
+            shipping_fee: string;
+            /** Status */
+            status: string;
+            /**
+             * Total
+             * @example 349.90
+             */
+            total: string;
         };
         /** PagePhotoOut */
         PagePhotoOut: {
@@ -197,6 +483,34 @@ export interface components {
             size: string;
             /** Sku */
             sku: string;
+        };
+        /**
+         * PaymentMethod
+         * @enum {string}
+         */
+        PaymentMethod: "bank_transfer" | "cod";
+        /** PlacedLineOut */
+        PlacedLineOut: {
+            /** Colour */
+            colour: string;
+            /**
+             * Line Total
+             * @example 349.90
+             */
+            line_total: string;
+            /** Quantity */
+            quantity: number;
+            /** Size */
+            size: string;
+            /** Sku */
+            sku: string;
+            /** Title */
+            title: string;
+            /**
+             * Unit Price
+             * @example 349.90
+             */
+            unit_price: string;
         };
         /** PriceFacet */
         PriceFacet: {
@@ -309,6 +623,49 @@ export interface components {
             /** Total */
             total: number;
         };
+        /** PublicSettingsOut */
+        PublicSettingsOut: {
+            banner: components["schemas"]["BannerOut"] | null;
+            /**
+             * Cod Fee
+             * @example 349.90
+             */
+            cod_fee: string;
+            /** Free Shipping Threshold */
+            free_shipping_threshold: string | null;
+            /** Legal Versions */
+            legal_versions: {
+                [key: string]: string;
+            };
+            seller: components["schemas"]["SellerOut"];
+            /**
+             * Shipping Fee
+             * @example 349.90
+             */
+            shipping_fee: string;
+        };
+        /** QuantityIn */
+        QuantityIn: {
+            /** Quantity */
+            quantity: number;
+        };
+        /** SellerOut */
+        SellerOut: {
+            /** Address */
+            address: string;
+            /** Complaint Contact */
+            complaint_contact: string;
+            /** Email */
+            email: string;
+            /** Name */
+            name: string;
+            /** Phone */
+            phone: string;
+            /** Return Carrier */
+            return_carrier: string;
+            /** Tax Number */
+            tax_number: string;
+        };
         /** SizeFacet */
         SizeFacet: {
             /** Count */
@@ -334,6 +691,98 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    basket_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BasketOut"];
+                };
+            };
+        };
+    };
+    basket_add_line: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BasketOut"];
+                };
+            };
+        };
+    };
+    basket_remove_line: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                line_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BasketOut"];
+                };
+            };
+        };
+    };
+    basket_set_quantity: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                line_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QuantityIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BasketOut"];
+                };
+            };
+        };
+    };
     catalog_list_categories: {
         parameters: {
             query?: never;
@@ -350,6 +799,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CategoryNodeOut"][];
+                };
+            };
+        };
+    };
+    checkout_place_order: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckoutIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderPlacedOut"];
                 };
             };
         };
@@ -424,6 +897,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductDetailOut"];
+                };
+            };
+        };
+    };
+    settings_get_public: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicSettingsOut"];
                 };
             };
         };

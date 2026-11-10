@@ -1,7 +1,9 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Search } from "lucide-react";
+import { Search, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { basketQuery } from "@/features/basket/queries";
 import type { CategoryNode } from "../queries";
 
 /** Top-level categories; hovering or focusing one opens its children. */
@@ -76,6 +78,25 @@ function SearchBox() {
   );
 }
 
+function BasketLink() {
+  const { data } = useQuery(basketQuery);
+  const count = data?.item_count ?? 0;
+  return (
+    <Link
+      to="/sepet"
+      className="relative grid size-10 place-items-center"
+      aria-label={count ? `Sepet, ${count} ürün` : "Sepet"}
+    >
+      <ShoppingBag className="size-5" aria-hidden="true" />
+      {count > 0 && (
+        <span className="absolute right-0 top-0 grid min-w-5 place-items-center rounded-full bg-primary px-1 text-xs text-primary-foreground">
+          {count}
+        </span>
+      )}
+    </Link>
+  );
+}
+
 export function SiteHeader({ categories }: { categories: CategoryNode[] }) {
   return (
     <header className="bg-card">
@@ -84,6 +105,7 @@ export function SiteHeader({ categories }: { categories: CategoryNode[] }) {
           Aura Tekstil
         </Link>
         <SearchBox />
+        <BasketLink />
       </div>
       <CategoryMenu categories={categories} />
     </header>

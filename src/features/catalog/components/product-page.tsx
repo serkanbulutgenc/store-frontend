@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useAddToBasket } from "@/features/basket/queries";
 import { cn } from "@/lib/utils";
 import {
   canAddToBasket,
@@ -77,6 +79,8 @@ export function ProductPage({ product }: { product: ProductDetail }) {
   const label = stockLabel(variant);
   const addable = canAddToBasket(variant);
   const colour = product.colours.find((c) => c.id === colourId);
+  const add = useAddToBasket();
+  const navigate = useNavigate();
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-6">
@@ -165,7 +169,28 @@ export function ProductPage({ product }: { product: ProductDetail }) {
             <p aria-live="polite" className="min-h-6 font-medium text-primary">
               {label}
             </p>
-            <Button size="lg" className="w-full" disabled={!addable}>
+            <Button
+              size="lg"
+              className="w-full"
+              disabled={!addable || add.isPending}
+              onClick={() => {
+                if (!variant) return;
+                add.mutate(
+                  { variantId: variant.id },
+                  {
+                    onSuccess: () => {
+                      toast.success("Ürün sepete eklendi.", {
+                        action: {
+                          label: "Sepete git",
+                          onClick: () => void navigate({ to: "/sepet" }),
+                        },
+                      });
+                    },
+                    onError: (e) => toast.error(e.message),
+                  },
+                );
+              }}
+            >
               {variant && !variant.in_stock
                 ? "Tükendi"
                 : activeSize
