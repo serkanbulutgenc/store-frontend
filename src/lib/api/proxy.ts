@@ -140,15 +140,22 @@ export async function forward(
   let body: BodyInit | null = upstream.body;
   const isJson = upstream.headers.get("content-type")?.includes("application/json");
   let newToken: string | undefined;
+  // allauth answers "confirm your password again" (reauthentication) with a 401 for a user who
+  // is still signed in; clearing the cookie then would log them out mid-task.
+  let stillSignedIn = false;
   if (isJson && path.startsWith("/_allauth/")) {
-    const data = (await upstream.json()) as { meta?: { session_token?: string } } | null;
+    const data = (await upstream.json()) as {
+      meta?: { session_token?: string; is_authenticated?: boolean };
+    } | null;
     newToken = data?.meta?.session_token;
+    stillSignedIn = data?.meta?.is_authenticated === true;
     if (data?.meta && "session_token" in data.meta) delete data.meta.session_token;
     body = JSON.stringify(data);
   }
 
   if (newToken) out.append("set-cookie", sessionCookie(config, newToken, secure));
-  else if (upstream.status === 401) out.append("set-cookie", clearedSessionCookie(config, secure));
+  else if (upstream.status === 401 && !stillSignedIn)
+    out.append("set-cookie", clearedSessionCookie(config, secure));
 
   return new Response(upstream.status === 204 || upstream.status === 304 ? null : body, {
     status: upstream.status,

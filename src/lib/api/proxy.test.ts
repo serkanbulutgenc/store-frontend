@@ -106,6 +106,45 @@ describe("forward", () => {
     expect(res.headers.getSetCookie().join(";")).toMatch(/store_session=;.*Max-Age=0/);
   });
 
+  it("keeps the session cookie on a reauthentication 401 for a user who is still signed in", async () => {
+    const f = upstream(
+      Response.json(
+        {
+          status: 401,
+          data: { flows: [{ id: "reauthenticate" }] },
+          meta: { is_authenticated: true },
+        },
+        { status: 401 },
+      ),
+    );
+    const res = await forward(
+      new Request("http://web/api/auth/account/authenticators/totp", {
+        method: "POST",
+        headers: { cookie: "store_session=live" },
+        body: "{}",
+      }),
+      config,
+      f,
+    );
+    expect(res.status).toBe(401);
+    expect(res.headers.getSetCookie().join(";")).not.toMatch(/store_session=/);
+  });
+
+  it("clears the cookie on an allauth 401 for a user who is not signed in", async () => {
+    const f = upstream(
+      Response.json(
+        { status: 401, data: { flows: [{ id: "login" }] }, meta: { is_authenticated: false } },
+        { status: 401 },
+      ),
+    );
+    const res = await forward(
+      new Request("http://web/api/auth/auth/session", { headers: { cookie: "store_session=old" } }),
+      config,
+      f,
+    );
+    expect(res.headers.getSetCookie().join(";")).toMatch(/store_session=;.*Max-Age=0/);
+  });
+
   it("relays upstream Set-Cookie (basket, csrf) to the browser", async () => {
     const up = new Response("{}", { headers: { "content-type": "application/json" } });
     up.headers.append("set-cookie", "oscar_open_basket=9_x; Path=/; HttpOnly");
