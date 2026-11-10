@@ -30,6 +30,8 @@ const DROP_RESPONSE_HEADERS = [
 
 /** `/api/auth/*` is allauth headless (app mode); the other prefixes keep their path. */
 function upstreamPath(pathname: string): string | null {
+  // Readiness (Postgres and Redis) for the external uptime check; no other root path is public.
+  if (pathname === "/api/health") return "/health";
   if (pathname.startsWith("/api/auth/"))
     return `/_allauth/app/v1/${pathname.slice("/api/auth/".length)}`;
   if (pathname.startsWith("/api/store/") || pathname.startsWith("/api/admin/")) return pathname;

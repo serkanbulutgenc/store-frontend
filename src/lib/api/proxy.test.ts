@@ -113,6 +113,16 @@ describe("forward", () => {
     expect(res.headers.getSetCookie()).toContain("oscar_open_basket=9_x; Path=/; HttpOnly");
   });
 
+  it("exposes only the health endpoint for uptime checks, at /api/health", async () => {
+    const f = upstream(Response.json({ status: "ok" }));
+    const res = await forward(new Request("http://web/api/health"), config, f);
+    expect(res.status).toBe(200);
+    expect(f.mock.calls[0]?.[0]).toBe("http://api:8000/health");
+    const g = upstream(Response.json({}));
+    expect((await forward(new Request("http://web/api/health/x"), config, g)).status).toBe(404);
+    expect(g).not.toHaveBeenCalled();
+  });
+
   it("does not forward unknown API prefixes", async () => {
     const f = upstream(Response.json({}));
     const res = await forward(new Request("http://web/api/secret"), config, f);
