@@ -18,6 +18,7 @@ import { Route as StorefrontAraRouteImport } from './routes/_storefront/ara'
 import { Route as StorefrontOdemeRouteImport } from './routes/_storefront/odeme'
 import { Route as StorefrontSepetRouteImport } from './routes/_storefront/sepet'
 import { Route as StorefrontSiparisOnayiRouteImport } from './routes/_storefront/siparis-onayi'
+import { Route as StorefrontSiparisTakipRouteImport } from './routes/_storefront/siparis-takip'
 import { Route as AdminAppRouteRouteImport } from './routes/admin/_app/route'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
@@ -78,6 +79,11 @@ const StorefrontSepetRoute = StorefrontSepetRouteImport.update({
 const StorefrontSiparisOnayiRoute = StorefrontSiparisOnayiRouteImport.update({
   id: '/siparis-onayi',
   path: '/siparis-onayi',
+  getParentRoute: () => StorefrontRouteRoute,
+} as any)
+const StorefrontSiparisTakipRoute = StorefrontSiparisTakipRouteImport.update({
+  id: '/siparis-takip',
+  path: '/siparis-takip',
   getParentRoute: () => StorefrontRouteRoute,
 } as any)
 const AdminAppRouteRoute = AdminAppRouteRouteImport.update({
@@ -176,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/odeme': typeof StorefrontOdemeRoute
   '/sepet': typeof StorefrontSepetRoute
   '/siparis-onayi': typeof StorefrontSiparisOnayiRoute
+  '/siparis-takip': typeof StorefrontSiparisTakipRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/$': typeof ApiSplatRoute
   '/kategori/$slug': typeof StorefrontKategoriSlugRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByTo {
   '/odeme': typeof StorefrontOdemeRoute
   '/sepet': typeof StorefrontSepetRoute
   '/siparis-onayi': typeof StorefrontSiparisOnayiRoute
+  '/siparis-takip': typeof StorefrontSiparisTakipRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/$': typeof ApiSplatRoute
   '/': typeof StorefrontIndexRoute
@@ -229,6 +237,7 @@ export interface FileRoutesById {
   '/_storefront/odeme': typeof StorefrontOdemeRoute
   '/_storefront/sepet': typeof StorefrontSepetRoute
   '/_storefront/siparis-onayi': typeof StorefrontSiparisOnayiRoute
+  '/_storefront/siparis-takip': typeof StorefrontSiparisTakipRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/$': typeof ApiSplatRoute
   '/_storefront/': typeof StorefrontIndexRoute
@@ -258,6 +267,7 @@ export interface FileRouteTypes {
     | '/odeme'
     | '/sepet'
     | '/siparis-onayi'
+    | '/siparis-takip'
     | '/admin/login'
     | '/api/$'
     | '/kategori/$slug'
@@ -283,6 +293,7 @@ export interface FileRouteTypes {
     | '/odeme'
     | '/sepet'
     | '/siparis-onayi'
+    | '/siparis-takip'
     | '/admin/login'
     | '/api/$'
     | '/'
@@ -310,6 +321,7 @@ export interface FileRouteTypes {
     | '/_storefront/odeme'
     | '/_storefront/sepet'
     | '/_storefront/siparis-onayi'
+    | '/_storefront/siparis-takip'
     | '/admin/login'
     | '/api/$'
     | '/_storefront/'
@@ -400,6 +412,13 @@ declare module '@tanstack/react-router' {
       path: '/siparis-onayi'
       fullPath: '/siparis-onayi'
       preLoaderRoute: typeof StorefrontSiparisOnayiRouteImport
+      parentRoute: typeof StorefrontRouteRoute
+    }
+    '/_storefront/siparis-takip': {
+      id: '/_storefront/siparis-takip'
+      path: '/siparis-takip'
+      fullPath: '/siparis-takip'
+      preLoaderRoute: typeof StorefrontSiparisTakipRouteImport
       parentRoute: typeof StorefrontRouteRoute
     }
     '/admin/_app': {
@@ -529,6 +548,7 @@ interface StorefrontRouteRouteChildren {
   StorefrontOdemeRoute: typeof StorefrontOdemeRoute
   StorefrontSepetRoute: typeof StorefrontSepetRoute
   StorefrontSiparisOnayiRoute: typeof StorefrontSiparisOnayiRoute
+  StorefrontSiparisTakipRoute: typeof StorefrontSiparisTakipRoute
   StorefrontIndexRoute: typeof StorefrontIndexRoute
   StorefrontKategoriSlugRoute: typeof StorefrontKategoriSlugRoute
   StorefrontUrunSlugRoute: typeof StorefrontUrunSlugRoute
@@ -540,6 +560,7 @@ const StorefrontRouteRouteChildren: StorefrontRouteRouteChildren = {
   StorefrontOdemeRoute: StorefrontOdemeRoute,
   StorefrontSepetRoute: StorefrontSepetRoute,
   StorefrontSiparisOnayiRoute: StorefrontSiparisOnayiRoute,
+  StorefrontSiparisTakipRoute: StorefrontSiparisTakipRoute,
   StorefrontIndexRoute: StorefrontIndexRoute,
   StorefrontKategoriSlugRoute: StorefrontKategoriSlugRoute,
   StorefrontUrunSlugRoute: StorefrontUrunSlugRoute,

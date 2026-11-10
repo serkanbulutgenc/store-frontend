@@ -177,6 +177,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/tracking": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Lookup
+         * @description Find an Order by number plus its email or phone. 404 for any mismatch;
+         *     429 after repeated tries from one address or against one number.
+         */
+        post: operations["tracking_lookup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/tracking/link/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Open Link
+         * @description Open the Order a signed link was issued for (valid 30 days).
+         */
+        get: operations["tracking_open_link"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -449,6 +490,11 @@ export interface components {
              * @example 349.90
              */
             total: string;
+            /**
+             * Tracking Token
+             * @description Signed link token (valid 30 days) for GET /tracking/link/{token}.
+             */
+            tracking_token: string;
         };
         /** PagePhotoOut */
         PagePhotoOut: {
@@ -681,6 +727,60 @@ export interface components {
             id: number;
             /** Name */
             name: string;
+        };
+        /** TrackingIn */
+        TrackingIn: {
+            /**
+             * Contact
+             * @description The email or the phone number on the Order.
+             */
+            contact: string;
+            /** Number */
+            number: string;
+        };
+        /**
+         * TrackingOut
+         * @description What a Shopper may see: no phone, address or email.
+         */
+        TrackingOut: {
+            /** Carrier */
+            carrier: string | null;
+            /**
+             * Cod Fee
+             * @example 349.90
+             */
+            cod_fee: string;
+            /**
+             * Items Total
+             * @example 349.90
+             */
+            items_total: string;
+            /** Lines */
+            lines: components["schemas"]["PlacedLineOut"][];
+            /** Number */
+            number: string;
+            payment_method: components["schemas"]["PaymentMethod"];
+            /** Payment Status */
+            payment_status: string;
+            /**
+             * Placed At
+             * Format: date-time
+             */
+            placed_at: string;
+            /**
+             * Shipping Fee
+             * @example 349.90
+             */
+            shipping_fee: string;
+            /** Status */
+            status: string;
+            /**
+             * Total
+             * @example 349.90
+             */
+            total: string;
+            /** Tracking Number */
+            tracking_number: string | null;
         };
     };
     responses: never;
@@ -917,6 +1017,52 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PublicSettingsOut"];
+                };
+            };
+        };
+    };
+    tracking_lookup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TrackingIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackingOut"];
+                };
+            };
+        };
+    };
+    tracking_open_link: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackingOut"];
                 };
             };
         };

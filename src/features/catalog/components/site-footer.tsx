@@ -17,6 +17,14 @@ export function SiteFooter() {
               </Link>
             </li>
           ))}
+          <li>
+            <Link
+              to="/siparis-takip"
+              className="text-muted-foreground hover:text-foreground hover:underline"
+            >
+              Sipariş takibi
+            </Link>
+          </li>
         </ul>
         <p className="mt-4 text-muted-foreground">© Aura Tekstil</p>
       </nav>

@@ -102,6 +102,17 @@ export function ConfirmationPage() {
         </dl>
       </section>
 
+      <p>
+        <Link
+          to="/siparis-takip"
+          search={{ t: order.tracking_token }}
+          className="text-primary underline"
+        >
+          Siparişimi takip et
+        </Link>{" "}
+        <span className="text-muted-foreground">(bağlantı 30 gün geçerlidir)</span>
+      </p>
+
       <section className="space-y-2 rounded-md bg-muted p-4">
         <h2 className="font-semibold">Hesap oluşturun</h2>
         <p>
