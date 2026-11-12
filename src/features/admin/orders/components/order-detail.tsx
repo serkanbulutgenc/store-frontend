@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import type { Me } from "@/lib/api/me";
 import { formatDate, formatTry } from "@/lib/format";
+import { OrderReturns } from "../../returns/components/order-returns";
 import { orderQuery } from "../queries";
 import {
   orderStatusLabel,
@@ -129,6 +130,8 @@ export function OrderDetailScreen({ number, me }: { number: string; me: Me }) {
           <Row label="Dahil KDV">{formatTry(o.kdv_total)}</Row>
         </dl>
       </section>
+
+      <OrderReturns order={o} me={me} />
 
       <section className="space-y-2">
         <h2 className="text-base font-semibold">Geçmiş</h2>

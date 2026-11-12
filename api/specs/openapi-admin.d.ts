@@ -883,6 +883,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/returns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Returns
+         * @description Return requests across all Orders. Waiting requests come oldest first, any
+         *     other filter (or none) newest first.
+         */
+        get: operations["returns_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/settings": {
         parameters: {
             query?: never;
@@ -1339,9 +1360,28 @@ export interface components {
             invoice_attention: components["schemas"]["InvoiceFlags"];
             low_stock: components["schemas"]["LowStock"];
             new_orders: components["schemas"]["NewOrders"];
+            open_returns: components["schemas"]["OpenReturns"];
             products_without_photos: components["schemas"]["ProductsWithoutPhotos"];
             shipped_without_invoice: components["schemas"]["NewOrders"];
             unpaid_transfers_near_expiry: components["schemas"]["ExpiringTransfers"];
+        };
+        /** HomeReturnRow */
+        HomeReturnRow: {
+            /** Customer */
+            customer: string;
+            /** Item Count */
+            item_count: number;
+            /** Number */
+            number: string;
+            /**
+             * Placed At
+             * Format: date-time
+             * @description When the Shopper asked.
+             */
+            placed_at: string;
+            reason: components["schemas"]["ReturnReason"];
+            /** Return Id */
+            return_id: number;
         };
         /** ImageDerivativeOut */
         ImageDerivativeOut: {
@@ -1619,6 +1659,13 @@ export interface components {
             count: number;
             /** Rows */
             rows: components["schemas"]["HomeOrderRow"][];
+        };
+        /** OpenReturns */
+        OpenReturns: {
+            /** Count */
+            count: number;
+            /** Rows */
+            rows: components["schemas"]["HomeReturnRow"][];
         };
         /** OrderAuditOut */
         OrderAuditOut: {
@@ -1941,6 +1988,17 @@ export interface components {
         PagedProductListOut: {
             /** Items */
             items: components["schemas"]["ProductListOut"][];
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total */
+            total: number;
+        };
+        /** PagedReturnRow */
+        PagedReturnRow: {
+            /** Items */
+            items: components["schemas"]["ReturnRow"][];
             /** Page */
             page: number;
             /** Page Size */
@@ -2289,6 +2347,24 @@ export interface components {
              * @description Shown to the Shopper.
              */
             reason: string;
+        };
+        /** ReturnRow */
+        ReturnRow: {
+            /** Customer */
+            customer: string;
+            /** Id */
+            id: number;
+            /** Item Count */
+            item_count: number;
+            /** Number */
+            number: string;
+            reason: components["schemas"]["ReturnReason"];
+            /**
+             * Requested At
+             * Format: date-time
+             */
+            requested_at: string;
+            status: components["schemas"]["ReturnStatus"];
         };
         /**
          * ReturnStatus
@@ -3885,6 +3961,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VariantOut"];
+                };
+            };
+        };
+    };
+    returns_list: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedReturnRow"];
                 };
             };
         };

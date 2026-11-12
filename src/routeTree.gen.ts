@@ -38,6 +38,7 @@ import { Route as AdminAppCategoriesRouteImport } from './routes/admin/_app/cate
 import { Route as AdminAppColoursRouteImport } from './routes/admin/_app/colours'
 import { Route as AdminAppExportRouteImport } from './routes/admin/_app/export'
 import { Route as AdminAppImportRouteImport } from './routes/admin/_app/import'
+import { Route as AdminAppReturnsRouteImport } from './routes/admin/_app/returns'
 import { Route as AdminAppSecurityRouteImport } from './routes/admin/_app/security'
 import { Route as AdminAppSettingsRouteImport } from './routes/admin/_app/settings'
 import { Route as AdminAppShippingRouteImport } from './routes/admin/_app/shipping'
@@ -205,6 +206,11 @@ const AdminAppImportRoute = AdminAppImportRouteImport.update({
   path: '/import',
   getParentRoute: () => AdminAppRouteRoute,
 } as any)
+const AdminAppReturnsRoute = AdminAppReturnsRouteImport.update({
+  id: '/returns',
+  path: '/returns',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
 const AdminAppSecurityRoute = AdminAppSecurityRouteImport.update({
   id: '/security',
   path: '/security',
@@ -352,6 +358,7 @@ export interface FileRoutesByFullPath {
   '/admin/colours': typeof AdminAppColoursRoute
   '/admin/export': typeof AdminAppExportRoute
   '/admin/import': typeof AdminAppImportRoute
+  '/admin/returns': typeof AdminAppReturnsRoute
   '/admin/security': typeof AdminAppSecurityRoute
   '/admin/settings': typeof AdminAppSettingsRoute
   '/admin/shipping': typeof AdminAppShippingRoute
@@ -401,6 +408,7 @@ export interface FileRoutesByTo {
   '/admin/colours': typeof AdminAppColoursRoute
   '/admin/export': typeof AdminAppExportRoute
   '/admin/import': typeof AdminAppImportRoute
+  '/admin/returns': typeof AdminAppReturnsRoute
   '/admin/security': typeof AdminAppSecurityRoute
   '/admin/settings': typeof AdminAppSettingsRoute
   '/admin/shipping': typeof AdminAppShippingRoute
@@ -454,6 +462,7 @@ export interface FileRoutesById {
   '/admin/_app/colours': typeof AdminAppColoursRoute
   '/admin/_app/export': typeof AdminAppExportRoute
   '/admin/_app/import': typeof AdminAppImportRoute
+  '/admin/_app/returns': typeof AdminAppReturnsRoute
   '/admin/_app/security': typeof AdminAppSecurityRoute
   '/admin/_app/settings': typeof AdminAppSettingsRoute
   '/admin/_app/shipping': typeof AdminAppShippingRoute
@@ -506,6 +515,7 @@ export interface FileRouteTypes {
     | '/admin/colours'
     | '/admin/export'
     | '/admin/import'
+    | '/admin/returns'
     | '/admin/security'
     | '/admin/settings'
     | '/admin/shipping'
@@ -555,6 +565,7 @@ export interface FileRouteTypes {
     | '/admin/colours'
     | '/admin/export'
     | '/admin/import'
+    | '/admin/returns'
     | '/admin/security'
     | '/admin/settings'
     | '/admin/shipping'
@@ -607,6 +618,7 @@ export interface FileRouteTypes {
     | '/admin/_app/colours'
     | '/admin/_app/export'
     | '/admin/_app/import'
+    | '/admin/_app/returns'
     | '/admin/_app/security'
     | '/admin/_app/settings'
     | '/admin/_app/shipping'
@@ -843,6 +855,13 @@ declare module '@tanstack/react-router' {
       path: '/import'
       fullPath: '/admin/import'
       preLoaderRoute: typeof AdminAppImportRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/returns': {
+      id: '/admin/_app/returns'
+      path: '/returns'
+      fullPath: '/admin/returns'
+      preLoaderRoute: typeof AdminAppReturnsRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
     '/admin/_app/security': {
@@ -1090,6 +1109,7 @@ interface AdminAppRouteRouteChildren {
   AdminAppColoursRoute: typeof AdminAppColoursRoute
   AdminAppExportRoute: typeof AdminAppExportRoute
   AdminAppImportRoute: typeof AdminAppImportRoute
+  AdminAppReturnsRoute: typeof AdminAppReturnsRoute
   AdminAppSecurityRoute: typeof AdminAppSecurityRoute
   AdminAppSettingsRoute: typeof AdminAppSettingsRoute
   AdminAppShippingRoute: typeof AdminAppShippingRoute
@@ -1116,6 +1136,7 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppColoursRoute: AdminAppColoursRoute,
   AdminAppExportRoute: AdminAppExportRoute,
   AdminAppImportRoute: AdminAppImportRoute,
+  AdminAppReturnsRoute: AdminAppReturnsRoute,
   AdminAppSecurityRoute: AdminAppSecurityRoute,
   AdminAppSettingsRoute: AdminAppSettingsRoute,
   AdminAppShippingRoute: AdminAppShippingRoute,

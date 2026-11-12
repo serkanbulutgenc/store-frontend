@@ -15,6 +15,7 @@ import {
   Tag,
   Trash2,
   Truck,
+  Undo2,
   Upload,
   UserCog,
   Users,
@@ -32,6 +33,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: "Ana sayfa", to: "/admin", icon: Home },
       { label: "Siparişler", to: "/admin/orders", icon: ShoppingCart, permission: "view_orders" },
+      { label: "İadeler", to: "/admin/returns", icon: Undo2, permission: "view_orders" },
       { label: "Müşteriler", to: "/admin/customers", icon: Users, permission: "view_customers" },
     ],
   },

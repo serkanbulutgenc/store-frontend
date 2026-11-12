@@ -7,6 +7,8 @@ export const AUDIT_ACTIONS: Record<string, string> = {
   ship: "Kargolandı",
   deliver: "Teslim edildi",
   return_request: "İade talebi",
+  return_approved: "İade talebi onaylandı",
+  return_rejected: "İade talebi reddedildi",
   return_received: "İade teslim alındı",
   order_edit: "Sipariş düzenleme",
   message_resend: "Mesaj yeniden gönderildi",

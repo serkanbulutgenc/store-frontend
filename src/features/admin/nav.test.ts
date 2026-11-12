@@ -14,7 +14,7 @@ const me = (permissions: string[]): Me => ({
 
 it("always shows Home and hides areas the user cannot use", () => {
   const labels = visibleNav(me(["view_products", "view_orders"])).map((i) => i.label);
-  expect(labels).toEqual(["Ana sayfa", "Siparişler", "Ürünler", "Stok", "Güvenlik"]);
+  expect(labels).toEqual(["Ana sayfa", "Siparişler", "İadeler", "Ürünler", "Stok", "Güvenlik"]);
 });
 
 it("shows Owner areas only with their permission", () => {
