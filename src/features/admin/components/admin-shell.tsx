@@ -64,6 +64,15 @@ export function AdminShell({ me }: { me: Me }) {
   // biome-ignore lint/correctness/useExhaustiveDependencies: close the menu on every navigation
   useEffect(() => setMobileOpen(false), [pathname]);
 
+  // The mobile dialog is hidden from md up; do not leave it open (and modal) after a resize.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const query = window.matchMedia("(min-width: 768px)");
+    const onChange = (e: MediaQueryListEvent) => e.matches && setMobileOpen(false);
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+  }, [mobileOpen]);
+
   function toggle() {
     const next = !collapsed;
     setCollapsed(next);

@@ -54,7 +54,7 @@ it("gives every nav item an icon", () => {
 });
 
 it("builds breadcrumbs for areas, details and sub-pages", () => {
-  expect(breadcrumbs("/admin")).toEqual([]);
+  expect(breadcrumbs("/admin")).toEqual([{ label: "Satış" }, { label: "Ana sayfa" }]);
   expect(breadcrumbs("/admin/orders")).toEqual([{ label: "Satış" }, { label: "Siparişler" }]);
   expect(breadcrumbs("/admin/products/new")).toEqual([
     { label: "Katalog" },

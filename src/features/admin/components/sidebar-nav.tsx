@@ -31,7 +31,10 @@ export function SidebarNav({
                 onClick={() => setClosed({ ...closed, [group.label]: !closed[group.label] })}
                 className="flex w-full items-center justify-between px-4 py-1 text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-foreground"
               >
-                {group.label}
+                <span className="flex items-center gap-1.5">
+                  <group.icon aria-hidden className="size-3.5" />
+                  {group.label}
+                </span>
                 <ChevronDown
                   aria-hidden
                   className={cn("size-3 transition-transform", isClosed && "-rotate-90")}

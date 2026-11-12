@@ -1,5 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
@@ -64,7 +65,10 @@ export function ProductsScreen({
         <h1 className="text-lg font-semibold">Ürünler</h1>
         {can(me, "manage_products") && (
           <Button size="sm" asChild>
-            <Link to="/admin/products/new">Yeni ürün</Link>
+            <Link to="/admin/products/new">
+              <Plus aria-hidden className="size-4" />
+              Yeni ürün
+            </Link>
           </Button>
         )}
       </div>

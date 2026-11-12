@@ -10,7 +10,7 @@ function initials(me: Me): string {
   return letters.toLocaleUpperCase("tr-TR");
 }
 
-/** Popover at the foot of the sidebar: name and role, Security, sign out. Esc and outside click close it. */
+/** Disclosure at the foot of the sidebar: name and role, Security, sign out. Esc and outside click close it. */
 export function UserMenu({
   me,
   rail,
@@ -44,7 +44,6 @@ export function UserMenu({
     <div ref={root} className="relative border-t border-border p-2">
       <button
         type="button"
-        aria-haspopup="menu"
         aria-expanded={open}
         aria-label="Kullanıcı menüsü"
         onClick={() => setOpen(!open)}
@@ -63,13 +62,9 @@ export function UserMenu({
         )}
       </button>
       {open && (
-        <div
-          role="menu"
-          className="absolute bottom-full left-2 z-50 mb-1 w-48 rounded-md border border-border bg-card p-1 shadow-md"
-        >
+        <div className="absolute bottom-full left-2 z-50 mb-1 w-48 rounded-md border border-border bg-card p-1 shadow-md">
           <Link
             to="/admin/security"
-            role="menuitem"
             className={itemClass}
             onClick={() => {
               setOpen(false);
@@ -78,7 +73,14 @@ export function UserMenu({
           >
             <ShieldCheck aria-hidden className="size-4" /> Güvenlik
           </Link>
-          <button type="button" role="menuitem" className={itemClass} onClick={onSignOut}>
+          <button
+            type="button"
+            className={itemClass}
+            onClick={() => {
+              setOpen(false);
+              onSignOut();
+            }}
+          >
             <LogOut aria-hidden className="size-4" /> Çıkış yap
           </button>
         </div>

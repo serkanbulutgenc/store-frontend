@@ -11,6 +11,7 @@ import {
   Settings,
   ShieldCheck,
   ShoppingCart,
+  Store,
   Tag,
   Trash2,
   Upload,
@@ -20,12 +21,13 @@ import {
 import { can, type Me } from "@/lib/api/me";
 
 export type NavItem = { label: string; to: string; icon: LucideIcon; permission?: string };
-export type NavGroup = { label: string; items: NavItem[] };
+export type NavGroup = { label: string; icon: LucideIcon; items: NavItem[] };
 
-/** Dashboard areas, grouped as in the approved shell (phase 2, section 3). The first group has no label for Home. */
+/** Dashboard areas, grouped as in the approved shell (phase 2, section 3). */
 export const NAV_GROUPS: NavGroup[] = [
   {
     label: "Satış",
+    icon: Store,
     items: [
       { label: "Ana sayfa", to: "/admin", icon: Home },
       { label: "Siparişler", to: "/admin/orders", icon: ShoppingCart, permission: "view_orders" },
@@ -34,6 +36,7 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     label: "Katalog",
+    icon: Package,
     items: [
       { label: "Ürünler", to: "/admin/products", icon: Package, permission: "view_products" },
       { label: "Stok", to: "/admin/stock", icon: Boxes, permission: "view_products" },
@@ -56,6 +59,7 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     label: "Yönetim",
+    icon: Settings,
     items: [
       { label: "Ayarlar", to: "/admin/settings", icon: Settings, permission: "manage_settings" },
       { label: "Personel", to: "/admin/staff", icon: UserCog, permission: "manage_staff_users" },
@@ -105,7 +109,7 @@ const SEGMENT_LABELS: Record<string, string> = { new: "Yeni", photos: "Fotoğraf
 /**
  * Breadcrumbs for an /admin path: group, area, then one crumb per deeper segment.
  * `entityLabels` maps a raw segment (an id or order number) to a display name.
- * Unknown areas get no crumbs. Home has none either.
+ * Home shows its own group and name. Unknown areas get no crumbs.
  */
 export function breadcrumbs(pathname: string, entityLabels: Record<string, string> = {}): Crumb[] {
   const segments = pathname
@@ -113,7 +117,7 @@ export function breadcrumbs(pathname: string, entityLabels: Record<string, strin
     .split("/")
     .filter(Boolean);
   const [area, ...rest] = segments;
-  if (!area) return [];
+  if (!area) return [{ label: "Satış" }, { label: "Ana sayfa" }];
   const base = `/admin/${area}`;
   for (const group of NAV_GROUPS) {
     const item = group.items.find((i) => i.to === base);
