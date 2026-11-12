@@ -47,3 +47,15 @@ export function toRatePatch(saved: RateDraft, draft: RateDraft): Partial<RateDra
 }
 
 export { desiError } from "./desi";
+
+// Dotted and dotless i fold together, so "izmir" finds İzmir and "isparta" finds Isparta.
+const fold = (s: string) => s.trim().toLocaleLowerCase("tr").replaceAll("ı", "i");
+
+/** The province whose name equals what was typed or picked (case-insensitive, i and ı alike). */
+export function findProvince<T extends { name: string }>(
+  provinces: T[],
+  text: string,
+): T | undefined {
+  const needle = fold(text);
+  return needle ? provinces.find((p) => fold(p.name) === needle) : undefined;
+}

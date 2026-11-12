@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { desiError, rateDirty, rateErrors, toRatePatch } from "./rules";
+import { desiError, findProvince, rateDirty, rateErrors, toRatePatch } from "./rules";
 
 const saved = { band_0_2: "45.00", band_3_5: "55.00", band_6_10: "70.00", per_extra_desi: "5.00" };
 
@@ -42,5 +42,22 @@ describe("desiError", () => {
   });
   it("lets a product leave desi blank when asked", () => {
     expect(desiError("", { optional: true })).toBeNull();
+  });
+});
+
+describe("findProvince", () => {
+  const provinces = [{ name: "İstanbul" }, { name: "Isparta" }, { name: "İzmir" }];
+  it("matches exactly, ignoring case and spaces", () => {
+    expect(findProvince(provinces, "  istanbul ")).toBe(provinces[0]);
+  });
+  it("treats the dotted and dotless i alike", () => {
+    expect(findProvince(provinces, "izmir")).toBe(provinces[2]);
+    expect(findProvince(provinces, "İZMİR")).toBe(provinces[2]);
+    expect(findProvince(provinces, "ısparta")).toBe(provinces[1]);
+    expect(findProvince(provinces, "isparta")).toBe(provinces[1]);
+  });
+  it("does not match a prefix or blank text", () => {
+    expect(findProvince(provinces, "Is")).toBeUndefined();
+    expect(findProvince(provinces, "  ")).toBeUndefined();
   });
 });

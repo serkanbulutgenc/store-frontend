@@ -67,7 +67,7 @@ export function SettingsScreen() {
   const versions = Object.entries(data.legal_versions);
   return (
     <form
-      className="max-w-2xl space-y-4"
+      className="space-y-4"
       onSubmit={(e) => {
         e.preventDefault();
         void form.handleSubmit();
@@ -107,7 +107,7 @@ export function SettingsScreen() {
             key={t.id}
             value={t.id}
             forceMount
-            className="space-y-3 data-[state=inactive]:hidden"
+            className="max-w-2xl space-y-3 data-[state=inactive]:hidden"
           >
             {t.fields.map((spec) => (
               <form.Field key={spec.name} name={spec.name}>

@@ -1,9 +1,10 @@
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { useId, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -26,6 +27,7 @@ import {
 } from "./queries";
 import {
   desiError,
+  findProvince,
   PRICE_FIELDS,
   PRICE_LABELS,
   type RateDraft,
@@ -125,32 +127,76 @@ function ZoneName({ zone }: { zone: ZoneOut }) {
   );
 }
 
-function ProvinceRow({ province, zones }: { province: ProvinceOut; zones: ZoneOut[] }) {
+/** The zone's provinces as chips, plus a type-ahead to move another province into this zone. */
+function ZoneProvinces({
+  zone,
+  provinces,
+  zones,
+}: {
+  zone: ZoneOut;
+  provinces: ProvinceOut[];
+  zones: ZoneOut[];
+}) {
   const move = useMoveProvince();
+  const [text, setText] = useState("");
+  const listId = useId();
+  const inZone = provinces.filter((p) => p.zone_id === zone.id);
+  const others = provinces.filter((p) => p.zone_id !== zone.id);
+  const zoneOf = (id: number) => zones.find((z) => z.id === id);
+
+  function pick(value: string) {
+    setText(value);
+    const province = findProvince(others, value);
+    if (!province) return;
+    move.mutate(
+      { id: province.id, zone_id: zone.id },
+      {
+        onSuccess: () => {
+          setText("");
+          toast.success(`${province.name} Bölge ${zone.number} bölgesine taşındı.`);
+        },
+        onError: fail,
+      },
+    );
+  }
+
   return (
-    <TableRow>
-      <TableCell>{province.name}</TableCell>
-      <TableCell>
-        <Select
-          aria-label={`${province.name} bölgesi`}
-          value={province.zone_id}
-          disabled={move.isPending}
-          onChange={(e) =>
-            move.mutate(
-              { id: province.id, zone_id: Number(e.target.value) },
-              { onSuccess: () => toast.success(`${province.name} taşındı.`), onError: fail },
-            )
-          }
-        >
-          {zones.map((z) => (
-            <option key={z.id} value={z.id}>
-              Bölge {z.number}
-              {z.name ? ` · ${z.name}` : ""}
+    <div className="space-y-2">
+      <label className="block text-muted-foreground" htmlFor={`add-${zone.id}`}>
+        İl ekle (başka bölgedeki bir il buraya taşınır)
+      </label>
+      <Input
+        id={`add-${zone.id}`}
+        className="max-w-xs"
+        list={listId}
+        placeholder="İl adı yazın…"
+        autoComplete="off"
+        disabled={move.isPending}
+        value={text}
+        onChange={(e) => pick(e.target.value)}
+      />
+      <datalist id={listId}>
+        {others.map((p) => {
+          const z = zoneOf(p.zone_id);
+          return (
+            <option key={p.id} value={p.name}>
+              {z ? `Bölge ${z.number}` : ""}
             </option>
+          );
+        })}
+      </datalist>
+      {inZone.length === 0 ? (
+        <p className="text-muted-foreground">Bu bölgede il yok.</p>
+      ) : (
+        <ul aria-label={`Bölge ${zone.number} illeri`} className="flex flex-wrap gap-1.5">
+          {inZone.map((p) => (
+            <li key={p.id} className="rounded-md border border-border bg-card px-2 py-0.5">
+              {p.name}
+            </li>
           ))}
-        </Select>
-      </TableCell>
-    </TableRow>
+        </ul>
+      )}
+    </div>
   );
 }
 
@@ -196,7 +242,7 @@ export function ShippingScreen() {
   const carriers = new Map(data.carriers.map((c) => [c.id, c.name]));
 
   return (
-    <div className="max-w-4xl space-y-8">
+    <div className="max-w-4xl space-y-4">
       <div>
         <h1 className="text-lg font-semibold">Kargo fiyatları</h1>
         <p className="text-muted-foreground">
@@ -205,41 +251,57 @@ export function ShippingScreen() {
         </p>
       </div>
 
-      {data.zones.map((zone) => (
-        <section key={zone.id} aria-labelledby={`zone-${zone.id}`} className="space-y-2">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 id={`zone-${zone.id}`} className="font-medium">
-              Bölge {zone.number}
-            </h2>
-            <ZoneName key={zone.name} zone={zone} />
-          </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Firma</TableHead>
-                {PRICE_FIELDS.map((f) => (
-                  <TableHead key={f}>{PRICE_LABELS[f]}</TableHead>
-                ))}
-                <TableHead>
-                  <span className="sr-only">İşlem</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.rates
-                .filter((r) => r.zone_id === zone.id)
-                .map((r) => (
-                  // Keyed by the saved prices so a refetch resets the row's draft.
-                  <RateRowEditor
-                    key={`${r.id}:${PRICE_FIELDS.map((f) => r[f]).join("|")}`}
-                    rate={r}
-                    carrier={carriers.get(r.carrier_id) ?? "?"}
-                  />
-                ))}
-            </TableBody>
-          </Table>
-        </section>
-      ))}
+      {data.zones.map((zone, i) => {
+        const count = data.provinces.filter((p) => p.zone_id === zone.id).length;
+        return (
+          <Collapsible
+            key={zone.id}
+            defaultOpen={i === 0}
+            className="rounded-lg border border-border bg-card"
+          >
+            <CollapsibleTrigger className="group flex w-full items-center justify-between gap-2 px-3 py-2 text-left font-medium">
+              <span>
+                Bölge {zone.number}
+                {zone.name ? ` · ${zone.name}` : ""}
+                <span className="ml-2 font-normal text-muted-foreground">{count} il</span>
+              </span>
+              <ChevronDown
+                aria-hidden
+                className="size-4 transition-transform group-data-[state=open]:rotate-180"
+              />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-4 border-t border-border p-3">
+              <ZoneName key={zone.name} zone={zone} />
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Firma</TableHead>
+                    {PRICE_FIELDS.map((f) => (
+                      <TableHead key={f}>{PRICE_LABELS[f]}</TableHead>
+                    ))}
+                    <TableHead>
+                      <span className="sr-only">İşlem</span>
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.rates
+                    .filter((r) => r.zone_id === zone.id)
+                    .map((r) => (
+                      // Keyed by the saved prices so a refetch resets the row's draft.
+                      <RateRowEditor
+                        key={`${r.id}:${PRICE_FIELDS.map((f) => r[f]).join("|")}`}
+                        rate={r}
+                        carrier={carriers.get(r.carrier_id) ?? "?"}
+                      />
+                    ))}
+                </TableBody>
+              </Table>
+              <ZoneProvinces zone={zone} provinces={data.provinces} zones={data.zones} />
+            </CollapsibleContent>
+          </Collapsible>
+        );
+      })}
 
       <section aria-labelledby="class-desi" className="space-y-2">
         <h2 id="class-desi" className="font-medium">
@@ -267,25 +329,6 @@ export function ShippingScreen() {
                 name={c.name}
                 desi={c.default_desi}
               />
-            ))}
-          </TableBody>
-        </Table>
-      </section>
-
-      <section aria-labelledby="provinces" className="space-y-2">
-        <h2 id="provinces" className="font-medium">
-          İllerin bölgeleri
-        </h2>
-        <Table className="max-w-md">
-          <TableHeader>
-            <TableRow>
-              <TableHead>İl</TableHead>
-              <TableHead>Bölge</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.provinces.map((p) => (
-              <ProvinceRow key={`${p.id}:${p.zone_id}`} province={p} zones={data.zones} />
             ))}
           </TableBody>
         </Table>
