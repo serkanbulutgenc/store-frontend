@@ -27,3 +27,10 @@ it("shows Owner areas only with their permission", () => {
 it("shows only Home and Security to an Owner who has not finished 2FA (empty permission list)", () => {
   expect(visibleNav(me([])).map((i) => i.label)).toEqual(["Ana sayfa", "Güvenlik"]);
 });
+
+it("shows the import entry only with the import permission (Owner, not Staff)", () => {
+  const staff = visibleNav(me(["view_products", "manage_products"])).map((i) => i.label);
+  expect(staff).not.toContain("İçe aktar");
+  const owner = visibleNav(me(["view_products", "import_catalogue"])).map((i) => i.label);
+  expect(owner).toContain("İçe aktar");
+});

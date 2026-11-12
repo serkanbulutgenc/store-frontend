@@ -7,6 +7,7 @@ export const NAV: NavItem[] = [
   { label: "Ana sayfa", to: "/admin" },
   { label: "Ürünler", to: "/admin/products", permission: "view_products" },
   { label: "Stok", to: "/admin/stock", permission: "view_products" },
+  { label: "İçe aktar", to: "/admin/import", permission: "import_catalogue" },
   { label: "Siparişler", to: "/admin/orders", permission: "view_orders" },
   { label: "Kategoriler", to: "/admin/categories", permission: "manage_categories" },
   { label: "Markalar", to: "/admin/brands", permission: "manage_brands" },

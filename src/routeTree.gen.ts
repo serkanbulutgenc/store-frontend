@@ -36,6 +36,7 @@ import { Route as AdminAppBrandsRouteImport } from './routes/admin/_app/brands'
 import { Route as AdminAppCategoriesRouteImport } from './routes/admin/_app/categories'
 import { Route as AdminAppColoursRouteImport } from './routes/admin/_app/colours'
 import { Route as AdminAppExportRouteImport } from './routes/admin/_app/export'
+import { Route as AdminAppImportRouteImport } from './routes/admin/_app/import'
 import { Route as AdminAppSecurityRouteImport } from './routes/admin/_app/security'
 import { Route as AdminAppSettingsRouteImport } from './routes/admin/_app/settings'
 import { Route as AdminAppStaffRouteImport } from './routes/admin/_app/staff'
@@ -190,6 +191,11 @@ const AdminAppExportRoute = AdminAppExportRouteImport.update({
   path: '/export',
   getParentRoute: () => AdminAppRouteRoute,
 } as any)
+const AdminAppImportRoute = AdminAppImportRouteImport.update({
+  id: '/import',
+  path: '/import',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
 const AdminAppSecurityRoute = AdminAppSecurityRouteImport.update({
   id: '/security',
   path: '/security',
@@ -320,6 +326,7 @@ export interface FileRoutesByFullPath {
   '/admin/categories': typeof AdminAppCategoriesRoute
   '/admin/colours': typeof AdminAppColoursRoute
   '/admin/export': typeof AdminAppExportRoute
+  '/admin/import': typeof AdminAppImportRoute
   '/admin/security': typeof AdminAppSecurityRoute
   '/admin/settings': typeof AdminAppSettingsRoute
   '/admin/staff': typeof AdminAppStaffRoute
@@ -364,6 +371,7 @@ export interface FileRoutesByTo {
   '/admin/categories': typeof AdminAppCategoriesRoute
   '/admin/colours': typeof AdminAppColoursRoute
   '/admin/export': typeof AdminAppExportRoute
+  '/admin/import': typeof AdminAppImportRoute
   '/admin/security': typeof AdminAppSecurityRoute
   '/admin/settings': typeof AdminAppSettingsRoute
   '/admin/staff': typeof AdminAppStaffRoute
@@ -412,6 +420,7 @@ export interface FileRoutesById {
   '/admin/_app/categories': typeof AdminAppCategoriesRoute
   '/admin/_app/colours': typeof AdminAppColoursRoute
   '/admin/_app/export': typeof AdminAppExportRoute
+  '/admin/_app/import': typeof AdminAppImportRoute
   '/admin/_app/security': typeof AdminAppSecurityRoute
   '/admin/_app/settings': typeof AdminAppSettingsRoute
   '/admin/_app/staff': typeof AdminAppStaffRoute
@@ -459,6 +468,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/colours'
     | '/admin/export'
+    | '/admin/import'
     | '/admin/security'
     | '/admin/settings'
     | '/admin/staff'
@@ -503,6 +513,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/colours'
     | '/admin/export'
+    | '/admin/import'
     | '/admin/security'
     | '/admin/settings'
     | '/admin/staff'
@@ -550,6 +561,7 @@ export interface FileRouteTypes {
     | '/admin/_app/categories'
     | '/admin/_app/colours'
     | '/admin/_app/export'
+    | '/admin/_app/import'
     | '/admin/_app/security'
     | '/admin/_app/settings'
     | '/admin/_app/staff'
@@ -769,6 +781,13 @@ declare module '@tanstack/react-router' {
       path: '/export'
       fullPath: '/admin/export'
       preLoaderRoute: typeof AdminAppExportRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/import': {
+      id: '/admin/_app/import'
+      path: '/import'
+      fullPath: '/admin/import'
+      preLoaderRoute: typeof AdminAppImportRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
     '/admin/_app/security': {
@@ -993,6 +1012,7 @@ interface AdminAppRouteRouteChildren {
   AdminAppCategoriesRoute: typeof AdminAppCategoriesRoute
   AdminAppColoursRoute: typeof AdminAppColoursRoute
   AdminAppExportRoute: typeof AdminAppExportRoute
+  AdminAppImportRoute: typeof AdminAppImportRoute
   AdminAppSecurityRoute: typeof AdminAppSecurityRoute
   AdminAppSettingsRoute: typeof AdminAppSettingsRoute
   AdminAppStaffRoute: typeof AdminAppStaffRoute
@@ -1014,6 +1034,7 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppCategoriesRoute: AdminAppCategoriesRoute,
   AdminAppColoursRoute: AdminAppColoursRoute,
   AdminAppExportRoute: AdminAppExportRoute,
+  AdminAppImportRoute: AdminAppImportRoute,
   AdminAppSecurityRoute: AdminAppSecurityRoute,
   AdminAppSettingsRoute: AdminAppSettingsRoute,
   AdminAppStaffRoute: AdminAppStaffRoute,

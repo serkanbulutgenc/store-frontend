@@ -97,6 +97,48 @@ export interface paths {
         patch: operations["catalog_update_brand"];
         trace?: never;
     };
+    "/api/admin/catalog/import/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm Import
+         * @description Apply the same CSV in one transaction: every row or none (422 names the
+         *     row and column). Products are created as drafts.
+         */
+        post: operations["catalog_import_confirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/catalog/import/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview Import
+         * @description Dry run: what the CSV would create and update, and every row error.
+         *     Writes nothing.
+         */
+        post: operations["catalog_import_preview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/categories": {
         parameters: {
             query?: never;
@@ -940,6 +982,57 @@ export interface components {
         ImageOrderIn: {
             /** Ids */
             ids: number[];
+        };
+        /** ImportCountsOut */
+        ImportCountsOut: {
+            /** Products To Create */
+            products_to_create: number;
+            /** Products To Update */
+            products_to_update: number;
+            /** Variants To Create */
+            variants_to_create: number;
+            /** Variants To Update */
+            variants_to_update: number;
+            /** Variants Unchanged */
+            variants_unchanged: number;
+        };
+        /** ImportErrorOut */
+        ImportErrorOut: {
+            /** Column */
+            column: string;
+            /** Message */
+            message: string;
+            /** Row */
+            row: number;
+        };
+        /** ImportPlanOut */
+        ImportPlanOut: {
+            counts: components["schemas"]["ImportCountsOut"];
+            /** Errors */
+            errors: components["schemas"]["ImportErrorOut"][];
+            /** New Brands */
+            new_brands: string[];
+            /** New Categories */
+            new_categories: string[];
+            /** New Suppliers */
+            new_suppliers: string[];
+            /** Rows */
+            rows: components["schemas"]["ImportRowOut"][];
+        };
+        /** ImportRowOut */
+        ImportRowOut: {
+            /** Action */
+            action: string;
+            /** Colour */
+            colour: string;
+            /** Product */
+            product: string;
+            /** Row */
+            row: number;
+            /** Size */
+            size: string;
+            /** Sku */
+            sku: string;
         };
         /** Input */
         Input: {
@@ -2065,6 +2158,66 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["NamedOut"];
+                };
+            };
+        };
+    };
+    catalog_import_confirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportPlanOut"];
+                };
+            };
+        };
+    };
+    catalog_import_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportPlanOut"];
                 };
             };
         };
