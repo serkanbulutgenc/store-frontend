@@ -38,7 +38,7 @@ export const LEGAL_PAGES: LegalPage[] = [
     key: "returns_withdrawal",
     slug: "iade-ve-cayma-kosullari",
     title: "İade ve Cayma Koşulları",
-    version: "1",
+    version: "2",
     body: returns,
   },
   {
