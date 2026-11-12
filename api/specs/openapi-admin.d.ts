@@ -62,6 +62,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/audit-log": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Audit Log
+         * @description Newest first, Owner only.
+         */
+        get: operations["audit_log_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/brands": {
         parameters: {
             query?: never;
@@ -207,6 +227,44 @@ export interface paths {
         head?: never;
         /** Update Colour */
         patch: operations["catalog_update_colour"];
+        trace?: never;
+    };
+    "/api/admin/customers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Customers
+         * @description Newest first. `q` matches name and email. Anonymised accounts have no email
+         *     or name and `anonymised` set.
+         */
+        get: operations["customers_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/customers/{customer_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Customer */
+        get: operations["customers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/admin/exports/accountant.csv": {
@@ -851,6 +909,54 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * AuditEntryOut
+         * @description What the order detail already shows, plus the target. No before/after.
+         */
+        AuditEntryOut: {
+            /** Action */
+            action: string;
+            /** Actor */
+            actor: string;
+            /** Actor Id */
+            actor_id: number | null;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Id */
+            id: number;
+            /** Summary */
+            summary: string;
+            /** Target Id */
+            target_id: string;
+            /** Target Type */
+            target_type: string;
+        };
+        /** AuditLogQuery */
+        AuditLogQuery: {
+            /**
+             * Action
+             * @description An audit action name.
+             */
+            action?: string | null;
+            /**
+             * Actor
+             * @description User id of the actor.
+             */
+            actor?: number | null;
+            /**
+             * Date From
+             * @description First day, inclusive.
+             */
+            date_from?: string | null;
+            /**
+             * Date To
+             * @description Last day, inclusive.
+             */
+            date_to?: string | null;
+        };
         /** CategoryIn */
         CategoryIn: {
             /** Name */
@@ -897,6 +1003,50 @@ export interface components {
             is_active?: boolean | null;
             /** Name */
             name?: string | null;
+        };
+        /** CustomerDetail */
+        CustomerDetail: {
+            /** Anonymised */
+            anonymised: boolean;
+            /** Email */
+            email: string;
+            /** Id */
+            id: number;
+            /**
+             * Joined At
+             * Format: date-time
+             */
+            joined_at: string;
+            /** Marketing Consent */
+            marketing_consent: boolean;
+            /** Name */
+            name: string;
+            /** Order Count */
+            order_count: number;
+            /** Orders */
+            orders: components["schemas"]["OrderRow"][];
+            /** Phone */
+            phone: string;
+        };
+        /** CustomerRow */
+        CustomerRow: {
+            /** Anonymised */
+            anonymised: boolean;
+            /** Email */
+            email: string;
+            /** Id */
+            id: number;
+            /**
+             * Joined At
+             * Format: date-time
+             */
+            joined_at: string;
+            /** Name */
+            name: string;
+            /** Order Count */
+            order_count: number;
+            /** Phone */
+            phone: string;
         };
         /** DeletionRequestOut */
         DeletionRequestOut: {
@@ -1508,6 +1658,28 @@ export interface components {
             /** Street */
             street?: string | null;
         };
+        /** PagedAuditEntryOut */
+        PagedAuditEntryOut: {
+            /** Items */
+            items: components["schemas"]["AuditEntryOut"][];
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total */
+            total: number;
+        };
+        /** PagedCustomerRow */
+        PagedCustomerRow: {
+            /** Items */
+            items: components["schemas"]["CustomerRow"][];
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total */
+            total: number;
+        };
         /** PagedDeletionRequestOut */
         PagedDeletionRequestOut: {
             /** Items */
@@ -2092,6 +2264,37 @@ export interface operations {
             };
         };
     };
+    audit_log_list: {
+        parameters: {
+            query?: {
+                /** @description User id of the actor. */
+                actor?: number | null;
+                /** @description An audit action name. */
+                action?: string | null;
+                /** @description First day, inclusive. */
+                date_from?: string | null;
+                /** @description Last day, inclusive. */
+                date_to?: string | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedAuditEntryOut"];
+                };
+            };
+        };
+    };
     catalog_list_brands: {
         parameters: {
             query?: never;
@@ -2358,6 +2561,52 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ColourOut"];
+                };
+            };
+        };
+    };
+    customers_list: {
+        parameters: {
+            query?: {
+                q?: string | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedCustomerRow"];
+                };
+            };
+        };
+    };
+    customers_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                customer_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerDetail"];
                 };
             };
         };
