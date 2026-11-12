@@ -1,5 +1,4 @@
 import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
 import { Camera, ChevronLeft, ChevronRight, ImagePlus, Star, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -18,6 +17,7 @@ import {
   useReorderImages,
   useUpdateImage,
 } from "../catalog/queries";
+import { useCrumbLabel } from "../components/crumb-labels";
 import { MAX_PHOTOS, moveItem, pickUploadable } from "./rules";
 import { uploadPhoto } from "./upload";
 
@@ -34,6 +34,7 @@ function thumbOf(img: ProductImageOut) {
 
 export function PhotosScreen({ productId }: { productId: number }) {
   const { data: product } = useSuspenseQuery(productQuery(productId));
+  useCrumbLabel(String(productId), product.title);
   const { data: images } = useSuspenseQuery(imagesQuery(productId));
   const { data: colours = [] } = useQuery(coloursQuery);
   const qc = useQueryClient();
@@ -125,16 +126,6 @@ export function PhotosScreen({ productId }: { productId: number }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
-        <Link to="/admin/products" className="text-muted-foreground underline">
-          Ürünler
-        </Link>
-        <Link
-          to="/admin/products/$productId"
-          params={{ productId: String(productId) }}
-          className="text-muted-foreground underline"
-        >
-          {product.title}
-        </Link>
         <h1 className="text-lg font-semibold">Fotoğraflar</h1>
         <span className="text-muted-foreground">
           {images.length}/{MAX_PHOTOS}

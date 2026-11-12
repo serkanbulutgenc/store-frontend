@@ -1,5 +1,4 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -41,9 +40,6 @@ export function OrderDetailScreen({ number, me }: { number: string; me: Me }) {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
-        <Link to="/admin/orders" className="text-muted-foreground underline">
-          Siparişler
-        </Link>
         <h1 className="font-mono text-lg font-semibold">{o.number}</h1>
         <Badge tone={orderStatusTone(o.status)}>{orderStatusLabel(o.status)}</Badge>
         <Badge tone={paymentTone[payment]}>{paymentLabel(payment)}</Badge>

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { can, type Me } from "@/lib/api/me";
+import { useCrumbLabel } from "../../components/crumb-labels";
 import { statusLabel, statusTone } from "../labels";
 import { type ProductStatus, productQuery, useSetStatus } from "../queries";
 import { ProductForm } from "./product-form";
@@ -25,6 +26,7 @@ export function statusActions(status: ProductStatus, perms: { manage: boolean; a
 
 export function ProductEditor({ productId, me }: { productId: number; me: Me }) {
   const { data: product } = useSuspenseQuery(productQuery(productId));
+  useCrumbLabel(String(productId), product.title);
   const setStatus = useSetStatus(productId);
   const actions = statusActions(product.status, {
     manage: can(me, "manage_products"),
@@ -43,9 +45,6 @@ export function ProductEditor({ productId, me }: { productId: number; me: Me }) 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
-        <Link to="/admin/products" className="text-muted-foreground underline">
-          Ürünler
-        </Link>
         <h1 className="text-lg font-semibold">{product.title}</h1>
         <Badge tone={statusTone[product.status]}>{statusLabel(product.status)}</Badge>
         <div className="ml-auto flex gap-2">
