@@ -69,7 +69,7 @@ export function ImportScreen() {
   }
 
   async function apply() {
-    if (!file) return;
+    if (!file || confirm.isPending) return;
     try {
       const result = await confirm.mutateAsync(file);
       setDone({ plan: result, fileName: file.name });
@@ -117,10 +117,16 @@ export function ImportScreen() {
           ref={input}
           id="import-file"
           type="file"
-          accept=".csv,text/csv"
+          accept=".csv,.txt,text/csv"
           className="block text-sm"
           disabled={preview.isPending || confirm.isPending}
-          onChange={(e) => void pick(e.target.files?.[0])}
+          onChange={(e) => {
+            const chosen = e.target.files?.[0];
+            // Clear the input so choosing the same path again (after fixing the file on
+            // disk) fires another change event and a fresh preview.
+            e.target.value = "";
+            void pick(chosen);
+          }}
         />
         {preview.isPending && <p className="text-muted-foreground">Önizleme hazırlanıyor…</p>}
       </div>
