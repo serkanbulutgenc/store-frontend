@@ -2,7 +2,7 @@ import { z } from "zod";
 import { moneySchema } from "../catalog/schemas";
 
 const optionalMoney = z.union([z.literal(""), moneySchema]);
-const email = z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+const email = z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Geçerli bir e-posta girin.");
 
 export const settingsFormSchema = z.object({
   shipping_fee: moneySchema,
@@ -30,7 +30,7 @@ export const settingsFormSchema = z.object({
   seller_name: z.string().trim(),
   seller_tax_number: z.string().trim(),
   seller_address: z.string().trim(),
-  seller_email: z.union([z.literal(""), email], "Geçerli bir e-posta girin."),
+  seller_email: z.union([z.literal(""), email]),
   seller_phone: z.string().trim(),
   return_carrier: z.string().trim(),
   complaint_contact: z.string().trim(),

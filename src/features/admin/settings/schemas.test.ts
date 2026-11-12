@@ -40,3 +40,9 @@ it("rejects a bad recipient or fee", () => {
   );
   expect(settingsFormSchema.safeParse({ ...valid, shipping_fee: "abc" }).success).toBe(false);
 });
+
+it("reports a bad seller e-mail in Turkish", () => {
+  const r = settingsFormSchema.safeParse({ ...valid, seller_email: "not-an-email" });
+  expect(r.success).toBe(false);
+  expect(r.error?.issues[0]?.message).toBe("Geçerli bir e-posta girin.");
+});
