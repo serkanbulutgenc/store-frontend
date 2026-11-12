@@ -130,7 +130,8 @@ export function BasketPage() {
           </div>
           {settings && (
             <p className="text-muted-foreground">
-              Kargo ücreti ve varsa kapıda ödeme bedeli ödeme adımında eklenir.
+              Kargo ücreti teslimat ilinize ve ürünlerin boyutuna göre ödeme adımında hesaplanır;
+              varsa kapıda ödeme bedeli de orada eklenir.
               {settings.free_shipping_threshold &&
                 ` ${formatTry(settings.free_shipping_threshold)} ve üzeri siparişlerde kargo ücretsizdir.`}
             </p>

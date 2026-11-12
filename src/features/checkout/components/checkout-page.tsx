@@ -9,13 +9,19 @@ import { accountQuery, addressesQuery } from "@/features/account/queries";
 import { apiErrorToFormErrors } from "@/features/admin/forms/api-errors";
 import { bind, Field, FormMessage } from "@/features/admin/forms/field";
 import { problemText } from "@/features/basket/problems";
-import { basketQuery, settingsQuery } from "@/features/basket/queries";
+import {
+  type Basket,
+  basketQuery,
+  type PublicSettings,
+  settingsQuery,
+} from "@/features/basket/queries";
 import { LEGAL_PAGES } from "@/features/legal/pages";
 import { formatTry } from "@/lib/format";
+import { useDebounced } from "@/lib/use-debounced";
 import { cn } from "@/lib/utils";
 import { suggestEmail } from "../email-hint";
-import { previewFees } from "../fees";
-import { usePlaceOrder } from "../queries";
+import { feeSummary, type PaymentChoice } from "../fees";
+import { useCheckoutQuote, usePlaceOrder } from "../queries";
 import { checkoutSchema, emptyCheckout, toCheckoutBody } from "../schemas";
 
 function useCheckoutForm(
@@ -97,6 +103,55 @@ function Check({ field, children }: { field: AnyFieldApi; children: React.ReactN
         </span>
       )}
     </div>
+  );
+}
+
+function FeeSummary({
+  basket,
+  settings,
+  method,
+  il,
+}: {
+  basket: Basket;
+  settings: PublicSettings;
+  method: PaymentChoice;
+  il: string;
+}) {
+  // The province is typed by hand, so wait for a pause before asking the backend.
+  const province = useDebounced(il.trim(), 400);
+  const quote = useCheckoutQuote(basket, province, method, basket.lines.length > 0);
+  const fees = feeSummary(basket.subtotal, settings, method, quote.data);
+  const waiting = quote.isFetching || province !== il.trim();
+  return (
+    <dl className="space-y-1 border-t border-border pt-3" aria-busy={waiting}>
+      <div className="flex justify-between">
+        <dt>Ürünler (KDV dahil)</dt>
+        <dd>{formatTry(basket.subtotal)}</dd>
+      </div>
+      <div className="flex justify-between">
+        <dt>Kargo</dt>
+        <dd className={cn(waiting && "opacity-60")}>
+          {fees.freeShipping ? "Ücretsiz" : formatTry(fees.shipping)}
+        </dd>
+      </div>
+      {!fees.calculated && !quote.isError && (
+        <p className="text-muted-foreground">Kargo ücreti teslimat ilinize göre hesaplanır.</p>
+      )}
+      {method === "cod" && (
+        <div className="flex justify-between">
+          <dt>Kapıda ödeme bedeli</dt>
+          <dd>{formatTry(fees.cod)}</dd>
+        </div>
+      )}
+      <div className="flex justify-between text-base font-semibold">
+        <dt>Toplam</dt>
+        <dd className={cn(waiting && "opacity-60")}>{formatTry(fees.total)}</dd>
+      </div>
+      <div className="flex justify-between text-muted-foreground">
+        <dt>Ödeme yöntemi</dt>
+        <dd>{method === "cod" ? "Kapıda ödeme" : "Havale / EFT"}</dd>
+      </div>
+    </dl>
   );
 }
 
@@ -318,36 +373,15 @@ export function CheckoutPage() {
               );
             })}
           </ul>
-          <form.Subscribe selector={(s) => s.values.payment_method}>
-            {(method) => {
-              const fees = previewFees(basket.subtotal, settings, method);
-              return (
-                <dl className="space-y-1 border-t border-border pt-3">
-                  <div className="flex justify-between">
-                    <dt>Ürünler (KDV dahil)</dt>
-                    <dd>{formatTry(basket.subtotal)}</dd>
-                  </div>
-                  <div className="flex justify-between">
-                    <dt>Kargo</dt>
-                    <dd>{fees.freeShipping ? "Ücretsiz" : formatTry(fees.shipping)}</dd>
-                  </div>
-                  {method === "cod" && (
-                    <div className="flex justify-between">
-                      <dt>Kapıda ödeme bedeli</dt>
-                      <dd>{formatTry(fees.cod)}</dd>
-                    </div>
-                  )}
-                  <div className="flex justify-between text-base font-semibold">
-                    <dt>Toplam</dt>
-                    <dd>{formatTry(fees.total)}</dd>
-                  </div>
-                  <div className="flex justify-between text-muted-foreground">
-                    <dt>Ödeme yöntemi</dt>
-                    <dd>{method === "cod" ? "Kapıda ödeme" : "Havale / EFT"}</dd>
-                  </div>
-                </dl>
-              );
-            }}
+          <form.Subscribe
+            selector={(s) => ({
+              method: s.values.payment_method,
+              il: s.values.shipping_address.il,
+            })}
+          >
+            {({ method, il }) => (
+              <FeeSummary basket={basket} settings={settings} method={method} il={il} />
+            )}
           </form.Subscribe>
           <p className="rounded-md bg-muted px-3 py-2 text-muted-foreground">
             Teslimattan itibaren 14 gün içinde cayma hakkınızı kullanabilirsiniz. Hijyen nedeniyle

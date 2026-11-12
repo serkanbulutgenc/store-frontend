@@ -214,6 +214,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/checkout/quote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Quote Order
+         * @description What the current basket would cost sent to `province`. Writes nothing.
+         *
+         *     400 `basket_empty` when there is nothing to price.
+         */
+        post: operations["checkout_quote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/store/csrf": {
         parameters: {
             query?: never;
@@ -941,6 +963,44 @@ export interface components {
             /** Quantity */
             quantity: number;
         };
+        /** QuoteIn */
+        QuoteIn: {
+            payment_method: components["schemas"]["PaymentMethod"];
+            /**
+             * Province
+             * @description Destination il; empty or unknown gives the flat Settings fee.
+             * @default
+             */
+            province: string;
+        };
+        /** QuoteOut */
+        QuoteOut: {
+            /**
+             * Cod Fee
+             * @example 349.90
+             */
+            cod_fee: string;
+            /**
+             * Free Shipping
+             * @description True when the items total reached the free-shipping threshold.
+             */
+            free_shipping: boolean;
+            /**
+             * Items Total
+             * @example 349.90
+             */
+            items_total: string;
+            /**
+             * Shipping Fee
+             * @example 349.90
+             */
+            shipping_fee: string;
+            /**
+             * Total
+             * @example 349.90
+             */
+            total: string;
+        };
         /** SavedAddressIn */
         SavedAddressIn: {
             /** Full Name */
@@ -1414,6 +1474,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrderPlacedOut"];
+                };
+            };
+        };
+    };
+    checkout_quote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QuoteIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuoteOut"];
                 };
             };
         };
