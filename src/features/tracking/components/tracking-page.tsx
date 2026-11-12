@@ -6,6 +6,7 @@ import { ApiError } from "@/lib/api/errors";
 import { formatDate, formatTry } from "@/lib/format";
 import { paymentLabel, statusLabel } from "../labels";
 import { type TrackedOrder, trackingLinkQuery, useTrackOrder } from "../queries";
+import { OrderActions } from "./order-actions";
 
 export function OrderView({ order }: { order: TrackedOrder }) {
   return (
@@ -155,6 +156,9 @@ export function TrackingPage({ token }: { token: string | undefined }) {
         </p>
       )}
       {order && <OrderView order={order} />}
+      {order && token && order === link.data && (
+        <OrderActions order={order} access={{ kind: "link", token }} />
+      )}
       {order && (
         <Button
           variant="outline"

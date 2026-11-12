@@ -119,6 +119,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/account/orders/{number}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel My Order
+         * @description Cancel one of my Orders while it is new or preparing.
+         */
+        post: operations["account_cancel_order"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/account/orders/{number}/returns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Return My Order
+         * @description Ask to return lines of one of my delivered Orders.
+         */
+        post: operations["account_request_return"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/store/basket": {
         parameters: {
             query?: never;
@@ -355,12 +395,61 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/tracking/link/{token}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel Via Link
+         * @description Cancel the Order a signed link was issued for, while it is new or preparing.
+         *
+         *     409 `illegal_transition` once it has shipped.
+         */
+        post: operations["tracking_cancel_order"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/tracking/link/{token}/returns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Return Via Link
+         * @description Ask to return lines of a delivered Order (within 14 days, no hygiene lines).
+         *
+         *     409 `return_not_available` or `return_window_closed`; 422 with `fields.lines`.
+         */
+        post: operations["tracking_request_return"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /** AccountOrderOut */
         AccountOrderOut: {
+            /**
+             * Can Cancel
+             * @description The Shopper may still cancel the Order.
+             */
+            can_cancel: boolean;
             /** Carrier */
             carrier: string | null;
             /**
@@ -374,7 +463,7 @@ export interface components {
              */
             items_total: string;
             /** Lines */
-            lines: components["schemas"]["PlacedLineOut"][];
+            lines: components["schemas"]["TrackingLineOut"][];
             /** Number */
             number: string;
             payment_method: components["schemas"]["PaymentMethod"];
@@ -385,6 +474,13 @@ export interface components {
              * Format: date-time
              */
             placed_at: string;
+            /**
+             * Return Deadline
+             * @description Last moment to request a return; null when none is possible.
+             */
+            return_deadline: string | null;
+            /** Returns */
+            returns: components["schemas"]["ReturnRequestOut"][];
             shipping_address?: components["schemas"]["OrderAddressOut"] | null;
             /**
              * Shipping Fee
@@ -1001,6 +1097,59 @@ export interface components {
              */
             total: string;
         };
+        /** ReturnIn */
+        ReturnIn: {
+            /** Lines */
+            lines: components["schemas"]["ReturnItemIn"][];
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+            reason: components["schemas"]["ReturnReason"];
+        };
+        /** ReturnItemIn */
+        ReturnItemIn: {
+            /** Line Id */
+            line_id: number;
+            /** Quantity */
+            quantity: number;
+        };
+        /** ReturnLineOut */
+        ReturnLineOut: {
+            /** Line Id */
+            line_id: number;
+            /** Quantity */
+            quantity: number;
+            /** Title */
+            title: string;
+        };
+        /**
+         * ReturnReason
+         * @enum {string}
+         */
+        ReturnReason: "wrong_size" | "changed_mind" | "defective" | "wrong_item" | "other";
+        /** ReturnRequestOut */
+        ReturnRequestOut: {
+            /** Id */
+            id: number;
+            /** Lines */
+            lines: components["schemas"]["ReturnLineOut"][];
+            /** Note */
+            note: string;
+            reason: components["schemas"]["ReturnReason"];
+            /**
+             * Requested At
+             * Format: date-time
+             */
+            requested_at: string;
+            status: components["schemas"]["ReturnStatus"];
+        };
+        /**
+         * ReturnStatus
+         * @enum {string}
+         */
+        ReturnStatus: "requested" | "approved" | "rejected" | "received" | "refunded";
         /** SavedAddressIn */
         SavedAddressIn: {
             /** Full Name */
@@ -1090,11 +1239,46 @@ export interface components {
             /** Number */
             number: string;
         };
+        /** TrackingLineOut */
+        TrackingLineOut: {
+            /** Colour */
+            colour: string;
+            /** Id */
+            id: number;
+            /**
+             * Line Total
+             * @example 349.90
+             */
+            line_total: string;
+            /** Quantity */
+            quantity: number;
+            /**
+             * Returnable Quantity
+             * @description Units that could be requested for return right now.
+             */
+            returnable_quantity: number;
+            /** Size */
+            size: string;
+            /** Sku */
+            sku: string;
+            /** Title */
+            title: string;
+            /**
+             * Unit Price
+             * @example 349.90
+             */
+            unit_price: string;
+        };
         /**
          * TrackingOut
          * @description What a Shopper may see: no phone, address or email.
          */
         TrackingOut: {
+            /**
+             * Can Cancel
+             * @description The Shopper may still cancel the Order.
+             */
+            can_cancel: boolean;
             /** Carrier */
             carrier: string | null;
             /**
@@ -1108,7 +1292,7 @@ export interface components {
              */
             items_total: string;
             /** Lines */
-            lines: components["schemas"]["PlacedLineOut"][];
+            lines: components["schemas"]["TrackingLineOut"][];
             /** Number */
             number: string;
             payment_method: components["schemas"]["PaymentMethod"];
@@ -1119,6 +1303,13 @@ export interface components {
              * Format: date-time
              */
             placed_at: string;
+            /**
+             * Return Deadline
+             * @description Last moment to request a return; null when none is possible.
+             */
+            return_deadline: string | null;
+            /** Returns */
+            returns: components["schemas"]["ReturnRequestOut"][];
             /**
              * Shipping Fee
              * @example 349.90
@@ -1338,6 +1529,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AccountOrderOut"];
+                };
+            };
+        };
+    };
+    account_cancel_order: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackingOut"];
+                };
+            };
+        };
+    };
+    account_request_return: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReturnIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackingOut"];
                 };
             };
         };
@@ -1633,6 +1872,54 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackingOut"];
+                };
+            };
+        };
+    };
+    tracking_cancel_order: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackingOut"];
+                };
+            };
+        };
+    };
+    tracking_request_return: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReturnIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };

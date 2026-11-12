@@ -614,6 +614,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/orders/{number}/returns/{return_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve Return
+         * @description Accept a return request. The Shopper's email says who pays return shipping.
+         */
+        post: operations["orders_return_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders/{number}/returns/{return_id}/receive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Receive Return
+         * @description The parcel arrived; per line, say whether the units go back on the shelf.
+         */
+        post: operations["orders_return_receive"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders/{number}/returns/{return_id}/refund": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refund Return
+         * @description Owner-only. Record the money paid back for a received return request.
+         */
+        post: operations["orders_return_refund"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders/{number}/returns/{return_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reject Return
+         * @description Turn a return request down with a reason the Shopper will read.
+         */
+        post: operations["orders_return_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/orders/{number}/ship": {
         parameters: {
             query?: never;
@@ -1624,6 +1704,8 @@ export interface components {
             refund_method: string;
             /** Refunded At */
             refunded_at: string | null;
+            /** Returns */
+            returns: components["schemas"]["ReturnAdminOut"][];
             /** Shipped At */
             shipped_at: string | null;
             shipping_address: components["schemas"]["OrderShippingOut"] | null;
@@ -2136,6 +2218,83 @@ export interface components {
          * @enum {string}
          */
         RefundMethod: "bank_transfer" | "cash";
+        /** ReturnAdminOut */
+        ReturnAdminOut: {
+            /** Decided At */
+            decided_at: string | null;
+            /** Id */
+            id: number;
+            /** Lines */
+            lines: components["schemas"]["ReturnLineAdminOut"][];
+            /** Note */
+            note: string;
+            reason: components["schemas"]["ReturnReason"];
+            /** Received At */
+            received_at: string | null;
+            /** Refund Amount */
+            refund_amount: string | null;
+            /** Refund Method */
+            refund_method: string;
+            /** Refunded At */
+            refunded_at: string | null;
+            /** Reject Reason */
+            reject_reason: string;
+            /**
+             * Requested At
+             * Format: date-time
+             */
+            requested_at: string;
+            /** Shop Pays Shipping */
+            shop_pays_shipping: boolean;
+            status: components["schemas"]["ReturnStatus"];
+        };
+        /** ReturnLineAdminOut */
+        ReturnLineAdminOut: {
+            /** Line Id */
+            line_id: number;
+            /** Quantity */
+            quantity: number;
+            /** Restocked */
+            restocked: boolean;
+            /** Title */
+            title: string;
+        };
+        /**
+         * ReturnReason
+         * @enum {string}
+         */
+        ReturnReason: "wrong_size" | "changed_mind" | "defective" | "wrong_item" | "other";
+        /** ReturnReceiveIn */
+        ReturnReceiveIn: {
+            /**
+             * Lines
+             * @description One entry for every line of the request.
+             */
+            lines: components["schemas"]["ReturnReceiveLineIn"][];
+        };
+        /** ReturnReceiveLineIn */
+        ReturnReceiveLineIn: {
+            /** Line Id */
+            line_id: number;
+            /**
+             * Restock
+             * @description Put the units back on the shelf.
+             */
+            restock: boolean;
+        };
+        /** ReturnRejectIn */
+        ReturnRejectIn: {
+            /**
+             * Reason
+             * @description Shown to the Shopper.
+             */
+            reason: string;
+        };
+        /**
+         * ReturnStatus
+         * @enum {string}
+         */
+        ReturnStatus: "requested" | "approved" | "rejected" | "received" | "refunded";
         /** SettingsOut */
         SettingsOut: {
             /** Bank Account Holder */
@@ -3283,6 +3442,110 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_return_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+                return_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_return_receive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+                return_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReturnReceiveIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_return_refund: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+                return_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderRefundIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    orders_return_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+                return_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReturnRejectIn"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {

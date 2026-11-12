@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { buttonVariants } from "@/components/ui/button";
+import { OrderActions } from "@/features/tracking/components/order-actions";
 import { OrderView } from "@/features/tracking/components/tracking-page";
 import { paymentLabel, statusLabel } from "@/features/tracking/labels";
 import { ApiError } from "@/lib/api/errors";
@@ -80,6 +81,7 @@ export function OrderDetailPage({ number }: { number: string }) {
       {data && (
         <>
           <OrderView order={data} />
+          <OrderActions order={data} access={{ kind: "account", number }} />
           {data.shipping_address && (
             <section aria-labelledby="ship" className="rounded-md border border-border bg-card p-4">
               <h2 id="ship" className="mb-1 font-semibold">
