@@ -61,11 +61,10 @@ it("builds breadcrumbs for areas, details and sub-pages", () => {
     { label: "Ürünler", to: "/admin/products" },
     { label: "Yeni" },
   ]);
-  expect(breadcrumbs("/admin/products/12/photos", { "12": "Pamuklu tişört" })).toEqual([
+  expect(breadcrumbs("/admin/products/12", { "12": "Pamuklu tişört" })).toEqual([
     { label: "Katalog" },
     { label: "Ürünler", to: "/admin/products" },
-    { label: "Pamuklu tişört", to: "/admin/products/12" },
-    { label: "Fotoğraflar" },
+    { label: "Pamuklu tişört" },
   ]);
   expect(breadcrumbs("/admin/orders/A-1001")).toEqual([
     { label: "Satış" },

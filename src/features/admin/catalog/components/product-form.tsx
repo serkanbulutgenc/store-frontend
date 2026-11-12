@@ -1,5 +1,6 @@
 import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { Save } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,11 +51,28 @@ function toFormValues(p: ProductOut): ProductFormValues {
   };
 }
 
+/** Field names per editor tab, so a tab can show an error marker. */
+export const GENERAL_FIELDS: (keyof ProductFormValues)[] = [
+  "title",
+  "category_id",
+  "brand_id",
+  "product_class_id",
+  "low_stock_threshold",
+  "slug",
+];
+export const PRICE_FIELDS: (keyof ProductFormValues)[] = [
+  "shelf_price",
+  "old_price",
+  "cost_price",
+  "supplier_id",
+  "supplier_code",
+];
+
 /**
- * Create and edit share this form. Fields the user may not see (cost price, Supplier) are
+ * Create and edit share this form state. Fields the user may not see (cost price, Supplier) are
  * not rendered and not sent: the API omits them from Staff responses and rejects them in requests.
  */
-export function ProductForm({
+export function useProductForm({
   product,
   me,
   onSaved,
@@ -63,15 +81,8 @@ export function ProductForm({
   me: Me;
   onSaved?: (p: ProductOut) => void;
 }) {
-  const canEdit = can(me, "manage_products");
   const canSeeCost = can(me, "view_cost_prices");
   const canSeeSupplier = can(me, "manage_suppliers");
-  const { data: categories } = useSuspenseQuery(categoriesQuery);
-  const { data: brands } = useSuspenseQuery(brandsQuery);
-  const { data: classes } = useSuspenseQuery(productClassesQuery);
-  // Staff may not list Suppliers (the API answers 403), so only Owners ask.
-  const suppliers = useQuery({ ...suppliersQuery, enabled: canSeeSupplier });
-
   const create = useCreateProduct();
   const update = useUpdateProduct(product?.id ?? 0);
   const initial = product ? toFormValues(product) : EMPTY;
@@ -100,162 +111,211 @@ export function ProductForm({
     },
   });
   useDirtyGuard(useStore(form.store, (s) => s.isDirty && !s.isSubmitting));
+  return form;
+}
+export type ProductFormApi = ReturnType<typeof useProductForm>;
 
+type FieldsProps = { form: ProductFormApi; me: Me; product?: ProductOut };
+
+/** Genel: name, category, brand, class, thresholds and slug. */
+export function GeneralFields({ form, me, product }: FieldsProps) {
+  const canEdit = can(me, "manage_products");
+  const { data: categories } = useSuspenseQuery(categoriesQuery);
+  const { data: brands } = useSuspenseQuery(brandsQuery);
+  const { data: classes } = useSuspenseQuery(productClassesQuery);
+  return (
+    <fieldset disabled={!canEdit} className="grid grid-cols-2 gap-3">
+      <div className="col-span-2">
+        <form.Field name="title">
+          {(f) => (
+            <Field field={f} label="Ürün adı">
+              <Input {...bind(f)} />
+            </Field>
+          )}
+        </form.Field>
+      </div>
+      <form.Field name="category_id">
+        {(f) => (
+          <Field field={f} label="Kategori">
+            <Select {...bind(f)}>
+              <option value="">Seçin…</option>
+              {categoryLabels(categories).map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.label}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        )}
+      </form.Field>
+      <form.Field name="brand_id">
+        {(f) => (
+          <Field field={f} label="Marka">
+            <Select {...bind(f)}>
+              <option value="">Markasız</option>
+              {brands.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        )}
+      </form.Field>
+      <form.Field name="product_class_id">
+        {(f) => (
+          <Field
+            field={f}
+            label="Ürün sınıfı"
+            hint={
+              product
+                ? "Oluşturulduktan sonra değiştirilemez."
+                : "Beden listesini ve KDV oranını belirler."
+            }
+          >
+            <Select {...bind(f)} disabled={!!product || !canEdit}>
+              <option value="">Seçin…</option>
+              {classes.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        )}
+      </form.Field>
+      <div className="space-y-1">
+        <span className="block font-medium">KDV oranı</span>
+        <p className="flex h-8 items-center text-muted-foreground">
+          {product ? `%${Number(product.kdv_rate)}` : "Sınıfa göre belirlenir"}
+        </p>
+      </div>
+      <form.Field name="low_stock_threshold">
+        {(f) => (
+          <Field
+            field={f}
+            label="Düşük stok eşiği"
+            hint="Boş bırakılırsa mağaza varsayılanı kullanılır."
+          >
+            <Input inputMode="numeric" {...bind(f)} />
+          </Field>
+        )}
+      </form.Field>
+      <form.Field name="slug">
+        {(f) => (
+          <Field field={f} label="Adres (slug)" hint="Boş bırakılırsa addan üretilir.">
+            <Input {...bind(f)} />
+          </Field>
+        )}
+      </form.Field>
+    </fieldset>
+  );
+}
+
+/** Fiyat: sale and old price for everyone; cost price and Supplier only for those allowed. */
+export function PriceFields({ form, me }: FieldsProps) {
+  const canEdit = can(me, "manage_products");
+  const canSeeCost = can(me, "view_cost_prices");
+  const canSeeSupplier = can(me, "manage_suppliers");
+  // Staff may not list Suppliers (the API answers 403), so only Owners ask.
+  const suppliers = useQuery({ ...suppliersQuery, enabled: canSeeSupplier });
+  return (
+    <fieldset disabled={!canEdit} className="grid grid-cols-2 gap-3">
+      <form.Field name="shelf_price">
+        {(f) => (
+          <Field field={f} label="Satış fiyatı (KDV dahil)" hint="Örn. 199.90">
+            <Input inputMode="decimal" {...bind(f)} />
+          </Field>
+        )}
+      </form.Field>
+      <form.Field name="old_price">
+        {(f) => (
+          <Field field={f} label="Eski fiyat" hint="İndirim göstermek için, isteğe bağlı.">
+            <Input inputMode="decimal" {...bind(f)} />
+          </Field>
+        )}
+      </form.Field>
+      {canSeeCost && (
+        <form.Field name="cost_price">
+          {(f) => (
+            <Field field={f} label="Alış fiyatı">
+              <Input inputMode="decimal" {...bind(f)} />
+            </Field>
+          )}
+        </form.Field>
+      )}
+      {canSeeSupplier && (
+        <>
+          <form.Field name="supplier_id">
+            {(f) => (
+              <Field field={f} label="Tedarikçi">
+                <Select {...bind(f)}>
+                  <option value="">Seçilmedi</option>
+                  {suppliers.data?.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+            )}
+          </form.Field>
+          <form.Field name="supplier_code">
+            {(f) => (
+              <Field field={f} label="Tedarikçi ürün kodu">
+                <Input {...bind(f)} />
+              </Field>
+            )}
+          </form.Field>
+        </>
+      )}
+    </fieldset>
+  );
+}
+
+/** Form message and Kaydet, shared by the create page and the editor tabs. */
+export function ProductFormFooter({
+  form,
+  me,
+  label,
+}: {
+  form: ProductFormApi;
+  me: Me;
+  label: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <form.Subscribe selector={(s) => s.errorMap.onSubmit}>
+        {(err) => <FormMessage error={err} />}
+      </form.Subscribe>
+      {can(me, "manage_products") && (
+        <form.Subscribe selector={(s) => s.isSubmitting}>
+          {(submitting) => (
+            <Button type="submit" size="sm" disabled={submitting}>
+              <Save aria-hidden className="size-4" />
+              {label}
+            </Button>
+          )}
+        </form.Subscribe>
+      )}
+    </div>
+  );
+}
+
+/** The create page: every field on one screen. Editing uses the tabs in `ProductEditor`. */
+export function ProductForm({ me, onSaved }: { me: Me; onSaved?: (p: ProductOut) => void }) {
+  const form = useProductForm({ me, onSaved });
   return (
     <form
-      className="grid max-w-3xl grid-cols-2 gap-3"
+      className="max-w-3xl space-y-3"
       onSubmit={(e) => {
         e.preventDefault();
         void form.handleSubmit();
       }}
     >
-      <fieldset disabled={!canEdit} className="col-span-2 grid grid-cols-2 gap-3">
-        <div className="col-span-2">
-          <form.Field name="title">
-            {(f) => (
-              <Field field={f} label="Ürün adı">
-                <Input {...bind(f)} />
-              </Field>
-            )}
-          </form.Field>
-        </div>
-        <form.Field name="category_id">
-          {(f) => (
-            <Field field={f} label="Kategori">
-              <Select {...bind(f)}>
-                <option value="">Seçin…</option>
-                {categoryLabels(categories).map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.label}
-                  </option>
-                ))}
-              </Select>
-            </Field>
-          )}
-        </form.Field>
-        <form.Field name="brand_id">
-          {(f) => (
-            <Field field={f} label="Marka">
-              <Select {...bind(f)}>
-                <option value="">Markasız</option>
-                {brands.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
-                  </option>
-                ))}
-              </Select>
-            </Field>
-          )}
-        </form.Field>
-        <form.Field name="product_class_id">
-          {(f) => (
-            <Field
-              field={f}
-              label="Ürün sınıfı"
-              hint={
-                product
-                  ? "Oluşturulduktan sonra değiştirilemez."
-                  : "Beden listesini ve KDV oranını belirler."
-              }
-            >
-              <Select {...bind(f)} disabled={!!product || !canEdit}>
-                <option value="">Seçin…</option>
-                {classes.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </Select>
-            </Field>
-          )}
-        </form.Field>
-        <div className="space-y-1">
-          <span className="block font-medium">KDV oranı</span>
-          <p className="flex h-8 items-center text-muted-foreground">
-            {product ? `%${Number(product.kdv_rate)}` : "Sınıfa göre belirlenir"}
-          </p>
-        </div>
-        <form.Field name="shelf_price">
-          {(f) => (
-            <Field field={f} label="Satış fiyatı (KDV dahil)" hint="Örn. 199.90">
-              <Input inputMode="decimal" {...bind(f)} />
-            </Field>
-          )}
-        </form.Field>
-        <form.Field name="old_price">
-          {(f) => (
-            <Field field={f} label="Eski fiyat" hint="İndirim göstermek için, isteğe bağlı.">
-              <Input inputMode="decimal" {...bind(f)} />
-            </Field>
-          )}
-        </form.Field>
-        {canSeeCost && (
-          <form.Field name="cost_price">
-            {(f) => (
-              <Field field={f} label="Alış fiyatı">
-                <Input inputMode="decimal" {...bind(f)} />
-              </Field>
-            )}
-          </form.Field>
-        )}
-        {canSeeSupplier && (
-          <>
-            <form.Field name="supplier_id">
-              {(f) => (
-                <Field field={f} label="Tedarikçi">
-                  <Select {...bind(f)}>
-                    <option value="">Seçilmedi</option>
-                    {suppliers.data?.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name}
-                      </option>
-                    ))}
-                  </Select>
-                </Field>
-              )}
-            </form.Field>
-            <form.Field name="supplier_code">
-              {(f) => (
-                <Field field={f} label="Tedarikçi ürün kodu">
-                  <Input {...bind(f)} />
-                </Field>
-              )}
-            </form.Field>
-          </>
-        )}
-        <form.Field name="low_stock_threshold">
-          {(f) => (
-            <Field
-              field={f}
-              label="Düşük stok eşiği"
-              hint="Boş bırakılırsa mağaza varsayılanı kullanılır."
-            >
-              <Input inputMode="numeric" {...bind(f)} />
-            </Field>
-          )}
-        </form.Field>
-        <form.Field name="slug">
-          {(f) => (
-            <Field field={f} label="Adres (slug)" hint="Boş bırakılırsa addan üretilir.">
-              <Input {...bind(f)} />
-            </Field>
-          )}
-        </form.Field>
-      </fieldset>
-      <div className="col-span-2 space-y-2">
-        <form.Subscribe selector={(s) => s.errorMap.onSubmit}>
-          {(err) => <FormMessage error={err} />}
-        </form.Subscribe>
-        {canEdit && (
-          <form.Subscribe selector={(s) => s.isSubmitting}>
-            {(submitting) => (
-              <Button type="submit" size="sm" disabled={submitting}>
-                {product ? "Kaydet" : "Ürünü oluştur"}
-              </Button>
-            )}
-          </form.Subscribe>
-        )}
-      </div>
+      <GeneralFields form={form} me={me} />
+      <PriceFields form={form} me={me} />
+      <ProductFormFooter form={form} me={me} label="Ürünü oluştur" />
     </form>
   );
 }

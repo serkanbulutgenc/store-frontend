@@ -104,7 +104,7 @@ export function visibleNav(me: Me | null): NavItem[] {
 export type Crumb = { label: string; to?: string };
 
 /** Fixed words for sub-paths below a nav area. Anything else is an entity id/number. */
-const SEGMENT_LABELS: Record<string, string> = { new: "Yeni", photos: "Fotoğraflar" };
+const SEGMENT_LABELS: Record<string, string> = { new: "Yeni" };
 
 /**
  * Breadcrumbs for an /admin path: group, area, then one crumb per deeper segment.

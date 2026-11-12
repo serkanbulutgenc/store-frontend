@@ -12,12 +12,10 @@ import {
   imagesQuery,
   keys,
   type ProductImageOut,
-  productQuery,
   useDeleteImage,
   useReorderImages,
   useUpdateImage,
 } from "../catalog/queries";
-import { useCrumbLabel } from "../components/crumb-labels";
 import { MAX_PHOTOS, moveItem, pickUploadable } from "./rules";
 import { uploadPhoto } from "./upload";
 
@@ -33,8 +31,6 @@ function thumbOf(img: ProductImageOut) {
 }
 
 export function PhotosScreen({ productId }: { productId: number }) {
-  const { data: product } = useSuspenseQuery(productQuery(productId));
-  useCrumbLabel(String(productId), product.title);
   const { data: images } = useSuspenseQuery(imagesQuery(productId));
   const { data: colours = [] } = useQuery(coloursQuery);
   const qc = useQueryClient();
@@ -126,7 +122,7 @@ export function PhotosScreen({ productId }: { productId: number }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-lg font-semibold">Fotoğraflar</h1>
+        <h2 className="text-base font-semibold">Fotoğraflar</h2>
         <span className="text-muted-foreground">
           {images.length}/{MAX_PHOTOS}
         </span>
