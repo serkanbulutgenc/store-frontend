@@ -31,6 +31,7 @@ const product = {
   supplier_id: "",
   supplier_code: "",
   low_stock_threshold: "",
+  desi: "",
 };
 
 describe("productFormSchema", () => {
@@ -61,6 +62,7 @@ describe("toProductBody", () => {
       shelf_price: "199.90",
       old_price: null,
       low_stock_threshold: null,
+      desi: null,
     });
   });
 
@@ -172,5 +174,20 @@ describe("stockAdjustmentSchema limits", () => {
     expect(
       stockAdjustmentSchema.safeParse({ delta: "100000", reason: "x".repeat(200) }).success,
     ).toBe(true);
+  });
+});
+
+describe("product desi", () => {
+  it("is optional but must be a whole number from 1", () => {
+    expect(productFormSchema.safeParse({ ...product, desi: "" }).success).toBe(true);
+    expect(productFormSchema.safeParse({ ...product, desi: "4" }).success).toBe(true);
+    for (const bad of ["0", "1.5", "-2", "abc"])
+      expect(productFormSchema.safeParse({ ...product, desi: bad }).success).toBe(false);
+  });
+  it("is sent as a number, and a blank clears it on edit", () => {
+    const can = { cost: false, supplier: false };
+    expect(toProductBody({ ...product, desi: "4" }, can, "edit").desi).toBe(4);
+    expect(toProductBody({ ...product, desi: "" }, can, "edit").desi).toBeNull();
+    expect(toProductBody({ ...product, desi: "" }, can, "create").desi).toBeNull();
   });
 });

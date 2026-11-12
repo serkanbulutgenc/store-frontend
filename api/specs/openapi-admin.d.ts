@@ -671,6 +671,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/product-classes/{class_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Product Class */
+        patch: operations["catalog_update_product_class"];
+        trace?: never;
+    };
     "/api/admin/products": {
         parameters: {
             query?: never;
@@ -802,6 +819,74 @@ export interface paths {
         head?: never;
         /** Update Settings */
         patch: operations["settings_update"];
+        trace?: never;
+    };
+    "/api/admin/shipping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Shipping */
+        get: operations["shipping_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/shipping/provinces/{province_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Move Province */
+        patch: operations["shipping_move_province"];
+        trace?: never;
+    };
+    "/api/admin/shipping/rates/{rate_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Rate */
+        patch: operations["shipping_update_rate"];
+        trace?: never;
+    };
+    "/api/admin/shipping/zones/{zone_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Rename Zone */
+        patch: operations["shipping_rename_zone"];
         trace?: never;
     };
     "/api/admin/staff": {
@@ -1006,6 +1091,13 @@ export interface components {
              * @description Last day, inclusive.
              */
             date_to?: string | null;
+        };
+        /** CarrierOut */
+        CarrierOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
         };
         /** CategoryIn */
         CategoryIn: {
@@ -1792,6 +1884,8 @@ export interface components {
         PaymentMethod: "bank_transfer" | "cod";
         /** ProductClassOut */
         ProductClassOut: {
+            /** Default Desi */
+            default_desi: number;
             /**
              * Default Kdv Rate
              * @example 349.90
@@ -1807,6 +1901,11 @@ export interface components {
             size_scheme: string;
             /** Sizes */
             sizes: string[];
+        };
+        /** ProductClassPatch */
+        ProductClassPatch: {
+            /** Default Desi */
+            default_desi: number;
         };
         /** ProductImageOut */
         ProductImageOut: {
@@ -1853,6 +1952,8 @@ export interface components {
             category_id: number;
             /** Cost Price */
             cost_price?: string | null;
+            /** Desi */
+            desi?: number | null;
             /** Kdv Rate */
             kdv_rate?: number | string | null;
             /** Low Stock Threshold */
@@ -1904,6 +2005,8 @@ export interface components {
             category: components["schemas"]["NamedOut"] | null;
             /** Cost Price */
             cost_price?: string | null;
+            /** Desi */
+            desi: number | null;
             /** Id */
             id: number;
             /**
@@ -1940,6 +2043,8 @@ export interface components {
             category_id?: number | null;
             /** Cost Price */
             cost_price?: string | null;
+            /** Desi */
+            desi?: number | null;
             /** Kdv Rate */
             kdv_rate?: number | string | null;
             /** Low Stock Threshold */
@@ -1968,6 +2073,63 @@ export interface components {
             count: number;
             /** Rows */
             rows: components["schemas"]["UnphotographedRow"][];
+        };
+        /** ProvinceOut */
+        ProvinceOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Zone Id */
+            zone_id: number;
+        };
+        /** ProvincePatch */
+        ProvincePatch: {
+            /** Zone Id */
+            zone_id: number;
+        };
+        /** RateOut */
+        RateOut: {
+            /**
+             * Band 0 2
+             * @example 349.90
+             */
+            band_0_2: string;
+            /**
+             * Band 3 5
+             * @example 349.90
+             */
+            band_3_5: string;
+            /**
+             * Band 6 10
+             * @example 349.90
+             */
+            band_6_10: string;
+            /** Carrier Id */
+            carrier_id: number;
+            /** Id */
+            id: number;
+            /**
+             * Per Extra Desi
+             * @example 349.90
+             */
+            per_extra_desi: string;
+            /** Zone Id */
+            zone_id: number;
+        };
+        /**
+         * RatePatch
+         * @description Prices arrive as strings; only the ones sent change.
+         */
+        RatePatch: {
+            /** Band 0 2 */
+            band_0_2?: string | null;
+            /** Band 3 5 */
+            band_3_5?: string | null;
+            /** Band 6 10 */
+            band_6_10?: string | null;
+            /** Per Extra Desi */
+            per_extra_desi?: string | null;
         };
         /**
          * RefundMethod
@@ -2129,6 +2291,17 @@ export interface components {
              */
             unit_price_excl: string;
         };
+        /** ShippingOut */
+        ShippingOut: {
+            /** Carriers */
+            carriers: components["schemas"]["CarrierOut"][];
+            /** Provinces */
+            provinces: components["schemas"]["ProvinceOut"][];
+            /** Rates */
+            rates: components["schemas"]["RateOut"][];
+            /** Zones */
+            zones: components["schemas"]["ZoneOut"][];
+        };
         /** StaffUserOut */
         StaffUserOut: {
             /** Email */
@@ -2237,6 +2410,20 @@ export interface components {
             price_override?: string | null;
             /** Sku */
             sku?: string | null;
+        };
+        /** ZoneOut */
+        ZoneOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Number */
+            number: number;
+        };
+        /** ZonePatch */
+        ZonePatch: {
+            /** Name */
+            name: string;
         };
     };
     responses: never;
@@ -3180,6 +3367,32 @@ export interface operations {
             };
         };
     };
+    catalog_update_product_class: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                class_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProductClassPatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductClassOut"];
+                };
+            };
+        };
+    };
     catalog_list_products_admin: {
         parameters: {
             query?: {
@@ -3453,6 +3666,104 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SettingsOut"];
+                };
+            };
+        };
+    };
+    shipping_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShippingOut"];
+                };
+            };
+        };
+    };
+    shipping_move_province: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                province_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProvincePatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProvinceOut"];
+                };
+            };
+        };
+    };
+    shipping_update_rate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                rate_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RatePatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RateOut"];
+                };
+            };
+        };
+    };
+    shipping_rename_zone: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                zone_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ZonePatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ZoneOut"];
                 };
             };
         };

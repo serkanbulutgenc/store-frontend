@@ -40,6 +40,7 @@ import { Route as AdminAppExportRouteImport } from './routes/admin/_app/export'
 import { Route as AdminAppImportRouteImport } from './routes/admin/_app/import'
 import { Route as AdminAppSecurityRouteImport } from './routes/admin/_app/security'
 import { Route as AdminAppSettingsRouteImport } from './routes/admin/_app/settings'
+import { Route as AdminAppShippingRouteImport } from './routes/admin/_app/shipping'
 import { Route as AdminAppStaffRouteImport } from './routes/admin/_app/staff'
 import { Route as AdminAppStockRouteImport } from './routes/admin/_app/stock'
 import { Route as AdminAppSuppliersRouteImport } from './routes/admin/_app/suppliers'
@@ -214,6 +215,11 @@ const AdminAppSettingsRoute = AdminAppSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AdminAppRouteRoute,
 } as any)
+const AdminAppShippingRoute = AdminAppShippingRouteImport.update({
+  id: '/shipping',
+  path: '/shipping',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
 const AdminAppStaffRoute = AdminAppStaffRouteImport.update({
   id: '/staff',
   path: '/staff',
@@ -348,6 +354,7 @@ export interface FileRoutesByFullPath {
   '/admin/import': typeof AdminAppImportRoute
   '/admin/security': typeof AdminAppSecurityRoute
   '/admin/settings': typeof AdminAppSettingsRoute
+  '/admin/shipping': typeof AdminAppShippingRoute
   '/admin/staff': typeof AdminAppStaffRoute
   '/admin/stock': typeof AdminAppStockRoute
   '/admin/suppliers': typeof AdminAppSuppliersRoute
@@ -396,6 +403,7 @@ export interface FileRoutesByTo {
   '/admin/import': typeof AdminAppImportRoute
   '/admin/security': typeof AdminAppSecurityRoute
   '/admin/settings': typeof AdminAppSettingsRoute
+  '/admin/shipping': typeof AdminAppShippingRoute
   '/admin/staff': typeof AdminAppStaffRoute
   '/admin/stock': typeof AdminAppStockRoute
   '/admin/suppliers': typeof AdminAppSuppliersRoute
@@ -448,6 +456,7 @@ export interface FileRoutesById {
   '/admin/_app/import': typeof AdminAppImportRoute
   '/admin/_app/security': typeof AdminAppSecurityRoute
   '/admin/_app/settings': typeof AdminAppSettingsRoute
+  '/admin/_app/shipping': typeof AdminAppShippingRoute
   '/admin/_app/staff': typeof AdminAppStaffRoute
   '/admin/_app/stock': typeof AdminAppStockRoute
   '/admin/_app/suppliers': typeof AdminAppSuppliersRoute
@@ -499,6 +508,7 @@ export interface FileRouteTypes {
     | '/admin/import'
     | '/admin/security'
     | '/admin/settings'
+    | '/admin/shipping'
     | '/admin/staff'
     | '/admin/stock'
     | '/admin/suppliers'
@@ -547,6 +557,7 @@ export interface FileRouteTypes {
     | '/admin/import'
     | '/admin/security'
     | '/admin/settings'
+    | '/admin/shipping'
     | '/admin/staff'
     | '/admin/stock'
     | '/admin/suppliers'
@@ -598,6 +609,7 @@ export interface FileRouteTypes {
     | '/admin/_app/import'
     | '/admin/_app/security'
     | '/admin/_app/settings'
+    | '/admin/_app/shipping'
     | '/admin/_app/staff'
     | '/admin/_app/stock'
     | '/admin/_app/suppliers'
@@ -847,6 +859,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAppSettingsRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
+    '/admin/_app/shipping': {
+      id: '/admin/_app/shipping'
+      path: '/shipping'
+      fullPath: '/admin/shipping'
+      preLoaderRoute: typeof AdminAppShippingRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
     '/admin/_app/staff': {
       id: '/admin/_app/staff'
       path: '/staff'
@@ -1073,6 +1092,7 @@ interface AdminAppRouteRouteChildren {
   AdminAppImportRoute: typeof AdminAppImportRoute
   AdminAppSecurityRoute: typeof AdminAppSecurityRoute
   AdminAppSettingsRoute: typeof AdminAppSettingsRoute
+  AdminAppShippingRoute: typeof AdminAppShippingRoute
   AdminAppStaffRoute: typeof AdminAppStaffRoute
   AdminAppStockRoute: typeof AdminAppStockRoute
   AdminAppSuppliersRoute: typeof AdminAppSuppliersRoute
@@ -1098,6 +1118,7 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppImportRoute: AdminAppImportRoute,
   AdminAppSecurityRoute: AdminAppSecurityRoute,
   AdminAppSettingsRoute: AdminAppSettingsRoute,
+  AdminAppShippingRoute: AdminAppShippingRoute,
   AdminAppStaffRoute: AdminAppStaffRoute,
   AdminAppStockRoute: AdminAppStockRoute,
   AdminAppSuppliersRoute: AdminAppSuppliersRoute,

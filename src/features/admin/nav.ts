@@ -14,6 +14,7 @@ import {
   Store,
   Tag,
   Trash2,
+  Truck,
   Upload,
   UserCog,
   Users,
@@ -62,6 +63,12 @@ export const NAV_GROUPS: NavGroup[] = [
     icon: Settings,
     items: [
       { label: "Ayarlar", to: "/admin/settings", icon: Settings, permission: "manage_settings" },
+      {
+        label: "Kargo fiyatları",
+        to: "/admin/shipping",
+        icon: Truck,
+        permission: "manage_settings",
+      },
       { label: "Personel", to: "/admin/staff", icon: UserCog, permission: "manage_staff_users" },
       {
         label: "Muhasebe dışa aktarımı",

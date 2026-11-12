@@ -21,7 +21,14 @@ it("shows Owner areas only with their permission", () => {
   const labels = visibleNav(me(["manage_settings", "view_audit_log", "manage_staff_users"])).map(
     (i) => i.label,
   );
-  expect(labels).toEqual(["Ana sayfa", "Ayarlar", "Personel", "Denetim günlüğü", "Güvenlik"]);
+  expect(labels).toEqual([
+    "Ana sayfa",
+    "Ayarlar",
+    "Kargo fiyatları",
+    "Personel",
+    "Denetim günlüğü",
+    "Güvenlik",
+  ]);
 });
 
 it("shows only Home and Security to an Owner who has not finished 2FA (empty permission list)", () => {

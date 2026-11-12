@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { components } from "../../../../api/specs/openapi-admin";
+import { desiError } from "../shipping/desi";
 
 // openapi-typescript marks defaulted fields required; the API treats `supplier_code` as optional
 // and rejects it from Staff when present, so it must be omittable.
@@ -31,6 +32,10 @@ export const productFormSchema = z.object({
   supplier_id: optionalId,
   supplier_code: z.string().trim(),
   low_stock_threshold: z.union([z.literal(""), z.string().regex(/^\d+$/, "Tam sayı girin.")]),
+  desi: z.string().superRefine((v, ctx) => {
+    const message = desiError(v, { optional: true });
+    if (message) ctx.addIssue({ code: "custom", message });
+  }),
 });
 export type ProductFormValues = z.infer<typeof productFormSchema>;
 
@@ -56,6 +61,8 @@ export function toProductBody(
   if (mode === "create" || v.slug !== "") body.slug = nullIfEmpty(v.slug);
   if (mode === "create" || v.low_stock_threshold !== "")
     body.low_stock_threshold = toId(v.low_stock_threshold);
+  // Blank clears the override, so the class default applies; null is a valid value here.
+  body.desi = v.desi.trim() === "" ? null : Number(v.desi);
   if (can.cost) body.cost_price = nullIfEmpty(v.cost_price);
   if (can.supplier) {
     body.supplier_id = toId(v.supplier_id);

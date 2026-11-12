@@ -33,6 +33,7 @@ const EMPTY: ProductFormValues = {
   supplier_id: "",
   supplier_code: "",
   low_stock_threshold: "",
+  desi: "",
 };
 
 function toFormValues(p: ProductOut): ProductFormValues {
@@ -48,6 +49,7 @@ function toFormValues(p: ProductOut): ProductFormValues {
     supplier_id: p.supplier ? String(p.supplier.id) : "",
     supplier_code: p.supplier_code ?? "",
     low_stock_threshold: String(p.low_stock_threshold),
+    desi: p.desi == null ? "" : String(p.desi),
   };
 }
 
@@ -66,6 +68,7 @@ export const PRICE_FIELDS: (keyof ProductFormValues)[] = [
   "cost_price",
   "supplier_id",
   "supplier_code",
+  "desi",
 ];
 
 /**
@@ -219,6 +222,9 @@ export function PriceFields({ form, me }: FieldsProps) {
   const canSeeSupplier = can(me, "manage_suppliers");
   // Staff may not list Suppliers (the API answers 403), so only Owners ask.
   const suppliers = useQuery({ ...suppliersQuery, enabled: canSeeSupplier });
+  const { data: classes } = useSuspenseQuery(productClassesQuery);
+  const classId = useStore(form.store, (s) => s.values.product_class_id);
+  const classDesi = classes.find((c) => String(c.id) === classId)?.default_desi;
   return (
     <fieldset disabled={!canEdit} className="grid grid-cols-2 gap-3">
       <form.Field name="shelf_price">
@@ -232,6 +238,21 @@ export function PriceFields({ form, me }: FieldsProps) {
         {(f) => (
           <Field field={f} label="Eski fiyat" hint="İndirim göstermek için, isteğe bağlı.">
             <Input inputMode="decimal" {...bind(f)} />
+          </Field>
+        )}
+      </form.Field>
+      <form.Field name="desi">
+        {(f) => (
+          <Field
+            field={f}
+            label="Desi"
+            hint={
+              classDesi == null
+                ? "Kargo boyutu. Boş bırakılırsa sınıfın desisi kullanılır."
+                : `Kargo boyutu. Boş bırakılırsa sınıfın desisi (${classDesi}) kullanılır.`
+            }
+          >
+            <Input inputMode="numeric" {...bind(f)} />
           </Field>
         )}
       </form.Field>
