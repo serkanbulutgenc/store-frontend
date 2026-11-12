@@ -32,6 +32,7 @@ import { Route as StorefrontYasalSlugRouteImport } from './routes/_storefront/ya
 import { Route as AdminAppIndexRouteImport } from './routes/admin/_app/index'
 import { Route as AdminAppSplatRouteImport } from './routes/admin/_app/$'
 import { Route as AdminAppAccountDeletionsRouteImport } from './routes/admin/_app/account-deletions'
+import { Route as AdminAppAuditLogRouteImport } from './routes/admin/_app/audit-log'
 import { Route as AdminAppBrandsRouteImport } from './routes/admin/_app/brands'
 import { Route as AdminAppCategoriesRouteImport } from './routes/admin/_app/categories'
 import { Route as AdminAppColoursRouteImport } from './routes/admin/_app/colours'
@@ -173,6 +174,11 @@ const AdminAppAccountDeletionsRoute =
     path: '/account-deletions',
     getParentRoute: () => AdminAppRouteRoute,
   } as any)
+const AdminAppAuditLogRoute = AdminAppAuditLogRouteImport.update({
+  id: '/audit-log',
+  path: '/audit-log',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
 const AdminAppBrandsRoute = AdminAppBrandsRouteImport.update({
   id: '/brands',
   path: '/brands',
@@ -334,6 +340,7 @@ export interface FileRoutesByFullPath {
   '/yasal/$slug': typeof StorefrontYasalSlugRoute
   '/admin/$': typeof AdminAppSplatRoute
   '/admin/account-deletions': typeof AdminAppAccountDeletionsRoute
+  '/admin/audit-log': typeof AdminAppAuditLogRoute
   '/admin/brands': typeof AdminAppBrandsRoute
   '/admin/categories': typeof AdminAppCategoriesRoute
   '/admin/colours': typeof AdminAppColoursRoute
@@ -381,6 +388,7 @@ export interface FileRoutesByTo {
   '/yasal/$slug': typeof StorefrontYasalSlugRoute
   '/admin/$': typeof AdminAppSplatRoute
   '/admin/account-deletions': typeof AdminAppAccountDeletionsRoute
+  '/admin/audit-log': typeof AdminAppAuditLogRoute
   '/admin/brands': typeof AdminAppBrandsRoute
   '/admin/categories': typeof AdminAppCategoriesRoute
   '/admin/colours': typeof AdminAppColoursRoute
@@ -432,6 +440,7 @@ export interface FileRoutesById {
   '/_storefront/yasal/$slug': typeof StorefrontYasalSlugRoute
   '/admin/_app/$': typeof AdminAppSplatRoute
   '/admin/_app/account-deletions': typeof AdminAppAccountDeletionsRoute
+  '/admin/_app/audit-log': typeof AdminAppAuditLogRoute
   '/admin/_app/brands': typeof AdminAppBrandsRoute
   '/admin/_app/categories': typeof AdminAppCategoriesRoute
   '/admin/_app/colours': typeof AdminAppColoursRoute
@@ -482,6 +491,7 @@ export interface FileRouteTypes {
     | '/yasal/$slug'
     | '/admin/$'
     | '/admin/account-deletions'
+    | '/admin/audit-log'
     | '/admin/brands'
     | '/admin/categories'
     | '/admin/colours'
@@ -529,6 +539,7 @@ export interface FileRouteTypes {
     | '/yasal/$slug'
     | '/admin/$'
     | '/admin/account-deletions'
+    | '/admin/audit-log'
     | '/admin/brands'
     | '/admin/categories'
     | '/admin/colours'
@@ -579,6 +590,7 @@ export interface FileRouteTypes {
     | '/_storefront/yasal/$slug'
     | '/admin/_app/$'
     | '/admin/_app/account-deletions'
+    | '/admin/_app/audit-log'
     | '/admin/_app/brands'
     | '/admin/_app/categories'
     | '/admin/_app/colours'
@@ -777,6 +789,13 @@ declare module '@tanstack/react-router' {
       path: '/account-deletions'
       fullPath: '/admin/account-deletions'
       preLoaderRoute: typeof AdminAppAccountDeletionsRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/audit-log': {
+      id: '/admin/_app/audit-log'
+      path: '/audit-log'
+      fullPath: '/admin/audit-log'
+      preLoaderRoute: typeof AdminAppAuditLogRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
     '/admin/_app/brands': {
@@ -1046,6 +1065,7 @@ const StorefrontRouteRouteWithChildren = StorefrontRouteRoute._addFileChildren(
 interface AdminAppRouteRouteChildren {
   AdminAppSplatRoute: typeof AdminAppSplatRoute
   AdminAppAccountDeletionsRoute: typeof AdminAppAccountDeletionsRoute
+  AdminAppAuditLogRoute: typeof AdminAppAuditLogRoute
   AdminAppBrandsRoute: typeof AdminAppBrandsRoute
   AdminAppCategoriesRoute: typeof AdminAppCategoriesRoute
   AdminAppColoursRoute: typeof AdminAppColoursRoute
@@ -1070,6 +1090,7 @@ interface AdminAppRouteRouteChildren {
 const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppSplatRoute: AdminAppSplatRoute,
   AdminAppAccountDeletionsRoute: AdminAppAccountDeletionsRoute,
+  AdminAppAuditLogRoute: AdminAppAuditLogRoute,
   AdminAppBrandsRoute: AdminAppBrandsRoute,
   AdminAppCategoriesRoute: AdminAppCategoriesRoute,
   AdminAppColoursRoute: AdminAppColoursRoute,

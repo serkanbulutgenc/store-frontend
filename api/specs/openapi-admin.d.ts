@@ -82,6 +82,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/audit-log/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Audit Entry
+         * @description One entry with its before and after. Owner only; the list leaves them out.
+         */
+        get: operations["audit_log_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/brands": {
         parameters: {
             query?: never;
@@ -909,6 +929,36 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AuditEntryDetail */
+        AuditEntryDetail: {
+            /** Action */
+            action: string;
+            /** Actor */
+            actor: string;
+            /** Actor Id */
+            actor_id: number | null;
+            /** After */
+            after: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Before */
+            before: {
+                [key: string]: unknown;
+            } | null;
+            /** Id */
+            id: number;
+            /** Summary */
+            summary: string;
+            /** Target Id */
+            target_id: string;
+            /** Target Type */
+            target_type: string;
+        };
         /**
          * AuditEntryOut
          * @description What the order detail already shows, plus the target. No before/after.
@@ -2291,6 +2341,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PagedAuditEntryOut"];
+                };
+            };
+        };
+    };
+    audit_log_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditEntryDetail"];
                 };
             };
         };
