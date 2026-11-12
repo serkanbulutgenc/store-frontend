@@ -24,42 +24,44 @@ export function SidebarNav({ me }: { me: Me }) {
   const { setOpenMobile } = useSidebar();
   return (
     <SidebarContent>
-      {visibleGroups(me).map((group) => (
-        <Collapsible key={group.label} defaultOpen className="group/collapsible">
-          <SidebarGroup>
-            <SidebarGroupLabel asChild>
-              <CollapsibleTrigger>
-                <group.icon aria-hidden className="mr-1.5 size-3.5" />
-                {group.label}
-                <ChevronDown
-                  aria-hidden
-                  className="ml-auto size-3 transition-transform group-data-[state=closed]/collapsible:-rotate-90"
-                />
-              </CollapsibleTrigger>
-            </SidebarGroupLabel>
-            <CollapsibleContent>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {group.items.map((item) => (
-                    <SidebarMenuItem key={item.to}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={isActive(pathname, item.to)}
-                        tooltip={item.label}
-                      >
-                        <Link to={item.to as "/admin"} onClick={() => setOpenMobile(false)}>
-                          <item.icon aria-hidden />
-                          <span>{item.label}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </SidebarGroup>
-        </Collapsible>
-      ))}
+      <nav aria-label="Yönetim" className="flex flex-col gap-2">
+        {visibleGroups(me).map((group) => (
+          <Collapsible key={group.label} defaultOpen className="group/collapsible">
+            <SidebarGroup>
+              <SidebarGroupLabel asChild>
+                <CollapsibleTrigger>
+                  <group.icon aria-hidden className="mr-1.5 size-3.5" />
+                  {group.label}
+                  <ChevronDown
+                    aria-hidden
+                    className="ml-auto size-3 transition-transform group-data-[state=closed]/collapsible:-rotate-90"
+                  />
+                </CollapsibleTrigger>
+              </SidebarGroupLabel>
+              <CollapsibleContent>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {group.items.map((item) => (
+                      <SidebarMenuItem key={item.to}>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={isActive(pathname, item.to)}
+                          tooltip={item.label}
+                        >
+                          <Link to={item.to as "/admin"} onClick={() => setOpenMobile(false)}>
+                            <item.icon aria-hidden />
+                            <span>{item.label}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </CollapsibleContent>
+            </SidebarGroup>
+          </Collapsible>
+        ))}
+      </nav>
     </SidebarContent>
   );
 }
