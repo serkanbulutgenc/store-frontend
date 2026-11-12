@@ -1,5 +1,13 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
+import { Fragment } from "react";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { breadcrumbs } from "../nav";
 import { useCrumbLabels } from "./crumb-labels";
 
@@ -8,32 +16,27 @@ export function Breadcrumbs() {
   const crumbs = breadcrumbs(pathname, useCrumbLabels());
   if (crumbs.length === 0) return null;
   return (
-    <nav aria-label="Konum" className="min-w-0">
-      <ol className="flex min-w-0 items-center gap-1 text-muted-foreground">
-        {crumbs.map((c, i) => {
-          const last = i === crumbs.length - 1;
-          return (
-            <li key={c.to ?? c.label} className="flex min-w-0 items-center gap-1">
-              {i > 0 && <ChevronRight aria-hidden className="size-3 shrink-0" />}
+    <Breadcrumb className="min-w-0" aria-label="Konum">
+      <BreadcrumbList className="flex-nowrap">
+        {crumbs.map((c, i) => (
+          <Fragment key={c.to ?? c.label}>
+            {i > 0 && <BreadcrumbSeparator />}
+            <BreadcrumbItem className="min-w-0">
               {c.to ? (
-                <Link
-                  to={c.to as "/admin"}
-                  className="truncate hover:text-foreground hover:underline"
-                >
-                  {c.label}
-                </Link>
+                <BreadcrumbLink asChild>
+                  <Link to={c.to as "/admin"} className="truncate">
+                    {c.label}
+                  </Link>
+                </BreadcrumbLink>
+              ) : i === crumbs.length - 1 ? (
+                <BreadcrumbPage className="truncate">{c.label}</BreadcrumbPage>
               ) : (
-                <span
-                  className={last ? "truncate font-medium text-foreground" : "truncate"}
-                  aria-current={last ? "page" : undefined}
-                >
-                  {c.label}
-                </span>
+                <span className="truncate">{c.label}</span>
               )}
-            </li>
-          );
-        })}
-      </ol>
-    </nav>
+            </BreadcrumbItem>
+          </Fragment>
+        ))}
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 }

@@ -1,6 +1,18 @@
 import { Link } from "@tanstack/react-router";
-import { LogOut, ShieldCheck } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { ChevronsUpDown, LogOut, ShieldCheck } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  SidebarFooter,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
 import type { Me } from "@/lib/api/me";
 
 function initials(me: Me): string {
@@ -10,81 +22,45 @@ function initials(me: Me): string {
   return letters.toLocaleUpperCase("tr-TR");
 }
 
-/** Disclosure at the foot of the sidebar: name and role, Security, sign out. Esc and outside click close it. */
-export function UserMenu({
-  me,
-  rail,
-  onSignOut,
-  onNavigate,
-}: {
-  me: Me;
-  rail: boolean;
-  onSignOut: () => void;
-  onNavigate?: () => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const root = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!open) return;
-    const onDown = (e: MouseEvent) => {
-      if (!root.current?.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("mousedown", onDown);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onDown);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
-  const itemClass = "flex h-8 w-full items-center gap-2 rounded px-2 text-left hover:bg-accent";
+/** Name and role at the foot of the sidebar; opens Security and sign-out. */
+export function UserMenu({ me, onSignOut }: { me: Me; onSignOut: () => void }) {
+  const { isMobile, setOpenMobile } = useSidebar();
   return (
-    <div ref={root} className="relative border-t border-border p-2">
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-label="Kullanıcı menüsü"
-        onClick={() => setOpen(!open)}
-        className="flex w-full items-center gap-2 rounded-md p-2 hover:bg-accent"
-      >
-        <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary text-xs text-primary-foreground">
-          {initials(me)}
-        </span>
-        {!rail && (
-          <span className="min-w-0 text-left">
-            <span className="block truncate font-medium">{me.name || me.email}</span>
-            <span className="block truncate text-xs text-muted-foreground">
-              {me.role === "owner" ? "Sahip" : "Personel"}
-            </span>
-          </span>
-        )}
-      </button>
-      {open && (
-        <div className="absolute bottom-full left-2 z-50 mb-1 w-48 rounded-md border border-border bg-card p-1 shadow-md">
-          <Link
-            to="/admin/security"
-            className={itemClass}
-            onClick={() => {
-              setOpen(false);
-              onNavigate?.();
-            }}
-          >
-            <ShieldCheck aria-hidden className="size-4" /> Güvenlik
-          </Link>
-          <button
-            type="button"
-            className={itemClass}
-            onClick={() => {
-              setOpen(false);
-              onSignOut();
-            }}
-          >
-            <LogOut aria-hidden className="size-4" /> Çıkış yap
-          </button>
-        </div>
-      )}
-    </div>
+    <SidebarFooter>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuButton size="lg" aria-label="Kullanıcı menüsü">
+                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary text-xs text-primary-foreground">
+                  {initials(me)}
+                </span>
+                <span className="grid min-w-0 flex-1 text-left leading-tight">
+                  <span className="truncate font-medium">{me.name || me.email}</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {me.role === "owner" ? "Sahip" : "Personel"}
+                  </span>
+                </span>
+                <ChevronsUpDown aria-hidden className="ml-auto size-4" />
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              side={isMobile ? "top" : "right"}
+              align="end"
+              className="w-(--radix-dropdown-menu-trigger-width) min-w-48"
+            >
+              <DropdownMenuItem asChild>
+                <Link to="/admin/security" onClick={() => setOpenMobile(false)}>
+                  <ShieldCheck aria-hidden /> Güvenlik
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={onSignOut}>
+                <LogOut aria-hidden /> Çıkış yap
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarFooter>
   );
 }
