@@ -137,6 +137,26 @@ export interface paths {
         patch: operations["catalog_update_brand"];
         trace?: never;
     };
+    "/api/admin/carriers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Carriers
+         * @description The carrier names Staff can pick when marking an Order shipped.
+         */
+        get: operations["orders_carriers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/catalog/import/confirm": {
         parameters: {
             query?: never;
@@ -2855,6 +2875,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["NamedOut"];
+                };
+            };
+        };
+    };
+    orders_carriers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
                 };
             };
         };

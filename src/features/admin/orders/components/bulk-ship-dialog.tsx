@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 
 /**
  * Ship several preparing orders at once: one carrier, one tracking number per order. Orders
@@ -11,11 +12,14 @@ import { Input } from "@/components/ui/input";
 export function BulkShipDialog({
   open,
   numbers,
+  carriers,
   ship,
   onDone,
 }: {
   open: boolean;
   numbers: string[];
+  /** The shop's carriers; the API refuses any other name. */
+  carriers: string[];
   ship: (number: string, body: { carrier: string; tracking_number: string }) => Promise<unknown>;
   /** `null` when the dialog was dismissed without shipping. */
   onDone: (failed: string[] | null) => void;
@@ -29,6 +33,7 @@ export function BulkShipDialog({
       {open && (
         <Form
           numbers={numbers}
+          carriers={carriers}
           ship={ship}
           busy={busy}
           setBusy={setBusy}
@@ -42,6 +47,7 @@ export function BulkShipDialog({
 
 function Form({
   numbers,
+  carriers,
   ship,
   busy,
   setBusy,
@@ -52,10 +58,11 @@ function Form({
   setBusy: (b: boolean) => void;
   onCancel: () => void;
   numbers: string[];
+  carriers: string[];
   ship: (number: string, body: { carrier: string; tracking_number: string }) => Promise<unknown>;
   onDone: (failed: string[]) => void;
 }) {
-  const [carrier, setCarrier] = useState("");
+  const [carrier, setCarrier] = useState(carriers[0] ?? "");
   const [tracking, setTracking] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
 
@@ -86,12 +93,18 @@ function Form({
         <label htmlFor="bulk-carrier" className="block font-medium">
           Kargo firması
         </label>
-        <Input
+        <Select
           id="bulk-carrier"
           autoFocus
           value={carrier}
           onChange={(e) => setCarrier(e.target.value)}
-        />
+        >
+          {carriers.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </Select>
       </div>
       {numbers.map((n) => (
         <div key={n} className="space-y-1">

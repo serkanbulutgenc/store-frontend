@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -9,6 +9,7 @@ import { can, type Me } from "@/lib/api/me";
 import { formatDate, formatTry } from "@/lib/format";
 import { type Column, columnHelper, DataTable } from "../../data-table/data-table";
 import {
+  carriersQuery,
   type OrderRow,
   type OrdersSearch,
   ordersQuery,
@@ -40,6 +41,7 @@ export function OrdersScreen({
   onSearchChange: (patch: Partial<OrdersSearch>) => void;
 }) {
   const { data, isFetching } = useSuspenseQuery(ordersQuery(search));
+  const carriers = useQuery(carriersQuery).data ?? [];
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [shipNumbers, setShipNumbers] = useState<string[] | null>(null);
   const [busy, setBusy] = useState(false);
@@ -216,6 +218,7 @@ export function OrdersScreen({
       <BulkShipDialog
         open={shipNumbers !== null}
         numbers={shipNumbers ?? []}
+        carriers={carriers}
         ship={(number, body) => ship.mutateAsync({ number, body })}
         onDone={(failed) => {
           setShipNumbers(null);

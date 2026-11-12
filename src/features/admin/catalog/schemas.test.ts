@@ -52,7 +52,11 @@ describe("productFormSchema", () => {
 
 describe("toProductBody", () => {
   it("turns empty strings into null and ids into numbers", () => {
-    const body = toProductBody(productFormSchema.parse(product), { cost: false, supplier: false });
+    const body = toProductBody(productFormSchema.parse(product), {
+      cost: false,
+      supplier: false,
+      desi: true,
+    });
     expect(body).toEqual({
       title: "Pamuklu Tişört",
       slug: null,
@@ -73,10 +77,10 @@ describe("toProductBody", () => {
       supplier_id: "2",
       supplier_code: "X1",
     });
-    const staff = toProductBody(values, { cost: false, supplier: false });
+    const staff = toProductBody(values, { cost: false, supplier: false, desi: true });
     expect(staff).not.toHaveProperty("cost_price");
     expect(staff).not.toHaveProperty("supplier_id");
-    const owner = toProductBody(values, { cost: true, supplier: true });
+    const owner = toProductBody(values, { cost: true, supplier: true, desi: true });
     expect(owner).toMatchObject({ cost_price: "80", supplier_id: 2, supplier_code: "X1" });
   });
 });
@@ -135,7 +139,7 @@ describe("toProductBody on edit", () => {
   it("omits a blank slug and a blank threshold instead of sending null (the API would rename to 'none' / reject)", () => {
     const body = toProductBody(
       productFormSchema.parse(product),
-      { cost: false, supplier: false },
+      { cost: false, supplier: false, desi: true },
       "edit",
     );
     expect(body).not.toHaveProperty("slug");
@@ -143,7 +147,7 @@ describe("toProductBody on edit", () => {
   });
   it("still sends them when filled", () => {
     const v = productFormSchema.parse({ ...product, slug: "pamuklu", low_stock_threshold: "3" });
-    expect(toProductBody(v, { cost: false, supplier: false }, "edit")).toMatchObject({
+    expect(toProductBody(v, { cost: false, supplier: false, desi: true }, "edit")).toMatchObject({
       slug: "pamuklu",
       low_stock_threshold: 3,
     });
@@ -184,8 +188,16 @@ describe("product desi", () => {
     for (const bad of ["0", "1.5", "-2", "abc"])
       expect(productFormSchema.safeParse({ ...product, desi: bad }).success).toBe(false);
   });
+  it("is left out of the body for a user who may not set it", () => {
+    const body = toProductBody(
+      { ...product, desi: "4" },
+      { cost: false, supplier: false, desi: false },
+      "edit",
+    );
+    expect("desi" in body).toBe(false);
+  });
   it("is sent as a number, and a blank clears it on edit", () => {
-    const can = { cost: false, supplier: false };
+    const can = { cost: false, supplier: false, desi: true };
     expect(toProductBody({ ...product, desi: "4" }, can, "edit").desi).toBe(4);
     expect(toProductBody({ ...product, desi: "" }, can, "edit").desi).toBeNull();
     expect(toProductBody({ ...product, desi: "" }, can, "create").desi).toBeNull();

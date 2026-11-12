@@ -45,7 +45,7 @@ export type ProductFormValues = z.infer<typeof productFormSchema>;
  */
 export function toProductBody(
   v: ProductFormValues,
-  can: { cost: boolean; supplier: boolean },
+  can: { cost: boolean; supplier: boolean; desi: boolean },
   mode: "create" | "edit" = "create",
 ) {
   const body: ProductIn = {
@@ -61,8 +61,8 @@ export function toProductBody(
   if (mode === "create" || v.slug !== "") body.slug = nullIfEmpty(v.slug);
   if (mode === "create" || v.low_stock_threshold !== "")
     body.low_stock_threshold = toId(v.low_stock_threshold);
-  // Blank clears the override, so the class default applies; null is a valid value here.
-  body.desi = v.desi.trim() === "" ? null : Number(v.desi);
+  // Owner only: Blank clears the override, so the class default applies; null is a valid value here.
+  if (can.desi) body.desi = v.desi.trim() === "" ? null : Number(v.desi);
   if (can.cost) body.cost_price = nullIfEmpty(v.cost_price);
   if (can.supplier) {
     body.supplier_id = toId(v.supplier_id);

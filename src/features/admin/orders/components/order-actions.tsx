@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,7 @@ import { can, type Me } from "@/lib/api/me";
 import { formatTry } from "@/lib/format";
 import { ActionDialog } from "../../forms/action-dialog";
 import {
+  carriersQuery,
   type OrderDetail,
   useCancelOrder,
   useCorrectEmail,
@@ -44,6 +46,7 @@ export function OrderActions({ order, me }: { order: OrderDetail; me: Me }) {
   const actions = allowedActions(me, { actions: order.actions, payment_status: paymentStatus });
   const manage = can(me, "manage_orders");
 
+  const carriers = useQuery({ ...carriersQuery, enabled: manage }).data ?? [];
   const pay = useMarkPaid();
   const cancel = useCancelOrder();
   const ship = useShipOrder();
@@ -127,10 +130,17 @@ export function OrderActions({ order, me }: { order: OrderDetail; me: Me }) {
         open={open === "ship"}
         title="Kargola"
         fields={[
-          { name: "carrier", label: "Kargo firması" },
+          {
+            name: "carrier",
+            label: "Kargo firması",
+            options: carriers.map((c) => ({ value: c, label: c })),
+          },
           { name: "tracking_number", label: "Takip numarası" },
         ]}
-        defaults={{ carrier: order.carrier ?? "", tracking_number: order.tracking_number ?? "" }}
+        defaults={{
+          carrier: carriers.find((c) => c === order.carrier) ?? carriers[0] ?? "",
+          tracking_number: order.tracking_number ?? "",
+        }}
         schema={shipFormSchema}
         success="Sipariş kargolandı."
         submit={(v) => ship.mutateAsync({ number: n, body: v })}

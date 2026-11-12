@@ -98,7 +98,7 @@ export function useProductForm({
         try {
           const body = toProductBody(
             productFormSchema.parse(value),
-            { cost: canSeeCost, supplier: canSeeSupplier },
+            { cost: canSeeCost, supplier: canSeeSupplier, desi: can(me, "manage_settings") },
             product ? "edit" : "create",
           );
           const saved = product ? await update.mutateAsync(body) : await create.mutateAsync(body);
@@ -241,21 +241,23 @@ export function PriceFields({ form, me }: FieldsProps) {
           </Field>
         )}
       </form.Field>
-      <form.Field name="desi">
-        {(f) => (
-          <Field
-            field={f}
-            label="Desi"
-            hint={
-              classDesi == null
-                ? "Kargo boyutu. Boş bırakılırsa sınıfın desisi kullanılır."
-                : `Kargo boyutu. Boş bırakılırsa sınıfın desisi (${classDesi}) kullanılır.`
-            }
-          >
-            <Input inputMode="numeric" {...bind(f)} />
-          </Field>
-        )}
-      </form.Field>
+      {can(me, "manage_settings") && (
+        <form.Field name="desi">
+          {(f) => (
+            <Field
+              field={f}
+              label="Desi"
+              hint={
+                classDesi == null
+                  ? "Kargo boyutu. Boş bırakılırsa sınıfın desisi kullanılır."
+                  : `Kargo boyutu. Boş bırakılırsa sınıfın desisi (${classDesi}) kullanılır.`
+              }
+            >
+              <Input inputMode="numeric" {...bind(f)} />
+            </Field>
+          )}
+        </form.Field>
+      )}
       {canSeeCost && (
         <form.Field name="cost_price">
           {(f) => (

@@ -35,6 +35,13 @@ export const ordersQuery = (s: OrdersSearch) =>
       ).data as PagedOrderRow,
   });
 
+/** The carriers Staff can pick when shipping (the shop's own list, not free text). */
+export const carriersQuery = queryOptions({
+  queryKey: [...orderKeys.all, "carriers"],
+  staleTime: 5 * 60_000,
+  queryFn: async () => (await adminApi.GET("/api/admin/carriers")).data as string[],
+});
+
 export const orderQuery = (number: string) =>
   queryOptions({
     queryKey: orderKeys.detail(number),

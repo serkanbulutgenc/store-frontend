@@ -13,7 +13,11 @@ export const PRICE_LABELS: Record<PriceField, string> = {
 
 const BANDS = ["band_0_2", "band_3_5", "band_6_10"] as const;
 
-const num = (s: string) => Number(s);
+/** Kuruş as an integer, so prices compare exactly (no float arithmetic on money). */
+const num = (s: string) => {
+  const [lira = "0", frac = ""] = s.trim().split(".");
+  return Number(lira) * 100 + Number(frac.padEnd(2, "0").slice(0, 2));
+};
 
 /**
  * Field errors for a rate row. Mirrors the API: every price above zero (a zero price would always
