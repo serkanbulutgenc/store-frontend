@@ -28,9 +28,13 @@ import {
 } from "../queries";
 import { toVariantBody, variantEditSchema, variantFormSchema } from "../schemas";
 import { AdjustStockDialog, type AdjustTarget } from "./adjust-stock-dialog";
+import { StockGridDialog } from "./stock-grid-dialog";
+import { VariantMatrixDialog } from "./variant-matrix-dialog";
 
 export function VariantsSection({ product, me }: { product: ProductOut; me: Me }) {
   const [adding, setAdding] = useState(false);
+  const [matrix, setMatrix] = useState(false);
+  const [grid, setGrid] = useState(false);
   const [editing, setEditing] = useState<VariantOut | null>(null);
   const [adjusting, setAdjusting] = useState<AdjustTarget | null>(null);
   const canManage = can(me, "manage_products");
@@ -40,11 +44,23 @@ export function VariantsSection({ product, me }: { product: ProductOut; me: Me }
     <section className="space-y-2">
       <div className="flex items-center justify-between">
         <h2 className="text-base font-semibold">Varyantlar</h2>
-        {canManage && (
-          <Button size="sm" onClick={() => setAdding(true)}>
-            Varyant ekle
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {canAdjust && product.variants.length > 0 && (
+            <Button size="sm" variant="outline" onClick={() => setGrid(true)}>
+              Stok tablosu
+            </Button>
+          )}
+          {canManage && (
+            <Button size="sm" variant="outline" onClick={() => setMatrix(true)}>
+              Toplu oluştur
+            </Button>
+          )}
+          {canManage && (
+            <Button size="sm" onClick={() => setAdding(true)}>
+              Varyant ekle
+            </Button>
+          )}
+        </div>
       </div>
       <div className="rounded-md border border-border bg-card">
         <Table>
@@ -132,6 +148,8 @@ export function VariantsSection({ product, me }: { product: ProductOut; me: Me }
       <Dialog open={editing !== null} onClose={() => setEditing(null)} title="Varyantı düzenle">
         {editing && <EditVariantForm variant={editing} onClose={() => setEditing(null)} />}
       </Dialog>
+      <VariantMatrixDialog product={product} open={matrix} onClose={() => setMatrix(false)} />
+      <StockGridDialog product={product} open={grid} onClose={() => setGrid(false)} />
       <AdjustStockDialog target={adjusting} onClose={() => setAdjusting(null)} />
     </section>
   );

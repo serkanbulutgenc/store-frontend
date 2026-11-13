@@ -1040,6 +1040,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/products/{product_id}/stock-grid": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Save Stock Grid
+         * @description Apply the changed cells of the stock grid as audited adjustments, all or
+         *     nothing. Returns every Variant of the Product with its new stock.
+         */
+        post: operations["catalog_save_stock_grid"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/products/{product_id}/variants": {
         parameters: {
             query?: never;
@@ -1051,6 +1072,27 @@ export interface paths {
         put?: never;
         /** Create Variant */
         post: operations["catalog_create_variant"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/products/{product_id}/variants/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Variants
+         * @description Create every missing colour x size Variant; existing ones are reported as
+         *     skipped.
+         */
+        post: operations["catalog_generate_variants"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2865,6 +2907,12 @@ export interface components {
             /** Zones */
             zones: components["schemas"]["ZoneOut"][];
         };
+        /** SkippedCombinationOut */
+        SkippedCombinationOut: {
+            colour: components["schemas"]["ColourOut"];
+            /** Size */
+            size: string;
+        };
         /** StaffUserOut */
         StaffUserOut: {
             /** Email */
@@ -2888,6 +2936,20 @@ export interface components {
         StockAdjustmentIn: {
             /** Delta */
             delta: number;
+            /** Reason */
+            reason: string;
+        };
+        /** StockGridCellIn */
+        StockGridCellIn: {
+            /** Delta */
+            delta: number;
+            /** Variant Id */
+            variant_id: number;
+        };
+        /** StockGridIn */
+        StockGridIn: {
+            /** Cells */
+            cells: components["schemas"]["StockGridCellIn"][];
             /** Reason */
             reason: string;
         };
@@ -2927,6 +2989,27 @@ export interface components {
             product_id: number;
             /** Title */
             title: string;
+        };
+        /** VariantGenerateIn */
+        VariantGenerateIn: {
+            /** Colour Ids */
+            colour_ids: number[];
+            /** Price Override */
+            price_override?: string | null;
+            /** Sizes */
+            sizes: string[];
+            /**
+             * Stock
+             * @default 0
+             */
+            stock: number;
+        };
+        /** VariantGenerateOut */
+        VariantGenerateOut: {
+            /** Created */
+            created: components["schemas"]["VariantOut"][];
+            /** Skipped */
+            skipped: components["schemas"]["SkippedCombinationOut"][];
         };
         /** VariantIn */
         VariantIn: {
@@ -4618,6 +4701,32 @@ export interface operations {
             };
         };
     };
+    catalog_save_stock_grid: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StockGridIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VariantOut"][];
+                };
+            };
+        };
+    };
     catalog_create_variant: {
         parameters: {
             query?: never;
@@ -4640,6 +4749,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VariantOut"];
+                };
+            };
+        };
+    };
+    catalog_generate_variants: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VariantGenerateIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VariantGenerateOut"];
                 };
             };
         };

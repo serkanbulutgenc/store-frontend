@@ -154,6 +154,30 @@ export const useCreateVariant = (productId: number) =>
       ).data as VariantOut,
   );
 
+export type VariantGenerateOut = components["schemas"]["VariantGenerateOut"];
+
+export const useGenerateVariants = (productId: number) =>
+  useInvalidating(
+    async (body: components["schemas"]["VariantGenerateIn"]) =>
+      (
+        await adminApi.POST("/api/admin/products/{product_id}/variants/generate", {
+          params: { path: { product_id: productId } },
+          body,
+        })
+      ).data as VariantGenerateOut,
+  );
+
+export const useSaveStockGrid = (productId: number) =>
+  useInvalidating(
+    async (body: components["schemas"]["StockGridIn"]) =>
+      (
+        await adminApi.POST("/api/admin/products/{product_id}/stock-grid", {
+          params: { path: { product_id: productId } },
+          body,
+        })
+      ).data as VariantOut[],
+  );
+
 export const useUpdateVariant = () =>
   useInvalidating(
     async (v: { id: number; body: components["schemas"]["VariantPatch"] }) =>
