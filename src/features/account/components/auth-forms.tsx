@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { apiErrorToFormErrors } from "@/features/admin/forms/api-errors";
 import { bind, Field, FormMessage } from "@/features/admin/forms/field";
+import { fetchMe } from "@/lib/api/fetch-me";
 import { type AuthOutcome, logIn, requestPasswordReset, resetPassword, signUp } from "../auth";
 import { ACCOUNT_KEY } from "../queries";
 import { loginSchema, resetRequestSchema, resetSchema, signUpSchema } from "../schemas";
@@ -111,7 +112,8 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
       try {
         qc.removeQueries({ queryKey: ACCOUNT_KEY }); // the cached signed-out answer is stale
         await router.invalidate();
-        await router.navigate({ href: redirectTo });
+        // A Dashboard user has no Storefront account: send them to the Dashboard.
+        await router.navigate({ href: (await fetchMe()) ? "/admin" : redirectTo });
       } catch {
         toast.error("Giriş yapıldı ancak sayfa yüklenemedi. Lütfen sayfayı yenileyin.");
       }
