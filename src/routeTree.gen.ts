@@ -48,6 +48,7 @@ import { Route as AdminAppStockRouteImport } from './routes/admin/_app/stock'
 import { Route as AdminAppSuppliersRouteImport } from './routes/admin/_app/suppliers'
 import { Route as StorefrontCustomerHesapIndexRouteImport } from './routes/_storefront/_customer/hesap/index'
 import { Route as StorefrontCustomerHesapAdreslerRouteImport } from './routes/_storefront/_customer/hesap/adresler'
+import { Route as StorefrontCustomerHesapFavorilerRouteImport } from './routes/_storefront/_customer/hesap/favoriler'
 import { Route as StorefrontCustomerHesapGuvenlikRouteImport } from './routes/_storefront/_customer/hesap/guvenlik'
 import { Route as StorefrontHesapEpostaDogrulaKeyRouteImport } from './routes/_storefront/hesap/eposta-dogrula.$key'
 import { Route as StorefrontHesapSifreSifirlaIndexRouteImport } from './routes/_storefront/hesap/sifre-sifirla.index'
@@ -263,6 +264,12 @@ const StorefrontCustomerHesapAdreslerRoute =
     path: '/adresler',
     getParentRoute: () => StorefrontCustomerHesapRouteRoute,
   } as any)
+const StorefrontCustomerHesapFavorilerRoute =
+  StorefrontCustomerHesapFavorilerRouteImport.update({
+    id: '/favoriler',
+    path: '/favoriler',
+    getParentRoute: () => StorefrontCustomerHesapRouteRoute,
+  } as any)
 const StorefrontCustomerHesapGuvenlikRoute =
   StorefrontCustomerHesapGuvenlikRouteImport.update({
     id: '/guvenlik',
@@ -400,6 +407,7 @@ export interface FileRoutesByFullPath {
   '/yasal/': typeof StorefrontYasalIndexRoute
   '/admin/': typeof AdminAppIndexRoute
   '/hesap/adresler': typeof StorefrontCustomerHesapAdreslerRoute
+  '/hesap/favoriler': typeof StorefrontCustomerHesapFavorilerRoute
   '/hesap/guvenlik': typeof StorefrontCustomerHesapGuvenlikRoute
   '/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
@@ -454,6 +462,7 @@ export interface FileRoutesByTo {
   '/admin/suppliers': typeof AdminAppSuppliersRoute
   '/yasal': typeof StorefrontYasalIndexRoute
   '/hesap/adresler': typeof StorefrontCustomerHesapAdreslerRoute
+  '/hesap/favoriler': typeof StorefrontCustomerHesapFavorilerRoute
   '/hesap/guvenlik': typeof StorefrontCustomerHesapGuvenlikRoute
   '/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
@@ -514,6 +523,7 @@ export interface FileRoutesById {
   '/_storefront/yasal/': typeof StorefrontYasalIndexRoute
   '/admin/_app/': typeof AdminAppIndexRoute
   '/_storefront/_customer/hesap/adresler': typeof StorefrontCustomerHesapAdreslerRoute
+  '/_storefront/_customer/hesap/favoriler': typeof StorefrontCustomerHesapFavorilerRoute
   '/_storefront/_customer/hesap/guvenlik': typeof StorefrontCustomerHesapGuvenlikRoute
   '/_storefront/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/_storefront/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
@@ -572,6 +582,7 @@ export interface FileRouteTypes {
     | '/yasal/'
     | '/admin/'
     | '/hesap/adresler'
+    | '/hesap/favoriler'
     | '/hesap/guvenlik'
     | '/hesap/eposta-dogrula/$key'
     | '/hesap/sifre-sifirla/$key'
@@ -626,6 +637,7 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/yasal'
     | '/hesap/adresler'
+    | '/hesap/favoriler'
     | '/hesap/guvenlik'
     | '/hesap/eposta-dogrula/$key'
     | '/hesap/sifre-sifirla/$key'
@@ -685,6 +697,7 @@ export interface FileRouteTypes {
     | '/_storefront/yasal/'
     | '/admin/_app/'
     | '/_storefront/_customer/hesap/adresler'
+    | '/_storefront/_customer/hesap/favoriler'
     | '/_storefront/_customer/hesap/guvenlik'
     | '/_storefront/hesap/eposta-dogrula/$key'
     | '/_storefront/hesap/sifre-sifirla/$key'
@@ -989,6 +1002,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StorefrontCustomerHesapAdreslerRouteImport
       parentRoute: typeof StorefrontCustomerHesapRouteRoute
     }
+    '/_storefront/_customer/hesap/favoriler': {
+      id: '/_storefront/_customer/hesap/favoriler'
+      path: '/favoriler'
+      fullPath: '/hesap/favoriler'
+      preLoaderRoute: typeof StorefrontCustomerHesapFavorilerRouteImport
+      parentRoute: typeof StorefrontCustomerHesapRouteRoute
+    }
     '/_storefront/_customer/hesap/guvenlik': {
       id: '/_storefront/_customer/hesap/guvenlik'
       path: '/guvenlik'
@@ -1120,6 +1140,7 @@ declare module '@tanstack/react-router' {
 
 interface StorefrontCustomerHesapRouteRouteChildren {
   StorefrontCustomerHesapAdreslerRoute: typeof StorefrontCustomerHesapAdreslerRoute
+  StorefrontCustomerHesapFavorilerRoute: typeof StorefrontCustomerHesapFavorilerRoute
   StorefrontCustomerHesapGuvenlikRoute: typeof StorefrontCustomerHesapGuvenlikRoute
   StorefrontCustomerHesapIndexRoute: typeof StorefrontCustomerHesapIndexRoute
   StorefrontCustomerHesapSiparislerNumberRoute: typeof StorefrontCustomerHesapSiparislerNumberRoute
@@ -1129,6 +1150,8 @@ interface StorefrontCustomerHesapRouteRouteChildren {
 const StorefrontCustomerHesapRouteRouteChildren: StorefrontCustomerHesapRouteRouteChildren =
   {
     StorefrontCustomerHesapAdreslerRoute: StorefrontCustomerHesapAdreslerRoute,
+    StorefrontCustomerHesapFavorilerRoute:
+      StorefrontCustomerHesapFavorilerRoute,
     StorefrontCustomerHesapGuvenlikRoute: StorefrontCustomerHesapGuvenlikRoute,
     StorefrontCustomerHesapIndexRoute: StorefrontCustomerHesapIndexRoute,
     StorefrontCustomerHesapSiparislerNumberRoute:

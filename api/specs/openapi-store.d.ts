@@ -64,6 +64,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/account/favorites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Favorites
+         * @description Hearted Products, newest first (at most 200). Draft and archived Products are
+         *     left out; sold-out ones come back with `sold_out` set so the UI can grey them.
+         */
+        get: operations["account_list_favorites"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/account/favorites/{product_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Add Favorite
+         * @description Heart a Product; idempotent. 404 for unknown or unpublished Products, 409
+         *     `favorites_limit` past 200.
+         */
+        put: operations["account_add_favorite"];
+        post?: never;
+        /** Remove Favorite */
+        delete: operations["account_remove_favorite"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/store/account/deletion-request": {
         parameters: {
             query?: never;
@@ -1655,6 +1698,66 @@ export interface operations {
             header?: never;
             path: {
                 address_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    account_list_favorites: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductCardOut"][];
+                };
+            };
+        };
+    };
+    account_add_favorite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    account_remove_favorite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
             };
             cookie?: never;
         };

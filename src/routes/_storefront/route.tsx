@@ -2,6 +2,7 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { SiteFooter } from "@/features/catalog/components/site-footer";
 import { SiteHeader } from "@/features/catalog/components/site-header";
 import { categoriesQuery } from "@/features/catalog/queries";
+import { PendingFavorite } from "@/features/favorites/components/heart-button";
 import { legalPagesQuery } from "@/features/legal/queries";
 
 export const Route = createFileRoute("/_storefront")({
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/_storefront")({
     return (
       <div data-theme="storefront" className="min-h-screen bg-background text-foreground">
         <SiteHeader categories={categories} />
+        <PendingFavorite />
         <Outlet />
         <SiteFooter pages={legalPages} />
       </div>

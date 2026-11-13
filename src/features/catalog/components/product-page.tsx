@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAddToBasket } from "@/features/basket/queries";
+import { HeartButton } from "@/features/favorites/components/heart-button";
 import { cn } from "@/lib/utils";
 import {
   canAddToBasket,
@@ -106,9 +107,12 @@ export function ProductPage({ product }: { product: ProductDetail }) {
       <div className="gap-10 lg:grid lg:grid-cols-2">
         <Gallery key={colourId} product={product} colourId={colourId} />
         <div className="mt-6 space-y-5 lg:mt-0">
-          <div>
-            {product.brand && <p className="text-muted-foreground">{product.brand.name}</p>}
-            <h1 className="text-2xl font-semibold">{product.title}</h1>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              {product.brand && <p className="text-muted-foreground">{product.brand.name}</p>}
+              <h1 className="text-2xl font-semibold">{product.title}</h1>
+            </div>
+            <HeartButton productId={product.id} className="shrink-0 border border-border" />
           </div>
           <div className="text-xl">
             <Price price={product.price} oldPrice={product.old_price} />

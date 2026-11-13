@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
+import { HeartButton } from "@/features/favorites/components/heart-button";
 import { formatTry } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import type { ProductCard as Card } from "../queries";
 import { ProductImage } from "./product-image";
 
@@ -17,13 +19,16 @@ export function Price({ price, oldPrice }: { price: string; oldPrice: string | n
   );
 }
 
-export function ProductCard({ product }: { product: Card }) {
+export function ProductCard({ product, dimSoldOut }: { product: Card; dimSoldOut?: boolean }) {
   return (
-    <li className="group">
+    <li className="group relative">
       <Link
         to="/urun/$slug"
         params={{ slug: product.slug }}
-        className="block rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className={cn(
+          "block rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+          dimSoldOut && product.sold_out && "opacity-60 grayscale",
+        )}
       >
         <div className="relative overflow-hidden rounded-md">
           <ProductImage
@@ -54,15 +59,16 @@ export function ProductCard({ product }: { product: Card }) {
           </ul>
         )}
       </Link>
+      <HeartButton productId={product.id} className="absolute right-2 top-2" />
     </li>
   );
 }
 
-export function ProductGrid({ products }: { products: Card[] }) {
+export function ProductGrid({ products, dimSoldOut }: { products: Card[]; dimSoldOut?: boolean }) {
   return (
     <ul className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-4">
       {products.map((p) => (
-        <ProductCard key={p.id} product={p} />
+        <ProductCard key={p.id} product={p} dimSoldOut={dimSoldOut} />
       ))}
     </ul>
   );

@@ -7,6 +7,7 @@ import { logout } from "@/features/admin/auth/allauth";
 const LINKS = [
   { to: "/hesap", label: "Profil" },
   { to: "/hesap/siparisler", label: "Siparişlerim" },
+  { to: "/hesap/favoriler", label: "Favorilerim" },
   { to: "/hesap/adresler", label: "Adreslerim" },
   { to: "/hesap/guvenlik", label: "Güvenlik" },
 ] as const;
