@@ -54,6 +54,8 @@ import { Route as StorefrontHesapSifreSifirlaIndexRouteImport } from './routes/_
 import { Route as StorefrontHesapSifreSifirlaKeyRouteImport } from './routes/_storefront/hesap/sifre-sifirla.$key'
 import { Route as AdminAppCustomersIndexRouteImport } from './routes/admin/_app/customers/index'
 import { Route as AdminAppCustomersIdRouteImport } from './routes/admin/_app/customers/$id'
+import { Route as AdminAppLegalPagesIndexRouteImport } from './routes/admin/_app/legal-pages/index'
+import { Route as AdminAppLegalPagesPageRouteImport } from './routes/admin/_app/legal-pages/$page'
 import { Route as AdminAppOrdersIndexRouteImport } from './routes/admin/_app/orders/index'
 import { Route as AdminAppOrdersNumberRouteImport } from './routes/admin/_app/orders/$number'
 import { Route as AdminAppProductsIndexRouteImport } from './routes/admin/_app/products/index'
@@ -293,6 +295,16 @@ const AdminAppCustomersIdRoute = AdminAppCustomersIdRouteImport.update({
   path: '/customers/$id',
   getParentRoute: () => AdminAppRouteRoute,
 } as any)
+const AdminAppLegalPagesIndexRoute = AdminAppLegalPagesIndexRouteImport.update({
+  id: '/legal-pages/',
+  path: '/legal-pages/',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
+const AdminAppLegalPagesPageRoute = AdminAppLegalPagesPageRouteImport.update({
+  id: '/legal-pages/$page',
+  path: '/legal-pages/$page',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
 const AdminAppOrdersIndexRoute = AdminAppOrdersIndexRouteImport.update({
   id: '/orders/',
   path: '/orders/',
@@ -378,12 +390,14 @@ export interface FileRoutesByFullPath {
   '/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
   '/admin/customers/$id': typeof AdminAppCustomersIdRoute
+  '/admin/legal-pages/$page': typeof AdminAppLegalPagesPageRoute
   '/admin/orders/$number': typeof AdminAppOrdersNumberRoute
   '/admin/products/$productId': typeof AdminAppProductsProductIdRoute
   '/admin/products/new': typeof AdminAppProductsNewRoute
   '/hesap/': typeof StorefrontCustomerHesapIndexRoute
   '/hesap/sifre-sifirla/': typeof StorefrontHesapSifreSifirlaIndexRoute
   '/admin/customers/': typeof AdminAppCustomersIndexRoute
+  '/admin/legal-pages/': typeof AdminAppLegalPagesIndexRoute
   '/admin/orders/': typeof AdminAppOrdersIndexRoute
   '/admin/products/': typeof AdminAppProductsIndexRoute
   '/hesap/siparisler/$number': typeof StorefrontCustomerHesapSiparislerNumberRoute
@@ -428,12 +442,14 @@ export interface FileRoutesByTo {
   '/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
   '/admin/customers/$id': typeof AdminAppCustomersIdRoute
+  '/admin/legal-pages/$page': typeof AdminAppLegalPagesPageRoute
   '/admin/orders/$number': typeof AdminAppOrdersNumberRoute
   '/admin/products/$productId': typeof AdminAppProductsProductIdRoute
   '/admin/products/new': typeof AdminAppProductsNewRoute
   '/hesap': typeof StorefrontCustomerHesapIndexRoute
   '/hesap/sifre-sifirla': typeof StorefrontHesapSifreSifirlaIndexRoute
   '/admin/customers': typeof AdminAppCustomersIndexRoute
+  '/admin/legal-pages': typeof AdminAppLegalPagesIndexRoute
   '/admin/orders': typeof AdminAppOrdersIndexRoute
   '/admin/products': typeof AdminAppProductsIndexRoute
   '/hesap/siparisler/$number': typeof StorefrontCustomerHesapSiparislerNumberRoute
@@ -484,12 +500,14 @@ export interface FileRoutesById {
   '/_storefront/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/_storefront/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
   '/admin/_app/customers/$id': typeof AdminAppCustomersIdRoute
+  '/admin/_app/legal-pages/$page': typeof AdminAppLegalPagesPageRoute
   '/admin/_app/orders/$number': typeof AdminAppOrdersNumberRoute
   '/admin/_app/products/$productId': typeof AdminAppProductsProductIdRoute
   '/admin/_app/products/new': typeof AdminAppProductsNewRoute
   '/_storefront/_customer/hesap/': typeof StorefrontCustomerHesapIndexRoute
   '/_storefront/hesap/sifre-sifirla/': typeof StorefrontHesapSifreSifirlaIndexRoute
   '/admin/_app/customers/': typeof AdminAppCustomersIndexRoute
+  '/admin/_app/legal-pages/': typeof AdminAppLegalPagesIndexRoute
   '/admin/_app/orders/': typeof AdminAppOrdersIndexRoute
   '/admin/_app/products/': typeof AdminAppProductsIndexRoute
   '/_storefront/_customer/hesap/siparisler/$number': typeof StorefrontCustomerHesapSiparislerNumberRoute
@@ -538,12 +556,14 @@ export interface FileRouteTypes {
     | '/hesap/eposta-dogrula/$key'
     | '/hesap/sifre-sifirla/$key'
     | '/admin/customers/$id'
+    | '/admin/legal-pages/$page'
     | '/admin/orders/$number'
     | '/admin/products/$productId'
     | '/admin/products/new'
     | '/hesap/'
     | '/hesap/sifre-sifirla/'
     | '/admin/customers/'
+    | '/admin/legal-pages/'
     | '/admin/orders/'
     | '/admin/products/'
     | '/hesap/siparisler/$number'
@@ -588,12 +608,14 @@ export interface FileRouteTypes {
     | '/hesap/eposta-dogrula/$key'
     | '/hesap/sifre-sifirla/$key'
     | '/admin/customers/$id'
+    | '/admin/legal-pages/$page'
     | '/admin/orders/$number'
     | '/admin/products/$productId'
     | '/admin/products/new'
     | '/hesap'
     | '/hesap/sifre-sifirla'
     | '/admin/customers'
+    | '/admin/legal-pages'
     | '/admin/orders'
     | '/admin/products'
     | '/hesap/siparisler/$number'
@@ -643,12 +665,14 @@ export interface FileRouteTypes {
     | '/_storefront/hesap/eposta-dogrula/$key'
     | '/_storefront/hesap/sifre-sifirla/$key'
     | '/admin/_app/customers/$id'
+    | '/admin/_app/legal-pages/$page'
     | '/admin/_app/orders/$number'
     | '/admin/_app/products/$productId'
     | '/admin/_app/products/new'
     | '/_storefront/_customer/hesap/'
     | '/_storefront/hesap/sifre-sifirla/'
     | '/admin/_app/customers/'
+    | '/admin/_app/legal-pages/'
     | '/admin/_app/orders/'
     | '/admin/_app/products/'
     | '/_storefront/_customer/hesap/siparisler/$number'
@@ -981,6 +1005,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAppCustomersIdRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
+    '/admin/_app/legal-pages/': {
+      id: '/admin/_app/legal-pages/'
+      path: '/legal-pages'
+      fullPath: '/admin/legal-pages/'
+      preLoaderRoute: typeof AdminAppLegalPagesIndexRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/legal-pages/$page': {
+      id: '/admin/_app/legal-pages/$page'
+      path: '/legal-pages/$page'
+      fullPath: '/admin/legal-pages/$page'
+      preLoaderRoute: typeof AdminAppLegalPagesPageRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
     '/admin/_app/orders/': {
       id: '/admin/_app/orders/'
       path: '/orders'
@@ -1139,10 +1177,12 @@ interface AdminAppRouteRouteChildren {
   AdminAppSuppliersRoute: typeof AdminAppSuppliersRoute
   AdminAppIndexRoute: typeof AdminAppIndexRoute
   AdminAppCustomersIdRoute: typeof AdminAppCustomersIdRoute
+  AdminAppLegalPagesPageRoute: typeof AdminAppLegalPagesPageRoute
   AdminAppOrdersNumberRoute: typeof AdminAppOrdersNumberRoute
   AdminAppProductsProductIdRoute: typeof AdminAppProductsProductIdRoute
   AdminAppProductsNewRoute: typeof AdminAppProductsNewRoute
   AdminAppCustomersIndexRoute: typeof AdminAppCustomersIndexRoute
+  AdminAppLegalPagesIndexRoute: typeof AdminAppLegalPagesIndexRoute
   AdminAppOrdersIndexRoute: typeof AdminAppOrdersIndexRoute
   AdminAppProductsIndexRoute: typeof AdminAppProductsIndexRoute
   AdminAppProductsProductIdPhotosRoute: typeof AdminAppProductsProductIdPhotosRoute
@@ -1166,10 +1206,12 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppSuppliersRoute: AdminAppSuppliersRoute,
   AdminAppIndexRoute: AdminAppIndexRoute,
   AdminAppCustomersIdRoute: AdminAppCustomersIdRoute,
+  AdminAppLegalPagesPageRoute: AdminAppLegalPagesPageRoute,
   AdminAppOrdersNumberRoute: AdminAppOrdersNumberRoute,
   AdminAppProductsProductIdRoute: AdminAppProductsProductIdRoute,
   AdminAppProductsNewRoute: AdminAppProductsNewRoute,
   AdminAppCustomersIndexRoute: AdminAppCustomersIndexRoute,
+  AdminAppLegalPagesIndexRoute: AdminAppLegalPagesIndexRoute,
   AdminAppOrdersIndexRoute: AdminAppOrdersIndexRoute,
   AdminAppProductsIndexRoute: AdminAppProductsIndexRoute,
   AdminAppProductsProductIdPhotosRoute: AdminAppProductsProductIdPhotosRoute,

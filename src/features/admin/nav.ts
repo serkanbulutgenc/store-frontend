@@ -8,6 +8,7 @@ import {
   type LucideIcon,
   Package,
   Palette,
+  Scale,
   Settings,
   ShieldCheck,
   ShoppingCart,
@@ -70,6 +71,12 @@ export const NAV_GROUPS: NavGroup[] = [
         to: "/admin/shipping",
         icon: Truck,
         permission: "manage_settings",
+      },
+      {
+        label: "Yasal sayfalar",
+        to: "/admin/legal-pages",
+        icon: Scale,
+        permission: "manage_legal_pages",
       },
       { label: "Personel", to: "/admin/staff", icon: UserCog, permission: "manage_staff_users" },
       {

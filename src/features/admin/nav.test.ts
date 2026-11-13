@@ -80,3 +80,10 @@ it("builds breadcrumbs for areas, details and sub-pages", () => {
   ]);
   expect(breadcrumbs("/admin/nope")).toEqual([]);
 });
+
+it("shows the Legal pages entry only with its permission (Owner, not Staff)", () => {
+  expect(visibleNav(me(["view_products", "manage_products"])).map((i) => i.label)).not.toContain(
+    "Yasal sayfalar",
+  );
+  expect(visibleNav(me(["manage_legal_pages"])).map((i) => i.label)).toContain("Yasal sayfalar");
+});
