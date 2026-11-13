@@ -88,6 +88,7 @@ export function isIndexableListing(s: BrowseSearch, kind: "category" | "search")
     s.colour?.length ||
     s.size?.length ||
     s.brand?.length ||
+    s.option?.length ||
     s.price_min !== undefined ||
     s.price_max !== undefined ||
     s.in_stock !== undefined ||

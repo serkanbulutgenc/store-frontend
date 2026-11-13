@@ -207,6 +207,19 @@ export function ProductPage({ product }: { product: ProductDetail }) {
               Hijyen nedeniyle bu ürün, ambalajı açıldıktan sonra iade edilemez.
             </p>
           )}
+          {product.attributes.length > 0 && (
+            <div>
+              <h2 className="mb-1 font-medium">Ürün özellikleri</h2>
+              <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+                {product.attributes.map((a) => (
+                  <div key={a.name} className="contents">
+                    <dt className="text-muted-foreground">{a.name}</dt>
+                    <dd>{a.values.join(", ")}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          )}
           {product.description && (
             <div>
               <h2 className="mb-1 font-medium">Ürün açıklaması</h2>

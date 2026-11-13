@@ -2,6 +2,7 @@ import { useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatTry } from "@/lib/format";
+import { facetLabels } from "../attribute-facets";
 import { type BrowseSearch, toggleValue } from "../browse-search";
 import type { Facets } from "../queries";
 
@@ -59,6 +60,7 @@ export function FilterPanel({
   onChange: (patch: Partial<BrowseSearch>) => void;
 }) {
   const id = useId();
+  const labels = facetLabels(facets.attributes);
   const [min, setMin] = useState(search.price_min?.toString() ?? "");
   const [max, setMax] = useState(search.price_max?.toString() ?? "");
   // Back/forward or "temizle" change the URL under us; follow it.
@@ -74,6 +76,7 @@ export function FilterPanel({
     search.colour?.length ||
       search.size?.length ||
       search.brand?.length ||
+      search.option?.length ||
       search.price_min !== undefined ||
       search.price_max !== undefined,
   );
@@ -134,6 +137,19 @@ export function FilterPanel({
           ))}
         </Group>
       )}
+      {facets.attributes.map((a) => (
+        <Group key={a.id} title={labels.get(a.id) ?? a.name}>
+          {a.options.map((o) => (
+            <Check
+              key={o.id}
+              label={o.label}
+              hint={o.count}
+              checked={search.option?.includes(o.id) ?? false}
+              onChange={() => onChange({ option: toggleValue(search.option, o.id) })}
+            />
+          ))}
+        </Group>
+      ))}
       <form onSubmit={applyPrice} className="space-y-2">
         <p className="font-medium">Fiyat (TL)</p>
         {facets.price.min && facets.price.max && (
@@ -178,6 +194,7 @@ export function FilterPanel({
               colour: undefined,
               size: undefined,
               brand: undefined,
+              option: undefined,
               price_min: undefined,
               price_max: undefined,
             });

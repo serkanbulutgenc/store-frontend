@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Camera, CircleAlert, CircleDollarSign, FileText, Layers } from "lucide-react";
+import { Camera, CircleAlert, CircleDollarSign, FileText, Layers, ListChecks } from "lucide-react";
 import { Suspense, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import { useCrumbLabel } from "../../components/crumb-labels";
 import { PhotosScreen } from "../../photos/photos-screen";
 import { statusLabel, statusTone } from "../labels";
 import { type ProductStatus, productQuery, useSetStatus } from "../queries";
+import { AttributesSection } from "./attributes-section";
 import {
   GENERAL_FIELDS,
   GeneralFields,
@@ -35,8 +36,8 @@ export function statusActions(status: ProductStatus, perms: { manage: boolean; a
   return actions;
 }
 
-export type EditorTab = "general" | "price" | "variants" | "photos";
-export const EDITOR_TABS: EditorTab[] = ["general", "price", "variants", "photos"];
+export type EditorTab = "general" | "price" | "variants" | "attributes" | "photos";
+export const EDITOR_TABS: EditorTab[] = ["general", "price", "variants", "attributes", "photos"];
 
 const panelClass = "data-[state=inactive]:hidden";
 
@@ -122,6 +123,10 @@ export function ProductEditor({
                     <Layers aria-hidden className="size-4" />
                     Varyantlar
                   </TabsTrigger>
+                  <TabsTrigger value="attributes" className="gap-1.5">
+                    <ListChecks aria-hidden className="size-4" />
+                    Özellikler
+                  </TabsTrigger>
                   {canManage && (
                     <TabsTrigger value="photos" className="gap-1.5">
                       <Camera aria-hidden className="size-4" />
@@ -155,6 +160,11 @@ export function ProductEditor({
 
         <TabsContent value="variants" forceMount className={panelClass}>
           <VariantsSection product={product} me={me} />
+        </TabsContent>
+        <TabsContent value="attributes" forceMount className={panelClass}>
+          <Suspense fallback={<Skeleton className="h-40 w-full" />}>
+            <AttributesSection product={product} me={me} />
+          </Suspense>
         </TabsContent>
         {canManage && (
           <TabsContent value="photos" forceMount className={panelClass}>

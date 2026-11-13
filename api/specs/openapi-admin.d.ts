@@ -62,6 +62,59 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/attribute-options/{option_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Attribute Option */
+        delete: operations["catalog_delete_attribute_option"];
+        options?: never;
+        head?: never;
+        /** Update Attribute Option */
+        patch: operations["catalog_update_attribute_option"];
+        trace?: never;
+    };
+    "/api/admin/attributes/{attribute_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Attribute */
+        delete: operations["catalog_delete_attribute"];
+        options?: never;
+        head?: never;
+        /** Update Attribute */
+        patch: operations["catalog_update_attribute"];
+        trace?: never;
+    };
+    "/api/admin/attributes/{attribute_id}/options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Attribute Option */
+        post: operations["catalog_add_attribute_option"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/audit-log": {
         parameters: {
             query?: never;
@@ -851,6 +904,24 @@ export interface paths {
         patch: operations["catalog_update_product_class"];
         trace?: never;
     };
+    "/api/admin/product-classes/{class_id}/attributes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Attributes */
+        get: operations["catalog_list_attributes"];
+        put?: never;
+        /** Create Attribute */
+        post: operations["catalog_create_attribute"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/products": {
         parameters: {
             query?: never;
@@ -888,6 +959,26 @@ export interface paths {
         head?: never;
         /** Update Product */
         patch: operations["catalog_update_product"];
+        trace?: never;
+    };
+    "/api/admin/products/{product_id}/attributes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Product Attributes
+         * @description Replace the values of the attributes named in the body; others stay.
+         */
+        put: operations["catalog_set_product_attributes"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/admin/products/{product_id}/images": {
@@ -1235,6 +1326,88 @@ export interface components {
             title: string;
             /** Version */
             version: number;
+        };
+        /** AttributeIn */
+        AttributeIn: {
+            /**
+             * Is Filterable
+             * @default false
+             */
+            is_filterable: boolean;
+            /**
+             * Is Multiple
+             * @default false
+             */
+            is_multiple: boolean;
+            /** Kind */
+            kind: string;
+            /** Name */
+            name: string;
+            /** Options */
+            options?: string[];
+        };
+        /** AttributeOptionIn */
+        AttributeOptionIn: {
+            /** Label */
+            label: string;
+        };
+        /** AttributeOptionOut */
+        AttributeOptionOut: {
+            /** Id */
+            id: number;
+            /** Label */
+            label: string;
+        };
+        /** AttributeOptionPatch */
+        AttributeOptionPatch: {
+            /** Label */
+            label?: string | null;
+            /** Sort Order */
+            sort_order?: number | null;
+        };
+        /** AttributeOut */
+        AttributeOut: {
+            /** Id */
+            id: number;
+            /** Is Filterable */
+            is_filterable: boolean;
+            /** Is Multiple */
+            is_multiple: boolean;
+            /** Kind */
+            kind: string;
+            /** Name */
+            name: string;
+            /** Options */
+            options: components["schemas"]["AttributeOptionOut"][];
+            /** Product Class Id */
+            product_class_id: number;
+            /** Product Count */
+            product_count: number;
+            /** Sort Order */
+            sort_order: number;
+        };
+        /** AttributePatch */
+        AttributePatch: {
+            /** Is Filterable */
+            is_filterable?: boolean | null;
+            /** Name */
+            name?: string | null;
+            /** Sort Order */
+            sort_order?: number | null;
+        };
+        /** AttributeValueIO */
+        AttributeValueIO: {
+            /** Attribute Id */
+            attribute_id: number;
+            /** Option Ids */
+            option_ids?: number[];
+            /** Text */
+            text?: string | null;
+        };
+        /** AttributeValuesIn */
+        AttributeValuesIn: {
+            /** Values */
+            values: components["schemas"]["AttributeValueIO"][];
         };
         /** AuditEntryDetail */
         AuditEntryDetail: {
@@ -2291,6 +2464,8 @@ export interface components {
         };
         /** ProductOut */
         ProductOut: {
+            /** Attribute Values */
+            attribute_values: components["schemas"]["AttributeValueIO"][];
             brand: components["schemas"]["NamedOut"] | null;
             category: components["schemas"]["NamedOut"] | null;
             /** Cost Price */
@@ -2885,6 +3060,128 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DeletionRequestOut"];
+                };
+            };
+        };
+    };
+    catalog_delete_attribute_option: {
+        parameters: {
+            query?: {
+                confirm?: boolean;
+            };
+            header?: never;
+            path: {
+                option_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    catalog_update_attribute_option: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                option_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AttributeOptionPatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttributeOptionOut"];
+                };
+            };
+        };
+    };
+    catalog_delete_attribute: {
+        parameters: {
+            query?: {
+                confirm?: boolean;
+            };
+            header?: never;
+            path: {
+                attribute_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    catalog_update_attribute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attribute_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AttributePatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttributeOut"];
+                };
+            };
+        };
+    };
+    catalog_add_attribute_option: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attribute_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AttributeOptionIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttributeOptionOut"];
                 };
             };
         };
@@ -4040,6 +4337,54 @@ export interface operations {
             };
         };
     };
+    catalog_list_attributes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                class_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttributeOut"][];
+                };
+            };
+        };
+    };
+    catalog_create_attribute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                class_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AttributeIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttributeOut"];
+                };
+            };
+        };
+    };
     catalog_list_products_admin: {
         parameters: {
             query?: {
@@ -4135,6 +4480,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductOut"];
+                };
+            };
+        };
+    };
+    catalog_set_product_attributes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AttributeValuesIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttributeValueIO"][];
                 };
             };
         };

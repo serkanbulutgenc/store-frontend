@@ -34,6 +34,7 @@ export const browseSearchSchema = z.object({
   colour: list(z.number().int().positive()),
   size: list(z.string().min(1)),
   brand: list(z.number().int().positive()),
+  option: list(z.number().int().positive()),
   price_min: price,
   price_max: price,
   in_stock: z.boolean().optional().catch(undefined),
@@ -54,6 +55,7 @@ type ListQuery = {
   colour?: number[];
   size?: string[];
   brand?: number[];
+  option?: number[];
   price_min?: number;
   price_max?: number;
   in_stock: boolean;
@@ -73,6 +75,7 @@ export function toListQuery(s: BrowseSearch, opts: { category?: string; page: nu
   if (s.colour?.length) q.colour = s.colour;
   if (s.size?.length) q.size = s.size;
   if (s.brand?.length) q.brand = s.brand;
+  if (s.option?.length) q.option = s.option;
   if (s.price_min !== undefined) q.price_min = s.price_min;
   if (s.price_max !== undefined) q.price_max = s.price_max;
   return q;

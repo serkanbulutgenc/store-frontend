@@ -1,5 +1,7 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import type { z } from "zod";
+import { Button } from "@/components/ui/button";
 import { adminApi } from "@/lib/api/clients";
 import { can, type Me } from "@/lib/api/me";
 import { ReferenceScreen } from "./components/reference-screen";
@@ -96,6 +98,13 @@ export function ProductClassesScreen({ me }: { me: Me }) {
         default_desi: String(r?.default_desi ?? 1),
       })}
       save={(values, row) => save({ values: values as ProductClassForm, id: row?.id })}
+      rowActions={(r) => (
+        <Button size="sm" variant="outline" asChild>
+          <Link to="/admin/product-classes/$classId" params={{ classId: String(r.id) }}>
+            Özellikler
+          </Link>
+        </Button>
+      )}
       lockedFields={classLocks}
       remove={{
         blocked: (r) =>

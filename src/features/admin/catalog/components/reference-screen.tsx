@@ -40,6 +40,8 @@ export type ReferenceProps<Row extends { id: number }> = {
   schema: z.ZodType<Record<string, string>, Record<string, string>>;
   defaults: (row?: Row) => Record<string, string>;
   save: (values: Record<string, string>, row?: Row) => Promise<unknown>;
+  /** Extra per-row controls, shown before "Düzenle" (for example a link to a detail page). */
+  rowActions?: (row: Row) => ReactNode;
   /** Fields the API will not change for this row, with the reason shown under the field. */
   lockedFields?: (row: Row) => Record<string, string>;
   /** Delete button per row. `blocked` returns why the row cannot be deleted, if so. */
@@ -103,6 +105,7 @@ export function ReferenceScreen<Row extends { id: number }>(props: ReferenceProp
                   <TableCell>
                     {props.canManage && (
                       <div className="flex justify-end gap-2">
+                        {props.rowActions?.(row)}
                         <Button size="sm" variant="outline" onClick={() => setEditing(row)}>
                           Düzenle
                         </Button>

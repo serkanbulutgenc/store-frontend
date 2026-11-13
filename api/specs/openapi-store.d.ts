@@ -648,6 +648,24 @@ export interface components {
             /** Street */
             street: string;
         };
+        /** AttributeBlockOut */
+        AttributeBlockOut: {
+            /** Name */
+            name: string;
+            /** Values */
+            values: string[];
+        };
+        /** AttributeFacet */
+        AttributeFacet: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Options */
+            options: components["schemas"]["OptionFacet"][];
+            /** Product Class */
+            product_class: string;
+        };
         /** BankOut */
         BankOut: {
             /** Account Holder */
@@ -836,6 +854,8 @@ export interface components {
         };
         /** FacetsOut */
         FacetsOut: {
+            /** Attributes */
+            attributes: components["schemas"]["AttributeFacet"][];
             /** Brands */
             brands: components["schemas"]["BrandFacet"][];
             /** Colours */
@@ -905,6 +925,15 @@ export interface components {
             title: string;
             /** Version */
             version: number;
+        };
+        /** OptionFacet */
+        OptionFacet: {
+            /** Count */
+            count: number;
+            /** Id */
+            id: number;
+            /** Label */
+            label: string;
         };
         /** OrderAddressOut */
         OrderAddressOut: {
@@ -1071,6 +1100,8 @@ export interface components {
         };
         /** ProductDetailOut */
         ProductDetailOut: {
+            /** Attributes */
+            attributes: components["schemas"]["AttributeBlockOut"][];
             brand: components["schemas"]["BrandOut"] | null;
             /** Breadcrumbs */
             breadcrumbs: components["schemas"]["CrumbOut"][];
@@ -1117,6 +1148,11 @@ export interface components {
              * @default true
              */
             in_stock: boolean;
+            /**
+             * Option
+             * @description Attribute option ids: any of one attribute's, all attributes.
+             */
+            option?: number[];
             /**
              * Page
              * @default 1
@@ -1984,6 +2020,8 @@ export interface operations {
                 colour?: number[];
                 size?: string[];
                 brand?: number[];
+                /** @description Attribute option ids: any of one attribute's, all attributes. */
+                option?: number[];
                 price_min?: number | string | null;
                 price_max?: number | string | null;
                 in_stock?: boolean;

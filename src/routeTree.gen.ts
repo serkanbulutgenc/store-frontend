@@ -39,7 +39,6 @@ import { Route as AdminAppCategoriesRouteImport } from './routes/admin/_app/cate
 import { Route as AdminAppColoursRouteImport } from './routes/admin/_app/colours'
 import { Route as AdminAppExportRouteImport } from './routes/admin/_app/export'
 import { Route as AdminAppImportRouteImport } from './routes/admin/_app/import'
-import { Route as AdminAppProductClassesRouteImport } from './routes/admin/_app/product-classes'
 import { Route as AdminAppReturnsRouteImport } from './routes/admin/_app/returns'
 import { Route as AdminAppSecurityRouteImport } from './routes/admin/_app/security'
 import { Route as AdminAppSettingsRouteImport } from './routes/admin/_app/settings'
@@ -59,6 +58,8 @@ import { Route as AdminAppLegalPagesIndexRouteImport } from './routes/admin/_app
 import { Route as AdminAppLegalPagesPageRouteImport } from './routes/admin/_app/legal-pages/$page'
 import { Route as AdminAppOrdersIndexRouteImport } from './routes/admin/_app/orders/index'
 import { Route as AdminAppOrdersNumberRouteImport } from './routes/admin/_app/orders/$number'
+import { Route as AdminAppProductClassesIndexRouteImport } from './routes/admin/_app/product-classes/index'
+import { Route as AdminAppProductClassesClassIdRouteImport } from './routes/admin/_app/product-classes/$classId'
 import { Route as AdminAppProductsIndexRouteImport } from './routes/admin/_app/products/index'
 import { Route as AdminAppProductsProductIdRouteImport } from './routes/admin/_app/products/$productId'
 import { Route as AdminAppProductsNewRouteImport } from './routes/admin/_app/products/new'
@@ -215,11 +216,6 @@ const AdminAppImportRoute = AdminAppImportRouteImport.update({
   path: '/import',
   getParentRoute: () => AdminAppRouteRoute,
 } as any)
-const AdminAppProductClassesRoute = AdminAppProductClassesRouteImport.update({
-  id: '/product-classes',
-  path: '/product-classes',
-  getParentRoute: () => AdminAppRouteRoute,
-} as any)
 const AdminAppReturnsRoute = AdminAppReturnsRouteImport.update({
   id: '/returns',
   path: '/returns',
@@ -321,6 +317,18 @@ const AdminAppOrdersNumberRoute = AdminAppOrdersNumberRouteImport.update({
   path: '/orders/$number',
   getParentRoute: () => AdminAppRouteRoute,
 } as any)
+const AdminAppProductClassesIndexRoute =
+  AdminAppProductClassesIndexRouteImport.update({
+    id: '/product-classes/',
+    path: '/product-classes/',
+    getParentRoute: () => AdminAppRouteRoute,
+  } as any)
+const AdminAppProductClassesClassIdRoute =
+  AdminAppProductClassesClassIdRouteImport.update({
+    id: '/product-classes/$classId',
+    path: '/product-classes/$classId',
+    getParentRoute: () => AdminAppRouteRoute,
+  } as any)
 const AdminAppProductsIndexRoute = AdminAppProductsIndexRouteImport.update({
   id: '/products/',
   path: '/products/',
@@ -382,7 +390,6 @@ export interface FileRoutesByFullPath {
   '/admin/colours': typeof AdminAppColoursRoute
   '/admin/export': typeof AdminAppExportRoute
   '/admin/import': typeof AdminAppImportRoute
-  '/admin/product-classes': typeof AdminAppProductClassesRoute
   '/admin/returns': typeof AdminAppReturnsRoute
   '/admin/security': typeof AdminAppSecurityRoute
   '/admin/settings': typeof AdminAppSettingsRoute
@@ -399,6 +406,7 @@ export interface FileRoutesByFullPath {
   '/admin/customers/$id': typeof AdminAppCustomersIdRoute
   '/admin/legal-pages/$page': typeof AdminAppLegalPagesPageRoute
   '/admin/orders/$number': typeof AdminAppOrdersNumberRoute
+  '/admin/product-classes/$classId': typeof AdminAppProductClassesClassIdRoute
   '/admin/products/$productId': typeof AdminAppProductsProductIdRoute
   '/admin/products/new': typeof AdminAppProductsNewRoute
   '/hesap/': typeof StorefrontCustomerHesapIndexRoute
@@ -406,6 +414,7 @@ export interface FileRoutesByFullPath {
   '/admin/customers/': typeof AdminAppCustomersIndexRoute
   '/admin/legal-pages/': typeof AdminAppLegalPagesIndexRoute
   '/admin/orders/': typeof AdminAppOrdersIndexRoute
+  '/admin/product-classes/': typeof AdminAppProductClassesIndexRoute
   '/admin/products/': typeof AdminAppProductsIndexRoute
   '/hesap/siparisler/$number': typeof StorefrontCustomerHesapSiparislerNumberRoute
   '/admin/products/$productId/photos': typeof AdminAppProductsProductIdPhotosRoute
@@ -436,7 +445,6 @@ export interface FileRoutesByTo {
   '/admin/colours': typeof AdminAppColoursRoute
   '/admin/export': typeof AdminAppExportRoute
   '/admin/import': typeof AdminAppImportRoute
-  '/admin/product-classes': typeof AdminAppProductClassesRoute
   '/admin/returns': typeof AdminAppReturnsRoute
   '/admin/security': typeof AdminAppSecurityRoute
   '/admin/settings': typeof AdminAppSettingsRoute
@@ -452,6 +460,7 @@ export interface FileRoutesByTo {
   '/admin/customers/$id': typeof AdminAppCustomersIdRoute
   '/admin/legal-pages/$page': typeof AdminAppLegalPagesPageRoute
   '/admin/orders/$number': typeof AdminAppOrdersNumberRoute
+  '/admin/product-classes/$classId': typeof AdminAppProductClassesClassIdRoute
   '/admin/products/$productId': typeof AdminAppProductsProductIdRoute
   '/admin/products/new': typeof AdminAppProductsNewRoute
   '/hesap': typeof StorefrontCustomerHesapIndexRoute
@@ -459,6 +468,7 @@ export interface FileRoutesByTo {
   '/admin/customers': typeof AdminAppCustomersIndexRoute
   '/admin/legal-pages': typeof AdminAppLegalPagesIndexRoute
   '/admin/orders': typeof AdminAppOrdersIndexRoute
+  '/admin/product-classes': typeof AdminAppProductClassesIndexRoute
   '/admin/products': typeof AdminAppProductsIndexRoute
   '/hesap/siparisler/$number': typeof StorefrontCustomerHesapSiparislerNumberRoute
   '/admin/products/$productId/photos': typeof AdminAppProductsProductIdPhotosRoute
@@ -494,7 +504,6 @@ export interface FileRoutesById {
   '/admin/_app/colours': typeof AdminAppColoursRoute
   '/admin/_app/export': typeof AdminAppExportRoute
   '/admin/_app/import': typeof AdminAppImportRoute
-  '/admin/_app/product-classes': typeof AdminAppProductClassesRoute
   '/admin/_app/returns': typeof AdminAppReturnsRoute
   '/admin/_app/security': typeof AdminAppSecurityRoute
   '/admin/_app/settings': typeof AdminAppSettingsRoute
@@ -511,6 +520,7 @@ export interface FileRoutesById {
   '/admin/_app/customers/$id': typeof AdminAppCustomersIdRoute
   '/admin/_app/legal-pages/$page': typeof AdminAppLegalPagesPageRoute
   '/admin/_app/orders/$number': typeof AdminAppOrdersNumberRoute
+  '/admin/_app/product-classes/$classId': typeof AdminAppProductClassesClassIdRoute
   '/admin/_app/products/$productId': typeof AdminAppProductsProductIdRoute
   '/admin/_app/products/new': typeof AdminAppProductsNewRoute
   '/_storefront/_customer/hesap/': typeof StorefrontCustomerHesapIndexRoute
@@ -518,6 +528,7 @@ export interface FileRoutesById {
   '/admin/_app/customers/': typeof AdminAppCustomersIndexRoute
   '/admin/_app/legal-pages/': typeof AdminAppLegalPagesIndexRoute
   '/admin/_app/orders/': typeof AdminAppOrdersIndexRoute
+  '/admin/_app/product-classes/': typeof AdminAppProductClassesIndexRoute
   '/admin/_app/products/': typeof AdminAppProductsIndexRoute
   '/_storefront/_customer/hesap/siparisler/$number': typeof StorefrontCustomerHesapSiparislerNumberRoute
   '/admin/_app/products/$productId_/photos': typeof AdminAppProductsProductIdPhotosRoute
@@ -551,7 +562,6 @@ export interface FileRouteTypes {
     | '/admin/colours'
     | '/admin/export'
     | '/admin/import'
-    | '/admin/product-classes'
     | '/admin/returns'
     | '/admin/security'
     | '/admin/settings'
@@ -568,6 +578,7 @@ export interface FileRouteTypes {
     | '/admin/customers/$id'
     | '/admin/legal-pages/$page'
     | '/admin/orders/$number'
+    | '/admin/product-classes/$classId'
     | '/admin/products/$productId'
     | '/admin/products/new'
     | '/hesap/'
@@ -575,6 +586,7 @@ export interface FileRouteTypes {
     | '/admin/customers/'
     | '/admin/legal-pages/'
     | '/admin/orders/'
+    | '/admin/product-classes/'
     | '/admin/products/'
     | '/hesap/siparisler/$number'
     | '/admin/products/$productId/photos'
@@ -605,7 +617,6 @@ export interface FileRouteTypes {
     | '/admin/colours'
     | '/admin/export'
     | '/admin/import'
-    | '/admin/product-classes'
     | '/admin/returns'
     | '/admin/security'
     | '/admin/settings'
@@ -621,6 +632,7 @@ export interface FileRouteTypes {
     | '/admin/customers/$id'
     | '/admin/legal-pages/$page'
     | '/admin/orders/$number'
+    | '/admin/product-classes/$classId'
     | '/admin/products/$productId'
     | '/admin/products/new'
     | '/hesap'
@@ -628,6 +640,7 @@ export interface FileRouteTypes {
     | '/admin/customers'
     | '/admin/legal-pages'
     | '/admin/orders'
+    | '/admin/product-classes'
     | '/admin/products'
     | '/hesap/siparisler/$number'
     | '/admin/products/$productId/photos'
@@ -662,7 +675,6 @@ export interface FileRouteTypes {
     | '/admin/_app/colours'
     | '/admin/_app/export'
     | '/admin/_app/import'
-    | '/admin/_app/product-classes'
     | '/admin/_app/returns'
     | '/admin/_app/security'
     | '/admin/_app/settings'
@@ -679,6 +691,7 @@ export interface FileRouteTypes {
     | '/admin/_app/customers/$id'
     | '/admin/_app/legal-pages/$page'
     | '/admin/_app/orders/$number'
+    | '/admin/_app/product-classes/$classId'
     | '/admin/_app/products/$productId'
     | '/admin/_app/products/new'
     | '/_storefront/_customer/hesap/'
@@ -686,6 +699,7 @@ export interface FileRouteTypes {
     | '/admin/_app/customers/'
     | '/admin/_app/legal-pages/'
     | '/admin/_app/orders/'
+    | '/admin/_app/product-classes/'
     | '/admin/_app/products/'
     | '/_storefront/_customer/hesap/siparisler/$number'
     | '/admin/_app/products/$productId_/photos'
@@ -912,13 +926,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAppImportRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
-    '/admin/_app/product-classes': {
-      id: '/admin/_app/product-classes'
-      path: '/product-classes'
-      fullPath: '/admin/product-classes'
-      preLoaderRoute: typeof AdminAppProductClassesRouteImport
-      parentRoute: typeof AdminAppRouteRoute
-    }
     '/admin/_app/returns': {
       id: '/admin/_app/returns'
       path: '/returns'
@@ -1050,6 +1057,20 @@ declare module '@tanstack/react-router' {
       path: '/orders/$number'
       fullPath: '/admin/orders/$number'
       preLoaderRoute: typeof AdminAppOrdersNumberRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/product-classes/': {
+      id: '/admin/_app/product-classes/'
+      path: '/product-classes'
+      fullPath: '/admin/product-classes/'
+      preLoaderRoute: typeof AdminAppProductClassesIndexRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/product-classes/$classId': {
+      id: '/admin/_app/product-classes/$classId'
+      path: '/product-classes/$classId'
+      fullPath: '/admin/product-classes/$classId'
+      preLoaderRoute: typeof AdminAppProductClassesClassIdRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
     '/admin/_app/products/': {
@@ -1187,7 +1208,6 @@ interface AdminAppRouteRouteChildren {
   AdminAppColoursRoute: typeof AdminAppColoursRoute
   AdminAppExportRoute: typeof AdminAppExportRoute
   AdminAppImportRoute: typeof AdminAppImportRoute
-  AdminAppProductClassesRoute: typeof AdminAppProductClassesRoute
   AdminAppReturnsRoute: typeof AdminAppReturnsRoute
   AdminAppSecurityRoute: typeof AdminAppSecurityRoute
   AdminAppSettingsRoute: typeof AdminAppSettingsRoute
@@ -1199,11 +1219,13 @@ interface AdminAppRouteRouteChildren {
   AdminAppCustomersIdRoute: typeof AdminAppCustomersIdRoute
   AdminAppLegalPagesPageRoute: typeof AdminAppLegalPagesPageRoute
   AdminAppOrdersNumberRoute: typeof AdminAppOrdersNumberRoute
+  AdminAppProductClassesClassIdRoute: typeof AdminAppProductClassesClassIdRoute
   AdminAppProductsProductIdRoute: typeof AdminAppProductsProductIdRoute
   AdminAppProductsNewRoute: typeof AdminAppProductsNewRoute
   AdminAppCustomersIndexRoute: typeof AdminAppCustomersIndexRoute
   AdminAppLegalPagesIndexRoute: typeof AdminAppLegalPagesIndexRoute
   AdminAppOrdersIndexRoute: typeof AdminAppOrdersIndexRoute
+  AdminAppProductClassesIndexRoute: typeof AdminAppProductClassesIndexRoute
   AdminAppProductsIndexRoute: typeof AdminAppProductsIndexRoute
   AdminAppProductsProductIdPhotosRoute: typeof AdminAppProductsProductIdPhotosRoute
 }
@@ -1217,7 +1239,6 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppColoursRoute: AdminAppColoursRoute,
   AdminAppExportRoute: AdminAppExportRoute,
   AdminAppImportRoute: AdminAppImportRoute,
-  AdminAppProductClassesRoute: AdminAppProductClassesRoute,
   AdminAppReturnsRoute: AdminAppReturnsRoute,
   AdminAppSecurityRoute: AdminAppSecurityRoute,
   AdminAppSettingsRoute: AdminAppSettingsRoute,
@@ -1229,11 +1250,13 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppCustomersIdRoute: AdminAppCustomersIdRoute,
   AdminAppLegalPagesPageRoute: AdminAppLegalPagesPageRoute,
   AdminAppOrdersNumberRoute: AdminAppOrdersNumberRoute,
+  AdminAppProductClassesClassIdRoute: AdminAppProductClassesClassIdRoute,
   AdminAppProductsProductIdRoute: AdminAppProductsProductIdRoute,
   AdminAppProductsNewRoute: AdminAppProductsNewRoute,
   AdminAppCustomersIndexRoute: AdminAppCustomersIndexRoute,
   AdminAppLegalPagesIndexRoute: AdminAppLegalPagesIndexRoute,
   AdminAppOrdersIndexRoute: AdminAppOrdersIndexRoute,
+  AdminAppProductClassesIndexRoute: AdminAppProductClassesIndexRoute,
   AdminAppProductsIndexRoute: AdminAppProductsIndexRoute,
   AdminAppProductsProductIdPhotosRoute: AdminAppProductsProductIdPhotosRoute,
 }
