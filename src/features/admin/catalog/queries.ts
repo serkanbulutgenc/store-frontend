@@ -72,10 +72,14 @@ export const lowStockQuery = (s: Pick<ListSearch, "page" | "size">) =>
 const ref = <const N extends string, T>(name: N, load: () => Promise<T>) =>
   queryOptions({ queryKey: [...keys.refs, name] as const, queryFn: load, staleTime: 5 * 60_000 });
 
-export const categoriesQuery = ref(
-  "categories",
-  async () => (await adminApi.GET("/api/admin/categories")).data as CategoryOut[],
-);
+export const categoriesQuery = queryOptions({
+  queryKey: [...keys.refs, "categories"] as const,
+  staleTime: 5 * 60_000,
+  queryFn: async () => (await adminApi.GET("/api/admin/categories")).data as CategoryOut[],
+  // While an image is still being processed, poll until its derivatives exist.
+  refetchInterval: (q) =>
+    q.state.data?.some((c) => c.image?.status === "processing") ? 2500 : false,
+});
 export const brandsQuery = ref(
   "brands",
   async () => (await adminApi.GET("/api/admin/brands")).data as NamedOut[],

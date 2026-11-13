@@ -3,11 +3,9 @@ import { z } from "zod";
 import { adminApi } from "@/lib/api/clients";
 import { can, type Me } from "@/lib/api/me";
 import { ReferenceScreen } from "./components/reference-screen";
-import { categoryLabels } from "./labels";
 import {
   brandsQuery,
   type ColourOut,
-  categoriesQuery,
   coloursQuery,
   keys,
   type NamedOut,
@@ -53,63 +51,6 @@ export function BrandsScreen({ me }: { me: Me }) {
       schema={nameOnly}
       defaults={(r) => ({ name: r?.name ?? "" })}
       save={(values, row) => save({ values: values as { name: string }, row })}
-    />
-  );
-}
-
-export function CategoriesScreen({ me }: { me: Me }) {
-  const { data } = useSuspenseQuery(categoriesQuery);
-  const labels = new Map(categoryLabels(data).map((c) => [c.id, c.label]));
-  const roots = data.filter((c) => c.parent_id == null);
-  const save = useSave(
-    async ({
-      values,
-      row,
-    }: {
-      values: { name: string; parent_id: string };
-      row?: (typeof data)[number];
-    }) =>
-      row
-        ? adminApi.PATCH("/api/admin/categories/{category_id}", {
-            params: { path: { category_id: row.id } },
-            body: { name: values.name },
-          })
-        : adminApi.POST("/api/admin/categories", {
-            body: {
-              name: values.name,
-              parent_id: values.parent_id ? Number(values.parent_id) : null,
-            },
-          }),
-  );
-  return (
-    <ReferenceScreen
-      title="Kategoriler"
-      singular="kategori"
-      rows={[...data].sort((a, b) =>
-        (labels.get(a.id) ?? "").localeCompare(labels.get(b.id) ?? "", "tr"),
-      )}
-      canManage={can(me, "manage_categories")}
-      columns={[
-        { header: "Ad", cell: (r) => labels.get(r.id) ?? r.name },
-        { header: "Adres", cell: (r) => <span className="font-mono text-xs">{r.slug}</span> },
-      ]}
-      fields={[
-        { name: "name", label: "Ad" },
-        {
-          name: "parent_id",
-          label: "Üst kategori",
-          kind: "select",
-          createOnly: true,
-          hint: "En fazla iki seviye.",
-          options: [
-            { value: "", label: "Ana kategori" },
-            ...roots.map((c) => ({ value: String(c.id), label: c.name })),
-          ],
-        },
-      ]}
-      schema={z.object({ name, parent_id: z.string() })}
-      defaults={(r) => ({ name: r?.name ?? "", parent_id: "" })}
-      save={(values, row) => save({ values: values as { name: string; parent_id: string }, row })}
     />
   );
 }

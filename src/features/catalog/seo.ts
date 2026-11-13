@@ -184,9 +184,13 @@ export function listingHead(o: {
   kind: "category" | "search";
   origin: string;
   trail?: { name: string; slug: string }[];
+  /** The Category's own SEO fields; each falls back to the generated text when empty. */
+  seoTitle?: string;
+  seoDescription?: string;
 }): HeadResult {
-  const title = `${o.title} | ${STORE_NAME}`;
-  const description = `${o.title} - ${STORE_NAME} ürünlerini inceleyin.`;
+  const title = `${o.seoTitle?.trim() || o.title} | ${STORE_NAME}`;
+  const description =
+    o.seoDescription?.trim() || `${o.title} - ${STORE_NAME} ürünlerini inceleyin.`;
   const url = listingCanonical(o.path, o.search, o.origin);
   const indexable = isIndexableListing(o.search, o.kind);
   return {

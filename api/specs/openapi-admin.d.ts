@@ -270,6 +270,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/categories/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reorder Categories
+         * @description Save the order of one sibling group (the top level when parent_id is null).
+         */
+        post: operations["catalog_reorder_categories"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/categories/{category_id}": {
         parameters: {
             query?: never;
@@ -283,8 +303,33 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Update Category */
+        /**
+         * Update Category
+         * @description Rename and/or edit properties; only the fields sent are changed.
+         */
         patch: operations["catalog_update_category"];
+        trace?: never;
+    };
+    "/api/admin/categories/{category_id}/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Category Image
+         * @description One image (JPEG, PNG or WebP), replacing any existing one; derivatives are made
+         *     in the background and the image reports `processing` until they exist.
+         */
+        post: operations["catalog_upload_category_image"];
+        /** Delete Category Image */
+        delete: operations["catalog_delete_category_image"];
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/admin/colours": {
@@ -1536,6 +1581,23 @@ export interface components {
             /** Name */
             name: string;
         };
+        /** CategoryImageOut */
+        CategoryImageOut: {
+            /** Alt Text */
+            alt_text: string;
+            /** Derivatives */
+            derivatives: components["schemas"]["ImageDerivativeOut"][];
+            /** Error */
+            error: string;
+            /** Height */
+            height: number;
+            /** Original Url */
+            original_url: string;
+            /** Status */
+            status: string;
+            /** Width */
+            width: number;
+        };
         /** CategoryIn */
         CategoryIn: {
             /** Name */
@@ -1545,14 +1607,47 @@ export interface components {
         };
         /** CategoryOut */
         CategoryOut: {
+            /** Description */
+            description: string;
             /** Id */
             id: number;
+            image: components["schemas"]["CategoryImageOut"] | null;
+            /** Is Hidden */
+            is_hidden: boolean;
             /** Name */
             name: string;
             /** Parent Id */
             parent_id: number | null;
+            /** Seo Description */
+            seo_description: string;
+            /** Seo Title */
+            seo_title: string;
             /** Slug */
             slug: string;
+            /** Sort Order */
+            sort_order: number;
+        };
+        /** CategoryPatch */
+        CategoryPatch: {
+            /** Description */
+            description?: string | null;
+            /** Image Alt */
+            image_alt?: string | null;
+            /** Is Hidden */
+            is_hidden?: boolean | null;
+            /** Name */
+            name?: string | null;
+            /** Seo Description */
+            seo_description?: string | null;
+            /** Seo Title */
+            seo_title?: string | null;
+        };
+        /** CategoryReorderIn */
+        CategoryReorderIn: {
+            /** Ids */
+            ids: number[];
+            /** Parent Id */
+            parent_id?: number | null;
         };
         /** ColourIn */
         ColourIn: {
@@ -3516,6 +3611,30 @@ export interface operations {
             };
         };
     };
+    catalog_reorder_categories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CategoryReorderIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryOut"][];
+                };
+            };
+        };
+    };
     catalog_update_category: {
         parameters: {
             query?: never;
@@ -3527,9 +3646,63 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["NameIn"];
+                "application/json": components["schemas"]["CategoryPatch"];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryOut"];
+                };
+            };
+        };
+    };
+    catalog_upload_category_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryOut"];
+                };
+            };
+        };
+    };
+    catalog_delete_category_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {

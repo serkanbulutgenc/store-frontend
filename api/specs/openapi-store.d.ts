@@ -231,6 +231,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/categories/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Category
+         * @description A Category page's copy, image and SEO fields; hidden Categories are 404.
+         */
+        get: operations["catalog_get_category"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/store/checkout": {
         parameters: {
             query?: never;
@@ -777,6 +797,24 @@ export interface components {
             children: components["schemas"]["CategoryChildOut"][];
             /** Name */
             name: string;
+            /** Slug */
+            slug: string;
+        };
+        /** CategoryPageOut */
+        CategoryPageOut: {
+            /** Breadcrumbs */
+            breadcrumbs: components["schemas"]["CategoryChildOut"][];
+            /** Children */
+            children: components["schemas"]["CategoryChildOut"][];
+            /** Description */
+            description: string;
+            image: components["schemas"]["CardImageOut"] | null;
+            /** Name */
+            name: string;
+            /** Seo Description */
+            seo_description: string;
+            /** Seo Title */
+            seo_title: string;
             /** Slug */
             slug: string;
         };
@@ -1852,6 +1890,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CategoryNodeOut"][];
+                };
+            };
+        };
+    };
+    catalog_get_category: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryPageOut"];
                 };
             };
         };

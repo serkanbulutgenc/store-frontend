@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { CategoriesScreen } from "@/features/admin/catalog/components/categories-screen";
 import { categoriesQuery } from "@/features/admin/catalog/queries";
-import { CategoriesScreen } from "@/features/admin/catalog/references";
 import { requirePermission } from "@/features/admin/guard";
 
 export const Route = createFileRoute("/admin/_app/categories")({

@@ -1,8 +1,10 @@
 import type { CategoryOut, ProductStatus } from "./queries";
 
-export function categoryLabels(categories: CategoryOut[]): { id: number; label: string }[] {
+type Labelled = Pick<CategoryOut, "id" | "name" | "parent_id"> & { slug?: string };
+
+export function categoryLabels(categories: Labelled[]): { id: number; label: string }[] {
   const byId = new Map(categories.map((c) => [c.id, c]));
-  const label = (c: CategoryOut) => {
+  const label = (c: Labelled) => {
     const parent = c.parent_id == null ? undefined : byId.get(c.parent_id);
     return parent ? `${parent.name} › ${c.name}` : c.name;
   };

@@ -178,4 +178,19 @@ describe("listingHead canonical", () => {
     });
     expect(h.links).toEqual([{ rel: "canonical", href: `${ORIGIN}/kategori/g?page=2` }]);
   });
+  it("uses the Category's SEO fields and falls back when they are empty", () => {
+    const base = {
+      title: "Elbise",
+      path: "/kategori/e",
+      search: {},
+      kind: "category" as const,
+      origin: ORIGIN,
+    };
+    const own = listingHead({ ...base, seoTitle: "Yazlık elbiseler", seoDescription: "Özet" });
+    expect(own.meta).toContainEqual({ name: "description", content: "Özet" });
+    expect(JSON.stringify(own.meta)).toContain("Yazlık elbiseler |");
+    const plain = listingHead({ ...base, seoTitle: " ", seoDescription: "" });
+    expect(JSON.stringify(plain.meta)).toContain("Elbise |");
+    expect(JSON.stringify(plain.meta)).toContain("ürünlerini inceleyin");
+  });
 });
