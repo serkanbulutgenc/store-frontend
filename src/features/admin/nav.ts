@@ -10,6 +10,7 @@ import {
   Palette,
   Scale,
   Settings,
+  Shapes,
   ShieldCheck,
   ShoppingCart,
   Store,
@@ -49,6 +50,12 @@ export const NAV_GROUPS: NavGroup[] = [
         to: "/admin/categories",
         icon: Layers,
         permission: "manage_categories",
+      },
+      {
+        label: "Ürün sınıfları",
+        to: "/admin/product-classes",
+        icon: Shapes,
+        permission: "manage_product_classes",
       },
       { label: "Markalar", to: "/admin/brands", icon: Tag, permission: "manage_brands" },
       {

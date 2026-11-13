@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ApiError } from "@/lib/api/errors";
 import { apiErrorToFormErrors } from "../../forms/api-errors";
 import { bind, Field, FormActions, FormMessage } from "../../forms/field";
 
@@ -39,12 +40,30 @@ export type ReferenceProps<Row extends { id: number }> = {
   schema: z.ZodType<Record<string, string>, Record<string, string>>;
   defaults: (row?: Row) => Record<string, string>;
   save: (values: Record<string, string>, row?: Row) => Promise<unknown>;
+  /** Fields the API will not change for this row, with the reason shown under the field. */
+  lockedFields?: (row: Row) => Record<string, string>;
+  /** Delete button per row. `blocked` returns why the row cannot be deleted, if so. */
+  remove?: {
+    blocked: (row: Row) => string | undefined;
+    confirm: (row: Row) => string;
+    run: (row: Row) => Promise<unknown>;
+  };
 };
 
 /** A small list with a create/edit dialog, for the reference data that has no paging or search. */
 export function ReferenceScreen<Row extends { id: number }>(props: ReferenceProps<Row>) {
   const [editing, setEditing] = useState<Row | "new" | null>(null);
   const close = () => setEditing(null);
+  const { remove } = props;
+  async function onRemove(row: Row, run: (row: Row) => Promise<unknown>, message: string) {
+    if (!window.confirm(message)) return;
+    try {
+      await run(row);
+      toast.success("Silindi.");
+    } catch (e) {
+      toast.error(e instanceof ApiError ? e.message : "Beklenmeyen bir hata oluştu.");
+    }
+  }
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -83,9 +102,22 @@ export function ReferenceScreen<Row extends { id: number }>(props: ReferenceProp
                   ))}
                   <TableCell>
                     {props.canManage && (
-                      <Button size="sm" variant="outline" onClick={() => setEditing(row)}>
-                        Düzenle
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button size="sm" variant="outline" onClick={() => setEditing(row)}>
+                          Düzenle
+                        </Button>
+                        {remove && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={remove.blocked(row) !== undefined}
+                            title={remove.blocked(row)}
+                            onClick={() => onRemove(row, remove.run, remove.confirm(row))}
+                          >
+                            Sil
+                          </Button>
+                        )}
+                      </div>
                     )}
                   </TableCell>
                 </TableRow>
@@ -130,6 +162,7 @@ function RefForm<Row extends { id: number }>({
       onClose();
     },
   });
+  const locked = row ? (props.lockedFields?.(row) ?? {}) : {};
   return (
     <form
       className="space-y-3"
@@ -143,9 +176,9 @@ function RefForm<Row extends { id: number }>({
         .map((def, i) => (
           <form.Field key={def.name} name={def.name}>
             {(f) => (
-              <Field field={f} label={def.label} hint={def.hint}>
+              <Field field={f} label={def.label} hint={locked[def.name] ?? def.hint}>
                 {def.kind === "select" ? (
-                  <Select {...bind(f)} autoFocus={i === 0}>
+                  <Select {...bind(f)} autoFocus={i === 0} disabled={def.name in locked}>
                     {def.options?.map((o) => (
                       <option key={o.value} value={o.value}>
                         {o.label}
@@ -153,7 +186,7 @@ function RefForm<Row extends { id: number }>({
                     ))}
                   </Select>
                 ) : (
-                  <Input autoFocus={i === 0} {...bind(f)} />
+                  <Input autoFocus={i === 0} {...bind(f)} disabled={def.name in locked} />
                 )}
               </Field>
             )}

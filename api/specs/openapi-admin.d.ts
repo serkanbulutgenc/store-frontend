@@ -825,7 +825,8 @@ export interface paths {
         /** List Product Classes */
         get: operations["catalog_list_product_classes"];
         put?: never;
-        post?: never;
+        /** Create Product Class */
+        post: operations["catalog_create_product_class"];
         delete?: never;
         options?: never;
         head?: never;
@@ -842,7 +843,8 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete?: never;
+        /** Delete Product Class */
+        delete: operations["catalog_delete_product_class"];
         options?: never;
         head?: never;
         /** Update Product Class */
@@ -2141,6 +2143,25 @@ export interface components {
          * @enum {string}
          */
         PaymentMethod: "bank_transfer" | "cod";
+        /** ProductClassIn */
+        ProductClassIn: {
+            /**
+             * Default Desi
+             * @default 1
+             */
+            default_desi: number;
+            /** Default Kdv Rate */
+            default_kdv_rate: number | string;
+            /**
+             * Is Hygiene
+             * @default false
+             */
+            is_hygiene: boolean;
+            /** Name */
+            name: string;
+            /** Size Scheme */
+            size_scheme: string;
+        };
         /** ProductClassOut */
         ProductClassOut: {
             /** Default Desi */
@@ -2156,6 +2177,8 @@ export interface components {
             is_hygiene: boolean;
             /** Name */
             name: string;
+            /** Product Count */
+            product_count?: number | null;
             /** Size Scheme */
             size_scheme: string;
             /** Sizes */
@@ -2164,7 +2187,15 @@ export interface components {
         /** ProductClassPatch */
         ProductClassPatch: {
             /** Default Desi */
-            default_desi: number;
+            default_desi?: number | null;
+            /** Default Kdv Rate */
+            default_kdv_rate?: number | string | null;
+            /** Is Hygiene */
+            is_hygiene?: boolean | null;
+            /** Name */
+            name?: string | null;
+            /** Size Scheme */
+            size_scheme?: string | null;
         };
         /** ProductImageOut */
         ProductImageOut: {
@@ -3936,6 +3967,50 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ProductClassOut"][];
                 };
+            };
+        };
+    };
+    catalog_create_product_class: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProductClassIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductClassOut"];
+                };
+            };
+        };
+    };
+    catalog_delete_product_class: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                class_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

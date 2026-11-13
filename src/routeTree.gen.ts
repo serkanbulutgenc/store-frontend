@@ -39,6 +39,7 @@ import { Route as AdminAppCategoriesRouteImport } from './routes/admin/_app/cate
 import { Route as AdminAppColoursRouteImport } from './routes/admin/_app/colours'
 import { Route as AdminAppExportRouteImport } from './routes/admin/_app/export'
 import { Route as AdminAppImportRouteImport } from './routes/admin/_app/import'
+import { Route as AdminAppProductClassesRouteImport } from './routes/admin/_app/product-classes'
 import { Route as AdminAppReturnsRouteImport } from './routes/admin/_app/returns'
 import { Route as AdminAppSecurityRouteImport } from './routes/admin/_app/security'
 import { Route as AdminAppSettingsRouteImport } from './routes/admin/_app/settings'
@@ -214,6 +215,11 @@ const AdminAppImportRoute = AdminAppImportRouteImport.update({
   path: '/import',
   getParentRoute: () => AdminAppRouteRoute,
 } as any)
+const AdminAppProductClassesRoute = AdminAppProductClassesRouteImport.update({
+  id: '/product-classes',
+  path: '/product-classes',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
 const AdminAppReturnsRoute = AdminAppReturnsRouteImport.update({
   id: '/returns',
   path: '/returns',
@@ -376,6 +382,7 @@ export interface FileRoutesByFullPath {
   '/admin/colours': typeof AdminAppColoursRoute
   '/admin/export': typeof AdminAppExportRoute
   '/admin/import': typeof AdminAppImportRoute
+  '/admin/product-classes': typeof AdminAppProductClassesRoute
   '/admin/returns': typeof AdminAppReturnsRoute
   '/admin/security': typeof AdminAppSecurityRoute
   '/admin/settings': typeof AdminAppSettingsRoute
@@ -429,6 +436,7 @@ export interface FileRoutesByTo {
   '/admin/colours': typeof AdminAppColoursRoute
   '/admin/export': typeof AdminAppExportRoute
   '/admin/import': typeof AdminAppImportRoute
+  '/admin/product-classes': typeof AdminAppProductClassesRoute
   '/admin/returns': typeof AdminAppReturnsRoute
   '/admin/security': typeof AdminAppSecurityRoute
   '/admin/settings': typeof AdminAppSettingsRoute
@@ -486,6 +494,7 @@ export interface FileRoutesById {
   '/admin/_app/colours': typeof AdminAppColoursRoute
   '/admin/_app/export': typeof AdminAppExportRoute
   '/admin/_app/import': typeof AdminAppImportRoute
+  '/admin/_app/product-classes': typeof AdminAppProductClassesRoute
   '/admin/_app/returns': typeof AdminAppReturnsRoute
   '/admin/_app/security': typeof AdminAppSecurityRoute
   '/admin/_app/settings': typeof AdminAppSettingsRoute
@@ -542,6 +551,7 @@ export interface FileRouteTypes {
     | '/admin/colours'
     | '/admin/export'
     | '/admin/import'
+    | '/admin/product-classes'
     | '/admin/returns'
     | '/admin/security'
     | '/admin/settings'
@@ -595,6 +605,7 @@ export interface FileRouteTypes {
     | '/admin/colours'
     | '/admin/export'
     | '/admin/import'
+    | '/admin/product-classes'
     | '/admin/returns'
     | '/admin/security'
     | '/admin/settings'
@@ -651,6 +662,7 @@ export interface FileRouteTypes {
     | '/admin/_app/colours'
     | '/admin/_app/export'
     | '/admin/_app/import'
+    | '/admin/_app/product-classes'
     | '/admin/_app/returns'
     | '/admin/_app/security'
     | '/admin/_app/settings'
@@ -898,6 +910,13 @@ declare module '@tanstack/react-router' {
       path: '/import'
       fullPath: '/admin/import'
       preLoaderRoute: typeof AdminAppImportRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/product-classes': {
+      id: '/admin/_app/product-classes'
+      path: '/product-classes'
+      fullPath: '/admin/product-classes'
+      preLoaderRoute: typeof AdminAppProductClassesRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
     '/admin/_app/returns': {
@@ -1168,6 +1187,7 @@ interface AdminAppRouteRouteChildren {
   AdminAppColoursRoute: typeof AdminAppColoursRoute
   AdminAppExportRoute: typeof AdminAppExportRoute
   AdminAppImportRoute: typeof AdminAppImportRoute
+  AdminAppProductClassesRoute: typeof AdminAppProductClassesRoute
   AdminAppReturnsRoute: typeof AdminAppReturnsRoute
   AdminAppSecurityRoute: typeof AdminAppSecurityRoute
   AdminAppSettingsRoute: typeof AdminAppSettingsRoute
@@ -1197,6 +1217,7 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppColoursRoute: AdminAppColoursRoute,
   AdminAppExportRoute: AdminAppExportRoute,
   AdminAppImportRoute: AdminAppImportRoute,
+  AdminAppProductClassesRoute: AdminAppProductClassesRoute,
   AdminAppReturnsRoute: AdminAppReturnsRoute,
   AdminAppSecurityRoute: AdminAppSecurityRoute,
   AdminAppSettingsRoute: AdminAppSettingsRoute,

@@ -87,3 +87,12 @@ it("shows the Legal pages entry only with its permission (Owner, not Staff)", ()
   );
   expect(visibleNav(me(["manage_legal_pages"])).map((i) => i.label)).toContain("Yasal sayfalar");
 });
+
+it("shows the Product classes entry only with its permission (Owner, not Staff)", () => {
+  expect(visibleNav(me(["view_products", "manage_products"])).map((i) => i.label)).not.toContain(
+    "Ürün sınıfları",
+  );
+  expect(visibleNav(me(["manage_product_classes"])).map((i) => i.label)).toContain(
+    "Ürün sınıfları",
+  );
+});
