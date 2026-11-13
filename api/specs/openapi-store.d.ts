@@ -456,6 +456,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/products/{slug}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["reviews_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/products/{slug}/my-review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["reviews_get_mine"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/account/reviews/{product_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["reviews_save_mine"];
+        post?: never;
+        delete: operations["reviews_delete_mine"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/store/products/{slug}": {
         parameters: {
             query?: never;
@@ -1172,6 +1220,10 @@ export interface components {
              * @example 349.90
              */
             price: string;
+            /** Rating Average */
+            rating_average: number | null;
+            /** Rating Count */
+            rating_count: number;
             /** Slug */
             slug: string;
             /** Sold Out */
@@ -1204,6 +1256,10 @@ export interface components {
              * @example 349.90
              */
             price: string;
+            /** Rating Average */
+            rating_average: number | null;
+            /** Rating Count */
+            rating_count: number;
             /** Slug */
             slug: string;
             /** Sold Out */
@@ -1386,6 +1442,66 @@ export interface components {
          * @enum {string}
          */
         ReturnStatus: "requested" | "approved" | "rejected" | "received" | "refunded";
+        /** MyReviewOut */
+        MyReviewOut: {
+            /** Body */
+            body: string;
+            /** Id */
+            id: number;
+            /** Stars */
+            stars: number;
+            /** Status */
+            status: string;
+        };
+        /** MyReviewStateOut */
+        MyReviewStateOut: {
+            /** Can Review */
+            can_review: boolean;
+            /** Message */
+            message: string | null;
+            /** Reason */
+            reason: string | null;
+            review: components["schemas"]["MyReviewOut"] | null;
+        };
+        /** ReviewIn */
+        ReviewIn: {
+            /**
+             * Body
+             * @default
+             */
+            body: string;
+            /** Stars */
+            stars: number;
+        };
+        /** ReviewOut */
+        ReviewOut: {
+            /** Author */
+            author: string;
+            /** Body */
+            body: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Id */
+            id: number;
+            /** Stars */
+            stars: number;
+        };
+        /** ReviewPageOut */
+        ReviewPageOut: {
+            /** Average */
+            average: number | null;
+            /** Count */
+            count: number;
+            /** Items */
+            items: components["schemas"]["ReviewOut"][];
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+        };
         /** SavedAddressIn */
         SavedAddressIn: {
             /** Full Name */
@@ -1689,6 +1805,98 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["SavedAddressOut"];
                 };
+            };
+        };
+    };
+    reviews_list: {
+        parameters: {
+            query?: {
+                page?: number;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewPageOut"];
+                };
+            };
+        };
+    };
+    reviews_get_mine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyReviewStateOut"];
+                };
+            };
+        };
+    };
+    reviews_save_mine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyReviewOut"];
+                };
+            };
+        };
+    };
+    reviews_delete_mine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

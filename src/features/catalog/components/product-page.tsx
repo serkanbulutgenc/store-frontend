@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAddToBasket } from "@/features/basket/queries";
 import { HeartButton } from "@/features/favorites/components/heart-button";
+import { ReviewsSection } from "@/features/reviews/components/reviews-section";
 import { cn } from "@/lib/utils";
 import {
   canAddToBasket,
@@ -232,6 +233,7 @@ export function ProductPage({ product }: { product: ProductDetail }) {
           )}
         </div>
       </div>
+      <ReviewsSection key={product.slug} slug={product.slug} productId={product.id} />
       <Similar product={product} />
     </main>
   );

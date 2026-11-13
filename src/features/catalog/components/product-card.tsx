@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { HeartButton } from "@/features/favorites/components/heart-button";
+import { RatingSummary } from "@/features/reviews/components/stars";
 import { formatTry } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { ProductCard as Card } from "../queries";
@@ -44,6 +45,7 @@ export function ProductCard({ product, dimSoldOut }: { product: Card; dimSoldOut
         </div>
         <h3 className="mt-2 line-clamp-2">{product.title}</h3>
         <Price price={product.price} oldPrice={product.old_price} />
+        <RatingSummary average={product.rating_average} count={product.rating_count} />
         {product.colours.length > 1 && (
           <ul className="mt-1 flex gap-1" aria-label="Renkler">
             {product.colours.map((c) => (

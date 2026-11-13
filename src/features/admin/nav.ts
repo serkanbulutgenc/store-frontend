@@ -6,6 +6,7 @@ import {
   Home,
   Layers,
   type LucideIcon,
+  MessageSquareText,
   Package,
   Palette,
   Scale,
@@ -56,6 +57,12 @@ export const NAV_GROUPS: NavGroup[] = [
         to: "/admin/product-classes",
         icon: Shapes,
         permission: "manage_product_classes",
+      },
+      {
+        label: "Yorumlar",
+        to: "/admin/reviews",
+        icon: MessageSquareText,
+        permission: "manage_products",
       },
       { label: "Markalar", to: "/admin/brands", icon: Tag, permission: "manage_brands" },
       {

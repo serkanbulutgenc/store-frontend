@@ -1144,6 +1144,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["reviews_admin_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/reviews/{review_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["reviews_admin_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/reviews/{review_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["reviews_admin_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/reviews/{review_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["reviews_admin_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/returns": {
         parameters: {
             query?: never;
@@ -1413,6 +1477,39 @@ export interface components {
             title: string;
             /** Version */
             version: number;
+        };
+        /** AdminReviewOut */
+        AdminReviewOut: {
+            /** Author */
+            author: string;
+            /** Author Email */
+            author_email: string;
+            /** Body */
+            body: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Id */
+            id: number;
+            /** Moderated At */
+            moderated_at: string | null;
+            /** Moderated By */
+            moderated_by: string | null;
+            /** Product Id */
+            product_id: number;
+            /** Product Title */
+            product_title: string;
+            /** Stars */
+            stars: number;
+            /** Status */
+            status: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
         };
         /** AttributeIn */
         AttributeIn: {
@@ -2359,6 +2456,17 @@ export interface components {
             postal_code?: string | null;
             /** Street */
             street?: string | null;
+        };
+        /** PagedAdminReviewOut */
+        PagedAdminReviewOut: {
+            /** Items */
+            items: components["schemas"]["AdminReviewOut"][];
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total */
+            total: number;
         };
         /** PagedAuditEntryOut */
         PagedAuditEntryOut: {
@@ -4949,6 +5057,94 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["VariantGenerateOut"];
                 };
+            };
+        };
+    };
+    reviews_admin_list: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedAdminReviewOut"];
+                };
+            };
+        };
+    };
+    reviews_admin_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                review_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminReviewOut"];
+                };
+            };
+        };
+    };
+    reviews_admin_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                review_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminReviewOut"];
+                };
+            };
+        };
+    };
+    reviews_admin_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                review_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

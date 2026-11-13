@@ -25,6 +25,10 @@ export const AUDIT_ACTIONS: Record<string, string> = {
   export_run: "Dışa aktarım",
   catalogue_import: "Katalog içe aktarma",
   account_deletion: "Hesap silme",
+  legal_page_published: "Yasal sayfa yayını",
+  review_approved: "Yorum onayı",
+  review_rejected: "Yorum reddi",
+  review_deleted: "Yorum silme",
 };
 
 export const auditActionLabel = (action: string) => AUDIT_ACTIONS[action] ?? action;
