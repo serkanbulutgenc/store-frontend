@@ -296,6 +296,83 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/legal-pages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Pages
+         * @description The current version of every Legal page.
+         */
+        get: operations["legal_list_public"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/legal-pages/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search Pages
+         * @description Full-text search over the current Legal pages; matches are marked « ».
+         */
+        get: operations["legal_search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/legal-pages/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Page */
+        get: operations["legal_get_public"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/legal-pages/{slug}/versions/{version}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Page Version
+         * @description An older text, so a Consent record can show what a Shopper accepted.
+         */
+        get: operations["legal_get_public_version"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/store/products": {
         parameters: {
             query?: never;
@@ -787,6 +864,48 @@ export interface components {
              */
             page_size: number;
         };
+        /** LegalPageOut */
+        LegalPageOut: {
+            /** Body */
+            body: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Page */
+            page: string;
+            /** Slug */
+            slug: string;
+            /** Title */
+            title: string;
+            /** Version */
+            version: number;
+        };
+        /** LegalPageRow */
+        LegalPageRow: {
+            /** Page */
+            page: string;
+            /** Slug */
+            slug: string;
+            /** Title */
+            title: string;
+            /** Version */
+            version: number;
+        };
+        /** LegalSearchHit */
+        LegalSearchHit: {
+            /** Excerpt */
+            excerpt: string;
+            /** Page */
+            page: string;
+            /** Slug */
+            slug: string;
+            /** Title */
+            title: string;
+            /** Version */
+            version: number;
+        };
         /** OrderAddressOut */
         OrderAddressOut: {
             /** Full Name */
@@ -1195,6 +1314,14 @@ export interface components {
             postal_code: string;
             /** Street */
             street: string;
+        };
+        /** SearchParams */
+        SearchParams: {
+            /**
+             * Q
+             * @default
+             */
+            q: string;
         };
         /** SellerOut */
         SellerOut: {
@@ -1757,6 +1884,93 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CsrfOut"];
+                };
+            };
+        };
+    };
+    legal_list_public: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LegalPageRow"][];
+                };
+            };
+        };
+    };
+    legal_search: {
+        parameters: {
+            query?: {
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LegalSearchHit"][];
+                };
+            };
+        };
+    };
+    legal_get_public: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LegalPageOut"];
+                };
+            };
+        };
+    };
+    legal_get_public_version: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                version: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LegalPageOut"];
                 };
             };
         };

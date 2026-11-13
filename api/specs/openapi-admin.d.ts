@@ -366,6 +366,67 @@ export interface paths {
         patch: operations["catalog_update_product_image"];
         trace?: never;
     };
+    "/api/admin/legal-pages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Pages
+         * @description The current version of every page.
+         */
+        get: operations["legal_pages_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/legal-pages/{page}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Versions
+         * @description Every saved version of one page, newest first.
+         */
+        get: operations["legal_pages_versions"];
+        put?: never;
+        /**
+         * Publish Version
+         * @description Save the next version. It is live on the Storefront at once; 422 if unchanged.
+         */
+        post: operations["legal_pages_publish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/legal-pages/{page}/versions/{version}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Version */
+        get: operations["legal_pages_get_version"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/me": {
         parameters: {
             query?: never;
@@ -1135,6 +1196,44 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AdminLegalRow */
+        AdminLegalRow: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Created By */
+            created_by?: string | null;
+            /** Page */
+            page: string;
+            /** Slug */
+            slug: string;
+            /** Title */
+            title: string;
+            /** Version */
+            version: number;
+        };
+        /** AdminLegalVersion */
+        AdminLegalVersion: {
+            /** Body */
+            body: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Created By */
+            created_by?: string | null;
+            /** Page */
+            page: string;
+            /** Slug */
+            slug: string;
+            /** Title */
+            title: string;
+            /** Version */
+            version: number;
+        };
         /** AuditEntryDetail */
         AuditEntryDetail: {
             /** Action */
@@ -2248,6 +2347,13 @@ export interface components {
             /** Zone Id */
             zone_id: number;
         };
+        /** PublishIn */
+        PublishIn: {
+            /** Body */
+            body: string;
+            /** Title */
+            title: string;
+        };
         /** RateOut */
         RateOut: {
             /**
@@ -2467,10 +2573,6 @@ export interface components {
             fee_kdv_rate?: string | null;
             /** Free Shipping Threshold */
             free_shipping_threshold?: string | null;
-            /** Legal Versions */
-            legal_versions?: {
-                [key: string]: string;
-            } | null;
             /** Low Stock Default */
             low_stock_default?: number | null;
             /** Notification Emails */
@@ -3230,6 +3332,97 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductImageOut"];
+                };
+            };
+        };
+    };
+    legal_pages_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminLegalRow"][];
+                };
+            };
+        };
+    };
+    legal_pages_versions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                page: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminLegalRow"][];
+                };
+            };
+        };
+    };
+    legal_pages_publish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                page: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublishIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminLegalVersion"];
+                };
+            };
+        };
+    };
+    legal_pages_get_version: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                page: string;
+                version: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminLegalVersion"];
                 };
             };
         };

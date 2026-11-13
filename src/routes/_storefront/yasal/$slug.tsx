@@ -1,13 +1,9 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Markdown } from "@/features/legal/markdown";
-import { legalBySlug } from "@/features/legal/pages";
+import { legalPageQuery } from "@/features/legal/queries";
 
 export const Route = createFileRoute("/_storefront/yasal/$slug")({
-  loader: ({ params }) => {
-    const page = legalBySlug(params.slug);
-    if (!page) throw notFound();
-    return page;
-  },
+  loader: ({ context, params }) => context.queryClient.query(legalPageQuery(params.slug)),
   head: ({ loaderData }) => ({
     meta: [{ title: `${loaderData?.title ?? "Yasal"} | Aura Tekstil` }],
   }),

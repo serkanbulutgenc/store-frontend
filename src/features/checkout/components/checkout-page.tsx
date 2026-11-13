@@ -15,7 +15,7 @@ import {
   type PublicSettings,
   settingsQuery,
 } from "@/features/basket/queries";
-import { LEGAL_PAGES } from "@/features/legal/pages";
+import { ApiError } from "@/lib/api/errors";
 import { formatTry } from "@/lib/format";
 import { useDebounced } from "@/lib/use-debounced";
 import { cn } from "@/lib/utils";
@@ -28,15 +28,22 @@ function useCheckoutForm(
   submit: (body: ReturnType<typeof toCheckoutBody>) => Promise<void>,
   legalVersions: Record<string, string>,
 ) {
+  const qc = useQueryClient();
   return useForm({
     defaultValues: emptyCheckout,
     validators: {
       onSubmit: checkoutSchema,
-      onSubmitAsync: async ({ value }) => {
+      onSubmitAsync: async ({ value, formApi }) => {
         try {
           await submit(toCheckoutBody(value, legalVersions));
           return undefined;
         } catch (e) {
+          if (e instanceof ApiError && e.code === "legal_changed") {
+            // A Legal page was republished while the Shopper filled the form: pick up the new
+            // versions and ask for the contract to be accepted again.
+            formApi.setFieldValue("contract_acknowledged", false);
+            await qc.invalidateQueries({ queryKey: settingsQuery.queryKey });
+          }
           return apiErrorToFormErrors(e);
         }
       },
@@ -162,7 +169,8 @@ export function CheckoutPage() {
   const place = usePlaceOrder();
   const navigate = useNavigate();
 
-  const legalVersionsShown = Object.fromEntries(LEGAL_PAGES.map((p) => [p.key, p.version]));
+  // The versions current when the Shopper loaded the page: what they are shown and accept.
+  const legalVersionsShown = settings?.legal_versions ?? {};
   const form = useCheckoutForm(async (body) => {
     await place.mutateAsync(body);
     await navigate({ to: "/siparis-onayi" });

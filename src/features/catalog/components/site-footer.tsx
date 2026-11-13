@@ -1,13 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { LEGAL_PAGES } from "@/features/legal/pages";
+import type { LegalPageRow } from "@/features/legal/queries";
 
-export function SiteFooter() {
+export function SiteFooter({ pages }: { pages: LegalPageRow[] }) {
   return (
     <footer className="mt-16 border-t border-border bg-card">
       <nav aria-label="Yasal bilgiler" className="mx-auto max-w-6xl px-4 py-6">
         <ul className="flex flex-wrap gap-x-6 gap-y-2">
-          {LEGAL_PAGES.map((p) => (
-            <li key={p.slug}>
+          {pages.map((p) => (
+            <li key={p.page}>
               <Link
                 to="/yasal/$slug"
                 params={{ slug: p.slug }}
@@ -17,6 +17,14 @@ export function SiteFooter() {
               </Link>
             </li>
           ))}
+          <li>
+            <Link
+              to="/yasal"
+              className="text-muted-foreground hover:text-foreground hover:underline"
+            >
+              Yasal sayfalarda ara
+            </Link>
+          </li>
           <li>
             <Link
               to="/siparis-takip"

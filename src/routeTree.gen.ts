@@ -28,6 +28,7 @@ import { Route as StorefrontHesapGirisRouteImport } from './routes/_storefront/h
 import { Route as StorefrontHesapKayitRouteImport } from './routes/_storefront/hesap/kayit'
 import { Route as StorefrontKategoriSlugRouteImport } from './routes/_storefront/kategori/$slug'
 import { Route as StorefrontUrunSlugRouteImport } from './routes/_storefront/urun/$slug'
+import { Route as StorefrontYasalIndexRouteImport } from './routes/_storefront/yasal/index'
 import { Route as StorefrontYasalSlugRouteImport } from './routes/_storefront/yasal/$slug'
 import { Route as AdminAppIndexRouteImport } from './routes/admin/_app/index'
 import { Route as AdminAppSplatRouteImport } from './routes/admin/_app/$'
@@ -153,6 +154,11 @@ const StorefrontKategoriSlugRoute = StorefrontKategoriSlugRouteImport.update({
 const StorefrontUrunSlugRoute = StorefrontUrunSlugRouteImport.update({
   id: '/urun/$slug',
   path: '/urun/$slug',
+  getParentRoute: () => StorefrontRouteRoute,
+} as any)
+const StorefrontYasalIndexRoute = StorefrontYasalIndexRouteImport.update({
+  id: '/yasal/',
+  path: '/yasal/',
   getParentRoute: () => StorefrontRouteRoute,
 } as any)
 const StorefrontYasalSlugRoute = StorefrontYasalSlugRouteImport.update({
@@ -365,6 +371,7 @@ export interface FileRoutesByFullPath {
   '/admin/staff': typeof AdminAppStaffRoute
   '/admin/stock': typeof AdminAppStockRoute
   '/admin/suppliers': typeof AdminAppSuppliersRoute
+  '/yasal/': typeof StorefrontYasalIndexRoute
   '/admin/': typeof AdminAppIndexRoute
   '/hesap/adresler': typeof StorefrontCustomerHesapAdreslerRoute
   '/hesap/guvenlik': typeof StorefrontCustomerHesapGuvenlikRoute
@@ -415,6 +422,7 @@ export interface FileRoutesByTo {
   '/admin/staff': typeof AdminAppStaffRoute
   '/admin/stock': typeof AdminAppStockRoute
   '/admin/suppliers': typeof AdminAppSuppliersRoute
+  '/yasal': typeof StorefrontYasalIndexRoute
   '/hesap/adresler': typeof StorefrontCustomerHesapAdreslerRoute
   '/hesap/guvenlik': typeof StorefrontCustomerHesapGuvenlikRoute
   '/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
@@ -469,6 +477,7 @@ export interface FileRoutesById {
   '/admin/_app/staff': typeof AdminAppStaffRoute
   '/admin/_app/stock': typeof AdminAppStockRoute
   '/admin/_app/suppliers': typeof AdminAppSuppliersRoute
+  '/_storefront/yasal/': typeof StorefrontYasalIndexRoute
   '/admin/_app/': typeof AdminAppIndexRoute
   '/_storefront/_customer/hesap/adresler': typeof StorefrontCustomerHesapAdreslerRoute
   '/_storefront/_customer/hesap/guvenlik': typeof StorefrontCustomerHesapGuvenlikRoute
@@ -522,6 +531,7 @@ export interface FileRouteTypes {
     | '/admin/staff'
     | '/admin/stock'
     | '/admin/suppliers'
+    | '/yasal/'
     | '/admin/'
     | '/hesap/adresler'
     | '/hesap/guvenlik'
@@ -572,6 +582,7 @@ export interface FileRouteTypes {
     | '/admin/staff'
     | '/admin/stock'
     | '/admin/suppliers'
+    | '/yasal'
     | '/hesap/adresler'
     | '/hesap/guvenlik'
     | '/hesap/eposta-dogrula/$key'
@@ -625,6 +636,7 @@ export interface FileRouteTypes {
     | '/admin/_app/staff'
     | '/admin/_app/stock'
     | '/admin/_app/suppliers'
+    | '/_storefront/yasal/'
     | '/admin/_app/'
     | '/_storefront/_customer/hesap/adresler'
     | '/_storefront/_customer/hesap/guvenlik'
@@ -785,6 +797,13 @@ declare module '@tanstack/react-router' {
       path: '/urun/$slug'
       fullPath: '/urun/$slug'
       preLoaderRoute: typeof StorefrontUrunSlugRouteImport
+      parentRoute: typeof StorefrontRouteRoute
+    }
+    '/_storefront/yasal/': {
+      id: '/_storefront/yasal/'
+      path: '/yasal'
+      fullPath: '/yasal/'
+      preLoaderRoute: typeof StorefrontYasalIndexRouteImport
       parentRoute: typeof StorefrontRouteRoute
     }
     '/_storefront/yasal/$slug': {
@@ -1073,6 +1092,7 @@ interface StorefrontRouteRouteChildren {
   StorefrontKategoriSlugRoute: typeof StorefrontKategoriSlugRoute
   StorefrontUrunSlugRoute: typeof StorefrontUrunSlugRoute
   StorefrontYasalSlugRoute: typeof StorefrontYasalSlugRoute
+  StorefrontYasalIndexRoute: typeof StorefrontYasalIndexRoute
   StorefrontHesapEpostaDogrulaKeyRoute: typeof StorefrontHesapEpostaDogrulaKeyRoute
   StorefrontHesapSifreSifirlaKeyRoute: typeof StorefrontHesapSifreSifirlaKeyRoute
   StorefrontHesapSifreSifirlaIndexRoute: typeof StorefrontHesapSifreSifirlaIndexRoute
@@ -1091,6 +1111,7 @@ const StorefrontRouteRouteChildren: StorefrontRouteRouteChildren = {
   StorefrontKategoriSlugRoute: StorefrontKategoriSlugRoute,
   StorefrontUrunSlugRoute: StorefrontUrunSlugRoute,
   StorefrontYasalSlugRoute: StorefrontYasalSlugRoute,
+  StorefrontYasalIndexRoute: StorefrontYasalIndexRoute,
   StorefrontHesapEpostaDogrulaKeyRoute: StorefrontHesapEpostaDogrulaKeyRoute,
   StorefrontHesapSifreSifirlaKeyRoute: StorefrontHesapSifreSifirlaKeyRoute,
   StorefrontHesapSifreSifirlaIndexRoute: StorefrontHesapSifreSifirlaIndexRoute,
