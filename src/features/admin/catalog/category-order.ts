@@ -156,3 +156,46 @@ export function isEffectivelyHidden(c: CategoryOut, all: CategoryOut[]): boolean
   }
   return false;
 }
+
+export type DropTarget = { kind: "before" | "after" | "inside"; id: number };
+
+export type DropPlan = {
+  /** Sent first when the Category changes parent. */
+  move: { id: number; parent_id: number | null } | null;
+  /** Sent last: the new order of the parent's children. */
+  reorder: { parent_id: number | null; ids: number[] };
+};
+
+/** The requests a drop stands for, or null when it is not allowed. */
+export function planDrop(
+  categories: CategoryOut[],
+  activeId: number,
+  target: DropTarget,
+): DropPlan | null {
+  const active = categories.find((c) => c.id === activeId);
+  const over = categories.find((c) => c.id === target.id);
+  if (!active || !over || over.id === activeId) return null;
+  const parentId = target.kind === "inside" ? over.id : over.parent_id;
+  if (parentId !== null && parentId !== active.parent_id) {
+    const parent = moveTargets(categories, activeId).find((t) => t.category.id === parentId);
+    if (!parent || parent.blocked) return null;
+  }
+  const group = categories
+    .filter((c) => c.parent_id === parentId && c.id !== activeId)
+    .sort(byOrderThenName);
+  const at =
+    target.kind === "inside"
+      ? group.length
+      : group.findIndex((c) => c.id === over.id) + (target.kind === "after" ? 1 : 0);
+  const ids = group.map((c) => c.id);
+  ids.splice(at, 0, activeId);
+  const move = parentId === active.parent_id ? null : { id: activeId, parent_id: parentId };
+  return { move, reorder: { parent_id: parentId, ids } };
+}
+
+/** Whether the row `overId` accepts the dragged Category in any position. */
+export function isDroppable(categories: CategoryOut[], activeId: number, overId: number): boolean {
+  return (["before", "after", "inside"] as const).some(
+    (kind) => planDrop(categories, activeId, { kind, id: overId }) !== null,
+  );
+}

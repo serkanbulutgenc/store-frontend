@@ -3,8 +3,10 @@ import {
   buildTree,
   type CategoryNode,
   expandableIds,
+  isDroppable,
   isEffectivelyHidden,
   moveTargets,
+  planDrop,
   reorderedIds,
   siblingReorder,
   visibleRows,
@@ -169,5 +171,59 @@ describe("moving a Category up or down among its siblings", () => {
     expect(siblingReorder(all, 3, 1)).toBeNull();
     expect(siblingReorder(all, 8, 1)).toBeNull();
     expect(siblingReorder(all, 99, 1)).toBeNull();
+  });
+});
+
+describe("planDrop", () => {
+  it("reorders among siblings when dropped before or after a sibling", () => {
+    expect(planDrop(all, 2, { kind: "after", id: 1 })).toEqual({
+      move: null,
+      reorder: { parent_id: null, ids: [5, 1, 2] },
+    });
+    expect(planDrop(all, 1, { kind: "before", id: 2 })).toEqual({
+      move: null,
+      reorder: { parent_id: null, ids: [1, 2, 5] },
+    });
+  });
+
+  it("re-parents: dropped inside a row it becomes the last child, after moving", () => {
+    expect(planDrop(all, 5, { kind: "inside", id: 1 })).toEqual({
+      move: { id: 5, parent_id: 1 },
+      reorder: { parent_id: 1, ids: [4, 3, 5] },
+    });
+  });
+
+  it("re-parents when dropped before a row under another parent", () => {
+    expect(planDrop(all, 2, { kind: "before", id: 3 })).toEqual({
+      move: { id: 2, parent_id: 1 },
+      reorder: { parent_id: 1, ids: [4, 2, 3] },
+    });
+  });
+
+  it("refuses drops onto itself or into its own subtree", () => {
+    expect(planDrop(all, 3, { kind: "inside", id: 3 })).toBeNull();
+    expect(planDrop(all, 3, { kind: "before", id: 3 })).toBeNull();
+    expect(planDrop(all, 3, { kind: "inside", id: 7 })).toBeNull();
+    expect(planDrop(all, 3, { kind: "after", id: 8 })).toBeNull();
+  });
+
+  it("refuses drops that would take the subtree past depth 5", () => {
+    // Elbise (with Midi > Yazlık > Keten below it) is 4 levels tall: fine under a top-level row, too deep under Etek (depth 2).
+    expect(planDrop(all, 3, { kind: "inside", id: 2 })?.move).toEqual({ id: 3, parent_id: 2 });
+    expect(planDrop(all, 3, { kind: "inside", id: 4 })).toBeNull();
+    // A leaf fits under Yazlık (depth 4) as a depth-5 child ...
+    expect(planDrop(all, 5, { kind: "inside", id: 7 })?.move).toEqual({ id: 5, parent_id: 7 });
+    // ... but not under Keten (depth 5), nor beside Keten's children.
+    expect(planDrop(all, 5, { kind: "inside", id: 8 })).toBeNull();
+    expect(planDrop(all, 3, { kind: "before", id: 8 })).toBeNull();
+  });
+});
+
+describe("isDroppable", () => {
+  it("marks the Category itself, its subtree and rows that would pass depth 5 as not droppable", () => {
+    const blocked = all.filter((x) => !isDroppable(all, 3, x.id)).map((x) => x.id);
+    // Elbise (3) itself, Midi (6), Yazlık (7), Keten (8); Etek (4) is a depth-2 row and
+    // Keten's neighbours are covered above, so only the four are blocked here.
+    expect(blocked.sort()).toEqual([3, 6, 7, 8].sort());
   });
 });

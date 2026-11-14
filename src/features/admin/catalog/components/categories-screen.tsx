@@ -15,6 +15,7 @@ import { validateFile } from "../../photos/rules";
 import { uploadCategoryImage } from "../category-image";
 import {
   buildTree,
+  type DropPlan,
   expandableIds,
   isEffectivelyHidden,
   type MoveBlock,
@@ -24,6 +25,7 @@ import {
   visibleRows,
 } from "../category-order";
 import { type CategoryOut, categoriesQuery, keys } from "../queries";
+import { DragHandle, RowDropZones, TreeDnd, useRowBlocked } from "./category-drag";
 import { CategoryRowActions } from "./category-row-actions";
 
 const message = (e: unknown) =>
@@ -75,6 +77,24 @@ export function CategoriesScreen({ me }: { me: Me }) {
     },
     onError: (e) => toast.error(message(e)),
   });
+  // A drop is the buttons' requests in sequence: "Move to..." first when the parent
+  // changes, then the reorder of the new group.
+  const drop = useMutation({
+    mutationFn: async (plan: DropPlan) => {
+      try {
+        if (plan.move) {
+          await adminApi.POST("/api/admin/categories/{category_id}/move", {
+            params: { path: { category_id: plan.move.id } },
+            body: { parent_id: plan.move.parent_id },
+          });
+        }
+        await adminApi.POST("/api/admin/categories/reorder", { body: plan.reorder });
+      } finally {
+        await refresh();
+      }
+    },
+    onError: (e) => toast.error(message(e)),
+  });
   const toggleHidden = useMutation({
     mutationFn: async (c: CategoryOut) => {
       await adminApi.PATCH("/api/admin/categories/{category_id}", {
@@ -110,40 +130,48 @@ export function CategoriesScreen({ me }: { me: Me }) {
       </div>
       {canManage && (
         <p className="text-sm text-muted-foreground">
-          Sırayı değiştirmek için okları kullanın; sıra mağaza menüsüne hemen yansır. En fazla beş
-          seviye.
+          Sırayı değiştirmek için satırı tutup sürükleyin (klavyede tutamaçta Boşluk, ardından
+          yukarı ve aşağı oklar) ya da okları ve “Taşı…” düğmesini kullanın; sıra mağaza menüsüne
+          hemen yansır. En fazla beş seviye.
         </p>
       )}
-      <ul className="divide-y divide-border rounded-md border border-border bg-card">
-        {rows.map((row) => (
-          <TreeItem
-            key={row.category.id}
-            row={row}
-            hidden={isEffectivelyHidden(row.category, data)}
-            onToggle={toggle}
-          >
-            <CategoryRowActions
+      <TreeDnd
+        categories={data}
+        canRestructure={canRestructure}
+        onDrop={(plan) => drop.mutate(plan)}
+      >
+        <ul className="divide-y divide-border rounded-md border border-border bg-card">
+          {rows.map((row) => (
+            <TreeItem
+              key={row.category.id}
               row={row}
-              canManage={canManage}
-              canRestructure={canRestructure}
-              busy={reorder.isPending}
-              onAddChild={(id) => {
-                setExpanded((prev) => new Set(prev).add(id));
-                setCreating({ parentId: id });
-              }}
-              onEdit={setEditingId}
-              onToggleHidden={(id) => {
-                const c = find(id);
-                if (c) toggleHidden.mutate(c);
-              }}
-              onMove={setMovingId}
-              onDelete={setDeletingId}
-              onUp={(id) => step(id, -1)}
-              onDown={(id) => step(id, 1)}
-            />
-          </TreeItem>
-        ))}
-      </ul>
+              hidden={isEffectivelyHidden(row.category, data)}
+              draggable={canManage && !reorder.isPending && !drop.isPending}
+              onToggle={toggle}
+            >
+              <CategoryRowActions
+                row={row}
+                canManage={canManage}
+                canRestructure={canRestructure}
+                busy={reorder.isPending}
+                onAddChild={(id) => {
+                  setExpanded((prev) => new Set(prev).add(id));
+                  setCreating({ parentId: id });
+                }}
+                onEdit={setEditingId}
+                onToggleHidden={(id) => {
+                  const c = find(id);
+                  if (c) toggleHidden.mutate(c);
+                }}
+                onMove={setMovingId}
+                onDelete={setDeletingId}
+                onUp={(id) => step(id, -1)}
+                onDown={(id) => step(id, 1)}
+              />
+            </TreeItem>
+          ))}
+        </ul>
+      </TreeDnd>
       <Dialog open={creating !== null} onClose={() => setCreating(null)} title="Yeni kategori">
         {creating && (
           <CreateForm all={data} parentId={creating.parentId} onClose={() => setCreating(null)} />
@@ -195,21 +223,31 @@ export function CategoriesScreen({ me }: { me: Me }) {
 function TreeItem({
   row,
   hidden,
+  draggable,
   onToggle,
   children,
 }: {
   row: TreeRow;
   hidden: boolean;
+  draggable: boolean;
   onToggle: (id: number) => void;
   children: React.ReactNode;
 }) {
   const c = row.category;
   const thumb = c.image?.derivatives.find((d) => d.width >= 400) ?? c.image?.derivatives[0];
+  const blocked = useRowBlocked(c.id);
   return (
     <li
-      className="flex flex-wrap items-center gap-3 px-3 py-2"
+      className={`relative flex flex-wrap items-center gap-3 px-3 py-2 ${blocked ? "opacity-50" : ""}`}
       style={{ paddingLeft: `${0.75 + (row.depth - 1) * 1.5}rem` }}
+      data-droppable={blocked ? "false" : undefined}
     >
+      <RowDropZones id={c.id} />
+      {draggable ? (
+        <DragHandle id={c.id} name={c.name} />
+      ) : (
+        <span aria-hidden className="size-6 shrink-0" />
+      )}
       {row.hasChildren ? (
         <button
           type="button"
