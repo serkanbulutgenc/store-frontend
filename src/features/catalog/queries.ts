@@ -13,12 +13,17 @@ export type CategoryNode = components["schemas"]["CategoryNodeOut"];
 export type CategoryPage = components["schemas"]["CategoryPageOut"];
 export type CardImage = components["schemas"]["CardImageOut"];
 
+/** The menu shows categories, sub-categories and their children. */
+const MENU_DEPTH = 3;
+
 const ROOT = ["store", "catalog"] as const;
 
 export const categoriesQuery = queryOptions({
   queryKey: [...ROOT, "categories"],
   staleTime: 5 * 60_000,
-  queryFn: async () => (await storeApi.GET("/api/store/categories")).data as CategoryNode[],
+  queryFn: async () =>
+    (await storeApi.GET("/api/store/categories", { params: { query: { depth: MENU_DEPTH } } }))
+      .data as CategoryNode[],
 });
 
 export const categoryPageQuery = (slug: string) =>

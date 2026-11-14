@@ -6,42 +6,7 @@ import { Input } from "@/components/ui/input";
 import { accountQuery } from "@/features/account/queries";
 import { basketQuery } from "@/features/basket/queries";
 import type { CategoryNode } from "../queries";
-
-/** Top-level categories; hovering or focusing one opens its children. */
-function CategoryMenu({ categories }: { categories: CategoryNode[] }) {
-  return (
-    <nav aria-label="Kategoriler" className="border-t border-border">
-      <ul className="mx-auto flex max-w-6xl flex-wrap gap-1 px-4">
-        {categories.map((c) => (
-          <li key={c.slug} className="group relative">
-            <Link
-              to="/kategori/$slug"
-              params={{ slug: c.slug }}
-              className="block px-3 py-3 hover:text-primary focus-visible:outline-2 focus-visible:outline-ring"
-            >
-              {c.name}
-            </Link>
-            {c.children.length > 0 && (
-              <ul className="invisible absolute left-0 top-full z-20 min-w-48 rounded-md border border-border bg-card py-1 shadow-md group-focus-within:visible group-hover:visible">
-                {c.children.map((child) => (
-                  <li key={child.slug}>
-                    <Link
-                      to="/kategori/$slug"
-                      params={{ slug: child.slug }}
-                      className="block px-3 py-2 hover:bg-accent"
-                    >
-                      {child.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
-}
+import { DesktopCategoryMenu, MobileCategoryMenu } from "./category-menu";
 
 function SearchBox() {
   const navigate = useNavigate();
@@ -115,16 +80,19 @@ export function SiteHeader({ categories }: { categories: CategoryNode[] }) {
   return (
     <header className="bg-card">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-        <Link to="/" className="text-xl font-semibold text-primary">
-          Aura Tekstil
-        </Link>
+        <div className="flex items-center gap-1">
+          <MobileCategoryMenu categories={categories} />
+          <Link to="/" className="text-xl font-semibold text-primary">
+            Aura Tekstil
+          </Link>
+        </div>
         <SearchBox />
         <div className="flex items-center">
           <AccountLink />
           <BasketLink />
         </div>
       </div>
-      <CategoryMenu categories={categories} />
+      <DesktopCategoryMenu categories={categories} />
     </header>
   );
 }

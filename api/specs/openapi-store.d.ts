@@ -287,7 +287,8 @@ export interface paths {
         /**
          * List Categories
          * @description The category tree for the header menu and the homepage: `depth` levels
-         *     (1 to 5, default 2), each node with its `child_count`.
+         *     (1 to 5, default 2), each node with its `child_count`
+         *     and the `image_url` of its thumbnail (null until the image is ready).
          */
         get: operations["catalog_list_categories"];
         put?: never;
@@ -905,6 +906,8 @@ export interface components {
             child_count: number;
             /** Children */
             children: components["schemas"]["CategoryNodeOut"][];
+            /** Image Url */
+            image_url: string | null;
             /** Name */
             name: string;
             /** Slug */
