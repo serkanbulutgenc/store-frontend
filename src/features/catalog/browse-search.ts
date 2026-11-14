@@ -1,16 +1,28 @@
 import { z } from "zod";
 
-export const SORTS = ["newest", "price_asc", "price_desc", "relevance"] as const;
+export const SORTS = [
+  "newest",
+  "price_asc",
+  "price_desc",
+  "name_asc",
+  "rating_desc",
+  "relevance",
+] as const;
 export type Sort = (typeof SORTS)[number];
 export const SORT_LABELS: Record<Sort, string> = {
   relevance: "Önerilen",
   newest: "En yeni",
   price_asc: "Fiyat: artan",
   price_desc: "Fiyat: azalan",
+  name_asc: "İsim: A-Z",
+  rating_desc: "En yüksek puan",
 };
 
-/** "Daha fazla göster" reveals page after page; a URL never fetches more than this many. */
-export const MAX_PAGES = 10;
+/** Sanity bound for a hand-typed `?page=`; the listing also clamps to the last real page. */
+export const MAX_PAGE_PARAM = 500;
+
+/** The server renders (and the loader preloads) at most this many pages; the rest load on the client. */
+export const SSR_PAGES = 3;
 
 /** One value or a list, from a URL that may have been typed by hand. */
 const list = <T extends z.ZodType>(item: T) =>
@@ -39,7 +51,7 @@ export const browseSearchSchema = z.object({
   price_max: price,
   in_stock: z.boolean().optional().catch(undefined),
   sort: z.enum(SORTS).optional().catch(undefined),
-  page: z.coerce.number().int().min(1).optional().catch(undefined),
+  page: z.coerce.number().int().min(1).max(MAX_PAGE_PARAM).optional().catch(undefined),
 });
 
 export type BrowseSearch = z.infer<typeof browseSearchSchema>;
@@ -81,11 +93,27 @@ export function toListQuery(s: BrowseSearch, opts: { category?: string; page: nu
   return q;
 }
 
-/** `page=3` in the URL means pages 1 to 3 are on screen. */
-export function pageNumbers(page: number | undefined): number[] {
-  const n = Math.min(Math.max(page ?? 1, 1), MAX_PAGES);
+/** `page=3` in the URL means pages 1 to 3 are on screen; `max` limits how many are listed. */
+export function pageNumbers(page: number | undefined, max = MAX_PAGE_PARAM): number[] {
+  const n = Math.min(Math.max(page ?? 1, 1), max);
   return Array.from({ length: n }, (_, i) => i + 1);
 }
+
+/** The pages the loader awaits: a deep `?page=30` only preloads the first few. */
+export const ssrPageNumbers = (page: number | undefined) => pageNumbers(page, SSR_PAGES);
+
+/**
+ * The pages a loader awaits. The server preloads a few so the HTML is complete; the browser
+ * awaits none, so a filter, sort or scroll shows skeleton cards instead of holding the old screen.
+ */
+export const loaderPageNumbers = (page: number | undefined) =>
+  typeof window === "undefined" ? ssrPageNumbers(page) : [];
+
+/** For `loaderDeps`: a bump beyond the preloaded pages must not re-run the loader. */
+export const loaderSearch = (s: BrowseSearch): BrowseSearch => ({
+  ...s,
+  page: Math.min(s.page ?? 1, SSR_PAGES),
+});
 
 /** Applies a filter change: the page resets and values equal to the default are removed. */
 export function withFilters(current: BrowseSearch, patch: Partial<BrowseSearch>): BrowseSearch {
@@ -102,3 +130,7 @@ export function toggleValue<T>(values: readonly T[] | undefined, value: T): T[] 
   const current = values ?? [];
   return current.includes(value) ? current.filter((v) => v !== value) : [...current, value];
 }
+
+/** Identifies the filter/sort set of a listing, whatever page of it is shown. */
+export const listKey = (s: BrowseSearch, category?: string): string =>
+  JSON.stringify(toListQuery(s, { category, page: 1 }));

@@ -67,3 +67,10 @@ export const productQuery = (slug: string) =>
       }
     },
   });
+
+/**
+ * Pages the server loaded for a listing, sent to the browser inside the route's loader data.
+ * The browser has no query cache at hydration, so without them its first render would be a
+ * skeleton and would not match the server's HTML.
+ */
+export type SeedPages = { key: string; pages: ProductPage[] };

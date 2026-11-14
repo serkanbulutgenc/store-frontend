@@ -1362,7 +1362,7 @@ export interface components {
              * @default newest
              * @enum {string}
              */
-            sort: "newest" | "price_asc" | "price_desc" | "relevance";
+            sort: "newest" | "price_asc" | "price_desc" | "name_asc" | "rating_desc" | "relevance";
         };
         /** ProductPageOut */
         ProductPageOut: {
@@ -2382,7 +2382,7 @@ export interface operations {
                 price_min?: number | string | null;
                 price_max?: number | string | null;
                 in_stock?: boolean;
-                sort?: "newest" | "price_asc" | "price_desc" | "relevance";
+                sort?: "newest" | "price_asc" | "price_desc" | "name_asc" | "rating_desc" | "relevance";
                 page?: number;
             };
             header?: never;

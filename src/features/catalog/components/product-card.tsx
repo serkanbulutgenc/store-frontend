@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Skeleton } from "@/components/ui/skeleton";
 import { HeartButton } from "@/features/favorites/components/heart-button";
 import { RatingSummary } from "@/features/reviews/components/stars";
 import { formatTry } from "@/lib/format";
@@ -66,9 +67,38 @@ export function ProductCard({ product, dimSoldOut }: { product: Card; dimSoldOut
   );
 }
 
+const GRID = "grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-4";
+
+/** Placeholder cards shaped like ProductCard (image, title, price), two rows on desktop. */
+export function ProductGridSkeleton({
+  count = 8,
+  className,
+}: {
+  count?: number;
+  className?: string;
+}) {
+  return (
+    <div className={className}>
+      <p role="status" className="sr-only">
+        Ürünler yükleniyor
+      </p>
+      <ul aria-hidden="true" className={GRID}>
+        {Array.from({ length: count }, (_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: static placeholders
+          <li key={i}>
+            <Skeleton className="aspect-[3/4] w-full" />
+            <Skeleton className="mt-2 h-4 w-3/4" />
+            <Skeleton className="mt-2 h-4 w-1/3" />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function ProductGrid({ products, dimSoldOut }: { products: Card[]; dimSoldOut?: boolean }) {
   return (
-    <ul className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-4">
+    <ul className={GRID}>
       {products.map((p) => (
         <ProductCard key={p.id} product={p} dimSoldOut={dimSoldOut} />
       ))}

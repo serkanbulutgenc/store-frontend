@@ -2,8 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   browseSearchSchema,
   effectiveSort,
-  MAX_PAGES,
+  loaderSearch,
+  MAX_PAGE_PARAM,
   pageNumbers,
+  SSR_PAGES,
+  ssrPageNumbers,
   toggleValue,
   toListQuery,
   withFilters,
@@ -92,8 +95,20 @@ describe("pageNumbers", () => {
     expect(pageNumbers(undefined)).toEqual([1]);
     expect(pageNumbers(3)).toEqual([1, 2, 3]);
   });
-  it("caps the number of pages fetched for one URL", () => {
-    expect(pageNumbers(500)).toHaveLength(MAX_PAGES);
+  it("is no longer capped at 10 pages", () => {
+    expect(pageNumbers(30)).toHaveLength(30);
+  });
+  it("bounds a hand-typed page so a URL cannot ask for millions of pages", () => {
+    expect(pageNumbers(10 ** 9)).toHaveLength(MAX_PAGE_PARAM);
+    expect(browseSearchSchema.parse({ page: MAX_PAGE_PARAM + 1 }).page).toBeUndefined();
+  });
+  it("preloads only the first few pages on the server", () => {
+    expect(ssrPageNumbers(30)).toEqual(Array.from({ length: SSR_PAGES }, (_, i) => i + 1));
+    expect(ssrPageNumbers(2)).toEqual([1, 2]);
+  });
+  it("keeps the loader from re-running when the page grows past the preloaded pages", () => {
+    expect(loaderSearch({ q: "a", page: 7 })).toEqual(loaderSearch({ q: "a", page: 12 }));
+    expect(loaderSearch({ q: "a", page: 7 }).page).toBe(SSR_PAGES);
   });
 });
 

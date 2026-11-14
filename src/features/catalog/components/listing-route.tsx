@@ -1,11 +1,11 @@
 import { Suspense } from "react";
-import { PendingState } from "@/components/route-states";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { BrowseSearch } from "../browse-search";
-import type { CardImage, CategoryNode } from "../queries";
+import type { CardImage, CategoryNode, SeedPages } from "../queries";
 import { ProductImage } from "./product-image";
-import { ProductListing } from "./product-listing";
+import { ListingSkeleton, ProductListing } from "./product-listing";
 
-type Nav = (opts: { search: BrowseSearch; resetScroll: boolean }) => unknown;
+type Nav = (opts: { search: BrowseSearch; resetScroll: boolean; replace?: boolean }) => unknown;
 
 /** Shared body of the category and search routes. */
 export function ListingRoute({
@@ -13,6 +13,7 @@ export function ListingRoute({
   search,
   category,
   categories,
+  seed,
   navigate,
   intro,
 }: {
@@ -20,6 +21,8 @@ export function ListingRoute({
   search: BrowseSearch;
   category?: string;
   categories: CategoryNode[];
+  /** Pages the server loaded, for a hydration that matches its HTML. */
+  seed: SeedPages | null;
   navigate: Nav;
   /** A Category page's copy and image, shown above the products. */
   intro?: { description: string; image: CardImage | null };
@@ -40,16 +43,27 @@ export function ListingRoute({
           {intro.description}
         </p>
       )}
-      <Suspense fallback={<PendingState />}>
+      <Suspense fallback={<ListingSkeleton />}>
         <ProductListing
           search={search}
           category={category}
           categories={categories}
+          seed={seed}
           onSearchChange={(next, opts) =>
-            void navigate({ search: next, resetScroll: !opts?.keepScroll })
+            void navigate({ search: next, resetScroll: !opts?.keepScroll, replace: opts?.replace })
           }
         />
       </Suspense>
+    </main>
+  );
+}
+
+/** Route `pendingComponent` for the listing routes: the same skeleton the listing itself uses. */
+export function ListingPending() {
+  return (
+    <main className="mx-auto max-w-6xl px-4 py-6">
+      <Skeleton className="mb-4 h-8 w-56" />
+      <ListingSkeleton />
     </main>
   );
 }
