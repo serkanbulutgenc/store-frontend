@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { useId, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,12 +13,17 @@ import { can, type Me } from "@/lib/api/me";
 import { validateFile } from "../../photos/rules";
 import { uploadCategoryImage } from "../category-image";
 import {
-  type CategoryGroup,
-  categoryGroups,
+  buildTree,
+  expandableIds,
   isEffectivelyHidden,
-  reorderedIds,
+  type MoveBlock,
+  moveTargets,
+  siblingReorder,
+  type TreeRow,
+  visibleRows,
 } from "../category-order";
 import { type CategoryOut, categoriesQuery, keys } from "../queries";
+import { CategoryRowActions } from "./category-row-actions";
 
 const message = (e: unknown) =>
   e instanceof ApiError ? e.message : "Beklenmeyen bir hata oluştu.";
@@ -35,61 +40,143 @@ function useRefresh() {
 export function CategoriesScreen({ me }: { me: Me }) {
   const { data } = useSuspenseQuery(categoriesQuery);
   const canManage = can(me, "manage_categories");
+  const canRestructure = can(me, "restructure_categories");
   const refresh = useRefresh();
+  const [expanded, setExpanded] = useState<ReadonlySet<number>>(new Set());
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [creating, setCreating] = useState(false);
+  const [creating, setCreating] = useState<{ parentId: number | null } | null>(null);
+  const [movingId, setMovingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const rows = useMemo(() => visibleRows(buildTree(data), expanded), [data, expanded]);
+  const find = (id: number | null) => data.find((c) => c.id === id) ?? null;
+  const toggle = (id: number) =>
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(id)) next.add(id);
+      return next;
+    });
+
+  // Stay pending until the list shows the new state, so a quick second move is not
+  // computed from the old one.
   const reorder = useMutation({
     mutationFn: async (v: { parent_id: number | null; ids: number[] }) => {
       await adminApi.POST("/api/admin/categories/reorder", { body: v });
-      // Stay pending until the list shows the new order, so a quick second move is not
-      // computed from the old one.
       await refresh();
     },
     onError: (e) => toast.error(message(e)),
   });
-  const editing = data.find((c) => c.id === editingId) ?? null;
+  const toggleHidden = useMutation({
+    mutationFn: async (c: CategoryOut) => {
+      await adminApi.PATCH("/api/admin/categories/{category_id}", {
+        params: { path: { category_id: c.id } },
+        body: { is_hidden: !c.is_hidden },
+      });
+      await refresh();
+    },
+    onError: (e) => toast.error(message(e)),
+  });
+  const step = (id: number, delta: -1 | 1) => {
+    const request = siblingReorder(data, id, delta);
+    if (request) reorder.mutate(request);
+  };
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-lg font-semibold">Kategoriler</h1>
-        {canManage && (
-          <Button size="sm" onClick={() => setCreating(true)}>
-            Yeni kategori
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={() => setExpanded(expandableIds(data))}>
+            Tümünü aç
           </Button>
-        )}
+          <Button size="sm" variant="outline" onClick={() => setExpanded(new Set())}>
+            Tümünü kapat
+          </Button>
+          {canManage && (
+            <Button size="sm" onClick={() => setCreating({ parentId: null })}>
+              Yeni kategori
+            </Button>
+          )}
+        </div>
       </div>
       {canManage && (
         <p className="text-sm text-muted-foreground">
-          Sırayı değiştirmek için satırı sürükleyin veya okları kullanın; sıra mağaza menüsüne hemen
-          yansır.
+          Sırayı değiştirmek için okları kullanın; sıra mağaza menüsüne hemen yansır. En fazla beş
+          seviye.
         </p>
       )}
-      {categoryGroups(data).map((group) => (
-        <GroupList
-          key={group.parent?.id ?? "root"}
-          group={group}
-          all={data}
-          canManage={canManage}
-          busy={reorder.isPending}
-          onMove={(from, to) =>
-            reorder.mutate({
-              parent_id: group.parent?.id ?? null,
-              ids: reorderedIds(group.items, from, to),
-            })
-          }
-          onEdit={setEditingId}
-        />
-      ))}
-      <Dialog open={creating} onClose={() => setCreating(false)} title="Yeni kategori">
-        {creating && <CreateForm all={data} onClose={() => setCreating(false)} />}
+      <ul className="divide-y divide-border rounded-md border border-border bg-card">
+        {rows.map((row) => (
+          <TreeItem
+            key={row.category.id}
+            row={row}
+            hidden={isEffectivelyHidden(row.category, data)}
+            onToggle={toggle}
+          >
+            <CategoryRowActions
+              row={row}
+              canManage={canManage}
+              canRestructure={canRestructure}
+              busy={reorder.isPending}
+              onAddChild={(id) => {
+                setExpanded((prev) => new Set(prev).add(id));
+                setCreating({ parentId: id });
+              }}
+              onEdit={setEditingId}
+              onToggleHidden={(id) => {
+                const c = find(id);
+                if (c) toggleHidden.mutate(c);
+              }}
+              onMove={setMovingId}
+              onDelete={setDeletingId}
+              onUp={(id) => step(id, -1)}
+              onDown={(id) => step(id, 1)}
+            />
+          </TreeItem>
+        ))}
+      </ul>
+      <Dialog open={creating !== null} onClose={() => setCreating(null)} title="Yeni kategori">
+        {creating && (
+          <CreateForm all={data} parentId={creating.parentId} onClose={() => setCreating(null)} />
+        )}
       </Dialog>
-      <Dialog open={editing !== null} onClose={() => setEditingId(null)} title="Kategoriyi düzenle">
-        {editing && (
+      <Dialog
+        open={find(editingId) !== null}
+        onClose={() => setEditingId(null)}
+        title="Kategoriyi düzenle"
+      >
+        {find(editingId) && (
           <EditForm
-            key={editing.id}
-            category={editing}
+            key={editingId}
+            category={find(editingId) as CategoryOut}
             canManage={canManage}
             onClose={() => setEditingId(null)}
+          />
+        )}
+      </Dialog>
+      <Dialog
+        open={find(movingId) !== null}
+        onClose={() => setMovingId(null)}
+        title="Kategoriyi taşı"
+      >
+        {find(movingId) && (
+          <MoveForm
+            key={movingId}
+            all={data}
+            category={find(movingId) as CategoryOut}
+            onClose={() => setMovingId(null)}
+          />
+        )}
+      </Dialog>
+      <Dialog
+        open={find(deletingId) !== null}
+        onClose={() => setDeletingId(null)}
+        title="Kategoriyi sil"
+      >
+        {find(deletingId) && (
+          <DeleteForm
+            key={deletingId}
+            category={find(deletingId) as CategoryOut}
+            onClose={() => setDeletingId(null)}
           />
         )}
       </Dialog>
@@ -97,91 +184,206 @@ export function CategoriesScreen({ me }: { me: Me }) {
   );
 }
 
-function GroupList({
-  group,
-  all,
-  canManage,
-  busy,
-  onMove,
-  onEdit,
+function TreeItem({
+  row,
+  hidden,
+  onToggle,
+  children,
 }: {
-  group: CategoryGroup;
-  all: CategoryOut[];
-  canManage: boolean;
-  busy: boolean;
-  onMove: (from: number, to: number) => void;
-  onEdit: (id: number) => void;
+  row: TreeRow;
+  hidden: boolean;
+  onToggle: (id: number) => void;
+  children: React.ReactNode;
 }) {
-  const [dragFrom, setDragFrom] = useState<number | null>(null);
-  const draggable = canManage && !busy && group.items.length > 1;
+  const c = row.category;
+  const thumb = c.image?.derivatives.find((d) => d.width >= 400) ?? c.image?.derivatives[0];
   return (
-    <section className="space-y-1">
-      <h2 className="text-sm font-medium text-muted-foreground">
-        {group.parent ? `${group.parent.name} altında` : "Ana kategoriler"}
-      </h2>
-      <ul className="divide-y divide-border rounded-md border border-border bg-card">
-        {group.items.map((c, i) => (
-          <li
-            key={c.id}
-            draggable={draggable}
-            onDragStart={() => setDragFrom(i)}
-            onDragOver={(e) => draggable && dragFrom !== null && e.preventDefault()}
-            onDrop={() => {
-              if (dragFrom !== null && dragFrom !== i) onMove(dragFrom, i);
-              setDragFrom(null);
-            }}
-            onDragEnd={() => setDragFrom(null)}
-            className="flex items-center gap-3 px-3 py-2"
-          >
-            {draggable && (
-              <span aria-hidden className="cursor-grab text-muted-foreground">
-                ⋮⋮
-              </span>
-            )}
-            <div className="min-w-0 flex-1">
-              <span className="font-medium">{c.name}</span>{" "}
-              <span className="font-mono text-xs text-muted-foreground">{c.slug}</span>{" "}
-              {isEffectivelyHidden(c, all) && <Badge tone="warn">Gizli</Badge>}
-            </div>
-            {draggable && (
-              <div className="flex gap-1">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  aria-label={`${c.name} yukarı taşı`}
-                  disabled={i === 0}
-                  onClick={() => onMove(i, i - 1)}
-                >
-                  ↑
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  aria-label={`${c.name} aşağı taşı`}
-                  disabled={i === group.items.length - 1}
-                  onClick={() => onMove(i, i + 1)}
-                >
-                  ↓
-                </Button>
-              </div>
-            )}
-            <Button size="sm" variant="outline" onClick={() => onEdit(c.id)}>
-              {canManage ? "Düzenle" : "Göster"}
-            </Button>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <li
+      className="flex flex-wrap items-center gap-3 px-3 py-2"
+      style={{ paddingLeft: `${0.75 + (row.depth - 1) * 1.5}rem` }}
+    >
+      {row.hasChildren ? (
+        <button
+          type="button"
+          aria-expanded={row.expanded}
+          aria-label={`${c.name} ${row.expanded ? "daralt" : "genişlet"}`}
+          className="size-6 shrink-0 rounded text-muted-foreground hover:bg-accent"
+          onClick={() => onToggle(c.id)}
+        >
+          {row.expanded ? "▾" : "▸"}
+        </button>
+      ) : (
+        <span aria-hidden className="size-6 shrink-0" />
+      )}
+      {thumb ? (
+        <img src={thumb.url} alt="" className="size-8 shrink-0 rounded border object-cover" />
+      ) : (
+        <span aria-hidden className="size-8 shrink-0 rounded border bg-muted" />
+      )}
+      <div className="min-w-0 flex-1">
+        <span className="font-medium">{c.name}</span>{" "}
+        <span className="font-mono text-xs text-muted-foreground">{c.slug}</span>{" "}
+        {hidden && <Badge tone="warn">Gizli</Badge>}
+        <span className="block text-xs text-muted-foreground">
+          {c.product_count} ürün · {c.child_count} alt kategori
+        </span>
+      </div>
+      {children}
+    </li>
   );
 }
 
-function CreateForm({ all, onClose }: { all: CategoryOut[]; onClose: () => void }) {
+const BLOCKED: Record<MoveBlock, string> = {
+  self: "kendisi",
+  descendant: "alt kategorisi",
+  "too-deep": "en fazla beş seviye aşılır",
+};
+
+function MoveForm({
+  all,
+  category,
+  onClose,
+}: {
+  all: CategoryOut[];
+  category: CategoryOut;
+  onClose: () => void;
+}) {
+  const refresh = useRefresh();
+  const group = useId();
+  const [target, setTarget] = useState<number | null>(category.parent_id);
+  const [error, setError] = useState<string | null>(null);
+  const targets = useMemo(() => moveTargets(all, category.id), [all, category.id]);
+  const move = useMutation({
+    mutationFn: async () => {
+      await adminApi.POST("/api/admin/categories/{category_id}/move", {
+        params: { path: { category_id: category.id } },
+        body: { parent_id: target },
+      });
+    },
+    onSuccess: async () => {
+      await refresh();
+      toast.success("Kategori taşındı.");
+      onClose();
+    },
+    onError: (e) => setError(message(e)),
+  });
+  return (
+    <form
+      className="space-y-3"
+      onSubmit={(e) => {
+        e.preventDefault();
+        setError(null);
+        move.mutate();
+      }}
+    >
+      <p className="text-sm">
+        <strong>{category.name}</strong> alt kategorileriyle birlikte taşınır ve yeni üst
+        kategorisinin en sonuna eklenir.
+      </p>
+      <fieldset className="max-h-72 space-y-1 overflow-auto rounded-md border p-2 text-sm">
+        <legend className="px-1 font-medium">Yeni üst kategori</legend>
+        <label className="flex items-center gap-2">
+          <input
+            type="radio"
+            name={group}
+            checked={target === null}
+            onChange={() => setTarget(null)}
+          />
+          Ana kategori (en üst seviye)
+        </label>
+        {targets.map((t) => (
+          <label
+            key={t.category.id}
+            className={`flex items-center gap-2 ${t.blocked ? "text-muted-foreground" : ""}`}
+            style={{ paddingLeft: `${t.depth * 1.25}rem` }}
+          >
+            <input
+              type="radio"
+              name={group}
+              disabled={t.blocked !== null}
+              checked={target === t.category.id}
+              onChange={() => setTarget(t.category.id)}
+            />
+            {t.category.name}
+            {t.blocked && <span className="text-xs">({BLOCKED[t.blocked]})</span>}
+          </label>
+        ))}
+      </fieldset>
+      {error && (
+        <p role="alert" className="text-sm text-destructive">
+          {error}
+        </p>
+      )}
+      <div className="flex justify-end gap-2">
+        <Button type="button" variant="outline" onClick={onClose}>
+          Vazgeç
+        </Button>
+        <Button type="submit" disabled={target === category.parent_id || move.isPending}>
+          Taşı
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+/** A plain confirm until the shared delete dialog (ticket 73) replaces it. A refused
+ * delete shows the backend's message, which names what blocks it. */
+function DeleteForm({ category, onClose }: { category: CategoryOut; onClose: () => void }) {
+  const refresh = useRefresh();
+  const [error, setError] = useState<string | null>(null);
+  const remove = useMutation({
+    mutationFn: async () => {
+      await adminApi.DELETE("/api/admin/categories/{category_id}", {
+        params: { path: { category_id: category.id } },
+      });
+    },
+    onSuccess: async () => {
+      await refresh();
+      toast.success("Kategori silindi.");
+      onClose();
+    },
+    onError: (e) => setError(message(e)),
+  });
+  return (
+    <div className="space-y-3 text-sm">
+      <p>
+        <strong>{category.name}</strong> kalıcı olarak silinir ({category.product_count} ürün,{" "}
+        {category.child_count} alt kategori). Adresi 404 verir; yönlendirme yapılmaz. Silme işlemi
+        denetim kaydına yazılır.
+      </p>
+      {error && (
+        <p role="alert" className="text-destructive">
+          {error}
+        </p>
+      )}
+      <div className="flex justify-end gap-2">
+        <Button type="button" variant="outline" onClick={onClose}>
+          Vazgeç
+        </Button>
+        <Button type="button" disabled={remove.isPending} onClick={() => remove.mutate()}>
+          Sil
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function CreateForm({
+  all,
+  parentId: initialParent,
+  onClose,
+}: {
+  all: CategoryOut[];
+  parentId: number | null;
+  onClose: () => void;
+}) {
   const refresh = useRefresh();
   const nameId = useId();
   const parentId = useId();
   const [name, setName] = useState("");
-  const [parent, setParent] = useState("");
+  const [parent, setParent] = useState(initialParent === null ? "" : String(initialParent));
   const [error, setError] = useState<string | null>(null);
+  const options = useMemo(() => visibleRows(buildTree(all), expandableIds(all)), [all]);
   const create = useMutation({
     mutationFn: async () => {
       await adminApi.POST("/api/admin/categories", {
@@ -216,15 +418,15 @@ function CreateForm({ all, onClose }: { all: CategoryOut[]; onClose: () => void 
         </label>
         <Select id={parentId} value={parent} onChange={(e) => setParent(e.target.value)}>
           <option value="">Ana kategori</option>
-          {all
-            .filter((c) => c.parent_id == null)
-            .map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
+          {options.map((r) => (
+            <option key={r.category.id} value={r.category.id} disabled={!r.canAddChild}>
+              {"\u00a0\u00a0".repeat(r.depth - 1)}
+              {r.category.name}
+              {r.canAddChild ? "" : " (en fazla beş seviye)"}
+            </option>
+          ))}
         </Select>
-        <span className="block text-xs text-muted-foreground">En fazla iki seviye.</span>
+        <span className="block text-xs text-muted-foreground">En fazla beş seviye.</span>
       </div>
       {error && (
         <p role="alert" className="text-sm text-destructive">
