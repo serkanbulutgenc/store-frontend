@@ -1,4 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 import { Camera, CircleAlert, CircleDollarSign, FileText, Layers, ListChecks } from "lucide-react";
 import { Suspense, useState } from "react";
 import { toast } from "sonner";
@@ -8,9 +9,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { can, type Me } from "@/lib/api/me";
 import { useCrumbLabel } from "../../components/crumb-labels";
+import { DeleteAction } from "../../components/delete-confirm";
 import { PhotosScreen } from "../../photos/photos-screen";
 import { statusLabel, statusTone } from "../labels";
-import { type ProductStatus, productQuery, useSetStatus } from "../queries";
+import { type ProductStatus, productQuery, useDeleteProduct, useSetStatus } from "../queries";
 import { AttributesSection } from "./attributes-section";
 import {
   GENERAL_FIELDS,
@@ -53,6 +55,8 @@ export function ProductEditor({
   const { data: product } = useSuspenseQuery(productQuery(productId));
   useCrumbLabel(String(productId), product.title);
   const setStatus = useSetStatus(productId);
+  const deleteProduct = useDeleteProduct();
+  const router = useRouter();
   const canManage = can(me, "manage_products");
   const actions = statusActions(product.status, {
     manage: canManage,
@@ -91,6 +95,24 @@ export function ProductEditor({
               {a.label}
             </Button>
           ))}
+          <DeleteAction
+            me={me}
+            name={product.title}
+            title="Ürünü sil"
+            touches={[`${product.variants.length} varyant`]}
+            run={() => deleteProduct.mutateAsync(productId)}
+            onDeleted={() => router.navigate({ to: "/admin/products" })}
+            alternative={
+              product.status === "archived"
+                ? undefined
+                : {
+                    label: "Arşivle",
+                    run: () => setStatus.mutateAsync("archived"),
+                    success: "Ürün arşivlendi.",
+                  }
+            }
+            success="Ürün silindi."
+          />
         </div>
       </div>
 

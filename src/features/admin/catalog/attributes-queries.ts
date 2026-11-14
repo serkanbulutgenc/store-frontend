@@ -1,6 +1,5 @@
 import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminApi } from "@/lib/api/clients";
-import { ApiError } from "@/lib/api/errors";
 import type { components } from "../../../../api/specs/openapi-admin";
 import { keys } from "./queries";
 
@@ -63,46 +62,18 @@ export const useRenameOption = () =>
     }),
   );
 
-/**
- * Deleting something that Products use asks the server first. When the server answers
- * `confirmation_required`, `ask` shows its message (it names how many Products lose a
- * value); on a yes the delete is repeated with `confirm`.
- */
-export async function deleteWithConfirmation(
-  run: (confirm: boolean) => Promise<unknown>,
-  ask: (message: string) => boolean,
-): Promise<boolean> {
-  try {
-    await run(false);
-    return true;
-  } catch (e) {
-    if (!(e instanceof ApiError) || e.code !== "confirmation_required") throw e;
-    if (!ask(e.message)) return false;
-    await run(true);
-    return true;
-  }
-}
-
 export const useDeleteAttribute = () =>
-  useDefinitionMutation(async (v: { id: number; ask: (message: string) => boolean }) =>
-    deleteWithConfirmation(
-      (confirm) =>
-        adminApi.DELETE("/api/admin/attributes/{attribute_id}", {
-          params: { path: { attribute_id: v.id }, query: { confirm } },
-        }),
-      v.ask,
-    ),
+  useDefinitionMutation(async (v: { id: number; confirm: boolean }) =>
+    adminApi.DELETE("/api/admin/attributes/{attribute_id}", {
+      params: { path: { attribute_id: v.id }, query: { confirm: v.confirm } },
+    }),
   );
 
 export const useDeleteOption = () =>
-  useDefinitionMutation(async (v: { id: number; ask: (message: string) => boolean }) =>
-    deleteWithConfirmation(
-      (confirm) =>
-        adminApi.DELETE("/api/admin/attribute-options/{option_id}", {
-          params: { path: { option_id: v.id }, query: { confirm } },
-        }),
-      v.ask,
-    ),
+  useDefinitionMutation(async (v: { id: number; confirm: boolean }) =>
+    adminApi.DELETE("/api/admin/attribute-options/{option_id}", {
+      params: { path: { option_id: v.id }, query: { confirm: v.confirm } },
+    }),
   );
 
 export const useSetProductAttributes = (productId: number) => {

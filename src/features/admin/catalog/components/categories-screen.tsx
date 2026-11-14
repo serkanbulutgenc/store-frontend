@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { adminApi } from "@/lib/api/clients";
 import { ApiError } from "@/lib/api/errors";
 import { can, type Me } from "@/lib/api/me";
+import { ConfirmDeleteDialog } from "../../components/delete-confirm";
 import { validateFile } from "../../photos/rules";
 import { uploadCategoryImage } from "../category-image";
 import {
@@ -49,6 +50,15 @@ export function CategoriesScreen({ me }: { me: Me }) {
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const rows = useMemo(() => visibleRows(buildTree(data), expanded), [data, expanded]);
   const find = (id: number | null) => data.find((c) => c.id === id) ?? null;
+  const deleting = find(deletingId);
+  const remove = useMutation({
+    mutationFn: async () => {
+      if (!deleting) return;
+      await adminApi.DELETE("/api/admin/categories/{category_id}", {
+        params: { path: { category_id: deleting.id } },
+      });
+    },
+  });
   const toggle = (id: number) =>
     setExpanded((prev) => {
       const next = new Set(prev);
@@ -167,19 +177,17 @@ export function CategoriesScreen({ me }: { me: Me }) {
           />
         )}
       </Dialog>
-      <Dialog
-        open={find(deletingId) !== null}
-        onClose={() => setDeletingId(null)}
+      <ConfirmDeleteDialog
+        target={deleting && { key: deleting.id, name: deleting.name }}
         title="Kategoriyi sil"
-      >
-        {find(deletingId) && (
-          <DeleteForm
-            key={deletingId}
-            category={find(deletingId) as CategoryOut}
-            onClose={() => setDeletingId(null)}
-          />
-        )}
-      </Dialog>
+        touches={
+          deleting ? [`${deleting.product_count} ürün`, `${deleting.child_count} alt kategori`] : []
+        }
+        run={() => remove.mutateAsync()}
+        onDeleted={refresh}
+        success="Kategori silindi."
+        onClose={() => setDeletingId(null)}
+      />
     </div>
   );
 }
@@ -323,48 +331,6 @@ function MoveForm({
         </Button>
       </div>
     </form>
-  );
-}
-
-/** A plain confirm until the shared delete dialog (ticket 73) replaces it. A refused
- * delete shows the backend's message, which names what blocks it. */
-function DeleteForm({ category, onClose }: { category: CategoryOut; onClose: () => void }) {
-  const refresh = useRefresh();
-  const [error, setError] = useState<string | null>(null);
-  const remove = useMutation({
-    mutationFn: async () => {
-      await adminApi.DELETE("/api/admin/categories/{category_id}", {
-        params: { path: { category_id: category.id } },
-      });
-    },
-    onSuccess: async () => {
-      await refresh();
-      toast.success("Kategori silindi.");
-      onClose();
-    },
-    onError: (e) => setError(message(e)),
-  });
-  return (
-    <div className="space-y-3 text-sm">
-      <p>
-        <strong>{category.name}</strong> kalıcı olarak silinir ({category.product_count} ürün,{" "}
-        {category.child_count} alt kategori). Adresi 404 verir; yönlendirme yapılmaz. Silme işlemi
-        denetim kaydına yazılır.
-      </p>
-      {error && (
-        <p role="alert" className="text-destructive">
-          {error}
-        </p>
-      )}
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline" onClick={onClose}>
-          Vazgeç
-        </Button>
-        <Button type="button" disabled={remove.isPending} onClick={() => remove.mutate()}>
-          Sil
-        </Button>
-      </div>
-    </div>
   );
 }
 

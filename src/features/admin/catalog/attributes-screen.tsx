@@ -1,10 +1,9 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ApiError } from "@/lib/api/errors";
+import { ConfirmDeleteDialog, twoStepDelete } from "../components/delete-confirm";
 import { ActionDialog } from "../forms/action-dialog";
 import { createSchema, editSchema, kindLabel, optionSchema, parseOptions } from "./attribute-form";
 import {
@@ -46,29 +45,28 @@ export function AttributesScreen({ classId }: { classId: number }) {
   const deleteAttribute = useDeleteAttribute();
   const deleteOption = useDeleteOption();
 
-  async function guarded(run: () => Promise<unknown>) {
-    try {
-      await run();
-    } catch (e) {
-      toast.error(e instanceof ApiError ? e.message : "İşlem tamamlanamadı.");
-    }
-  }
-
+  const [deleting, setDeleting] = useState<{
+    key: string;
+    name: string;
+    touches: string[];
+    run: () => Promise<unknown>;
+    success: string;
+  } | null>(null);
   const removeAttribute = (a: AttributeOut) =>
-    guarded(async () => {
-      const done = await deleteAttribute.mutateAsync({
-        id: a.id,
-        ask: (message) => window.confirm(`${message}\n\n“${a.name}” silinsin mi?`),
-      });
-      if (done) toast.success("Özellik silindi.");
+    setDeleting({
+      key: `attribute-${a.id}`,
+      name: a.name,
+      touches: [`${a.product_count} üründe dolu`],
+      run: twoStepDelete((confirm) => deleteAttribute.mutateAsync({ id: a.id, confirm })),
+      success: "Özellik silindi.",
     });
   const removeOption = (id: number, label: string) =>
-    guarded(async () => {
-      const done = await deleteOption.mutateAsync({
-        id,
-        ask: (message) => window.confirm(`${message}\n\n“${label}” silinsin mi?`),
-      });
-      if (done) toast.success("Seçenek silindi.");
+    setDeleting({
+      key: `option-${id}`,
+      name: label,
+      touches: [],
+      run: twoStepDelete((confirm) => deleteOption.mutateAsync({ id, confirm })),
+      success: "Seçenek silindi.",
     });
 
   return (
@@ -263,6 +261,14 @@ export function AttributesScreen({ classId }: { classId: number }) {
           })
         }
         onClose={close}
+      />
+      <ConfirmDeleteDialog
+        target={deleting}
+        title="Sil"
+        touches={deleting?.touches ?? []}
+        run={() => deleting?.run() ?? Promise.resolve()}
+        success={deleting?.success}
+        onClose={() => setDeleting(null)}
       />
     </div>
   );

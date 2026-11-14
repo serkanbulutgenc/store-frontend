@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ApiError } from "@/lib/api/errors";
+import { ConfirmDeleteDialog } from "../../components/delete-confirm";
 import { apiErrorToFormErrors } from "../../forms/api-errors";
 import { bind, Field, FormActions, FormMessage } from "../../forms/field";
 
@@ -30,11 +30,13 @@ export type FieldDef = {
   editOnly?: boolean;
 };
 
-export type ReferenceProps<Row extends { id: number }> = {
+export type ReferenceProps<Row extends { id: number; name: string }> = {
   title: string;
   singular: string;
   rows: Row[];
   canManage: boolean;
+  /** Owner-only (`delete_catalogue`): shows the delete button. The API enforces it. */
+  canDelete?: boolean;
   columns: { header: string; cell: (row: Row) => ReactNode }[];
   fields: FieldDef[];
   schema: z.ZodType<Record<string, string>, Record<string, string>>;
@@ -44,28 +46,24 @@ export type ReferenceProps<Row extends { id: number }> = {
   rowActions?: (row: Row) => ReactNode;
   /** Fields the API will not change for this row, with the reason shown under the field. */
   lockedFields?: (row: Row) => Record<string, string>;
-  /** Delete button per row. `blocked` returns why the row cannot be deleted, if so. */
+  /** Delete button per row, through the shared confirm dialog. The backend's refusal names
+   * what blocks it; `alternative` is offered after a refusal (Deactivate a Colour in use). */
   remove?: {
-    blocked: (row: Row) => string | undefined;
-    confirm: (row: Row) => string;
+    /** What the delete touches, e.g. "3 ürün". */
+    touches?: (row: Row) => string[];
     run: (row: Row) => Promise<unknown>;
+    alternative?: (row: Row) => { label: string; run: () => Promise<unknown>; success: string };
   };
 };
 
 /** A small list with a create/edit dialog, for the reference data that has no paging or search. */
-export function ReferenceScreen<Row extends { id: number }>(props: ReferenceProps<Row>) {
+export function ReferenceScreen<Row extends { id: number; name: string }>(
+  props: ReferenceProps<Row>,
+) {
   const [editing, setEditing] = useState<Row | "new" | null>(null);
   const close = () => setEditing(null);
+  const [deleting, setDeleting] = useState<Row | null>(null);
   const { remove } = props;
-  async function onRemove(row: Row, run: (row: Row) => Promise<unknown>, message: string) {
-    if (!window.confirm(message)) return;
-    try {
-      await run(row);
-      toast.success("Silindi.");
-    } catch (e) {
-      toast.error(e instanceof ApiError ? e.message : "Beklenmeyen bir hata oluştu.");
-    }
-  }
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -109,13 +107,12 @@ export function ReferenceScreen<Row extends { id: number }>(props: ReferenceProp
                         <Button size="sm" variant="outline" onClick={() => setEditing(row)}>
                           Düzenle
                         </Button>
-                        {remove && (
+                        {remove && props.canDelete && (
                           <Button
                             size="sm"
                             variant="outline"
-                            disabled={remove.blocked(row) !== undefined}
-                            title={remove.blocked(row)}
-                            onClick={() => onRemove(row, remove.run, remove.confirm(row))}
+                            aria-label={`${row.name} sil`}
+                            onClick={() => setDeleting(row)}
                           >
                             Sil
                           </Button>
@@ -129,6 +126,16 @@ export function ReferenceScreen<Row extends { id: number }>(props: ReferenceProp
           </TableBody>
         </Table>
       </div>
+      {remove && (
+        <ConfirmDeleteDialog
+          target={deleting && { key: deleting.id, name: deleting.name }}
+          title={`${props.singular.charAt(0).toLocaleUpperCase("tr")}${props.singular.slice(1)} sil`}
+          touches={deleting ? (remove.touches?.(deleting) ?? []) : []}
+          run={() => (deleting ? remove.run(deleting) : Promise.resolve())}
+          alternative={deleting ? remove.alternative?.(deleting) : undefined}
+          onClose={() => setDeleting(null)}
+        />
+      )}
       <Dialog
         open={editing !== null}
         onClose={close}
@@ -142,7 +149,7 @@ export function ReferenceScreen<Row extends { id: number }>(props: ReferenceProp
   );
 }
 
-function RefForm<Row extends { id: number }>({
+function RefForm<Row extends { id: number; name: string }>({
   row,
   onClose,
   ...props

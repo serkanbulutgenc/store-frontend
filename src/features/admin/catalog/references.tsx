@@ -40,12 +40,17 @@ export function BrandsScreen({ me }: { me: Me }) {
         })
       : adminApi.POST("/api/admin/brands", { body: values }),
   );
+  const remove = useSave(async (id: number) =>
+    adminApi.DELETE("/api/admin/brands/{brand_id}", { params: { path: { brand_id: id } } }),
+  );
   return (
     <ReferenceScreen
       title="Markalar"
       singular="marka"
       rows={data}
       canManage={can(me, "manage_brands")}
+      canDelete={can(me, "delete_catalogue")}
+      remove={{ run: (r) => remove(r.id) }}
       columns={[{ header: "Ad", cell: (r) => r.name }]}
       fields={[{ name: "name", label: "Ad" }]}
       schema={nameOnly}
@@ -66,12 +71,19 @@ export function SuppliersScreen({ me }: { me: Me }) {
           })
         : adminApi.POST("/api/admin/suppliers", { body: values }),
   );
+  const remove = useSave(async (id: number) =>
+    adminApi.DELETE("/api/admin/suppliers/{supplier_id}", {
+      params: { path: { supplier_id: id } },
+    }),
+  );
   return (
     <ReferenceScreen
       title="Tedarikçiler"
       singular="tedarikçi"
       rows={data}
       canManage={can(me, "manage_suppliers")}
+      canDelete={can(me, "delete_catalogue")}
+      remove={{ run: (r) => remove(r.id) }}
       columns={[
         { header: "Ad", cell: (r) => r.name },
         { header: "Kod", cell: (r) => <span className="font-mono text-xs">{r.code}</span> },
@@ -114,12 +126,30 @@ export function ColoursScreen({ me }: { me: Me }) {
             body: { name: values.name, hex_code: values.hex_code },
           }),
   );
+  const remove = useSave(async (id: number) =>
+    adminApi.DELETE("/api/admin/colours/{colour_id}", { params: { path: { colour_id: id } } }),
+  );
+  const deactivate = useSave(async (r: ColourOut) =>
+    adminApi.PATCH("/api/admin/colours/{colour_id}", {
+      params: { path: { colour_id: r.id } },
+      body: { is_active: false },
+    }),
+  );
   return (
     <ReferenceScreen
       title="Renkler"
       singular="renk"
       rows={data}
       canManage={can(me, "manage_colours")}
+      canDelete={can(me, "delete_catalogue")}
+      remove={{
+        run: (r) => remove(r.id),
+        alternative: (r) => ({
+          label: "Pasifleştir",
+          run: () => deactivate(r),
+          success: "Renk pasifleştirildi.",
+        }),
+      }}
       columns={[
         {
           header: "Renk",

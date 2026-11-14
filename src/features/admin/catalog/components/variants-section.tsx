@@ -17,12 +17,14 @@ import {
 } from "@/components/ui/table";
 import { can, type Me } from "@/lib/api/me";
 import { formatTry } from "@/lib/format";
+import { DeleteAction } from "../../components/delete-confirm";
 import { apiErrorToFormErrors } from "../../forms/api-errors";
 import { bind, Field, FormActions, FormMessage } from "../../forms/field";
 import {
   coloursQuery,
   type ProductOut,
   useCreateVariant,
+  useDeleteVariant,
   useUpdateVariant,
   type VariantOut,
 } from "../queries";
@@ -39,6 +41,7 @@ export function VariantsSection({ product, me }: { product: ProductOut; me: Me }
   const [adjusting, setAdjusting] = useState<AdjustTarget | null>(null);
   const canManage = can(me, "manage_products");
   const canAdjust = can(me, "adjust_stock");
+  const deleteVariant = useDeleteVariant();
 
   return (
     <section className="space-y-2">
@@ -134,6 +137,13 @@ export function VariantsSection({ product, me }: { product: ProductOut; me: Me }
                           Düzenle
                         </Button>
                       )}
+                      <DeleteAction
+                        me={me}
+                        name={`${v.colour.name} / ${v.size}`}
+                        title="Varyantı sil"
+                        run={() => deleteVariant.mutateAsync(v.id)}
+                        success="Varyant silindi."
+                      />
                     </div>
                   </TableCell>
                 </TableRow>

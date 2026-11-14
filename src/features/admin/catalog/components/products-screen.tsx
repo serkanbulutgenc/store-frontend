@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { can, type Me } from "@/lib/api/me";
 import { formatTry } from "@/lib/format";
+import { DeleteAction } from "../../components/delete-confirm";
 import { type Column, columnHelper, DataTable } from "../../data-table/data-table";
 import { categoryLabels, statusLabel, statusTone } from "../labels";
 import {
@@ -14,11 +15,12 @@ import {
   type ProductStatus,
   type ProductsSearch,
   productsQuery,
+  useDeleteProduct,
 } from "../queries";
 
 const helper = columnHelper<ProductListOut>();
 
-const columns: Column<ProductListOut>[] = [
+const baseColumns: Column<ProductListOut>[] = [
   helper.accessor("title", {
     header: "Ürün",
     cell: (c) => (
@@ -59,6 +61,26 @@ export function ProductsScreen({
 }) {
   const { data, isFetching } = useSuspenseQuery(productsQuery(search));
   const { data: categories } = useSuspenseQuery(categoriesQuery);
+  const deleteProduct = useDeleteProduct();
+  const columns = can(me, "delete_catalogue")
+    ? [
+        ...baseColumns,
+        helper.display({
+          id: "actions",
+          header: "",
+          cell: (c) => (
+            <DeleteAction
+              me={me}
+              name={c.row.original.title}
+              title="Ürünü sil"
+              touches={[`${c.row.original.variant_count} varyant`]}
+              run={() => deleteProduct.mutateAsync(c.row.original.id)}
+              success="Ürün silindi."
+            />
+          ),
+        }),
+      ]
+    : baseColumns;
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">

@@ -147,6 +147,32 @@ export const useSetStatus = (id: number) =>
       ).data as ProductOut,
   );
 
+/** Deletes a Product. Its own detail queries are dropped, not refetched (they would 404). */
+export const useDeleteProduct = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      await adminApi.DELETE("/api/admin/products/{product_id}", {
+        params: { path: { product_id: id } },
+      });
+      return id;
+    },
+    onSuccess: async (id) => {
+      qc.removeQueries({ queryKey: keys.product(id) });
+      await Promise.all(
+        [keys.products, keys.stock].map((queryKey) => qc.invalidateQueries({ queryKey })),
+      );
+    },
+  });
+};
+
+export const useDeleteVariant = () =>
+  useInvalidating(async (id: number) => {
+    await adminApi.DELETE("/api/admin/variants/{variant_id}", {
+      params: { path: { variant_id: id } },
+    });
+  });
+
 export const useCreateVariant = (productId: number) =>
   useInvalidating(
     async (body: components["schemas"]["VariantIn"]) =>

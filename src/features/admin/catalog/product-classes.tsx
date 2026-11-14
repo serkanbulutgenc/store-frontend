@@ -106,10 +106,9 @@ export function ProductClassesScreen({ me }: { me: Me }) {
         </Button>
       )}
       lockedFields={classLocks}
+      canDelete={can(me, "manage_product_classes")}
       remove={{
-        blocked: (r) =>
-          r.product_count ? `Bu sınıfta ${r.product_count} ürün var; silinemez.` : undefined,
-        confirm: (r) => `"${r.name}" sınıfı silinsin mi? Bu işlem geri alınamaz.`,
+        touches: (r) => (r.product_count ? [`${r.product_count} ürün`] : []),
         run: (r) => remove(r.id),
       }}
     />

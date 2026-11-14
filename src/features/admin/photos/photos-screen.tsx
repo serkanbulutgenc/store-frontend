@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog } from "@/components/ui/dialog";
 import { Select } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import {
@@ -16,6 +15,7 @@ import {
   useReorderImages,
   useUpdateImage,
 } from "../catalog/queries";
+import { ConfirmDeleteDialog } from "../components/delete-confirm";
 import { MAX_PHOTOS, moveItem, pickUploadable } from "./rules";
 import { uploadPhoto } from "./upload";
 
@@ -104,19 +104,6 @@ export function PhotosScreen({ productId }: { productId: number }) {
     const ids = moveItem(images, from, to).map((i) => i.id);
     if (ids.join() !== images.map((i) => i.id).join())
       void run(reorder.mutateAsync(ids), "Sıra kaydedilemedi.");
-  }
-
-  async function confirmDelete() {
-    if (!deleting) return;
-    const target = deleting;
-    setDeleting(null);
-    try {
-      await remove.mutateAsync(target.id);
-      toast.success("Fotoğraf silindi.");
-    } catch (e) {
-      // The API blocks deleting the last photo of a published product with a Turkish message.
-      toast.error(message(e, "Fotoğraf silinemedi."));
-    }
   }
 
   return (
@@ -354,15 +341,14 @@ export function PhotosScreen({ productId }: { productId: number }) {
         ))}
       </ul>
 
-      <Dialog open={deleting !== null} onClose={() => setDeleting(null)} title="Fotoğrafı sil">
-        <p className="text-muted-foreground">Bu fotoğraf kalıcı olarak silinecek.</p>
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={() => setDeleting(null)}>
-            Vazgeç
-          </Button>
-          <Button onClick={() => void confirmDelete()}>Sil</Button>
-        </div>
-      </Dialog>
+      <ConfirmDeleteDialog
+        target={deleting && { key: deleting.id, name: "Fotoğraf" }}
+        title="Fotoğrafı sil"
+        touches={[]}
+        run={() => (deleting ? remove.mutateAsync(deleting.id) : Promise.resolve())}
+        success="Fotoğraf silindi."
+        onClose={() => setDeleting(null)}
+      />
     </div>
   );
 }
