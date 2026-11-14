@@ -64,6 +64,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/account/deletion-request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Deletion
+         * @description Ask the Owner to delete the account. Personal fields are anonymised; Orders
+         *     stay for the legal retention period. 409 while a request is already open.
+         */
+        post: operations["account_request_deletion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/store/account/favorites": {
         parameters: {
             query?: never;
@@ -102,27 +123,6 @@ export interface paths {
         post?: never;
         /** Remove Favorite */
         delete: operations["account_remove_favorite"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/store/account/deletion-request": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Request Deletion
-         * @description Ask the Owner to delete the account. Personal fields are anonymised; Orders
-         *     stay for the legal retention period. 409 while a request is already open.
-         */
-        post: operations["account_request_deletion"];
-        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -202,6 +202,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/account/reviews/{product_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Save Review
+         * @description Create or edit my review. 403 `review_not_delivered` or `review_fully_returned`
+         *     when not eligible; 422 for HTML or text over 2000 characters. Stars alone publish
+         *     at once; new or changed text waits for a moderator.
+         */
+        put: operations["reviews_save_mine"];
+        post?: never;
+        /** Delete Review */
+        delete: operations["reviews_delete_mine"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/store/basket": {
         parameters: {
             query?: never;
@@ -263,7 +286,8 @@ export interface paths {
         };
         /**
          * List Categories
-         * @description The two-level category tree for the header menu and the homepage.
+         * @description The category tree for the header menu and the homepage: `depth` levels
+         *     (1 to 5, default 2), each node with its `child_count`.
          */
         get: operations["catalog_list_categories"];
         put?: never;
@@ -456,14 +480,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/store/products/{slug}/reviews": {
+    "/api/store/products/{slug}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["reviews_list"];
+        /** Get Product */
+        get: operations["catalog_get_product"];
         put?: never;
         post?: never;
         delete?: never;
@@ -479,6 +504,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * My Review
+         * @description Whether the signed-in Shopper may review this Product (and why not), plus
+         *     their review if they wrote one.
+         */
         get: operations["reviews_get_mine"];
         put?: never;
         post?: never;
@@ -488,31 +518,18 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/store/account/reviews/{product_id}": {
+    "/api/store/products/{slug}/reviews": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        put: operations["reviews_save_mine"];
-        post?: never;
-        delete: operations["reviews_delete_mine"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/store/products/{slug}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Product */
-        get: operations["catalog_get_product"];
+        /**
+         * List Reviews
+         * @description Published reviews, newest first, with the average and count (10 per page).
+         */
+        get: operations["reviews_list"];
         put?: never;
         post?: never;
         delete?: never;
@@ -884,8 +901,10 @@ export interface components {
         };
         /** CategoryNodeOut */
         CategoryNodeOut: {
+            /** Child Count */
+            child_count: number;
             /** Children */
-            children: components["schemas"]["CategoryChildOut"][];
+            children: components["schemas"]["CategoryNodeOut"][];
             /** Name */
             name: string;
             /** Slug */
@@ -1055,6 +1074,27 @@ export interface components {
             /** Version */
             version: number;
         };
+        /** MyReviewOut */
+        MyReviewOut: {
+            /** Body */
+            body: string;
+            /** Id */
+            id: number;
+            /** Stars */
+            stars: number;
+            /** Status */
+            status: string;
+        };
+        /** MyReviewStateOut */
+        MyReviewStateOut: {
+            /** Can Review */
+            can_review: boolean;
+            /** Message */
+            message: string | null;
+            /** Reason */
+            reason: string | null;
+            review: components["schemas"]["MyReviewOut"] | null;
+        };
         /** OptionFacet */
         OptionFacet: {
             /** Count */
@@ -1138,6 +1178,14 @@ export interface components {
             is_primary: boolean;
             /** Sizes */
             sizes: components["schemas"]["ImageSizeOut"][];
+        };
+        /** PageQuery */
+        PageQuery: {
+            /**
+             * Page
+             * @default 1
+             */
+            page: number;
         };
         /** PageVariantOut */
         PageVariantOut: {
@@ -1442,27 +1490,6 @@ export interface components {
          * @enum {string}
          */
         ReturnStatus: "requested" | "approved" | "rejected" | "received" | "refunded";
-        /** MyReviewOut */
-        MyReviewOut: {
-            /** Body */
-            body: string;
-            /** Id */
-            id: number;
-            /** Stars */
-            stars: number;
-            /** Status */
-            status: string;
-        };
-        /** MyReviewStateOut */
-        MyReviewStateOut: {
-            /** Can Review */
-            can_review: boolean;
-            /** Message */
-            message: string | null;
-            /** Reason */
-            reason: string | null;
-            review: components["schemas"]["MyReviewOut"] | null;
-        };
         /** ReviewIn */
         ReviewIn: {
             /**
@@ -1808,98 +1835,6 @@ export interface operations {
             };
         };
     };
-    reviews_list: {
-        parameters: {
-            query?: {
-                page?: number;
-            };
-            header?: never;
-            path: {
-                slug: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ReviewPageOut"];
-                };
-            };
-        };
-    };
-    reviews_get_mine: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                slug: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MyReviewStateOut"];
-                };
-            };
-        };
-    };
-    reviews_save_mine: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                product_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ReviewIn"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MyReviewOut"];
-                };
-            };
-        };
-    };
-    reviews_delete_mine: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                product_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     account_delete_address: {
         parameters: {
             query?: never;
@@ -1917,6 +1852,26 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    account_request_deletion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountOut"];
+                };
             };
         };
     };
@@ -1977,26 +1932,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-        };
-    };
-    account_request_deletion: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AccountOut"];
-                };
             };
         };
     };
@@ -2090,6 +2025,52 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["TrackingOut"];
                 };
+            };
+        };
+    };
+    reviews_save_mine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyReviewOut"];
+                };
+            };
+        };
+    };
+    reviews_delete_mine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -2187,7 +2168,9 @@ export interface operations {
     };
     catalog_list_categories: {
         parameters: {
-            query?: never;
+            query?: {
+                depth?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -2434,6 +2417,52 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductDetailOut"];
+                };
+            };
+        };
+    };
+    reviews_get_mine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyReviewStateOut"];
+                };
+            };
+        };
+    };
+    reviews_list: {
+        parameters: {
+            query?: {
+                page?: number;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewPageOut"];
                 };
             };
         };

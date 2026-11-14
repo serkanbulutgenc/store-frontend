@@ -183,7 +183,11 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete Brand
+         * @description Owner only. Refused while Products use the Brand.
+         */
+        delete: operations["catalog_delete_brand"];
         options?: never;
         head?: never;
         /** Update Brand */
@@ -300,7 +304,11 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete Category
+         * @description Owner only. Refused while the Category has children or Products.
+         */
+        delete: operations["catalog_delete_category"];
         options?: never;
         head?: never;
         /**
@@ -327,6 +335,27 @@ export interface paths {
         post: operations["catalog_upload_category_image"];
         /** Delete Category Image */
         delete: operations["catalog_delete_category_image"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/categories/{category_id}/move": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Move Category
+         * @description Owner only. Moves the Category with its subtree; it goes last among its new
+         *     siblings.
+         */
+        post: operations["catalog_move_category"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -360,7 +389,11 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete Colour
+         * @description Owner only. Refused while a Variant or photo uses the Colour.
+         */
+        delete: operations["catalog_delete_colour"];
         options?: never;
         head?: never;
         /** Update Colour */
@@ -999,7 +1032,11 @@ export interface paths {
         get: operations["catalog_get_product"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete Product
+         * @description Owner only. Refused while the Product has Orders; archive it instead.
+         */
+        delete: operations["catalog_delete_product"];
         options?: never;
         head?: never;
         /** Update Product */
@@ -1144,6 +1181,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/returns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Returns
+         * @description Return requests across all Orders. Waiting requests come oldest first, any
+         *     other filter (or none) newest first.
+         */
+        get: operations["returns_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/reviews": {
         parameters: {
             query?: never;
@@ -1151,6 +1209,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * List Reviews
+         * @description Reviews with text, by `status` (pending, published or rejected). Pending ones
+         *     come oldest first.
+         */
         get: operations["reviews_admin_list"];
         put?: never;
         post?: never;
@@ -1170,6 +1233,7 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
+        /** Delete Review */
         delete: operations["reviews_admin_delete"];
         options?: never;
         head?: never;
@@ -1185,6 +1249,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Approve Review */
         post: operations["reviews_admin_approve"];
         delete?: never;
         options?: never;
@@ -1201,28 +1266,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Reject Review */
         post: operations["reviews_admin_reject"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/admin/returns": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List Returns
-         * @description Return requests across all Orders. Waiting requests come oldest first, any
-         *     other filter (or none) newest first.
-         */
-        get: operations["returns_list"];
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1395,7 +1440,11 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete Supplier
+         * @description Owner only. Refused while Products use the Supplier.
+         */
+        delete: operations["catalog_delete_supplier"];
         options?: never;
         head?: never;
         /** Update Supplier */
@@ -1412,7 +1461,11 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete Variant
+         * @description Owner only. Refused with Orders and for a published Product's last Variant.
+         */
+        delete: operations["catalog_delete_variant"];
         options?: never;
         head?: never;
         /** Update Variant */
@@ -1702,8 +1755,17 @@ export interface components {
             /** Parent Id */
             parent_id?: number | null;
         };
+        /** CategoryMoveIn */
+        CategoryMoveIn: {
+            /** Parent Id */
+            parent_id?: number | null;
+        };
         /** CategoryOut */
         CategoryOut: {
+            /** Child Count */
+            child_count: number;
+            /** Depth */
+            depth: number;
             /** Description */
             description: string;
             /** Id */
@@ -1715,6 +1777,8 @@ export interface components {
             name: string;
             /** Parent Id */
             parent_id: number | null;
+            /** Product Count */
+            product_count: number;
             /** Seo Description */
             seo_description: string;
             /** Seo Title */
@@ -3569,6 +3633,26 @@ export interface operations {
             };
         };
     };
+    catalog_delete_brand: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                brand_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     catalog_update_brand: {
         parameters: {
             query?: never;
@@ -3743,6 +3827,26 @@ export interface operations {
             };
         };
     };
+    catalog_delete_category: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     catalog_update_category: {
         parameters: {
             query?: never;
@@ -3823,6 +3927,32 @@ export interface operations {
             };
         };
     };
+    catalog_move_category: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CategoryMoveIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryOut"];
+                };
+            };
+        };
+    };
     catalog_list_colours: {
         parameters: {
             query?: never;
@@ -3864,6 +3994,26 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ColourOut"];
                 };
+            };
+        };
+    };
+    catalog_delete_colour: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                colour_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -4822,6 +4972,26 @@ export interface operations {
             };
         };
     };
+    catalog_delete_product: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     catalog_update_product: {
         parameters: {
             query?: never;
@@ -5060,6 +5230,30 @@ export interface operations {
             };
         };
     };
+    returns_list: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedReturnRow"];
+                };
+            };
+        };
+    };
     reviews_admin_list: {
         parameters: {
             query?: {
@@ -5081,6 +5275,26 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PagedAdminReviewOut"];
                 };
+            };
+        };
+    };
+    reviews_admin_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                review_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -5124,50 +5338,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminReviewOut"];
-                };
-            };
-        };
-    };
-    reviews_admin_delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                review_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    returns_list: {
-        parameters: {
-            query?: {
-                status?: string | null;
-                page?: number;
-                page_size?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PagedReturnRow"];
                 };
             };
         };
@@ -5450,6 +5620,26 @@ export interface operations {
             };
         };
     };
+    catalog_delete_supplier: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplier_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     catalog_update_supplier: {
         parameters: {
             query?: never;
@@ -5473,6 +5663,26 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["SupplierOut"];
                 };
+            };
+        };
+    };
+    catalog_delete_variant: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                variant_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
