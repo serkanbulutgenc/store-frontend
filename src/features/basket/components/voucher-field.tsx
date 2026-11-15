@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { useId } from "react";
+import { useId, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatTry } from "@/lib/format";
@@ -30,6 +30,11 @@ export function VoucherField({
   onContinueWithout,
 }: VoucherFieldProps) {
   const id = useId();
+  const input = useRef<HTMLInputElement>(null);
+  const apply = () => {
+    const code = input.current?.value.trim();
+    if (code) onApply(code);
+  };
   if (voucher) {
     // A refusal from checkout is newer news than the cart's own flag.
     const refusal =
@@ -63,25 +68,26 @@ export function VoucherField({
     );
   }
   return (
-    <form
-      className="space-y-1 text-sm"
-      onSubmit={(e) => {
-        e.preventDefault();
-        const code = new FormData(e.currentTarget).get("code");
-        if (typeof code === "string" && code.trim()) onApply(code.trim());
-      }}
-    >
+    // Not a <form>: the checkout page puts this inside its own form, and a form inside a
+    // form is invalid HTML (the browser drops it and "Uygula" would submit the page).
+    <div className="space-y-1 text-sm">
       <label htmlFor={id}>Kupon kodu</label>
       <div className="flex gap-2">
         <Input
+          ref={input}
           id={id}
           name="code"
           autoComplete="off"
           autoCapitalize="characters"
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${id}-error` : undefined}
+          onKeyDown={(e) => {
+            if (e.key !== "Enter") return;
+            e.preventDefault(); // Enter must apply the code, not submit the surrounding form
+            apply();
+          }}
         />
-        <Button type="submit" variant="outline" disabled={pending}>
+        <Button type="button" variant="outline" disabled={pending} onClick={apply}>
           Uygula
         </Button>
       </div>
@@ -90,6 +96,6 @@ export function VoucherField({
           {error}
         </p>
       )}
-    </form>
+    </div>
   );
 }

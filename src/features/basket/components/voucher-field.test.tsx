@@ -98,4 +98,18 @@ describe("VoucherField", () => {
     expect(out).toContain("Kuponsuz devam et");
     expect(out).not.toContain("−₺20,00"); // not offered as a saving while it is refused
   });
+
+  it("is no form of its own, so it can sit inside the checkout form without nesting", () => {
+    // The checkout page wraps its whole summary in one form. A form inside it is invalid
+    // HTML: the browser drops it and "Uygula" submits the page (a reload) instead.
+    const inside = renderToString(
+      <form>
+        <VoucherField {...props} voucher={null} />
+      </form>,
+    );
+    expect((inside.match(/<form/g) ?? []).length).toBe(1);
+    expect(inside).toMatch(/<button[^>]*type="button"[^>]*>Uygula<\/button>/);
+    // Nothing in it may submit the surrounding form.
+    expect(inside).not.toMatch(/<button[^>]*type="submit"/);
+  });
 });
