@@ -5,6 +5,7 @@ import { CreateAccountOffer } from "@/features/account/components/create-account
 import { formatTry } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { type PlacedOrder, placedOrderKey } from "../queries";
+import { OrderTotals } from "./order-totals";
 
 export function ConfirmationPage() {
   const qc = useQueryClient();
@@ -81,26 +82,7 @@ export function ConfirmationPage() {
             </li>
           ))}
         </ul>
-        <dl className="mt-2 space-y-1 border-t border-border pt-2">
-          <div className="flex justify-between">
-            <dt>Ürünler</dt>
-            <dd>{formatTry(order.items_total)}</dd>
-          </div>
-          <div className="flex justify-between">
-            <dt>Kargo</dt>
-            <dd>{formatTry(order.shipping_fee)}</dd>
-          </div>
-          {order.payment_method === "cod" && (
-            <div className="flex justify-between">
-              <dt>Kapıda ödeme bedeli</dt>
-              <dd>{formatTry(order.cod_fee)}</dd>
-            </div>
-          )}
-          <div className="flex justify-between text-base font-semibold">
-            <dt>Toplam</dt>
-            <dd>{formatTry(order.total)}</dd>
-          </div>
-        </dl>
+        <OrderTotals order={order} />
       </section>
 
       <p>
