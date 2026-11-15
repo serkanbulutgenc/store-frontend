@@ -24,7 +24,7 @@ export function buildTree(categories: CategoryOut[]): CategoryNode[] {
   return roots;
 }
 
-/** Deepest level of the Category tree (CONTEXT.md). */
+/** Deepest level of the Category tree (GLOSSARY.md (backend repo)). */
 export const MAX_DEPTH = 5;
 
 export type TreeRow = {
