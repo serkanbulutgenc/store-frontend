@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import type { ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HeartButton } from "@/features/favorites/components/heart-button";
 import { RatingSummary } from "@/features/reviews/components/stars";
@@ -21,9 +22,19 @@ export function Price({ price, oldPrice }: { price: string; oldPrice: string | n
   );
 }
 
-export function ProductCard({ product, dimSoldOut }: { product: Card; dimSoldOut?: boolean }) {
+export function ProductCard({
+  product,
+  dimSoldOut,
+  className,
+  badge,
+}: {
+  product: Card;
+  dimSoldOut?: boolean;
+  className?: string;
+  badge?: ReactNode;
+}) {
   return (
-    <li className="group relative">
+    <li className={cn("group relative", className)}>
       <Link
         to="/urun/$slug"
         params={{ slug: product.slug }}
@@ -62,6 +73,7 @@ export function ProductCard({ product, dimSoldOut }: { product: Card; dimSoldOut
           </ul>
         )}
       </Link>
+      {badge}
       <HeartButton productId={product.id} className="absolute right-2 top-2" />
     </li>
   );

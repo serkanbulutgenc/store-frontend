@@ -1,54 +1,59 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ProductGrid } from "@/features/catalog/components/product-card";
+import { HomeHero } from "@/features/catalog/components/home-hero";
+import { ProductRail } from "@/features/catalog/components/product-rail";
 import { categoriesQuery, productsPageQuery } from "@/features/catalog/queries";
 import { homeHead } from "@/features/catalog/seo";
 
-const NEW_ARRIVALS = 8;
-
 export const Route = createFileRoute("/_storefront/")({
   loader: async ({ context }) => {
-    const [page, categories] = await Promise.all([
+    const [latest, popular, categories] = await Promise.all([
       context.queryClient.query(productsPageQuery({}, { page: 1 })),
+      context.queryClient.query(productsPageQuery({ sort: "rating_desc" }, { page: 1 })),
       context.queryClient.query(categoriesQuery),
     ]);
-    return { arrivals: page.items.slice(0, NEW_ARRIVALS), categories };
+    // The API has no on-sale filter yet: take discounted items from the two pages we already have.
+    const onSale = [
+      ...new Map([...latest.items, ...popular.items].map((p) => [p.id, p])).values(),
+    ].filter((p) => p.old_price);
+    return { latest: latest.items, popular: popular.items, onSale, categories };
   },
   head: ({ match }) => homeHead(match.context.siteOrigin),
   component: function Home() {
-    const { arrivals, categories } = Route.useLoaderData();
+    const { latest, popular, onSale, categories } = Route.useLoaderData();
     return (
-      <main className="mx-auto max-w-6xl space-y-12 px-4 py-8">
+      <main>
         {/* The optional banner is a Store setting (ticket 20); it slots in here. */}
-        <section aria-labelledby="new">
-          <h1 id="new" className="mb-4 text-2xl font-semibold">
-            Yeni gelenler
-          </h1>
-          {arrivals.length > 0 ? (
-            <ProductGrid products={arrivals} />
-          ) : (
-            <p className="text-muted-foreground">Ürünler yakında burada.</p>
+        <HomeHero products={latest} />
+        <div className="mx-auto max-w-6xl space-y-12 px-4 py-10">
+          <ProductRail title="Yeni gelenler" products={latest} seeAll={{ sort: "newest" }} />
+          <ProductRail title="İndirimdekiler" products={onSale} showDiscount />
+          <ProductRail
+            title="En çok beğenilenler"
+            products={popular}
+            seeAll={{ sort: "rating_desc" }}
+          />
+          {latest.length === 0 && <p className="text-muted-foreground">Ürünler yakında burada.</p>}
+          {categories.length > 0 && (
+            <section aria-labelledby="cats">
+              <h2 id="cats" className="mb-3 text-xl font-semibold">
+                Kategoriler
+              </h2>
+              <ul className="flex flex-wrap gap-2">
+                {categories.map((c) => (
+                  <li key={c.slug}>
+                    <Link
+                      to="/kategori/$slug"
+                      params={{ slug: c.slug }}
+                      className="block rounded-full border border-border px-4 py-2 hover:bg-accent"
+                    >
+                      {c.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
           )}
-        </section>
-        {categories.length > 0 && (
-          <section aria-labelledby="cats">
-            <h2 id="cats" className="mb-4 text-xl font-semibold">
-              Kategoriler
-            </h2>
-            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {categories.map((c) => (
-                <li key={c.slug}>
-                  <Link
-                    to="/kategori/$slug"
-                    params={{ slug: c.slug }}
-                    className="grid h-28 place-items-center rounded-md border border-border bg-card text-lg hover:bg-accent"
-                  >
-                    {c.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+        </div>
       </main>
     );
   },
