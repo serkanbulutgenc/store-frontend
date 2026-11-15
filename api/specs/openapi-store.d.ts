@@ -1271,6 +1271,7 @@ export interface components {
             colour: string;
             /**
              * Line Total
+             * @description Before any Voucher, so lines add up to items_total.
              * @example 349.90
              */
             line_total: string;
@@ -1698,6 +1699,7 @@ export interface components {
             id: number;
             /**
              * Line Total
+             * @description Before any Voucher, so lines add up to items_total.
              * @example 349.90
              */
             line_total: string;
