@@ -30,12 +30,15 @@ export function VoucherField({
   onContinueWithout,
 }: VoucherFieldProps) {
   const id = useId();
-  if (voucher)
+  if (voucher) {
+    // A refusal from checkout is newer news than the cart's own flag.
+    const refusal =
+      error ?? (voucher.problem ? voucherMessage(voucher.problem, voucher.minimum ?? null) : null);
     return (
       <div className="space-y-1 text-sm">
         <div className="flex items-center justify-between gap-2">
           <span>{`Kupon (${voucher.code})`}</span>
-          {!voucher.problem && <span>{`−${formatTry(voucher.discount)}`}</span>}
+          {!refusal && <span>{`−${formatTry(voucher.discount)}`}</span>}
           <button
             type="button"
             disabled={pending}
@@ -46,9 +49,9 @@ export function VoucherField({
             Kaldır
           </button>
         </div>
-        {voucher.problem && (
+        {refusal && (
           <p role="alert" className="text-red-700">
-            {voucherMessage(voucher.problem, voucher.minimum ?? null)}
+            {refusal}
           </p>
         )}
         {onContinueWithout && (
@@ -58,6 +61,7 @@ export function VoucherField({
         )}
       </div>
     );
+  }
   return (
     <form
       className="space-y-1 text-sm"

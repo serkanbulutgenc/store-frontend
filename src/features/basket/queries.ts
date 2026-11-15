@@ -60,3 +60,14 @@ export const useRemoveLine = () =>
         })
       ).data as Basket,
   );
+
+export const useApplyVoucher = () =>
+  useBasketMutation(
+    async (code: string) =>
+      (await storeApi.POST("/api/store/basket/voucher", { body: { code } })).data as Basket,
+  );
+
+export const useRemoveVoucher = () =>
+  useBasketMutation(
+    async () => (await storeApi.DELETE("/api/store/basket/voucher")).data as Basket,
+  );

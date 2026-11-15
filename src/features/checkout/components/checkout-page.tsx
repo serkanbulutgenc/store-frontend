@@ -8,6 +8,7 @@ import { checkoutPrefill } from "@/features/account/prefill";
 import { accountQuery, addressesQuery } from "@/features/account/queries";
 import { apiErrorToFormErrors } from "@/features/admin/forms/api-errors";
 import { bind, Field, FormMessage } from "@/features/admin/forms/field";
+import { VoucherField } from "@/features/basket/components/voucher-field";
 import { problemText } from "@/features/basket/problems";
 import {
   type Basket,
@@ -15,6 +16,7 @@ import {
   type PublicSettings,
   settingsQuery,
 } from "@/features/basket/queries";
+import { useVoucherField } from "@/features/basket/use-voucher-field";
 import { ApiError } from "@/lib/api/errors";
 import { formatTry } from "@/lib/format";
 import { useDebounced } from "@/lib/use-debounced";
@@ -118,47 +120,55 @@ function FeeSummary({
   settings,
   method,
   il,
+  placeError,
 }: {
   basket: Basket;
   settings: PublicSettings;
   method: PaymentChoice;
   il: string;
+  /** The error of placing the Order, so a refused Voucher shows next to its code. */
+  placeError: unknown;
 }) {
   // The province is typed by hand, so wait for a pause before asking the backend.
   const province = useDebounced(il.trim(), 400);
   const quote = useCheckoutQuote(basket, province, method, basket.lines.length > 0);
-  const fees = feeSummary(basket.subtotal, settings, method, quote.data);
+  const applied = basket.voucher && !basket.voucher.problem ? basket.voucher.discount : "0.00";
+  const fees = feeSummary(basket.subtotal, settings, method, quote.data, applied);
   const waiting = quote.isFetching || province !== il.trim();
+  const voucher = useVoucherField(basket.voucher, placeError);
   return (
-    <dl className="space-y-1 border-t border-border pt-3" aria-busy={waiting}>
-      <div className="flex justify-between">
-        <dt>Ürünler (KDV dahil)</dt>
-        <dd>{formatTry(basket.subtotal)}</dd>
-      </div>
-      <div className="flex justify-between">
-        <dt>Kargo</dt>
-        <dd className={cn(waiting && "opacity-60")}>
-          {fees.freeShipping ? "Ücretsiz" : formatTry(fees.shipping)}
-        </dd>
-      </div>
-      {!fees.calculated && !quote.isError && (
-        <p className="text-muted-foreground">Kargo ücreti teslimat ilinize göre hesaplanır.</p>
-      )}
-      {method === "cod" && (
+    <div className="space-y-3">
+      <VoucherField {...voucher} />
+      <dl className="space-y-1 border-t border-border pt-3" aria-busy={waiting}>
         <div className="flex justify-between">
-          <dt>Kapıda ödeme bedeli</dt>
-          <dd>{formatTry(fees.cod)}</dd>
+          <dt>Ürünler (KDV dahil)</dt>
+          <dd>{formatTry(basket.subtotal)}</dd>
         </div>
-      )}
-      <div className="flex justify-between text-base font-semibold">
-        <dt>Toplam</dt>
-        <dd className={cn(waiting && "opacity-60")}>{formatTry(fees.total)}</dd>
-      </div>
-      <div className="flex justify-between text-muted-foreground">
-        <dt>Ödeme yöntemi</dt>
-        <dd>{method === "cod" ? "Kapıda ödeme" : "Havale / EFT"}</dd>
-      </div>
-    </dl>
+        <div className="flex justify-between">
+          <dt>Kargo</dt>
+          <dd className={cn(waiting && "opacity-60")}>
+            {fees.freeShipping ? "Ücretsiz" : formatTry(fees.shipping)}
+          </dd>
+        </div>
+        {!fees.calculated && !quote.isError && (
+          <p className="text-muted-foreground">Kargo ücreti teslimat ilinize göre hesaplanır.</p>
+        )}
+        {method === "cod" && (
+          <div className="flex justify-between">
+            <dt>Kapıda ödeme bedeli</dt>
+            <dd>{formatTry(fees.cod)}</dd>
+          </div>
+        )}
+        <div className="flex justify-between text-base font-semibold">
+          <dt>Toplam</dt>
+          <dd className={cn(waiting && "opacity-60")}>{formatTry(fees.total)}</dd>
+        </div>
+        <div className="flex justify-between text-muted-foreground">
+          <dt>Ödeme yöntemi</dt>
+          <dd>{method === "cod" ? "Kapıda ödeme" : "Havale / EFT"}</dd>
+        </div>
+      </dl>
+    </div>
   );
 }
 
@@ -388,7 +398,13 @@ export function CheckoutPage() {
             })}
           >
             {({ method, il }) => (
-              <FeeSummary basket={basket} settings={settings} method={method} il={il} />
+              <FeeSummary
+                basket={basket}
+                settings={settings}
+                method={method}
+                il={il}
+                placeError={place.error}
+              />
             )}
           </form.Subscribe>
           <p className="rounded-md bg-muted px-3 py-2 text-muted-foreground">

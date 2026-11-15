@@ -85,4 +85,17 @@ describe("VoucherField", () => {
     expect(html({ voucher })).not.toContain("Kuponsuz devam et");
     expect(html({ voucher: null, onContinueWithout: vi.fn() })).not.toContain("Kuponsuz devam et");
   });
+
+  it("shows a refusal from checkout next to the code that was refused", () => {
+    // The cart cannot know a Guest already used the code; only placing the Order finds out.
+    const out = html({
+      voucher: { code: "ONCE10", discount: "20.00" },
+      error: "Geçersiz kupon kodu.",
+      onContinueWithout: vi.fn(),
+    });
+    expect(out).toMatch(/<p[^>]*role="alert"[^>]*>Geçersiz kupon kodu\.<\/p>/);
+    expect(out).toContain("Kupon (ONCE10)");
+    expect(out).toContain("Kuponsuz devam et");
+    expect(out).not.toContain("−₺20,00"); // not offered as a saving while it is refused
+  });
 });

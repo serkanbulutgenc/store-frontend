@@ -3,6 +3,7 @@ import { basketQuery } from "@/features/basket/queries";
 import { storeApi } from "@/lib/api/clients";
 import { ApiError } from "@/lib/api/errors";
 import type { components } from "../../../api/specs/openapi-store";
+import { checkoutQuoteKey } from "./quote-key";
 
 export type CheckoutQuote = components["schemas"]["QuoteOut"];
 
@@ -12,14 +13,17 @@ export type CheckoutQuote = components["schemas"]["QuoteOut"];
  * a quantity change refetches; the previous quote stays on screen meanwhile.
  */
 export function useCheckoutQuote(
-  basket: { subtotal: string; lines: { id: number; quantity: number }[] },
+  basket: {
+    subtotal: string;
+    lines: { id: number; quantity: number }[];
+    voucher?: { code: string; problem?: string | null } | null;
+  },
   province: string,
   method: components["schemas"]["PaymentMethod"],
   enabled: boolean,
 ) {
-  const lines = basket.lines.map((l) => `${l.id}:${l.quantity}`).join(",");
   return useQuery({
-    queryKey: ["store", "checkout-quote", { lines, subtotal: basket.subtotal, province, method }],
+    queryKey: checkoutQuoteKey(basket, province, method),
     enabled,
     placeholderData: keepPreviousData,
     staleTime: 0,

@@ -8,8 +8,10 @@ import { formatTry } from "@/lib/format";
  */
 export function voucherMessage(reason: string, minimum: string | null): string {
   if (reason === "expired") return "Bu kuponun süresi dolmuş.";
-  if (reason === "minimum" && minimum)
-    return `Bu kupon için sepet tutarı en az ${formatTry(minimum)} olmalı.`;
+  if (reason === "minimum")
+    return minimum
+      ? `Bu kupon için sepet tutarı en az ${formatTry(minimum)} olmalı.`
+      : "Sepet tutarı bu kupon için yeterli değil.";
   return "Geçersiz kupon kodu.";
 }
 
@@ -17,4 +19,12 @@ export function voucherMessage(reason: string, minimum: string | null): string {
 export function voucherReason(error: unknown): string | null {
   if (!(error instanceof ApiError) || error.code !== "voucher_invalid") return null;
   return error.fields.voucher_code?.[0] ?? null;
+}
+
+/** The line under the code field when applying a code failed, whatever the failure. */
+export function applyErrorMessage(error: unknown): string {
+  const reason = voucherReason(error);
+  if (reason) return voucherMessage(reason, null);
+  if (error instanceof ApiError && error.code === "basket_empty") return "Sepetiniz boş.";
+  return "Kupon uygulanamadı. Lütfen tekrar deneyin.";
 }

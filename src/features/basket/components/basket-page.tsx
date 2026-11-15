@@ -13,6 +13,8 @@ import {
   useRemoveLine,
   useSetQuantity,
 } from "../queries";
+import { useVoucherField } from "../use-voucher-field";
+import { VoucherField } from "./voucher-field";
 
 function LineRow({ line }: { line: BasketLine }) {
   const setQuantity = useSetQuantity();
@@ -94,6 +96,7 @@ function LineRow({ line }: { line: BasketLine }) {
 export function BasketPage() {
   const { data: basket } = useQuery(basketQuery);
   const { data: settings } = useQuery(settingsQuery);
+  const voucher = useVoucherField(basket?.voucher);
 
   if (!basket)
     return (
@@ -128,6 +131,7 @@ export function BasketPage() {
             <span>Ara toplam (KDV dahil)</span>
             <span>{formatTry(basket.subtotal)}</span>
           </div>
+          <VoucherField {...voucher} />
           {settings && (
             <p className="text-muted-foreground">
               Kargo ücreti teslimat ilinize ve ürünlerin boyutuna göre ödeme adımında hesaplanır;
