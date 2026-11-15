@@ -92,6 +92,7 @@ export function isIndexableListing(s: BrowseSearch, kind: "category" | "search")
     s.price_min !== undefined ||
     s.price_max !== undefined ||
     s.in_stock !== undefined ||
+    s.on_sale !== undefined ||
     s.sort !== undefined
   );
 }

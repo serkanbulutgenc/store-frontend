@@ -6,32 +6,31 @@ import { homeHead } from "@/features/catalog/seo";
 
 export const Route = createFileRoute("/_storefront/")({
   loader: async ({ context }) => {
-    const [latest, popular, categories] = await Promise.all([
+    const [latest, popular, onSale, categories] = await Promise.all([
       context.queryClient.query(productsPageQuery({}, { page: 1 })),
-      context.queryClient.query(productsPageQuery({ sort: "rating_desc" }, { page: 1 })),
+      context.queryClient.query(productsPageQuery({ sort: "popular" }, { page: 1 })),
+      context.queryClient.query(productsPageQuery({ on_sale: true }, { page: 1 })),
       context.queryClient.query(categoriesQuery),
     ]);
-    // The API has no on-sale filter yet: take discounted items from the two pages we already have.
-    const onSale = [
-      ...new Map([...latest.items, ...popular.items].map((p) => [p.id, p])).values(),
-    ].filter((p) => p.old_price);
-    return { latest: latest.items, popular: popular.items, onSale, categories };
+    return { latest: latest.items, popular: popular.items, onSale: onSale.items, categories };
   },
   head: ({ match }) => homeHead(match.context.siteOrigin),
   component: function Home() {
     const { latest, popular, onSale, categories } = Route.useLoaderData();
     return (
       <main>
+        <h1 className="sr-only">Aura Tekstil</h1>
         {/* The optional banner is a Store setting (ticket 20); it slots in here. */}
         <HomeHero products={latest} />
         <div className="mx-auto max-w-6xl space-y-12 px-4 py-10">
           <ProductRail title="Yeni gelenler" products={latest} seeAll={{ sort: "newest" }} />
-          <ProductRail title="İndirimdekiler" products={onSale} showDiscount />
           <ProductRail
-            title="En çok beğenilenler"
-            products={popular}
-            seeAll={{ sort: "rating_desc" }}
+            title="İndirimdekiler"
+            products={onSale}
+            seeAll={{ on_sale: true }}
+            showDiscount
           />
+          <ProductRail title="Çok satanlar" products={popular} seeAll={{ sort: "popular" }} />
           {latest.length === 0 && <p className="text-muted-foreground">Ürünler yakında burada.</p>}
           {categories.length > 0 && (
             <section aria-labelledby="cats">

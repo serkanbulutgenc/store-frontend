@@ -6,6 +6,7 @@ export const SORTS = [
   "price_desc",
   "name_asc",
   "rating_desc",
+  "popular",
   "relevance",
 ] as const;
 export type Sort = (typeof SORTS)[number];
@@ -16,6 +17,7 @@ export const SORT_LABELS: Record<Sort, string> = {
   price_desc: "Fiyat: azalan",
   name_asc: "İsim: A-Z",
   rating_desc: "En yüksek puan",
+  popular: "Çok satanlar",
 };
 
 /** Sanity bound for a hand-typed `?page=`; the listing also clamps to the last real page. */
@@ -50,6 +52,7 @@ export const browseSearchSchema = z.object({
   price_min: price,
   price_max: price,
   in_stock: z.boolean().optional().catch(undefined),
+  on_sale: z.boolean().optional().catch(undefined),
   sort: z.enum(SORTS).optional().catch(undefined),
   page: z.coerce.number().int().min(1).max(MAX_PAGE_PARAM).optional().catch(undefined),
 });
@@ -71,6 +74,7 @@ type ListQuery = {
   price_min?: number;
   price_max?: number;
   in_stock: boolean;
+  on_sale?: boolean;
   sort: Sort;
   page: number;
 };
@@ -90,6 +94,7 @@ export function toListQuery(s: BrowseSearch, opts: { category?: string; page: nu
   if (s.option?.length) q.option = s.option;
   if (s.price_min !== undefined) q.price_min = s.price_min;
   if (s.price_max !== undefined) q.price_max = s.price_max;
+  if (s.on_sale) q.on_sale = true;
   return q;
 }
 

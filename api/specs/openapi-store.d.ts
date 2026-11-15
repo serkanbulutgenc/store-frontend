@@ -1337,6 +1337,12 @@ export interface components {
              */
             in_stock: boolean;
             /**
+             * On Sale
+             * @description Only Products with an old price.
+             * @default false
+             */
+            on_sale: boolean;
+            /**
              * Option
              * @description Attribute option ids: any of one attribute's, all attributes.
              */
@@ -1362,7 +1368,7 @@ export interface components {
              * @default newest
              * @enum {string}
              */
-            sort: "newest" | "price_asc" | "price_desc" | "name_asc" | "rating_desc" | "relevance";
+            sort: "newest" | "price_asc" | "price_desc" | "name_asc" | "rating_desc" | "popular" | "relevance";
         };
         /** ProductPageOut */
         ProductPageOut: {
@@ -2382,7 +2388,9 @@ export interface operations {
                 price_min?: number | string | null;
                 price_max?: number | string | null;
                 in_stock?: boolean;
-                sort?: "newest" | "price_asc" | "price_desc" | "name_asc" | "rating_desc" | "relevance";
+                /** @description Only Products with an old price. */
+                on_sale?: boolean;
+                sort?: "newest" | "price_asc" | "price_desc" | "name_asc" | "rating_desc" | "popular" | "relevance";
                 page?: number;
             };
             header?: never;

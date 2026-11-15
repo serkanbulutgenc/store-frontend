@@ -69,7 +69,7 @@ export function ProductRail({
 }: {
   title: string;
   products: Card[];
-  seeAll?: { sort: "newest" | "rating_desc" };
+  seeAll?: { sort?: "newest" | "popular"; on_sale?: true };
   showDiscount?: boolean;
 }) {
   const [ref, api] = useEmblaCarousel({
@@ -87,11 +87,7 @@ export function ProductRail({
           {title}
         </h2>
         {seeAll && (
-          <Link
-            to="/ara"
-            search={{ sort: seeAll.sort }}
-            className="text-sm underline underline-offset-4"
-          >
+          <Link to="/ara" search={seeAll} className="text-sm underline underline-offset-4">
             Tümünü gör
           </Link>
         )}

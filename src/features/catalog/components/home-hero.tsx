@@ -65,11 +65,7 @@ export function HomeHero({ products }: { products: Card[] }) {
                 <Link to="/urun/$slug" params={{ slug: p.slug }} className="block size-full">
                   <Photo product={p} eager={n === 0} />
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-6 pb-8 text-white md:p-10">
-                    {n === 0 ? (
-                      <h1 className="max-w-xl text-2xl font-bold md:text-4xl">{p.title}</h1>
-                    ) : (
-                      <p className="max-w-xl text-2xl font-bold md:text-4xl">{p.title}</p>
-                    )}
+                    <p className="max-w-xl text-2xl font-bold md:text-4xl">{p.title}</p>
                     <p className="mt-1 text-lg">{formatTry(p.price)}</p>
                   </div>
                 </Link>
