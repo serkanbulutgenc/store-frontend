@@ -2932,6 +2932,12 @@ export interface components {
             received_at: string | null;
             /** Refund Amount */
             refund_amount: string | null;
+            /**
+             * Refund Due
+             * @description What the Shopper paid for these units, net of any Voucher.
+             * @example 349.90
+             */
+            refund_due: string;
             /** Refund Method */
             refund_method: string;
             /** Refunded At */

@@ -1,3 +1,5 @@
+import { formatTry } from "@/lib/format";
+
 const STATUS: Record<string, string> = {
   requested: "Bekliyor",
   approved: "Onaylandı",
@@ -58,4 +60,24 @@ export function receiveBody(values: Record<string, string>) {
       .filter(([key]) => key.startsWith("line_"))
       .map(([key, value]) => ({ line_id: Number(key.slice(5)), restock: value === "yes" })),
   };
+}
+
+/**
+ * The refund form's starting values. The amount is what the Shopper actually paid for the
+ * returned units, net of any Voucher; the Owner may still change it (for example to add the
+ * shipping fee), so it is a suggestion and not a limit. Nothing due (a rejected request)
+ * leaves it empty: a refund of 0.00 is never valid.
+ */
+export function refundDefaults(request: { refund_due: string }) {
+  const due = Number(request.refund_due) > 0 ? request.refund_due : "";
+  return { amount: due, method: "bank_transfer", iban: "" };
+}
+
+/**
+ * The line on a request card that says what the customer paid for the returned items, net of
+ * any Voucher. Only while the request is open: a refunded one shows "Ödenen iade" instead.
+ */
+export function refundDueText(request: { status: string; refund_due: string }): string | null {
+  if (returnSteps(request.status).length === 0 || Number(request.refund_due) <= 0) return null;
+  return `Müşterinin bu ürünler için ödediği tutar: ${formatTry(request.refund_due)}`;
 }

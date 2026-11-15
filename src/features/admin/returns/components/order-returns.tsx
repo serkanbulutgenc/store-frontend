@@ -18,6 +18,8 @@ import {
   RESTOCK_OPTIONS,
   type ReturnStep,
   receiveBody,
+  refundDefaults,
+  refundDueText,
   returnReasonLabel,
   returnStatusLabel,
   returnStatusTone,
@@ -76,6 +78,7 @@ export function OrderReturns({ order, me }: { order: OrderDetail; me: Me }) {
               </li>
             ))}
           </ul>
+          {refundDueText(r) && <p>{refundDueText(r)}</p>}
           {r.reject_reason && (
             <p className="text-muted-foreground">Ret nedeni: {r.reject_reason}</p>
           )}
@@ -139,7 +142,7 @@ export function OrderReturns({ order, me }: { order: OrderDetail; me: Me }) {
           {
             name: "amount",
             label: "Tutar",
-            hint: "İade edilen ürünlerin tutarı; kargo ücreti ayrıca değerlendirilir.",
+            hint: "Önerilen tutar, müşterinin bu ürünler için ödediği tutardır; kargo ücreti ayrıca değerlendirilir.",
           },
           {
             name: "method",
@@ -151,7 +154,7 @@ export function OrderReturns({ order, me }: { order: OrderDetail; me: Me }) {
           },
           { name: "iban", label: "IBAN", hint: "Havale için gerekli." },
         ]}
-        defaults={{ amount: "", method: "bank_transfer", iban: "" }}
+        defaults={refundDefaults(current ?? { refund_due: "0.00" })}
         schema={refundFormSchema}
         success="İade kaydedildi."
         submit={(v) =>
