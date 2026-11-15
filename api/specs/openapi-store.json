@@ -547,6 +547,17 @@
             "pattern": "^-?\\d+\\.\\d{2}$",
             "title": "Subtotal",
             "type": "string"
+          },
+          "voucher": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VoucherOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The Voucher applied to this basket, if any."
           }
         },
         "required": [
@@ -1245,11 +1256,21 @@
             "title": "Cod Fee",
             "type": "string"
           },
+          "discount": {
+            "description": "What the Voucher took off the items.",
+            "examples": [
+              "349.90"
+            ],
+            "pattern": "^-?\\d+\\.\\d{2}$",
+            "title": "Discount",
+            "type": "string"
+          },
           "email": {
             "title": "Email",
             "type": "string"
           },
           "items_total": {
+            "description": "What the items cost before any Voucher.",
             "examples": [
               "349.90"
             ],
@@ -1307,6 +1328,18 @@
             "description": "Signed link token (valid 30 days) for GET /tracking/link/{token}.",
             "title": "Tracking Token",
             "type": "string"
+          },
+          "voucher_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The Voucher this Order used, if any.",
+            "title": "Voucher Code"
           }
         },
         "required": [
@@ -1317,6 +1350,7 @@
           "email",
           "lines",
           "items_total",
+          "discount",
           "shipping_fee",
           "cod_fee",
           "total",
@@ -2058,12 +2092,22 @@
             "title": "Cod Fee",
             "type": "string"
           },
+          "discount": {
+            "description": "What the basket's Voucher takes off the items.",
+            "examples": [
+              "349.90"
+            ],
+            "pattern": "^-?\\d+\\.\\d{2}$",
+            "title": "Discount",
+            "type": "string"
+          },
           "free_shipping": {
             "description": "True when the items total reached the free-shipping threshold.",
             "title": "Free Shipping",
             "type": "boolean"
           },
           "items_total": {
+            "description": "What the items cost before any Voucher.",
             "examples": [
               "349.90"
             ],
@@ -2086,10 +2130,35 @@
             "pattern": "^-?\\d+\\.\\d{2}$",
             "title": "Total",
             "type": "string"
+          },
+          "voucher_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The Voucher the basket carries, if any.",
+            "title": "Voucher Code"
+          },
+          "voucher_problem": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the Voucher is not applied (minimum); null when it is.",
+            "title": "Voucher Problem"
           }
         },
         "required": [
           "items_total",
+          "discount",
           "shipping_fee",
           "cod_fee",
           "total",
@@ -2738,6 +2807,71 @@
           "returns"
         ],
         "title": "TrackingOut",
+        "type": "object"
+      },
+      "VoucherIn": {
+        "properties": {
+          "code": {
+            "maxLength": 128,
+            "title": "Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
+        ],
+        "title": "VoucherIn",
+        "type": "object"
+      },
+      "VoucherOut": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "discount": {
+            "description": "What it takes off the items; 0.00 while it has a problem.",
+            "examples": [
+              "349.90"
+            ],
+            "pattern": "^-?\\d+\\.\\d{2}$",
+            "title": "Discount",
+            "type": "string"
+          },
+          "minimum": {
+            "anyOf": [
+              {
+                "examples": [
+                  "349.90"
+                ],
+                "pattern": "^-?\\d+\\.\\d{2}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The items total the Voucher needs; null when it has no minimum.",
+            "title": "Minimum"
+          },
+          "problem": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "minimum when the basket fell below the minimum; null when fine.",
+            "title": "Problem"
+          }
+        },
+        "required": [
+          "code",
+          "discount"
+        ],
+        "title": "VoucherOut",
         "type": "object"
       }
     },
@@ -3476,6 +3610,70 @@
           }
         ],
         "summary": "Set Quantity",
+        "tags": [
+          "basket"
+        ]
+      }
+    },
+    "/api/store/basket/voucher": {
+      "delete": {
+        "description": "Take the Voucher off the basket. Harmless when there is none.",
+        "operationId": "basket_remove_voucher",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasketOut"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "GuestAuth": []
+          }
+        ],
+        "summary": "Remove Voucher",
+        "tags": [
+          "basket"
+        ]
+      },
+      "post": {
+        "description": "Apply a Voucher code to the basket, replacing any earlier one.",
+        "operationId": "basket_apply_voucher",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoucherIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasketOut"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "GuestAuth": []
+          }
+        ],
+        "summary": "Apply Voucher",
         "tags": [
           "basket"
         ]

@@ -277,6 +277,30 @@ export interface paths {
         patch: operations["basket_set_quantity"];
         trace?: never;
     };
+    "/api/store/basket/voucher": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Apply Voucher
+         * @description Apply a Voucher code to the basket, replacing any earlier one.
+         */
+        post: operations["basket_apply_voucher"];
+        /**
+         * Remove Voucher
+         * @description Take the Voucher off the basket. Harmless when there is none.
+         */
+        delete: operations["basket_remove_voucher"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/store/categories": {
         parameters: {
             query?: never;
@@ -869,6 +893,8 @@ export interface components {
              * @example 349.90
              */
             subtotal: string;
+            /** @description The Voucher applied to this basket, if any. */
+            voucher?: components["schemas"]["VoucherOut"] | null;
         };
         /** BrandFacet */
         BrandFacet: {
@@ -1132,10 +1158,17 @@ export interface components {
              * @example 349.90
              */
             cod_fee: string;
+            /**
+             * Discount
+             * @description What the Voucher took off the items.
+             * @example 349.90
+             */
+            discount: string;
             /** Email */
             email: string;
             /**
              * Items Total
+             * @description What the items cost before any Voucher.
              * @example 349.90
              */
             items_total: string;
@@ -1168,6 +1201,11 @@ export interface components {
              * @description Signed link token (valid 30 days) for GET /tracking/link/{token}.
              */
             tracking_token: string;
+            /**
+             * Voucher Code
+             * @description The Voucher this Order used, if any.
+             */
+            voucher_code?: string | null;
         };
         /** PagePhotoOut */
         PagePhotoOut: {
@@ -1426,12 +1464,19 @@ export interface components {
              */
             cod_fee: string;
             /**
+             * Discount
+             * @description What the basket's Voucher takes off the items.
+             * @example 349.90
+             */
+            discount: string;
+            /**
              * Free Shipping
              * @description True when the items total reached the free-shipping threshold.
              */
             free_shipping: boolean;
             /**
              * Items Total
+             * @description What the items cost before any Voucher.
              * @example 349.90
              */
             items_total: string;
@@ -1445,6 +1490,16 @@ export interface components {
              * @example 349.90
              */
             total: string;
+            /**
+             * Voucher Code
+             * @description The Voucher the basket carries, if any.
+             */
+            voucher_code?: string | null;
+            /**
+             * Voucher Problem
+             * @description Why the Voucher is not applied (minimum); null when it is.
+             */
+            voucher_problem?: string | null;
         };
         /** ReturnIn */
         ReturnIn: {
@@ -1720,6 +1775,32 @@ export interface components {
             total: string;
             /** Tracking Number */
             tracking_number: string | null;
+        };
+        /** VoucherIn */
+        VoucherIn: {
+            /** Code */
+            code: string;
+        };
+        /** VoucherOut */
+        VoucherOut: {
+            /** Code */
+            code: string;
+            /**
+             * Discount
+             * @description What it takes off the items; 0.00 while it has a problem.
+             * @example 349.90
+             */
+            discount: string;
+            /**
+             * Minimum
+             * @description The items total the Voucher needs; null when it has no minimum.
+             */
+            minimum?: string | null;
+            /**
+             * Problem
+             * @description minimum when the basket fell below the minimum; null when fine.
+             */
+            problem?: string | null;
         };
     };
     responses: never;
@@ -2163,6 +2244,50 @@ export interface operations {
                 "application/json": components["schemas"]["QuantityIn"];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BasketOut"];
+                };
+            };
+        };
+    };
+    basket_apply_voucher: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VoucherIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BasketOut"];
+                };
+            };
+        };
+    };
+    basket_remove_voucher: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {

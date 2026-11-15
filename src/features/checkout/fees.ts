@@ -25,7 +25,12 @@ const toKurus = (amount: string): number => {
 const fromKurus = (kurus: number): string =>
   `${Math.floor(kurus / 100)}.${String(kurus % 100).padStart(2, "0")}`;
 
-export function previewFees(subtotal: string, settings: FeeSettings, method: PaymentChoice) {
+export function previewFees(
+  subtotal: string,
+  settings: FeeSettings,
+  method: PaymentChoice,
+  discount = "0.00",
+) {
   const items = toKurus(subtotal);
   const threshold = settings.free_shipping_threshold;
   const free = threshold !== null && items >= toKurus(threshold);
@@ -34,7 +39,7 @@ export function previewFees(subtotal: string, settings: FeeSettings, method: Pay
   return {
     shipping: fromKurus(shipping),
     cod: fromKurus(cod),
-    total: fromKurus(items + shipping + cod),
+    total: fromKurus(items - toKurus(discount) + shipping + cod),
     freeShipping: free,
   };
 }
@@ -44,13 +49,24 @@ export function feeSummary(
   settings: FeeSettings,
   method: PaymentChoice,
   quote: CheckoutQuote | undefined,
+  basketDiscount = "0.00",
 ) {
-  if (!quote) return { ...previewFees(subtotal, settings, method), calculated: false };
+  if (!quote)
+    return {
+      ...previewFees(subtotal, settings, method, basketDiscount),
+      discount: basketDiscount,
+      voucherCode: null,
+      voucherProblem: null,
+      calculated: false,
+    };
   return {
     shipping: quote.shipping_fee,
     cod: quote.cod_fee,
     total: quote.total,
     freeShipping: quote.free_shipping,
+    discount: quote.discount,
+    voucherCode: quote.voucher_code ?? null,
+    voucherProblem: quote.voucher_problem ?? null,
     calculated: true,
   };
 }
