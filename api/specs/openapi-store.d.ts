@@ -688,7 +688,14 @@ export interface components {
              */
             cod_fee: string;
             /**
+             * Discount
+             * @description What the Voucher took off the items.
+             * @example 349.90
+             */
+            discount: string;
+            /**
              * Items Total
+             * @description What the items cost before any Voucher.
              * @example 349.90
              */
             items_total: string;
@@ -726,6 +733,11 @@ export interface components {
             total: string;
             /** Tracking Number */
             tracking_number: string | null;
+            /**
+             * Voucher Code
+             * @description The Voucher this Order used, if any.
+             */
+            voucher_code?: string | null;
         };
         /** AccountOrderRow */
         AccountOrderRow: {
@@ -1740,7 +1752,14 @@ export interface components {
              */
             cod_fee: string;
             /**
+             * Discount
+             * @description What the Voucher took off the items.
+             * @example 349.90
+             */
+            discount: string;
+            /**
              * Items Total
+             * @description What the items cost before any Voucher.
              * @example 349.90
              */
             items_total: string;
@@ -1777,6 +1796,11 @@ export interface components {
             total: string;
             /** Tracking Number */
             tracking_number: string | null;
+            /**
+             * Voucher Code
+             * @description The Voucher this Order used, if any.
+             */
+            voucher_code?: string | null;
         };
         /** VoucherIn */
         VoucherIn: {

@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { OrderTotals } from "@/features/checkout/components/order-totals";
 import { ApiError } from "@/lib/api/errors";
 import { formatDate, formatTry } from "@/lib/format";
 import { paymentLabel, statusLabel } from "../labels";
@@ -51,26 +52,7 @@ export function OrderView({ order }: { order: TrackedOrder }) {
           </li>
         ))}
       </ul>
-      <dl className="space-y-1 border-t border-border pt-2">
-        <div className="flex justify-between">
-          <dt>Ürünler</dt>
-          <dd>{formatTry(order.items_total)}</dd>
-        </div>
-        <div className="flex justify-between">
-          <dt>Kargo</dt>
-          <dd>{formatTry(order.shipping_fee)}</dd>
-        </div>
-        {order.payment_method === "cod" && (
-          <div className="flex justify-between">
-            <dt>Kapıda ödeme bedeli</dt>
-            <dd>{formatTry(order.cod_fee)}</dd>
-          </div>
-        )}
-        <div className="flex justify-between text-base font-semibold">
-          <dt>Toplam</dt>
-          <dd>{formatTry(order.total)}</dd>
-        </div>
-      </dl>
+      <OrderTotals order={order} />
     </section>
   );
 }
