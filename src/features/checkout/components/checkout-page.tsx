@@ -6,7 +6,6 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { checkoutPrefill } from "@/features/account/prefill";
 import { accountQuery, addressesQuery } from "@/features/account/queries";
-import { apiErrorToFormErrors } from "@/features/admin/forms/api-errors";
 import { bind, Field, FormMessage } from "@/features/admin/forms/field";
 import { VoucherField } from "@/features/basket/components/voucher-field";
 import { problemText } from "@/features/basket/problems";
@@ -25,6 +24,7 @@ import { suggestEmail } from "../email-hint";
 import { feeSummary, type PaymentChoice } from "../fees";
 import { useCheckoutQuote, usePlaceOrder } from "../queries";
 import { checkoutSchema, emptyCheckout, toCheckoutBody } from "../schemas";
+import { checkoutSubmitErrors } from "../submit-errors";
 
 function useCheckoutForm(
   submit: (body: ReturnType<typeof toCheckoutBody>) => Promise<void>,
@@ -46,7 +46,7 @@ function useCheckoutForm(
             formApi.setFieldValue("contract_acknowledged", false);
             await qc.invalidateQueries({ queryKey: settingsQuery.queryKey });
           }
-          return apiErrorToFormErrors(e);
+          return checkoutSubmitErrors(e);
         }
       },
     },
