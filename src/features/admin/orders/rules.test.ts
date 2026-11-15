@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Me } from "@/lib/api/me";
-import { allowedActions, canBulkMarkPaid, canBulkShip, canDo } from "./rules";
+import { allowedActions, canBulkMarkPaid, canBulkShip, canDo, orderVoucherRow } from "./rules";
 
 const me = (permissions: string[]): Me => ({
   id: 1,
@@ -57,5 +57,21 @@ describe("bulk validity", () => {
   it("ships only preparing orders", () => {
     expect(canBulkShip({ status: "preparing", payment_status: "paid" })).toBe(true);
     expect(canBulkShip({ status: "new", payment_status: "paid" })).toBe(false);
+  });
+});
+
+describe("orderVoucherRow", () => {
+  it("shows what the voucher took off, with a note that the lines are as charged", () => {
+    expect(orderVoucherRow({ code: "YAZ10", discount: "20.00" })).toEqual({
+      label: "Kupon (YAZ10)",
+      amount: "−₺20,00",
+      note: "Satır tutarları kupon düşüldükten sonraki, ödenen tutarlardır.",
+    });
+    expect(orderVoucherRow({ code: "KIS-50", discount: "1234.50" })?.amount).toBe("−₺1.234,50");
+  });
+
+  it("shows nothing for an order that used no voucher", () => {
+    expect(orderVoucherRow(null)).toBeNull();
+    expect(orderVoucherRow(undefined)).toBeNull();
   });
 });

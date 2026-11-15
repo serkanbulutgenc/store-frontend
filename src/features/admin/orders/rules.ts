@@ -1,4 +1,5 @@
 import { can, type Me } from "@/lib/api/me";
+import { formatTry } from "@/lib/format";
 
 export type PaymentStatus = "unpaid" | "paid" | "refunded";
 
@@ -92,3 +93,17 @@ export const canBulkMarkPaid = (r: Row) =>
   r.payment_status === "unpaid" &&
   !["cancelled", "return_requested", "returned"].includes(r.status);
 export const canBulkShip = (r: Row) => r.status === "preparing";
+
+export const VOUCHER_NOTE = "Satır tutarları kupon düşüldükten sonraki, ödenen tutarlardır.";
+
+/** The voucher line of the totals, from the Order's own record (`null` when it used none). */
+export function orderVoucherRow(
+  voucher: { code: string; discount: string } | null | undefined,
+): { label: string; amount: string; note: string } | null {
+  if (!voucher) return null;
+  return {
+    label: `Kupon (${voucher.code})`,
+    amount: `−${formatTry(voucher.discount)}`,
+    note: VOUCHER_NOTE,
+  };
+}

@@ -47,6 +47,7 @@ import { Route as AdminAppShippingRouteImport } from './routes/admin/_app/shippi
 import { Route as AdminAppStaffRouteImport } from './routes/admin/_app/staff'
 import { Route as AdminAppStockRouteImport } from './routes/admin/_app/stock'
 import { Route as AdminAppSuppliersRouteImport } from './routes/admin/_app/suppliers'
+import { Route as AdminAppVouchersRouteImport } from './routes/admin/_app/vouchers'
 import { Route as StorefrontCustomerHesapIndexRouteImport } from './routes/_storefront/_customer/hesap/index'
 import { Route as StorefrontCustomerHesapAdreslerRouteImport } from './routes/_storefront/_customer/hesap/adresler'
 import { Route as StorefrontCustomerHesapFavorilerRouteImport } from './routes/_storefront/_customer/hesap/favoriler'
@@ -258,6 +259,11 @@ const AdminAppSuppliersRoute = AdminAppSuppliersRouteImport.update({
   path: '/suppliers',
   getParentRoute: () => AdminAppRouteRoute,
 } as any)
+const AdminAppVouchersRoute = AdminAppVouchersRouteImport.update({
+  id: '/vouchers',
+  path: '/vouchers',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
 const StorefrontCustomerHesapIndexRoute =
   StorefrontCustomerHesapIndexRouteImport.update({
     id: '/',
@@ -411,6 +417,7 @@ export interface FileRoutesByFullPath {
   '/admin/staff': typeof AdminAppStaffRoute
   '/admin/stock': typeof AdminAppStockRoute
   '/admin/suppliers': typeof AdminAppSuppliersRoute
+  '/admin/vouchers': typeof AdminAppVouchersRoute
   '/yasal/': typeof StorefrontYasalIndexRoute
   '/admin/': typeof AdminAppIndexRoute
   '/hesap/adresler': typeof StorefrontCustomerHesapAdreslerRoute
@@ -468,6 +475,7 @@ export interface FileRoutesByTo {
   '/admin/staff': typeof AdminAppStaffRoute
   '/admin/stock': typeof AdminAppStockRoute
   '/admin/suppliers': typeof AdminAppSuppliersRoute
+  '/admin/vouchers': typeof AdminAppVouchersRoute
   '/yasal': typeof StorefrontYasalIndexRoute
   '/hesap/adresler': typeof StorefrontCustomerHesapAdreslerRoute
   '/hesap/favoriler': typeof StorefrontCustomerHesapFavorilerRoute
@@ -529,6 +537,7 @@ export interface FileRoutesById {
   '/admin/_app/staff': typeof AdminAppStaffRoute
   '/admin/_app/stock': typeof AdminAppStockRoute
   '/admin/_app/suppliers': typeof AdminAppSuppliersRoute
+  '/admin/_app/vouchers': typeof AdminAppVouchersRoute
   '/_storefront/yasal/': typeof StorefrontYasalIndexRoute
   '/admin/_app/': typeof AdminAppIndexRoute
   '/_storefront/_customer/hesap/adresler': typeof StorefrontCustomerHesapAdreslerRoute
@@ -589,6 +598,7 @@ export interface FileRouteTypes {
     | '/admin/staff'
     | '/admin/stock'
     | '/admin/suppliers'
+    | '/admin/vouchers'
     | '/yasal/'
     | '/admin/'
     | '/hesap/adresler'
@@ -646,6 +656,7 @@ export interface FileRouteTypes {
     | '/admin/staff'
     | '/admin/stock'
     | '/admin/suppliers'
+    | '/admin/vouchers'
     | '/yasal'
     | '/hesap/adresler'
     | '/hesap/favoriler'
@@ -706,6 +717,7 @@ export interface FileRouteTypes {
     | '/admin/_app/staff'
     | '/admin/_app/stock'
     | '/admin/_app/suppliers'
+    | '/admin/_app/vouchers'
     | '/_storefront/yasal/'
     | '/admin/_app/'
     | '/_storefront/_customer/hesap/adresler'
@@ -1007,6 +1019,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAppSuppliersRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
+    '/admin/_app/vouchers': {
+      id: '/admin/_app/vouchers'
+      path: '/vouchers'
+      fullPath: '/admin/vouchers'
+      preLoaderRoute: typeof AdminAppVouchersRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
     '/_storefront/_customer/hesap/': {
       id: '/_storefront/_customer/hesap/'
       path: '/'
@@ -1258,6 +1277,7 @@ interface AdminAppRouteRouteChildren {
   AdminAppStaffRoute: typeof AdminAppStaffRoute
   AdminAppStockRoute: typeof AdminAppStockRoute
   AdminAppSuppliersRoute: typeof AdminAppSuppliersRoute
+  AdminAppVouchersRoute: typeof AdminAppVouchersRoute
   AdminAppIndexRoute: typeof AdminAppIndexRoute
   AdminAppCustomersIdRoute: typeof AdminAppCustomersIdRoute
   AdminAppLegalPagesPageRoute: typeof AdminAppLegalPagesPageRoute
@@ -1290,6 +1310,7 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppStaffRoute: AdminAppStaffRoute,
   AdminAppStockRoute: AdminAppStockRoute,
   AdminAppSuppliersRoute: AdminAppSuppliersRoute,
+  AdminAppVouchersRoute: AdminAppVouchersRoute,
   AdminAppIndexRoute: AdminAppIndexRoute,
   AdminAppCustomersIdRoute: AdminAppCustomersIdRoute,
   AdminAppLegalPagesPageRoute: AdminAppLegalPagesPageRoute,

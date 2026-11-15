@@ -16,6 +16,7 @@ import {
   ShoppingCart,
   Store,
   Tag,
+  TicketPercent,
   Trash2,
   Truck,
   Undo2,
@@ -38,6 +39,12 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "Siparişler", to: "/admin/orders", icon: ShoppingCart, permission: "view_orders" },
       { label: "İadeler", to: "/admin/returns", icon: Undo2, permission: "view_orders" },
       { label: "Müşteriler", to: "/admin/customers", icon: Users, permission: "view_customers" },
+      {
+        label: "Kuponlar",
+        to: "/admin/vouchers",
+        icon: TicketPercent,
+        permission: "manage_vouchers",
+      },
     ],
   },
   {

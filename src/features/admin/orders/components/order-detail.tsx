@@ -16,6 +16,7 @@ import { orderQuery } from "../queries";
 import {
   orderStatusLabel,
   orderStatusTone,
+  orderVoucherRow,
   type PaymentStatus,
   paymentLabel,
   paymentTone,
@@ -37,6 +38,7 @@ export function OrderDetailScreen({ number, me }: { number: string; me: Me }) {
   const { data: o } = useSuspenseQuery(orderQuery(number));
   const payment = o.payment_status as PaymentStatus;
   const addr = o.shipping_address;
+  const voucher = orderVoucherRow(o.voucher);
 
   return (
     <div className="space-y-6">
@@ -91,6 +93,7 @@ export function OrderDetailScreen({ number, me }: { number: string; me: Me }) {
         <p className="text-muted-foreground">
           Sipariş anındaki ürün adı ve fiyatlar; sonraki katalog değişikliklerinden etkilenmez.
         </p>
+        {voucher && <p className="text-muted-foreground">{voucher.note}</p>}
         <div className="rounded-md border border-border bg-card">
           <Table>
             <TableHeader>
@@ -122,6 +125,7 @@ export function OrderDetailScreen({ number, me }: { number: string; me: Me }) {
         </div>
         <dl className="ml-auto w-64 space-y-1">
           <Row label="Ürünler">{formatTry(o.items_total)}</Row>
+          {voucher && <Row label={voucher.label}>{voucher.amount}</Row>}
           <Row label="Kargo">{formatTry(o.shipping_fee)}</Row>
           <Row label="Kapıda ödeme">{formatTry(o.cod_fee)}</Row>
           <Row label="Toplam">

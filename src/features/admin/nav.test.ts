@@ -96,3 +96,26 @@ it("shows the Product classes entry only with its permission (Owner, not Staff)"
     "Ürün sınıfları",
   );
 });
+
+it("shows Vouchers in Satış, after Customers, only with the voucher permission", () => {
+  const owner = visibleGroups(me(["view_orders", "view_customers", "manage_vouchers"]));
+  expect(owner[0]?.items.map((i) => i.label)).toEqual([
+    "Ana sayfa",
+    "Siparişler",
+    "İadeler",
+    "Müşteriler",
+    "Kuponlar",
+  ]);
+  const staff = visibleNav(me(["view_orders", "view_customers", "view_products"]));
+  expect(staff.map((i) => i.label)).not.toContain("Kuponlar");
+});
+
+it("gives Vouchers its own route and an icon", () => {
+  const item = visibleNav(me(["manage_vouchers"])).find((i) => i.label === "Kuponlar");
+  expect(item?.to).toBe("/admin/vouchers");
+  expect(item?.icon).toBeTruthy();
+});
+
+it("builds breadcrumbs for the vouchers area", () => {
+  expect(breadcrumbs("/admin/vouchers")).toEqual([{ label: "Satış" }, { label: "Kuponlar" }]);
+});

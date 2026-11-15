@@ -29,6 +29,11 @@ export const AUDIT_ACTIONS: Record<string, string> = {
   review_approved: "Yorum onayı",
   review_rejected: "Yorum reddi",
   review_deleted: "Yorum silme",
+  voucher_created: "Kupon oluşturuldu",
+  voucher_edited: "Kupon düzenlendi",
+  voucher_deactivated: "Kupon kapatıldı",
+  voucher_activated: "Kupon açıldı",
+  voucher_deleted: "Kupon silindi",
 };
 
 export const auditActionLabel = (action: string) => AUDIT_ACTIONS[action] ?? action;

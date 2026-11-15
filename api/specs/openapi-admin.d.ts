@@ -1489,6 +1489,76 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/vouchers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Vouchers */
+        get: operations["vouchers_list"];
+        put?: never;
+        /** Create Voucher */
+        post: operations["vouchers_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/vouchers/{voucher_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Voucher */
+        delete: operations["vouchers_delete"];
+        options?: never;
+        head?: never;
+        /** Edit Voucher */
+        patch: operations["vouchers_edit"];
+        trace?: never;
+    };
+    "/api/admin/vouchers/{voucher_id}/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Activate Voucher */
+        post: operations["vouchers_activate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/vouchers/{voucher_id}/deactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Deactivate Voucher */
+        post: operations["vouchers_deactivate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2362,6 +2432,7 @@ export interface components {
             total: string;
             /** Tracking Number */
             tracking_number: string;
+            voucher: components["schemas"]["OrderVoucherOut"] | null;
         };
         /** OrderEmailIn */
         OrderEmailIn: {
@@ -2520,6 +2591,19 @@ export interface components {
             postal_code?: string | null;
             /** Street */
             street?: string | null;
+        };
+        /**
+         * OrderVoucherOut
+         * @description The Voucher the Order used, as it was when the Shopper placed it.
+         */
+        OrderVoucherOut: {
+            /** Code */
+            code: string;
+            /**
+             * Discount
+             * @example 349.90
+             */
+            discount: string;
         };
         /** PagedAdminReviewOut */
         PagedAdminReviewOut: {
@@ -3329,6 +3413,85 @@ export interface components {
             price_override?: string | null;
             /** Sku */
             sku?: string | null;
+        };
+        /** VoucherAdminOut */
+        VoucherAdminOut: {
+            /** Cap */
+            cap: number | null;
+            /** Code */
+            code: string;
+            /** Ends At */
+            ends_at: string | null;
+            /** Id */
+            id: number;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "percentage" | "fixed";
+            /** Minimum */
+            minimum: string | null;
+            /** Once Per Customer */
+            once_per_customer: boolean;
+            /** Redemptions */
+            redemptions: number;
+            /**
+             * Starts At
+             * Format: date-time
+             */
+            starts_at: string;
+            /** Status */
+            status: string;
+            /**
+             * Value
+             * @example 349.90
+             */
+            value: string;
+        };
+        /** VoucherIn */
+        VoucherIn: {
+            /** Cap */
+            cap?: number | null;
+            /** Code */
+            code: string;
+            /** Ends At */
+            ends_at?: string | null;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "percentage" | "fixed";
+            /** Minimum */
+            minimum?: number | string | null;
+            /**
+             * Once Per Customer
+             * @default false
+             */
+            once_per_customer: boolean;
+            /** Starts At */
+            starts_at?: string | null;
+            /** Value */
+            value: number | string;
+        };
+        /**
+         * VoucherPatch
+         * @description What the Owner changes; anything left out stays as it is.
+         */
+        VoucherPatch: {
+            /** Cap */
+            cap?: number | null;
+            /** Code */
+            code?: string | null;
+            /** Ends At */
+            ends_at?: string | null;
+            /** Minimum */
+            minimum?: number | string | null;
+            /** Once Per Customer */
+            once_per_customer?: boolean | null;
+            /** Starts At */
+            starts_at?: string | null;
+            /** Value */
+            value?: number | string | null;
         };
         /** ZoneOut */
         ZoneOut: {
@@ -5740,6 +5903,142 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VariantOut"];
+                };
+            };
+        };
+    };
+    vouchers_list: {
+        parameters: {
+            query?: {
+                status?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoucherAdminOut"][];
+                };
+            };
+        };
+    };
+    vouchers_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VoucherIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoucherAdminOut"];
+                };
+            };
+        };
+    };
+    vouchers_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                voucher_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    vouchers_edit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                voucher_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VoucherPatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoucherAdminOut"];
+                };
+            };
+        };
+    };
+    vouchers_activate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                voucher_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoucherAdminOut"];
+                };
+            };
+        };
+    };
+    vouchers_deactivate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                voucher_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoucherAdminOut"];
                 };
             };
         };
