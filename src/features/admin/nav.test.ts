@@ -42,6 +42,13 @@ it("shows the import entry only with the import permission (Owner, not Staff)", 
   expect(owner).toContain("İçe aktar");
 });
 
+it("shows the Menus entry only with the manage_menus permission (Owner, not Staff)", () => {
+  const staff = visibleNav(me(["view_products", "manage_products"])).map((i) => i.to);
+  expect(staff).not.toContain("/admin/menus");
+  const owner = visibleNav(me(["manage_menus"])).map((i) => i.to);
+  expect(owner).toContain("/admin/menus");
+});
+
 it("groups the sidebar as Satış, Katalog, Yönetim and drops groups left empty", () => {
   const all = visibleGroups(me(["view_orders", "view_products", "manage_settings"]));
   expect(all.map((g) => g.label)).toEqual(["Satış", "Katalog", "Yönetim"]);

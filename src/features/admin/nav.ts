@@ -6,6 +6,7 @@ import {
   Home,
   Layers,
   type LucideIcon,
+  Menu,
   MessageSquareText,
   Package,
   Palette,
@@ -99,6 +100,7 @@ export const NAV_GROUPS: NavGroup[] = [
         icon: Scale,
         permission: "manage_legal_pages",
       },
+      { label: "Menüler", to: "/admin/menus", icon: Menu, permission: "manage_menus" },
       { label: "Personel", to: "/admin/staff", icon: UserCog, permission: "manage_staff_users" },
       {
         label: "Muhasebe dışa aktarımı",
