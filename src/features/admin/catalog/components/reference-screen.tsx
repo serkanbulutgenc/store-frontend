@@ -51,6 +51,8 @@ export type ReferenceProps<Row extends { id: number; name: string }> = {
   remove?: {
     /** What the delete touches, e.g. "3 ürün". */
     touches?: (row: Row) => string[];
+    /** Menu items pointing at the row, which block its delete (ADR 0007). */
+    menuItemCount?: (row: Row) => number | undefined;
     run: (row: Row) => Promise<unknown>;
     alternative?: (row: Row) => { label: string; run: () => Promise<unknown>; success: string };
   };
@@ -131,6 +133,7 @@ export function ReferenceScreen<Row extends { id: number; name: string }>(
           target={deleting && { key: deleting.id, name: deleting.name }}
           title={`${props.singular.charAt(0).toLocaleUpperCase("tr")}${props.singular.slice(1)} sil`}
           touches={deleting ? (remove.touches?.(deleting) ?? []) : []}
+          menuItemCount={deleting ? remove.menuItemCount?.(deleting) : undefined}
           run={() => (deleting ? remove.run(deleting) : Promise.resolve())}
           alternative={deleting ? remove.alternative?.(deleting) : undefined}
           onClose={() => setDeleting(null)}

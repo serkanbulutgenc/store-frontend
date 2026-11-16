@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -43,6 +44,8 @@ export type DeleteConfirmBodyProps = {
   pending: boolean;
   /** A softer option (Archive, Deactivate), offered once the delete was refused. */
   alternative?: { label: string; run: () => void };
+  /** How many Menu items point at the target; they block the delete (ADR 0007). */
+  menuItemCount?: number;
   onConfirm: () => void;
   onCancel: () => void;
 };
@@ -54,6 +57,7 @@ export function DeleteConfirmBody({
   error,
   pending,
   alternative,
+  menuItemCount,
   onConfirm,
   onCancel,
 }: DeleteConfirmBodyProps) {
@@ -63,6 +67,14 @@ export function DeleteConfirmBody({
         <strong>{name}</strong> kalıcı olarak silinir
         {touches.length > 0 && ` (${touches.join(", ")})`}.
       </p>
+      {menuItemCount ? (
+        <p>
+          {`${menuItemCount} menü öğesi buna bağlı; silmeden önce onları menüden kaldırın.`}{" "}
+          <Link to="/admin/menus" className="underline">
+            Menü düzenleyiciyi aç
+          </Link>
+        </p>
+      ) : null}
       {error && (
         <p role="alert" className="text-destructive">
           {error}
@@ -96,6 +108,7 @@ export function ConfirmDeleteDialog({
   onClose,
   success = "Silindi.",
   alternative,
+  menuItemCount,
 }: {
   /** The item being deleted; `null` keeps the dialog closed. */
   target: { key: string | number; name: string } | null;
@@ -108,6 +121,8 @@ export function ConfirmDeleteDialog({
   success?: string;
   /** Offered after a refusal instead of the delete, e.g. Archive a Product with Orders. */
   alternative?: { label: string; run: () => Promise<unknown>; success: string };
+  /** Menu items pointing at the target, which block the delete (ADR 0007). */
+  menuItemCount?: number;
 }) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -133,6 +148,7 @@ export function ConfirmDeleteDialog({
             touches={touches}
             error={error}
             pending={pending}
+            menuItemCount={menuItemCount}
             alternative={
               alternative && {
                 label: alternative.label,
@@ -160,6 +176,7 @@ export function DeleteAction({
   alternative,
   success,
   label = "Sil",
+  menuItemCount,
 }: {
   me: Me;
   name: string;
@@ -170,6 +187,7 @@ export function DeleteAction({
   alternative?: { label: string; run: () => Promise<unknown>; success: string };
   success?: string;
   label?: string;
+  menuItemCount?: number;
 }) {
   const [open, setOpen] = useState(false);
   if (!can(me, "delete_catalogue")) return null;
@@ -192,6 +210,7 @@ export function DeleteAction({
         onDeleted={onDeleted}
         alternative={alternative}
         success={success}
+        menuItemCount={menuItemCount}
         onClose={() => setOpen(false)}
       />
     </>

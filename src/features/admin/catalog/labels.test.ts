@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { categoryLabels, menuItemsTouch, statusLabel } from "./labels";
+import { categoryLabels, statusLabel } from "./labels";
 
 const cats = [
   { id: 1, name: "Giyim", parent_id: null, slug: "giyim" },
@@ -25,13 +25,4 @@ it("translates statuses", () => {
   expect(statusLabel("draft")).toBe("Taslak");
   expect(statusLabel("published")).toBe("Yayında");
   expect(statusLabel("archived")).toBe("Arşivlenmiş");
-});
-
-it("names the Menu items a delete is blocked by", () => {
-  expect(menuItemsTouch(2)).toEqual(["2 menü öğesi"]);
-});
-
-it("says nothing about Menu items when none point at the target", () => {
-  expect(menuItemsTouch(0)).toEqual([]);
-  expect(menuItemsTouch(undefined)).toEqual([]);
 });

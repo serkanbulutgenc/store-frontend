@@ -1,3 +1,9 @@
+import {
+  createMemoryHistory,
+  createRootRoute,
+  createRouter,
+  RouterProvider,
+} from "@tanstack/react-router";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { ApiError } from "@/lib/api/errors";
@@ -12,31 +18,59 @@ const props = {
   onConfirm: vi.fn(),
   onCancel: vi.fn(),
   alternative: undefined as { label: string; run: () => void } | undefined,
+  menuItemCount: undefined as number | undefined,
 };
-const html = (over: Partial<typeof props> = {}) =>
-  renderToString(<DeleteConfirmBody {...props} {...over} />);
+/** Renders inside a bare router, which the Dashboard `Link`s in the body need. */
+async function html(over: Partial<typeof props> = {}) {
+  const root = createRootRoute({ component: () => <DeleteConfirmBody {...props} {...over} /> });
+  const router = createRouter({
+    routeTree: root,
+    history: createMemoryHistory({ initialEntries: ["/"] }),
+  });
+  await router.load();
+  return renderToString(<RouterProvider router={router} />);
+}
 
 describe("delete confirmation", () => {
-  it("names the item and shows what the delete touches", () => {
-    const out = html();
+  it("names the item and shows what the delete touches", async () => {
+    const out = await html();
     expect(out).toContain("<strong>Elbise</strong>");
     expect(out).toContain("3 ürün");
     expect(out).toContain("2 alt kategori");
   });
 
-  it("tells the Owner what blocks a refused delete", () => {
-    const out = html({ error: "Silinemez: 4 siparişte kullanılıyor." });
+  it("tells the Owner what blocks a refused delete", async () => {
+    const out = await html({ error: "Silinemez: 4 siparişte kullanılıyor." });
     expect(out).toMatch(/<p[^>]*role="alert"[^>]*>Silinemez: 4 siparişte kullanılıyor\.<\/p>/);
   });
 
-  it("offers the alternative only once the delete was refused", () => {
+  it("offers the alternative only once the delete was refused", async () => {
     const alternative = { label: "Pasifleştir", run: vi.fn() };
-    expect(html({ alternative })).not.toContain("Pasifleştir");
-    expect(html({ alternative, error: "Silinemez: 2 varyant." })).toContain("Pasifleştir");
+    expect(await html({ alternative })).not.toContain("Pasifleştir");
+    expect(await html({ alternative, error: "Silinemez: 2 varyant." })).toContain("Pasifleştir");
   });
 
-  it("shows no alert before anything was refused", () => {
-    expect(html()).not.toContain('role="alert"');
+  it("shows no alert before anything was refused", async () => {
+    expect(await html()).not.toContain('role="alert"');
+  });
+});
+
+describe("a delete blocked by Menu items (ADR 0007)", () => {
+  const blocked = (menuItemCount: number | undefined) => html({ touches: [], menuItemCount });
+
+  it("names the count and sends the Owner to the Menu builder to remove them first", async () => {
+    const out = await blocked(2);
+    expect(out).toContain("2 menü öğesi");
+    expect(out).toContain("menüden kaldırın");
+    expect(out).toMatch(/<a[^>]*href="\/admin\/menus"/);
+  });
+
+  it("says nothing about Menus when no Menu item points at the target", async () => {
+    for (const count of [0, undefined]) {
+      const out = await blocked(count);
+      expect(out).not.toContain("menü öğesi");
+      expect(out).not.toContain("/admin/menus");
+    }
   });
 });
 

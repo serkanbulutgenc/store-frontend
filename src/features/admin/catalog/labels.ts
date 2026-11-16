@@ -13,11 +13,6 @@ export function categoryLabels(categories: Labelled[]): { id: number; label: str
   return sorted.map((c) => ({ id: c.id, label: label(c) }));
 }
 
-/** The Menu items that block deleting a Category, Product or Brand (ADR 0007), for the
- * delete dialog's "what this touches" list. Empty when none point at it. */
-export const menuItemsTouch = (count: number | undefined): string[] =>
-  count ? [`${count} menü öğesi`] : [];
-
 const STATUS: Record<ProductStatus, string> = {
   draft: "Taslak",
   published: "Yayında",

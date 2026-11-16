@@ -11,7 +11,7 @@ import { can, type Me } from "@/lib/api/me";
 import { useCrumbLabel } from "../../components/crumb-labels";
 import { DeleteAction } from "../../components/delete-confirm";
 import { PhotosScreen } from "../../photos/photos-screen";
-import { menuItemsTouch, statusLabel, statusTone } from "../labels";
+import { statusLabel, statusTone } from "../labels";
 import { type ProductStatus, productQuery, useDeleteProduct, useSetStatus } from "../queries";
 import { AttributesSection } from "./attributes-section";
 import {
@@ -99,10 +99,8 @@ export function ProductEditor({
             me={me}
             name={product.title}
             title="Ürünü sil"
-            touches={[
-              `${product.variants.length} varyant`,
-              ...menuItemsTouch(product.menu_item_count),
-            ]}
+            touches={[`${product.variants.length} varyant`]}
+            menuItemCount={product.menu_item_count}
             run={() => deleteProduct.mutateAsync(productId)}
             onDeleted={() => router.navigate({ to: "/admin/products" })}
             alternative={
