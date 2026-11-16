@@ -612,6 +612,29 @@
         "title": "AuditLogQuery",
         "type": "object"
       },
+      "BrandOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "menu_item_count": {
+            "title": "Menu Item Count",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "menu_item_count"
+        ],
+        "title": "BrandOut",
+        "type": "object"
+      },
       "CarrierOut": {
         "properties": {
           "id": {
@@ -749,6 +772,10 @@
             "title": "Is Hidden",
             "type": "boolean"
           },
+          "menu_item_count": {
+            "title": "Menu Item Count",
+            "type": "integer"
+          },
           "name": {
             "title": "Name",
             "type": "string"
@@ -793,6 +820,7 @@
           "depth",
           "child_count",
           "product_count",
+          "menu_item_count",
           "sort_order",
           "is_hidden",
           "description",
@@ -1966,6 +1994,385 @@
           "mfa_enrolled"
         ],
         "title": "MeOut",
+        "type": "object"
+      },
+      "MenuIn": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/MenuItemIn"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "MenuIn",
+        "type": "object"
+      },
+      "MenuItemIn": {
+        "description": "One item and the items under it. List order is Menu order.",
+        "properties": {
+          "brand_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brand Id"
+          },
+          "builtin": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Builtin"
+          },
+          "category_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Id"
+          },
+          "children": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/MenuItemIn"
+            },
+            "title": "Children",
+            "type": "array"
+          },
+          "include_subcategories": {
+            "default": false,
+            "title": "Include Subcategories",
+            "type": "boolean"
+          },
+          "is_hidden": {
+            "default": false,
+            "title": "Is Hidden",
+            "type": "boolean"
+          },
+          "label": {
+            "default": "",
+            "title": "Label",
+            "type": "string"
+          },
+          "legal_page": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legal Page"
+          },
+          "product_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Id"
+          },
+          "target_type": {
+            "enum": [
+              "category",
+              "product",
+              "brand",
+              "legal_page",
+              "builtin",
+              "url",
+              "group"
+            ],
+            "title": "Target Type",
+            "type": "string"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "required": [
+          "target_type"
+        ],
+        "title": "MenuItemIn",
+        "type": "object"
+      },
+      "MenuItemOut": {
+        "properties": {
+          "brand_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brand Id"
+          },
+          "builtin": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Builtin"
+          },
+          "category_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Id"
+          },
+          "children": {
+            "items": {
+              "$ref": "#/components/schemas/MenuItemOut"
+            },
+            "title": "Children",
+            "type": "array"
+          },
+          "include_subcategories": {
+            "title": "Include Subcategories",
+            "type": "boolean"
+          },
+          "is_hidden": {
+            "title": "Is Hidden",
+            "type": "boolean"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "legal_page": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legal Page"
+          },
+          "link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link"
+          },
+          "not_shown_reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "hidden",
+                  "parent_not_shown",
+                  "target_not_public",
+                  "target_missing"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Not Shown Reason"
+          },
+          "product_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Id"
+          },
+          "target_label": {
+            "title": "Target Label",
+            "type": "string"
+          },
+          "target_type": {
+            "enum": [
+              "category",
+              "product",
+              "brand",
+              "legal_page",
+              "builtin",
+              "url",
+              "group"
+            ],
+            "title": "Target Type",
+            "type": "string"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "required": [
+          "target_type",
+          "category_id",
+          "product_id",
+          "brand_id",
+          "include_subcategories",
+          "legal_page",
+          "builtin",
+          "url",
+          "label",
+          "is_hidden",
+          "target_label",
+          "link",
+          "not_shown_reason",
+          "children"
+        ],
+        "title": "MenuItemOut",
+        "type": "object"
+      },
+      "MenuOut": {
+        "properties": {
+          "depth_limit": {
+            "title": "Depth Limit",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/MenuItemOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "depth_limit",
+          "items"
+        ],
+        "title": "MenuOut",
+        "type": "object"
+      },
+      "MenuTargetOut": {
+        "description": "A match for the builder's target picker; spread it into an item as it is.",
+        "properties": {
+          "brand_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brand Id"
+          },
+          "category_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Id"
+          },
+          "legal_page": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legal Page"
+          },
+          "product_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Id"
+          },
+          "target_label": {
+            "title": "Target Label",
+            "type": "string"
+          },
+          "target_type": {
+            "enum": [
+              "category",
+              "product",
+              "brand",
+              "legal_page"
+            ],
+            "title": "Target Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "target_type",
+          "target_label",
+          "category_id",
+          "product_id",
+          "brand_id",
+          "legal_page"
+        ],
+        "title": "MenuTargetOut",
         "type": "object"
       },
       "NameIn": {
@@ -3683,6 +4090,11 @@
           },
           "low_stock_threshold": {
             "title": "Low Stock Threshold",
+            "type": "integer"
+          },
+          "menu_item_count": {
+            "default": 0,
+            "title": "Menu Item Count",
             "type": "integer"
           },
           "old_price": {
@@ -6247,7 +6659,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/NamedOut"
+                    "$ref": "#/components/schemas/BrandOut"
                   },
                   "title": "Response",
                   "type": "array"
@@ -6305,7 +6717,7 @@
     },
     "/api/admin/brands/{brand_id}": {
       "delete": {
-        "description": "Owner only. Refused while Products use the Brand.",
+        "description": "Owner only. Refused while Products or Menu items use the Brand.",
         "operationId": "catalog_delete_brand",
         "parameters": [
           {
@@ -6619,7 +7031,7 @@
     },
     "/api/admin/categories/{category_id}": {
       "delete": {
-        "description": "Owner only. Refused while the Category has children or Products.",
+        "description": "Owner only. Refused while the Category has children, Products or Menu items.",
         "operationId": "catalog_delete_category",
         "parameters": [
           {
@@ -7427,6 +7839,133 @@
         "summary": "Get Me",
         "tags": [
           "staff"
+        ]
+      }
+    },
+    "/api/admin/menu-targets": {
+      "get": {
+        "description": "Categories, Legal pages, Products and Brands matching `q` by name.",
+        "operationId": "menus_search_targets",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Q",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MenuTargetOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "RequiresPermission": []
+          }
+        ],
+        "summary": "Search Menu Targets",
+        "tags": [
+          "menus"
+        ]
+      }
+    },
+    "/api/admin/menus/{key}": {
+      "get": {
+        "description": "The saved tree with hidden and non-public items, each flagged with why it is\nnot shown.",
+        "operationId": "menus_get_for_editing",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key",
+            "required": true,
+            "schema": {
+              "title": "Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuOut"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "RequiresPermission": []
+          }
+        ],
+        "summary": "Get Menu",
+        "tags": [
+          "menus"
+        ]
+      },
+      "put": {
+        "description": "Replace the whole tree atomically. Live at once; written to the Audit log.",
+        "operationId": "menus_save",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key",
+            "required": true,
+            "schema": {
+              "title": "Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MenuIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuOut"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "RequiresPermission": []
+          }
+        ],
+        "summary": "Save Menu",
+        "tags": [
+          "menus"
         ]
       }
     },
@@ -8760,7 +9299,7 @@
     },
     "/api/admin/products/{product_id}": {
       "delete": {
-        "description": "Owner only. Refused while the Product has Orders; archive it instead.",
+        "description": "Owner only. Refused while the Product has Orders or Menu items; archive it\ninstead.",
         "operationId": "catalog_delete_product",
         "parameters": [
           {
