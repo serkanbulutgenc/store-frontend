@@ -32,6 +32,7 @@ const product = {
   supplier_code: "",
   low_stock_threshold: "",
   desi: "",
+  description: "",
 };
 
 describe("productFormSchema", () => {
@@ -67,6 +68,7 @@ describe("toProductBody", () => {
       old_price: null,
       low_stock_threshold: null,
       desi: null,
+      description: "",
     });
   });
 
@@ -201,5 +203,28 @@ describe("product desi", () => {
     expect(toProductBody({ ...product, desi: "4" }, can, "edit").desi).toBe(4);
     expect(toProductBody({ ...product, desi: "" }, can, "edit").desi).toBeNull();
     expect(toProductBody({ ...product, desi: "" }, can, "create").desi).toBeNull();
+  });
+});
+
+describe("product description", () => {
+  const can = { cost: false, supplier: false, desi: false };
+
+  it("accepts up to 5000 characters and rejects more, in Turkish", () => {
+    expect(productFormSchema.safeParse({ ...product, description: "a".repeat(5000) }).success).toBe(
+      true,
+    );
+    const over = productFormSchema.safeParse({ ...product, description: "a".repeat(5001) });
+    expect(over.success).toBe(false);
+    if (!over.success)
+      expect(over.error.issues[0]?.message).toBe("Açıklama en fazla 5000 karakter olabilir.");
+  });
+
+  it("is sent as written on create and on edit, an empty one clearing it", () => {
+    const text = "**Pamuklu**\n\n- yıkanabilir";
+    const parsed = (description: string) => productFormSchema.parse({ ...product, description });
+
+    expect(toProductBody(parsed(text), can, "create").description).toBe(text);
+    expect(toProductBody(parsed(text), can, "edit").description).toBe(text);
+    expect(toProductBody(parsed(""), can, "edit").description).toBe("");
   });
 });

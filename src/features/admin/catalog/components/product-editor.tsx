@@ -1,6 +1,14 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import { Camera, CircleAlert, CircleDollarSign, FileText, Layers, ListChecks } from "lucide-react";
+import {
+  AlignLeft,
+  Camera,
+  CircleAlert,
+  CircleDollarSign,
+  FileText,
+  Layers,
+  ListChecks,
+} from "lucide-react";
 import { Suspense, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +23,8 @@ import { statusLabel, statusTone } from "../labels";
 import { type ProductStatus, productQuery, useDeleteProduct, useSetStatus } from "../queries";
 import { AttributesSection } from "./attributes-section";
 import {
+  DESCRIPTION_FIELDS,
+  DescriptionFields,
   GENERAL_FIELDS,
   GeneralFields,
   PRICE_FIELDS,
@@ -38,8 +48,15 @@ export function statusActions(status: ProductStatus, perms: { manage: boolean; a
   return actions;
 }
 
-export type EditorTab = "general" | "price" | "variants" | "attributes" | "photos";
-export const EDITOR_TABS: EditorTab[] = ["general", "price", "variants", "attributes", "photos"];
+export type EditorTab = "general" | "price" | "description" | "variants" | "attributes" | "photos";
+export const EDITOR_TABS: EditorTab[] = [
+  "general",
+  "price",
+  "description",
+  "variants",
+  "attributes",
+  "photos",
+];
 
 const panelClass = "data-[state=inactive]:hidden";
 
@@ -142,6 +159,11 @@ export function ProductEditor({
                     Fiyat
                     {marker(bad(PRICE_FIELDS))}
                   </TabsTrigger>
+                  <TabsTrigger value="description" className="gap-1.5">
+                    <AlignLeft aria-hidden className="size-4" />
+                    Açıklama
+                    {marker(bad(DESCRIPTION_FIELDS))}
+                  </TabsTrigger>
                   <TabsTrigger value="variants" className="gap-1.5">
                     <Layers aria-hidden className="size-4" />
                     Varyantlar
@@ -162,7 +184,7 @@ export function ProductEditor({
           </form.Subscribe>
         </div>
 
-        {/* Genel and Fiyat are one form: both stay mounted, so edits survive a tab switch. */}
+        {/* Genel, Fiyat and Açıklama are one form: all stay mounted, so edits survive a tab switch. */}
         <form
           className="max-w-3xl space-y-3"
           onSubmit={(e) => {
@@ -176,7 +198,10 @@ export function ProductEditor({
           <TabsContent value="price" forceMount className={panelClass}>
             <PriceFields form={form} me={me} product={product} />
           </TabsContent>
-          {(tab === "general" || tab === "price") && (
+          <TabsContent value="description" forceMount className={panelClass}>
+            <DescriptionFields form={form} me={me} />
+          </TabsContent>
+          {(tab === "general" || tab === "price" || tab === "description") && (
             <ProductFormFooter form={form} me={me} label="Kaydet" />
           )}
         </form>

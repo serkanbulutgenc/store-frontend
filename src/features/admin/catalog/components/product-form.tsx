@@ -20,6 +20,7 @@ import {
   useUpdateProduct,
 } from "../queries";
 import { type ProductFormValues, productFormSchema, toProductBody } from "../schemas";
+import { DescriptionEditor } from "./description-editor";
 
 const EMPTY: ProductFormValues = {
   title: "",
@@ -34,6 +35,7 @@ const EMPTY: ProductFormValues = {
   supplier_code: "",
   low_stock_threshold: "",
   desi: "",
+  description: "",
 };
 
 function toFormValues(p: ProductOut): ProductFormValues {
@@ -50,6 +52,7 @@ function toFormValues(p: ProductOut): ProductFormValues {
     supplier_code: p.supplier_code ?? "",
     low_stock_threshold: String(p.low_stock_threshold),
     desi: p.desi == null ? "" : String(p.desi),
+    description: p.description,
   };
 }
 
@@ -62,6 +65,7 @@ export const GENERAL_FIELDS: (keyof ProductFormValues)[] = [
   "low_stock_threshold",
   "slug",
 ];
+export const DESCRIPTION_FIELDS: (keyof ProductFormValues)[] = ["description"];
 export const PRICE_FIELDS: (keyof ProductFormValues)[] = [
   "shelf_price",
   "old_price",
@@ -296,6 +300,23 @@ export function PriceFields({ form, me }: FieldsProps) {
   );
 }
 
+/** Açıklama: the Markdown Description. Image upload needs the photo permission as well. */
+export function DescriptionFields({ form, me }: FieldsProps) {
+  return (
+    <fieldset disabled={!can(me, "manage_products")}>
+      <form.Field name="description">
+        {(f) => (
+          <DescriptionEditor
+            field={f}
+            canUpload={can(me, "manage_product_photos")}
+            disabled={!can(me, "manage_products")}
+          />
+        )}
+      </form.Field>
+    </fieldset>
+  );
+}
+
 /** Form message and Kaydet, shared by the create page and the editor tabs. */
 export function ProductFormFooter({
   form,
@@ -338,6 +359,7 @@ export function ProductForm({ me, onSaved }: { me: Me; onSaved?: (p: ProductOut)
     >
       <GeneralFields form={form} me={me} />
       <PriceFields form={form} me={me} />
+      <DescriptionFields form={form} me={me} />
       <ProductFormFooter form={form} me={me} label="Ürünü oluştur" />
     </form>
   );

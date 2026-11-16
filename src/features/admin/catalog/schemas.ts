@@ -19,6 +19,10 @@ const optionalId = z.union([z.literal(""), z.string().regex(/^\d+$/)]);
 const nullIfEmpty = (v: string) => (v === "" ? null : v);
 const toId = (v: string) => (v === "" ? null : Number(v));
 
+/** The API's limit on a Product Description, counted in characters (code points), not bytes. */
+export const DESCRIPTION_MAX = 5000;
+export const descriptionLength = (text: string) => Array.from(text).length;
+
 /** Form values are strings (inputs); `toProductBody` turns them into the API body. */
 export const productFormSchema = z.object({
   title: z.string().trim().min(1, "Ürün adı gerekli."),
@@ -32,6 +36,12 @@ export const productFormSchema = z.object({
   supplier_id: optionalId,
   supplier_code: z.string().trim(),
   low_stock_threshold: z.union([z.literal(""), z.string().regex(/^\d+$/, "Tam sayı girin.")]),
+  description: z
+    .string()
+    .refine(
+      (v) => descriptionLength(v) <= DESCRIPTION_MAX,
+      `Açıklama en fazla ${DESCRIPTION_MAX} karakter olabilir.`,
+    ),
   desi: z.string().superRefine((v, ctx) => {
     const message = desiError(v, { optional: true });
     if (message) ctx.addIssue({ code: "custom", message });
@@ -55,6 +65,8 @@ export function toProductBody(
     product_class_id: Number(v.product_class_id),
     shelf_price: v.shelf_price,
     old_price: nullIfEmpty(v.old_price),
+    // Sent as written; an empty text clears it.
+    description: v.description,
   };
   // Blank means "use the default / generate it" on create. On edit the API reads null as a value
   // (slug "none", or an invalid threshold), so a blank field is simply left out of the PATCH.

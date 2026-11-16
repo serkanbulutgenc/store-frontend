@@ -438,6 +438,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/description-images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Description Image
+         * @description One image for a Product Description (JPEG, PNG or WebP). Returns its URL to
+         *     put in the Markdown; nothing is attached to a Product.
+         */
+        post: operations["catalog_upload_description_image"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/exports/accountant.csv": {
         parameters: {
             query?: never;
@@ -2028,6 +2049,11 @@ export interface components {
             /** Status */
             status: string;
         };
+        /** DescriptionImageOut */
+        DescriptionImageOut: {
+            /** Url */
+            url: string;
+        };
         /** ExpiringRow */
         ExpiringRow: {
             /** Customer */
@@ -2977,6 +3003,11 @@ export interface components {
             category_id: number;
             /** Cost Price */
             cost_price?: string | null;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
             /** Desi */
             desi?: number | null;
             /** Kdv Rate */
@@ -3034,6 +3065,8 @@ export interface components {
             category: components["schemas"]["NamedOut"] | null;
             /** Cost Price */
             cost_price?: string | null;
+            /** Description */
+            description: string;
             /** Desi */
             desi: number | null;
             /** Id */
@@ -3077,6 +3110,8 @@ export interface components {
             category_id?: number | null;
             /** Cost Price */
             cost_price?: string | null;
+            /** Description */
+            description?: string | null;
             /** Desi */
             desi?: number | null;
             /** Kdv Rate */
@@ -4430,6 +4465,36 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CustomerDetail"];
+                };
+            };
+        };
+    };
+    catalog_upload_description_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DescriptionImageOut"];
                 };
             };
         };
