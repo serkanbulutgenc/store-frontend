@@ -38,9 +38,12 @@ const h3 = heading("h3", "mt-4 text-lg font-semibold text-foreground");
 
 const LINK_PROTOCOLS = /^(https?:|mailto:)/i;
 
-/** Links: http(s) and mailto only. Images: only our own `/media/` files. */
+/** A path on this site. `//host` and `/\host` are other sites in disguise, so they are not. */
+const isSitePath = (url: string) => url.startsWith("/") && !/^\/[/\\]/.test(url);
+
+/** Links: http(s), mailto and our own pages. Images: only our own `/media/` files. */
 function urlTransform(url: string, key: string): string {
-  if (key === "href") return LINK_PROTOCOLS.test(url) ? url : "";
+  if (key === "href") return LINK_PROTOCOLS.test(url) || isSitePath(url) ? url : "";
   if (key === "src") return url.startsWith("/media/") ? url : "";
   return "";
 }
@@ -61,7 +64,12 @@ const components: Components = {
     ) : null,
   a: ({ href, children }) =>
     href ? (
-      <a href={href} rel="nofollow noopener" className="underline underline-offset-4">
+      <a
+        href={href}
+        // Only links that leave the site are nofollow.
+        rel={isSitePath(href) ? undefined : "nofollow noopener"}
+        className="underline underline-offset-4"
+      >
         {children}
       </a>
     ) : (

@@ -37,18 +37,30 @@ describe("ProductDescription", () => {
     expect(out).toMatch(/<h6[^>]*>Altı<\/h6>/);
   });
 
-  it("keeps only http, https and mailto links and marks them nofollow", () => {
+  it("keeps http, https, mailto and site-relative links, and marks outside ones nofollow", () => {
     const out = html(
       "[güvenli](https://ornek.com/a) [posta](mailto:a@b.co) [kötü](javascript:alert(1)) " +
-        "[veri](data:text/html;base64,AAAA) [göreli](/urun/x) [harici](//evil.com)",
+        "[veri](data:text/html;base64,AAAA) [harici](//evil.com) [ters](/\\evil2.com) " +
+        "[göreli](/urun/pamuklu-tisort?renk=3#yorumlar)",
     );
 
     expect(out).toMatch(/<a [^>]*href="https:\/\/ornek.com\/a"[^>]*rel="nofollow noopener"/);
     expect(out).toContain('href="mailto:a@b.co"');
-    for (const bad of ["javascript:", "data:", "/urun/x", "evil.com"]) {
+    for (const bad of ["javascript:", "data:", "evil.com"]) {
       expect(out).not.toContain(bad);
     }
     expect(out).toContain("kötü"); // the text stays, only the link goes
+    expect(out).toContain("harici");
+    // `/\host` is read as `//host` by browsers; the parser encodes the backslash, so it
+    // stays a path on this site and no href can start with `//` or `/\`.
+    expect(out).not.toMatch(/href="(\/\/|\/\\)/);
+  });
+
+  it("links to our own pages without nofollow", () => {
+    const out = html("[göreli](/urun/pamuklu-tisort?renk=3#yorumlar)");
+
+    expect(out).toContain('href="/urun/pamuklu-tisort?renk=3#yorumlar"');
+    expect(out).not.toContain("nofollow");
   });
 
   it("shows only our own images, lazy and responsive, and drops all others", () => {
