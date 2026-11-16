@@ -8,6 +8,7 @@ import { reviewsQuery } from "@/features/reviews/queries";
 import { cn } from "@/lib/utils";
 import { type ProductDetail, productsPageQuery } from "../queries";
 import { Price, ProductGrid } from "./product-card";
+import { ProductDescription } from "./product-description";
 import { ProductGallery } from "./product-gallery";
 import { useQuickPick } from "./quick-view/use-quick-pick";
 
@@ -59,9 +60,7 @@ function ProductTabs({ product }: { product: ProductDetail }) {
       </TabsContent>
       <TabsContent value="description" className="pt-4">
         {product.description ? (
-          <p className="max-w-3xl whitespace-pre-line text-muted-foreground">
-            {product.description}
-          </p>
+          <ProductDescription source={product.description} />
         ) : (
           <p className="text-muted-foreground">Açıklama yok.</p>
         )}

@@ -1,4 +1,5 @@
 import type { BrowseSearch } from "./browse-search";
+import { descriptionExcerpt } from "./description-excerpt";
 import type { CategoryNode, ProductDetail } from "./queries";
 
 export const STORE_NAME = "Aura Tekstil";
@@ -30,7 +31,7 @@ export function productJsonLd(product: ProductDetail, origin: string): Record<st
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.title,
-    description: metaDescription(product.description, product.title),
+    description: metaDescription(descriptionExcerpt(product.description), product.title),
     ...(images.length ? { image: images } : {}),
     ...(sku ? { sku } : {}),
     ...(product.brand ? { brand: { "@type": "Brand", name: product.brand.name } } : {}),
@@ -148,7 +149,7 @@ export type HeadResult = {
 export function productHead(product: ProductDetail, origin: string): HeadResult {
   const title = `${product.title} | ${STORE_NAME}`;
   const description = metaDescription(
-    product.description,
+    descriptionExcerpt(product.description),
     `${product.title} - ${STORE_NAME}'de uygun fiyatla.`,
   );
   const url = absoluteUrl(origin, `/urun/${product.slug}`);

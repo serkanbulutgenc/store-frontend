@@ -3,11 +3,15 @@ import { Link } from "@tanstack/react-router";
 import { X } from "lucide-react";
 import { Dialog } from "radix-ui";
 import { Button } from "@/components/ui/button";
+import { descriptionExcerpt } from "../../description-excerpt";
 import { type ProductDetail, productQuery } from "../../queries";
 import { Price } from "../product-card";
 import { ProductGallery } from "../product-gallery";
 import { ColourChips, SizeChips } from "./option-chips";
 import { useQuickPick } from "./use-quick-pick";
+
+// Characters of the Description kept for the 4-line preview.
+const EXCERPT_LENGTH = 300;
 
 export function QuickViewDialog({
   slug,
@@ -96,7 +100,9 @@ function Content({ product, onAdded }: { product: ProductDetail; onAdded: () => 
               : "Sepete ekle"}
         </Button>
         {product.description && (
-          <p className="line-clamp-4 text-sm text-muted-foreground">{product.description}</p>
+          <p className="line-clamp-4 text-sm text-muted-foreground">
+            {descriptionExcerpt(product.description, EXCERPT_LENGTH)}
+          </p>
         )}
         <Link
           to="/urun/$slug"

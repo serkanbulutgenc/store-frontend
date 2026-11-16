@@ -7,6 +7,7 @@ import {
   listingCanonical,
   metaDescription,
   organizationJsonLd,
+  productHead,
   productJsonLd,
 } from "./seo";
 
@@ -192,5 +193,24 @@ describe("listingHead canonical", () => {
     const plain = listingHead({ ...base, seoTitle: " ", seoDescription: "" });
     expect(JSON.stringify(plain.meta)).toContain("Elbise |");
     expect(JSON.stringify(plain.meta)).toContain("ürünlerini inceleyin");
+  });
+});
+
+describe("a Markdown product description in SEO", () => {
+  const marked = {
+    ...(product as object),
+    description:
+      "**Pamuklu** kumaş\n\n| Beden | Göğüs |\n| --- | --- |\n| S | 90 |\n\n![Ön](/media/description/a.jpg)",
+  } as never;
+
+  it("reaches meta, Open Graph and JSON-LD as plain text", () => {
+    const plain = "Pamuklu kumaş Beden Göğüs S 90";
+    const head = productHead(marked, ORIGIN);
+    const content = (key: string) =>
+      head.meta.find((m) => m.name === key || m.property === key)?.content;
+
+    expect(content("description")).toBe(plain);
+    expect(content("og:description")).toBe(plain);
+    expect(productJsonLd(marked, ORIGIN).description).toBe(plain);
   });
 });
