@@ -5,8 +5,8 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { accountQuery } from "@/features/account/queries";
 import { basketQuery } from "@/features/basket/queries";
-import type { CategoryNode } from "../queries";
-import { DesktopCategoryMenu, MobileCategoryMenu } from "./category-menu";
+import { DesktopHeaderMenu, MobileHeaderMenu } from "@/features/menus/components/header-menu";
+import type { MenuNode } from "@/features/menus/menu-link";
 
 function SearchBox() {
   const navigate = useNavigate();
@@ -76,12 +76,12 @@ function AccountLink() {
   );
 }
 
-export function SiteHeader({ categories }: { categories: CategoryNode[] }) {
+export function SiteHeader({ items }: { items: MenuNode[] }) {
   return (
     <header className="bg-card">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
         <div className="flex items-center gap-1">
-          <MobileCategoryMenu categories={categories} />
+          <MobileHeaderMenu items={items} />
           <Link to="/" className="text-xl font-semibold text-primary">
             Aura Tekstil
           </Link>
@@ -92,7 +92,7 @@ export function SiteHeader({ categories }: { categories: CategoryNode[] }) {
           <BasketLink />
         </div>
       </div>
-      <DesktopCategoryMenu categories={categories} />
+      <DesktopHeaderMenu items={items} />
     </header>
   );
 }
