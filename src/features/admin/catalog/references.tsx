@@ -3,6 +3,7 @@ import { z } from "zod";
 import { adminApi } from "@/lib/api/clients";
 import { can, type Me } from "@/lib/api/me";
 import { ReferenceScreen } from "./components/reference-screen";
+import { menuItemsTouch } from "./labels";
 import {
   brandsQuery,
   type ColourOut,
@@ -50,7 +51,7 @@ export function BrandsScreen({ me }: { me: Me }) {
       rows={data}
       canManage={can(me, "manage_brands")}
       canDelete={can(me, "delete_catalogue")}
-      remove={{ run: (r) => remove(r.id) }}
+      remove={{ run: (r) => remove(r.id), touches: (r) => menuItemsTouch(r.menu_item_count) }}
       columns={[{ header: "Ad", cell: (r) => r.name }]}
       fields={[{ name: "name", label: "Ad" }]}
       schema={nameOnly}

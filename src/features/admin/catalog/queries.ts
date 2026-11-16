@@ -13,6 +13,7 @@ export type CategoryOut = components["schemas"]["CategoryOut"];
 export type ColourOut = components["schemas"]["ColourOut"];
 export type SupplierOut = components["schemas"]["SupplierOut"];
 export type NamedOut = components["schemas"]["NamedOut"];
+export type BrandOut = components["schemas"]["BrandOut"];
 
 export type ProductsSearch = ListSearch & { status?: ProductStatus; category_id?: number };
 
@@ -82,7 +83,7 @@ export const categoriesQuery = queryOptions({
 });
 export const brandsQuery = ref(
   "brands",
-  async () => (await adminApi.GET("/api/admin/brands")).data as NamedOut[],
+  async () => (await adminApi.GET("/api/admin/brands")).data as BrandOut[],
 );
 export const coloursQuery = ref(
   "colours",

@@ -24,6 +24,7 @@ import {
   type TreeRow,
   visibleRows,
 } from "../category-order";
+import { menuItemsTouch } from "../labels";
 import { type CategoryOut, categoriesQuery, keys } from "../queries";
 import { DragHandle, RowDropZones, TreeDnd, useRowBlocked } from "./category-drag";
 import { CategoryRowActions } from "./category-row-actions";
@@ -209,7 +210,13 @@ export function CategoriesScreen({ me }: { me: Me }) {
         target={deleting && { key: deleting.id, name: deleting.name }}
         title="Kategoriyi sil"
         touches={
-          deleting ? [`${deleting.product_count} ürün`, `${deleting.child_count} alt kategori`] : []
+          deleting
+            ? [
+                `${deleting.product_count} ürün`,
+                `${deleting.child_count} alt kategori`,
+                ...menuItemsTouch(deleting.menu_item_count),
+              ]
+            : []
         }
         run={() => remove.mutateAsync()}
         onDeleted={refresh}

@@ -185,7 +185,7 @@ export interface paths {
         post?: never;
         /**
          * Delete Brand
-         * @description Owner only. Refused while Products use the Brand.
+         * @description Owner only. Refused while Products or Menu items use the Brand.
          */
         delete: operations["catalog_delete_brand"];
         options?: never;
@@ -306,7 +306,7 @@ export interface paths {
         post?: never;
         /**
          * Delete Category
-         * @description Owner only. Refused while the Category has children or Products.
+         * @description Owner only. Refused while the Category has children, Products or Menu items.
          */
         delete: operations["catalog_delete_category"];
         options?: never;
@@ -572,6 +572,51 @@ export interface paths {
          */
         get: operations["staff_get_me"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/menu-targets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search Menu Targets
+         * @description Categories, Legal pages, Products and Brands matching `q` by name.
+         */
+        get: operations["menus_search_targets"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/menus/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Menu
+         * @description The saved tree with hidden and non-public items, each flagged with why it is
+         *     not shown.
+         */
+        get: operations["menus_get_for_editing"];
+        /**
+         * Save Menu
+         * @description Replace the whole tree atomically. Live at once; written to the Audit log.
+         */
+        put: operations["menus_save"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1034,7 +1079,8 @@ export interface paths {
         post?: never;
         /**
          * Delete Product
-         * @description Owner only. Refused while the Product has Orders; archive it instead.
+         * @description Owner only. Refused while the Product has Orders or Menu items; archive it
+         *     instead.
          */
         delete: operations["catalog_delete_product"];
         options?: never;
@@ -1794,6 +1840,15 @@ export interface components {
              */
             date_to?: string | null;
         };
+        /** BrandOut */
+        BrandOut: {
+            /** Id */
+            id: number;
+            /** Menu Item Count */
+            menu_item_count: number;
+            /** Name */
+            name: string;
+        };
         /** CarrierOut */
         CarrierOut: {
             /** Id */
@@ -1843,6 +1898,8 @@ export interface components {
             image: components["schemas"]["CategoryImageOut"] | null;
             /** Is Hidden */
             is_hidden: boolean;
+            /** Menu Item Count */
+            menu_item_count: number;
             /** Name */
             name: string;
             /** Parent Id */
@@ -2297,6 +2354,118 @@ export interface components {
             permissions: string[];
             /** Role */
             role: ("owner" | "staff") | null;
+        };
+        /** MenuIn */
+        MenuIn: {
+            /** Items */
+            items: components["schemas"]["MenuItemIn"][];
+        };
+        /**
+         * MenuItemIn
+         * @description One item and the items under it. List order is Menu order.
+         */
+        MenuItemIn: {
+            /** Brand Id */
+            brand_id?: number | null;
+            /** Builtin */
+            builtin?: string | null;
+            /** Category Id */
+            category_id?: number | null;
+            /**
+             * Children
+             * @default []
+             */
+            children: components["schemas"]["MenuItemIn"][];
+            /**
+             * Include Subcategories
+             * @default false
+             */
+            include_subcategories: boolean;
+            /**
+             * Is Hidden
+             * @default false
+             */
+            is_hidden: boolean;
+            /**
+             * Label
+             * @default
+             */
+            label: string;
+            /** Legal Page */
+            legal_page?: string | null;
+            /** Product Id */
+            product_id?: number | null;
+            /**
+             * Target Type
+             * @enum {string}
+             */
+            target_type: "category" | "product" | "brand" | "legal_page" | "builtin" | "url" | "group";
+            /** Url */
+            url?: string | null;
+        };
+        /** MenuItemOut */
+        MenuItemOut: {
+            /** Brand Id */
+            brand_id: number | null;
+            /** Builtin */
+            builtin: string | null;
+            /** Category Id */
+            category_id: number | null;
+            /** Children */
+            children: components["schemas"]["MenuItemOut"][];
+            /** Include Subcategories */
+            include_subcategories: boolean;
+            /** Is Hidden */
+            is_hidden: boolean;
+            /** Label */
+            label: string;
+            /** Legal Page */
+            legal_page: string | null;
+            /** Link */
+            link: string | null;
+            /** Not Shown Reason */
+            not_shown_reason: ("hidden" | "parent_not_shown" | "target_not_public" | "target_missing") | null;
+            /** Product Id */
+            product_id: number | null;
+            /** Target Label */
+            target_label: string;
+            /**
+             * Target Type
+             * @enum {string}
+             */
+            target_type: "category" | "product" | "brand" | "legal_page" | "builtin" | "url" | "group";
+            /** Url */
+            url: string | null;
+        };
+        /** MenuOut */
+        MenuOut: {
+            /** Depth Limit */
+            depth_limit: number;
+            /** Items */
+            items: components["schemas"]["MenuItemOut"][];
+            /** Key */
+            key: string;
+        };
+        /**
+         * MenuTargetOut
+         * @description A match for the builder's target picker; spread it into an item as it is.
+         */
+        MenuTargetOut: {
+            /** Brand Id */
+            brand_id: number | null;
+            /** Category Id */
+            category_id: number | null;
+            /** Legal Page */
+            legal_page: string | null;
+            /** Product Id */
+            product_id: number | null;
+            /** Target Label */
+            target_label: string;
+            /**
+             * Target Type
+             * @enum {string}
+             */
+            target_type: "category" | "product" | "brand" | "legal_page";
         };
         /** NameIn */
         NameIn: {
@@ -2874,6 +3043,11 @@ export interface components {
             kdv_rate: string;
             /** Low Stock Threshold */
             low_stock_threshold: number;
+            /**
+             * Menu Item Count
+             * @default 0
+             */
+            menu_item_count: number;
             /** Old Price */
             old_price: string | null;
             product_class: components["schemas"]["ProductClassOut"];
@@ -3773,7 +3947,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["NamedOut"][];
+                    "application/json": components["schemas"]["BrandOut"][];
                 };
             };
         };
@@ -4454,6 +4628,76 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MeOut"];
+                };
+            };
+        };
+    };
+    menus_search_targets: {
+        parameters: {
+            query?: {
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MenuTargetOut"][];
+                };
+            };
+        };
+    };
+    menus_get_for_editing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MenuOut"];
+                };
+            };
+        };
+    };
+    menus_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MenuIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MenuOut"];
                 };
             };
         };
