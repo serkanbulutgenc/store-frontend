@@ -180,8 +180,8 @@ export function ReviewsSection({ slug, productId }: { slug: string; productId: n
   const { data } = useQuery(reviewsQuery(slug, page));
   const pages = data ? Math.max(1, Math.ceil(data.count / data.page_size)) : 1;
   return (
-    <section className="mt-12 max-w-3xl space-y-4" aria-labelledby="reviews">
-      <h2 id="reviews" className="text-lg font-semibold">
+    <section className="max-w-3xl space-y-4" aria-labelledby="reviews">
+      <h2 id="reviews" className="sr-only">
         Değerlendirmeler
       </h2>
       {data && <RatingSummary average={data.average} count={data.count} />}

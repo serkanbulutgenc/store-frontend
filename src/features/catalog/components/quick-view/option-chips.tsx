@@ -34,6 +34,8 @@ export function SizeChips({
   pick: QuickPick;
   onPick?: (variantId: number) => void;
 }) {
+  // A one-size colour has nothing to choose, except in the strip, where the lone size is shown.
+  if (pick.sizes.length === 1 && !onPick) return null;
   return (
     <fieldset className="flex flex-wrap gap-1.5 border-0 p-0">
       <legend className="sr-only">Beden</legend>

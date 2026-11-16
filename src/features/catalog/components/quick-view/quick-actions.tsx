@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Eye, ShoppingBag, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { type ProductCard, type ProductDetail, productQuery } from "../../queries";
 import { SizeChips } from "./option-chips";
@@ -73,6 +73,18 @@ function StripSizes({ slug, onClose }: { slug: string; onClose: () => void }) {
 
 function Strip({ product, onClose }: { product: ProductDetail; onClose: () => void }) {
   const pick = useQuickPick(product);
+  // A one-size product has nothing to choose: the bag adds it at once and the strip never opens.
+  const direct = !pick.needsSize && pick.variant?.in_stock ? pick.variant.id : null;
+  const sent = useRef(false);
+  const { addVariant } = pick;
+  useEffect(() => {
+    if (direct === null || sent.current) return;
+    sent.current = true;
+    addVariant(direct, onClose);
+  }, [direct, addVariant, onClose]);
+  // If the add fails the strip falls back to the size chips.
+  if (direct !== null && (pick.pending || !sent.current))
+    return <p className="px-1 text-sm">Ekleniyor…</p>;
   return (
     <>
       <SizeChips pick={pick} onPick={(id) => pick.addVariant(id, onClose)} />

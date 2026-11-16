@@ -5,9 +5,8 @@ import { useAddToBasket } from "@/features/basket/queries";
 import {
   canAddToBasket,
   defaultColourId,
-  findVariant,
   photosForColour,
-  sizesForColour,
+  resolveSelection,
   stockLabel,
 } from "../../product-options";
 import type { ProductDetail } from "../../queries";
@@ -19,10 +18,12 @@ export function useQuickPick(product: ProductDetail) {
   const add = useAddToBasket();
   const navigate = useNavigate();
 
-  const sizes = sizesForColour(product.variants, colourId);
-  // A size that does not exist in the newly picked colour is dropped.
-  const activeSize = sizes.some((s) => s.size === size) ? size : null;
-  const variant = findVariant(product.variants, colourId, activeSize);
+  const {
+    sizes,
+    size: activeSize,
+    variant,
+    needsSize,
+  } = resolveSelection(product.variants, colourId, size);
 
   function addVariant(variantId: number, onAdded?: () => void) {
     add.mutate(
@@ -45,6 +46,7 @@ export function useQuickPick(product: ProductDetail) {
     size: activeSize,
     setSize,
     sizes,
+    needsSize,
     variant,
     label: stockLabel(variant),
     canAdd: canAddToBasket(variant),

@@ -37,6 +37,33 @@ export function findVariant<T extends OptVariant>(
   return variants.find((v) => v.colour.id === colourId && v.size === size);
 }
 
+/** The colour's only variant: a one-size colour needs no size choice. */
+export function soleVariant<T extends OptVariant>(
+  variants: T[],
+  colourId: number | null,
+): T | undefined {
+  if (colourId === null) return undefined;
+  const own = variants.filter((v) => v.colour.id === colourId);
+  return own.length === 1 ? own[0] : undefined;
+}
+
+/**
+ * What the customer has picked for a colour. A one-size colour resolves to its only variant with
+ * no size chosen; a size the colour does not have is dropped; `needsSize` is true while sizes
+ * exist but none is resolved.
+ */
+export function resolveSelection<T extends OptVariant>(
+  variants: T[],
+  colourId: number | null,
+  size: string | null,
+) {
+  const sizes = sizesForColour(variants, colourId);
+  const sole = soleVariant(variants, colourId);
+  const chosen = sole ? sole.size : sizes.some((s) => s.size === size) ? size : null;
+  const variant = sole ?? findVariant(variants, colourId, chosen);
+  return { sizes, size: chosen, variant, needsSize: sizes.length > 0 && !variant };
+}
+
 export function defaultColourId(variants: OptVariant[]): number | null {
   const pick = variants.find((v) => v.in_stock) ?? variants[0];
   return pick ? pick.colour.id : null;

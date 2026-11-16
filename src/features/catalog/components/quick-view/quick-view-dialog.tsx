@@ -2,11 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { X } from "lucide-react";
 import { Dialog } from "radix-ui";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { type ProductDetail, productQuery } from "../../queries";
 import { Price } from "../product-card";
-import { ProductImage } from "../product-image";
+import { ProductGallery } from "../product-gallery";
 import { ColourChips, SizeChips } from "./option-chips";
 import { useQuickPick } from "./use-quick-pick";
 
@@ -61,37 +60,15 @@ function Body({ slug, onAdded }: { slug: string; onAdded: () => void }) {
 
 function Content({ product, onAdded }: { product: ProductDetail; onAdded: () => void }) {
   const pick = useQuickPick(product);
-  const [picked, setPicked] = useState<number | null>(null);
-  const currentPhoto = pick.photos.find((p) => p.id === picked) ?? pick.photos[0];
-  const current = currentPhoto ?? product.image;
-  const sizeless = pick.sizes.length === 0;
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
-      <div className="space-y-2">
-        <ProductImage
-          key={pick.colourId}
-          image={current}
-          sizes="(min-width: 768px) 28rem, 100vw"
-          eager
-        />
-        {pick.photos.length > 1 && (
-          <ul className="grid grid-cols-5 gap-2" aria-label="Fotoğraflar">
-            {pick.photos.slice(0, 5).map((p, i) => (
-              <li key={p.id}>
-                <button
-                  type="button"
-                  aria-label={`Fotoğraf ${i + 1}`}
-                  aria-current={p.id === currentPhoto?.id}
-                  onClick={() => setPicked(p.id)}
-                >
-                  <ProductImage image={p} sizes="80px" />
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <ProductGallery
+        key={pick.colourId}
+        photos={pick.photos}
+        fallback={product.image}
+        sizes="(min-width: 768px) 28rem, 100vw"
+      />
       <div className="space-y-4">
         <div>
           {product.brand && <p className="text-muted-foreground">{product.brand.name}</p>}
@@ -114,9 +91,9 @@ function Content({ product, onAdded }: { product: ProductDetail; onAdded: () => 
         >
           {pick.variant && !pick.variant.in_stock
             ? "Tükendi"
-            : pick.size || sizeless
-              ? "Sepete ekle"
-              : "Beden seçin"}
+            : pick.needsSize
+              ? "Beden seçin"
+              : "Sepete ekle"}
         </Button>
         {product.description && (
           <p className="line-clamp-4 text-sm text-muted-foreground">{product.description}</p>

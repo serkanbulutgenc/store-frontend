@@ -6,7 +6,9 @@ import {
   type OptPhoto,
   type OptVariant,
   photosForColour,
+  resolveSelection,
   sizesForColour,
+  soleVariant,
   stockLabel,
 } from "./product-options";
 
@@ -64,6 +66,46 @@ describe("findVariant", () => {
     expect(findVariant(variants, 20, "M")?.id).toBe(2);
     expect(findVariant(variants, 20, "L")).toBeUndefined();
     expect(findVariant(variants, 10, null)).toBeUndefined();
+  });
+});
+
+describe("soleVariant", () => {
+  const variants = [v(1, 10, "Std", 3), v(2, 20, "M", 3), v(3, 20, "L", 1)];
+  it("is the colour's only variant: a one-size colour needs no size choice", () => {
+    expect(soleVariant(variants, 10)?.id).toBe(1);
+  });
+  it("is none when the colour has several sizes, even if other colours are one-size", () => {
+    expect(soleVariant(variants, 20)).toBeUndefined();
+  });
+  it("is none without a colour or for an unknown colour", () => {
+    expect(soleVariant(variants, null)).toBeUndefined();
+    expect(soleVariant(variants, 99)).toBeUndefined();
+  });
+  it("still returns a sold-out only variant so the button can say Tükendi", () => {
+    expect(soleVariant([v(1, 10, "Std", 0)], 10)?.in_stock).toBe(false);
+  });
+});
+
+describe("resolveSelection", () => {
+  const variants = [v(1, 10, "Std", 3), v(2, 20, "M", 3), v(3, 20, "L", 1)];
+  it("picks a one-size colour's variant with no size chosen", () => {
+    const sel = resolveSelection(variants, 10, null);
+    expect(sel.variant?.id).toBe(1);
+    expect(sel.size).toBe("Std");
+    expect(sel.needsSize).toBe(false);
+  });
+  it("asks for a size on a multi-size colour until one is chosen", () => {
+    expect(resolveSelection(variants, 20, null)).toMatchObject({
+      variant: undefined,
+      needsSize: true,
+    });
+    expect(resolveSelection(variants, 20, "L").variant?.id).toBe(3);
+  });
+  it("drops a size the newly picked colour does not have", () => {
+    expect(resolveSelection(variants, 20, "Std")).toMatchObject({ size: null, variant: undefined });
+  });
+  it("needs no size when the colour has no variants at all", () => {
+    expect(resolveSelection(variants, null, null).needsSize).toBe(false);
   });
 });
 
