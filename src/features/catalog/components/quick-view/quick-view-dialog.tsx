@@ -1,0 +1,134 @@
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
+import { X } from "lucide-react";
+import { Dialog } from "radix-ui";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { type ProductDetail, productQuery } from "../../queries";
+import { Price } from "../product-card";
+import { ProductImage } from "../product-image";
+import { ColourChips, SizeChips } from "./option-chips";
+import { useQuickPick } from "./use-quick-pick";
+
+export function QuickViewDialog({
+  slug,
+  title,
+  open,
+  onOpenChange,
+}: {
+  slug: string;
+  title: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  return (
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      {/* The portal renders under <body>, outside the storefront layout, so the theme tokens are re-applied on the content. */}
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50" />
+        <Dialog.Content
+          data-theme="storefront"
+          className="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[min(56rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-border bg-background p-5 text-foreground shadow-xl"
+        >
+          <Dialog.Title className="sr-only">{title}</Dialog.Title>
+          <Dialog.Description className="sr-only">Hızlı ürün önizlemesi</Dialog.Description>
+          <Dialog.Close aria-label="Kapat" className="absolute right-3 top-3 rounded-md p-1">
+            <X className="size-5" />
+          </Dialog.Close>
+          <Body slug={slug} onAdded={() => onOpenChange(false)} />
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
+function Body({ slug, onAdded }: { slug: string; onAdded: () => void }) {
+  const { data, isError } = useQuery(productQuery(slug));
+  if (isError)
+    return (
+      <p role="alert" className="p-10 text-center">
+        Ürün yüklenemedi. Lütfen tekrar deneyin.
+      </p>
+    );
+  if (!data)
+    return (
+      <p role="status" className="p-10 text-center">
+        Yükleniyor…
+      </p>
+    );
+  return <Content product={data} onAdded={onAdded} />;
+}
+
+function Content({ product, onAdded }: { product: ProductDetail; onAdded: () => void }) {
+  const pick = useQuickPick(product);
+  const [picked, setPicked] = useState<number | null>(null);
+  const currentPhoto = pick.photos.find((p) => p.id === picked) ?? pick.photos[0];
+  const current = currentPhoto ?? product.image;
+  const sizeless = pick.sizes.length === 0;
+
+  return (
+    <div className="grid gap-6 md:grid-cols-2">
+      <div className="space-y-2">
+        <ProductImage
+          key={pick.colourId}
+          image={current}
+          sizes="(min-width: 768px) 28rem, 100vw"
+          eager
+        />
+        {pick.photos.length > 1 && (
+          <ul className="grid grid-cols-5 gap-2" aria-label="Fotoğraflar">
+            {pick.photos.slice(0, 5).map((p, i) => (
+              <li key={p.id}>
+                <button
+                  type="button"
+                  aria-label={`Fotoğraf ${i + 1}`}
+                  aria-current={p.id === currentPhoto?.id}
+                  onClick={() => setPicked(p.id)}
+                >
+                  <ProductImage image={p} sizes="80px" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <div className="space-y-4">
+        <div>
+          {product.brand && <p className="text-muted-foreground">{product.brand.name}</p>}
+          <h2 className="text-xl font-semibold">{product.title}</h2>
+        </div>
+        <div>
+          <Price price={product.price} oldPrice={product.old_price} />
+          <p className="text-sm text-muted-foreground">KDV dahil</p>
+        </div>
+        <ColourChips product={product} pick={pick} />
+        <SizeChips pick={pick} />
+        <p aria-live="polite" className="min-h-5 text-sm font-medium text-primary">
+          {pick.label}
+        </p>
+        <Button
+          size="lg"
+          className="w-full"
+          disabled={!pick.canAdd || pick.pending}
+          onClick={() => pick.variant && pick.addVariant(pick.variant.id, onAdded)}
+        >
+          {pick.variant && !pick.variant.in_stock
+            ? "Tükendi"
+            : pick.size || sizeless
+              ? "Sepete ekle"
+              : "Beden seçin"}
+        </Button>
+        {product.description && (
+          <p className="line-clamp-4 text-sm text-muted-foreground">{product.description}</p>
+        )}
+        <Link
+          to="/urun/$slug"
+          params={{ slug: product.slug }}
+          className="block text-sm underline underline-offset-4"
+        >
+          Tüm ürün detayları
+        </Link>
+      </div>
+    </div>
+  );
+}
