@@ -3009,6 +3009,8 @@ export interface components {
             category: components["schemas"]["NamedOut"] | null;
             /** Id */
             id: number;
+            /** Menu Item Count */
+            menu_item_count: number;
             /**
              * Shelf Price
              * @example 349.90

@@ -74,6 +74,7 @@ export function ProductsScreen({
               name={c.row.original.title}
               title="Ürünü sil"
               touches={[`${c.row.original.variant_count} varyant`]}
+              menuItemCount={c.row.original.menu_item_count}
               run={() => deleteProduct.mutateAsync(c.row.original.id)}
               success="Ürün silindi."
             />
