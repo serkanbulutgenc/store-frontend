@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { PrototypeSwitcher } from "@/features/catalog/components/prototype-quick-view"; // PROTOTYPE
 import { SiteFooter } from "@/features/catalog/components/site-footer";
 import { SiteHeader } from "@/features/catalog/components/site-header";
 import { categoriesQuery } from "@/features/catalog/queries";
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/_storefront")({
         <PendingFavorite />
         <Outlet />
         <SiteFooter pages={legalPages} />
+        <PrototypeSwitcher /> {/* PROTOTYPE */}
       </div>
     );
   },

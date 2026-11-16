@@ -7,6 +7,7 @@ import { formatTry } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { ProductCard as Card } from "../queries";
 import { ProductImage } from "./product-image";
+import { QuickActions } from "./prototype-quick-view"; // PROTOTYPE
 
 export function Price({ price, oldPrice }: { price: string; oldPrice: string | null }) {
   return (
@@ -75,6 +76,7 @@ export function ProductCard({
       </Link>
       {badge}
       <HeartButton productId={product.id} className="absolute right-2 top-2" />
+      <QuickActions product={product} /> {/* PROTOTYPE */}
     </li>
   );
 }
