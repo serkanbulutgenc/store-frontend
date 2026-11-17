@@ -9,6 +9,7 @@ import {
   emptyWarning,
   imageEditable,
   move,
+  pendingKind,
 } from "./rules";
 
 const OWNER = { owner: true, submitter: false };
@@ -109,5 +110,19 @@ describe("emptyWarning", () => {
     expect(emptyWarning([{ action: "unpublish" }], [])).toBeNull();
     expect(emptyWarning([{ action: "submit" }], [])).toBeNull();
     expect(emptyWarning([], [])).toBeNull();
+  });
+});
+
+describe("pendingKind", () => {
+  it("is a submission while awaiting approval", () => {
+    expect(pendingKind({ status: "pending_approval", hasPendingChange: false })).toBe("submission");
+  });
+  it("is a change on a published Collection with one", () => {
+    expect(pendingKind({ status: "published", hasPendingChange: true })).toBe("change");
+  });
+  it("is nothing otherwise", () => {
+    expect(pendingKind({ status: "published", hasPendingChange: false })).toBeNull();
+    expect(pendingKind({ status: "draft", hasPendingChange: false })).toBeNull();
+    expect(pendingKind({ status: "unpublished", hasPendingChange: false })).toBeNull();
   });
 });

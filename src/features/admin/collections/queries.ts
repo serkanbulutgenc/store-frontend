@@ -1,8 +1,8 @@
-import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminApi } from "@/lib/api/clients";
 import { ApiError } from "@/lib/api/errors";
 import type { components } from "../../../../api/specs/openapi-admin";
-import type { CollectionAction } from "./rules";
+import { type CollectionAction, pendingKind } from "./rules";
 
 export type CollectionRow = components["schemas"]["CollectionRowOut"];
 export type CollectionOut = components["schemas"]["CollectionOut"];
@@ -114,4 +114,20 @@ export async function uploadCollectionImage(
   const body: unknown = await response.json().catch(() => null);
   if (!response.ok) throw ApiError.from(response.status, body);
   return body as CollectionOut;
+}
+
+/** The Collections the Owner has to decide on, oldest submission first. Shares the "all" list's
+ * cache entry, so any move or edit refreshes it. */
+export const pendingCollectionsQuery = () =>
+  queryOptions({
+    ...collectionsQuery(),
+    select: (rows) =>
+      rows
+        .filter((c) => pendingKind({ status: c.status, hasPendingChange: c.has_pending_change }))
+        .sort((a, b) => (a.submitted_at ?? "").localeCompare(b.submitted_at ?? "")),
+  });
+
+/** How many Collections wait for the Owner; undefined until known. For the nav badge. */
+export function usePendingCollectionCount(enabled: boolean): number | undefined {
+  return useQuery({ ...pendingCollectionsQuery(), enabled }).data?.length;
 }

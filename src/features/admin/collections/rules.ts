@@ -134,3 +134,18 @@ export function emptyWarning(
   const goesLive = moves.some((m) => m.action === "publish" || m.action === "approve");
   return goesLive && !products.some(isVisible) ? EMPTY_WARNING : null;
 }
+
+/** What the Owner has to decide on a Collection: a first submission, a change to a published
+ * one, or nothing. */
+export type PendingKind = "submission" | "change";
+
+export function pendingKind({ status, hasPendingChange }: CollectionState): PendingKind | null {
+  if (status === "pending_approval") return "submission";
+  if (status === "published" && hasPendingChange) return "change";
+  return null;
+}
+
+export const PENDING_KIND_LABEL: Record<PendingKind, string> = {
+  submission: "Yeni gönderim",
+  change: "Bekleyen değişiklik",
+};
