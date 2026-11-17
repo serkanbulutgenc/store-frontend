@@ -16,8 +16,9 @@ describe("descriptionExcerpt", () => {
     expect(descriptionExcerpt(md)).toBe("Önce sonra Beden Göğüs S 90");
   });
 
-  it("keeps the text of code, quotes and strikethrough", () => {
-    expect(descriptionExcerpt("~~eski~~ `kod`\n\n> alıntı")).toBe("eski kod alıntı");
+  it("keeps the text of code and quotes, and reads only tables as GFM", () => {
+    expect(descriptionExcerpt("`kod`\n\n> alıntı")).toBe("kod alıntı");
+    expect(descriptionExcerpt("~~eski~~ - [ ] yapılacak")).toBe("~~eski~~ - [ ] yapılacak");
   });
 
   it("cuts at the given length with an ellipsis, and only when it has to", () => {

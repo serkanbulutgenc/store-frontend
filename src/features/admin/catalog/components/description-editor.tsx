@@ -87,9 +87,15 @@ export function DescriptionEditor({
 
   function apply(change: (edit: Edit) => Edit) {
     const el = area.current;
-    if (!el) return;
-    const next = change({ text: el.value, start: el.selectionStart, end: el.selectionEnd });
-    selectAfter.current = { start: next.start, end: next.end };
+    // An upload can finish while the preview is showing and the textarea is gone: the image
+    // then goes at the end of the text instead of being lost.
+    const text = el ? el.value : ((field.state.value ?? "") as string);
+    const next = change(
+      el
+        ? { text, start: el.selectionStart, end: el.selectionEnd }
+        : { text, start: text.length, end: text.length },
+    );
+    if (el) selectAfter.current = { start: next.start, end: next.end };
     field.handleChange(next.text);
   }
 
@@ -234,6 +240,12 @@ export function DescriptionEditor({
           />
         )}
 
+        <p className="text-muted-foreground text-sm" data-testid="description-hint">
+          Markdown ile yazın: <code>**kalın**</code>, <code>*italik*</code>, <code>- madde</code>,{" "}
+          <code>[metin](adres)</code>, <code>![açıklama](adres)</code>. Satır başına{" "}
+          <code>###</code> koyarak başlık, <code>|</code> ile tablo yapabilirsiniz. HTML
+          kullanılamaz.
+        </p>
         <div className="flex flex-wrap items-center gap-x-4 text-sm">
           {missingAlt > 0 && (
             <span role="status" className="text-amber-700">

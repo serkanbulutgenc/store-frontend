@@ -1,21 +1,13 @@
 import type { Nodes } from "mdast";
-import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
+import { remarkGfmTables } from "./remark-gfm-tables";
 
 // The same parser and extensions the renderer uses, so both read a Description alike.
-const parser = unified().use(remarkParse).use(remarkGfm);
+const parser = unified().use(remarkParse).use(remarkGfmTables);
 
 // These sit inside a line of text, so their words join the text around them.
-const INLINE = new Set([
-  "text",
-  "inlineCode",
-  "strong",
-  "emphasis",
-  "delete",
-  "link",
-  "linkReference",
-]);
+const INLINE = new Set(["text", "inlineCode", "strong", "emphasis", "link", "linkReference"]);
 
 /** The words of a node: images and raw HTML contribute nothing. */
 function words(node: Nodes): string {
