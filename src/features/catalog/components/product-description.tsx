@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react";
 import Markdown, { type Components } from "react-markdown";
 import remarkBreaks from "remark-breaks";
-import remarkGfm from "remark-gfm";
+import { remarkGfmTables } from "../remark-gfm-tables";
 
 /** The only elements a Description may produce. Anything else keeps its text only. */
 const ALLOWED_ELEMENTS = [
@@ -93,7 +93,7 @@ export function ProductDescription({ source }: { source: string }) {
         allowedElements={ALLOWED_ELEMENTS}
         unwrapDisallowed
         components={components}
-        remarkPlugins={[remarkGfm, remarkBreaks]}
+        remarkPlugins={[remarkGfmTables, remarkBreaks]}
       >
         {source}
       </Markdown>

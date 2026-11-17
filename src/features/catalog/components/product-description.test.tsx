@@ -25,6 +25,19 @@ describe("ProductDescription", () => {
     expect(out).toContain("Merhaba");
   });
 
+  it("supports tables only: no strikethrough, bare-URL links or task lists", () => {
+    const out = html(
+      "~~eski~~\n\nwww.example.com ve https://example.com\n\n- [ ] yapılacak\n\n| A | B |\n| - | - |\n| 1 | 2 |",
+    );
+
+    expect(out).toContain("<table");
+    expect(out).toContain("<td>1</td>");
+    expect(out).toContain("~~eski~~");
+    expect(out).not.toContain("<del");
+    expect(out).not.toContain("<a ");
+    expect(out).not.toContain("checkbox");
+  });
+
   it("demotes # and ## to h3 and keeps h3 to h6", () => {
     const out = html("# Bir\n\n## İki\n\n### Üç\n\n#### Dört\n\n##### Beş\n\n###### Altı");
 
