@@ -118,3 +118,19 @@ export function move<T>(items: readonly T[], from: number, delta: -1 | 1): T[] {
   next.splice(to, 0, item as T);
   return next;
 }
+
+/** Whether the Storefront would show a Product: only a published one. */
+export const isVisible = (product: { status: string }) => product.status === "published";
+
+export const EMPTY_WARNING =
+  "Bu koleksiyonda mağazada görünen ürün yok. Yayına alırsanız sayfası bulunamadı (404) verir ve menüden kalkar.";
+
+/** A warning for whoever is about to publish or approve a version with no visible Product.
+ * `products` is the version that would go live: the pending change's list when there is one. */
+export function emptyWarning(
+  moves: readonly { action: CollectionAction }[],
+  products: readonly { status: string }[],
+): string | null {
+  const goesLive = moves.some((m) => m.action === "publish" || m.action === "approve");
+  return goesLive && !products.some(isVisible) ? EMPTY_WARNING : null;
+}
