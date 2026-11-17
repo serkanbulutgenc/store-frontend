@@ -2,6 +2,7 @@ import {
   Boxes,
   Building2,
   FileSpreadsheet,
+  GalleryVerticalEnd,
   History,
   Home,
   Layers,
@@ -71,6 +72,12 @@ export const NAV_GROUPS: NavGroup[] = [
         to: "/admin/reviews",
         icon: MessageSquareText,
         permission: "manage_products",
+      },
+      {
+        label: "Koleksiyonlar",
+        to: "/admin/collections",
+        icon: GalleryVerticalEnd,
+        permission: "edit_collections",
       },
       { label: "Markalar", to: "/admin/brands", icon: Tag, permission: "manage_brands" },
       {
