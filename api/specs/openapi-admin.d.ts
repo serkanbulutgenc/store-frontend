@@ -361,6 +361,80 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/collections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Collections */
+        get: operations["collections_list"];
+        put?: never;
+        /** Create Collection */
+        post: operations["collections_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/collections/{collection_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Collection */
+        get: operations["collections_get"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete Collection
+         * @description A hard delete: Owner-only (ADR 0005). Never touches the Products.
+         */
+        delete: operations["collections_delete"];
+        options?: never;
+        head?: never;
+        /** Edit Collection */
+        patch: operations["collections_edit"];
+        trace?: never;
+    };
+    "/api/admin/collections/{collection_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish Collection */
+        post: operations["collections_publish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/collections/{collection_id}/unpublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Unpublish Collection */
+        post: operations["collections_unpublish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/colours": {
         parameters: {
             query?: never;
@@ -609,7 +683,7 @@ export interface paths {
         };
         /**
          * Search Menu Targets
-         * @description Categories, Legal pages, Products and Brands matching `q` by name.
+         * @description Categories, Legal pages, Products, Brands, Collections matching `q` by name.
          */
         get: operations["menus_search_targets"];
         put?: never;
@@ -1958,6 +2032,94 @@ export interface components {
             /** Parent Id */
             parent_id?: number | null;
         };
+        /** CollectionIn */
+        CollectionIn: {
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Name */
+            name: string;
+            /**
+             * Product Ids
+             * @default []
+             */
+            product_ids: number[];
+            /** Slug */
+            slug?: string | null;
+        };
+        /** CollectionOut */
+        CollectionOut: {
+            /** Description */
+            description: string;
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Products */
+            products: components["schemas"]["CollectionProductOut"][];
+            /** Published At */
+            published_at: string | null;
+            /** Slug */
+            slug: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "published" | "unpublished";
+            /** Visible Product Count */
+            visible_product_count: number;
+        };
+        /**
+         * CollectionPatch
+         * @description What the Owner changes; anything left out stays as it is. `product_ids`
+         *     replaces the whole ordered list.
+         */
+        CollectionPatch: {
+            /** Description */
+            description?: string | null;
+            /** Name */
+            name?: string | null;
+            /** Product Ids */
+            product_ids?: number[] | null;
+            /** Slug */
+            slug?: string | null;
+        };
+        /** CollectionProductOut */
+        CollectionProductOut: {
+            /** Id */
+            id: number;
+            /** Slug */
+            slug: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "published" | "archived";
+            /** Title */
+            title: string;
+        };
+        /** CollectionRowOut */
+        CollectionRowOut: {
+            /** Description */
+            description: string;
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Product Count */
+            product_count: number;
+            /** Published At */
+            published_at: string | null;
+            /** Slug */
+            slug: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "published" | "unpublished";
+        };
         /** ColourIn */
         ColourIn: {
             /** Hex Code */
@@ -2402,6 +2564,8 @@ export interface components {
              * @default []
              */
             children: components["schemas"]["MenuItemIn"][];
+            /** Collection Id */
+            collection_id?: number | null;
             /**
              * Include Subcategories
              * @default false
@@ -2425,7 +2589,7 @@ export interface components {
              * Target Type
              * @enum {string}
              */
-            target_type: "category" | "product" | "brand" | "legal_page" | "builtin" | "url" | "group";
+            target_type: "category" | "product" | "brand" | "collection" | "legal_page" | "builtin" | "url" | "group";
             /** Url */
             url?: string | null;
         };
@@ -2439,6 +2603,8 @@ export interface components {
             category_id: number | null;
             /** Children */
             children: components["schemas"]["MenuItemOut"][];
+            /** Collection Id */
+            collection_id: number | null;
             /** Include Subcategories */
             include_subcategories: boolean;
             /** Is Hidden */
@@ -2459,7 +2625,7 @@ export interface components {
              * Target Type
              * @enum {string}
              */
-            target_type: "category" | "product" | "brand" | "legal_page" | "builtin" | "url" | "group";
+            target_type: "category" | "product" | "brand" | "collection" | "legal_page" | "builtin" | "url" | "group";
             /** Url */
             url: string | null;
         };
@@ -2481,6 +2647,8 @@ export interface components {
             brand_id: number | null;
             /** Category Id */
             category_id: number | null;
+            /** Collection Id */
+            collection_id: number | null;
             /** Legal Page */
             legal_page: string | null;
             /** Product Id */
@@ -2491,7 +2659,7 @@ export interface components {
              * Target Type
              * @enum {string}
              */
-            target_type: "category" | "product" | "brand" | "legal_page";
+            target_type: "category" | "product" | "brand" | "collection" | "legal_page";
         };
         /** NameIn */
         NameIn: {
@@ -4329,6 +4497,164 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CategoryOut"];
+                };
+            };
+        };
+    };
+    collections_list: {
+        parameters: {
+            query?: {
+                status?: ("draft" | "published" | "unpublished") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionRowOut"][];
+                };
+            };
+        };
+    };
+    collections_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CollectionIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionOut"];
+                };
+            };
+        };
+    };
+    collections_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionOut"];
+                };
+            };
+        };
+    };
+    collections_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    collections_edit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CollectionPatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionOut"];
+                };
+            };
+        };
+    };
+    collections_publish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionOut"];
+                };
+            };
+        };
+    };
+    collections_unpublish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionOut"];
                 };
             };
         };

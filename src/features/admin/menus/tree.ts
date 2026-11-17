@@ -10,6 +10,7 @@ export function toBody(items: MenuItemRow[]): MenuItemBody[] {
     category_id: i.category_id,
     product_id: i.product_id,
     brand_id: i.brand_id,
+    collection_id: i.collection_id,
     include_subcategories: i.include_subcategories,
     legal_page: i.legal_page,
     builtin: i.builtin,
@@ -78,7 +79,8 @@ export type NotShownReason = NonNullable<MenuItemRow["not_shown_reason"]>;
 const NOT_SHOWN_TEXT: Record<NotShownReason, string> = {
   hidden: "Gizlendi; mağazada görünmez.",
   parent_not_shown: "Üstündeki öğe görünmediği için mağazada görünmez.",
-  target_not_public: "Hedefi herkese açık değil (gizli, taslak ya da arşivde); mağazada görünmez.",
+  target_not_public:
+    "Hedefi herkese açık değil (gizli, taslak, arşivde, yayında değil ya da görünür ürünü yok); mağazada görünmez.",
   target_missing: "Hedefi bulunamadı; mağazada görünmez.",
 };
 

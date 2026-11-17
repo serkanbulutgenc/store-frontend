@@ -24,6 +24,7 @@ import { Route as AdminAppRouteRouteImport } from './routes/admin/_app/route'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as StorefrontCustomerHesapRouteRouteImport } from './routes/_storefront/_customer/hesap/route'
+import { Route as StorefrontCollectionsSlugRouteImport } from './routes/_storefront/collections/$slug'
 import { Route as StorefrontHesapGirisRouteImport } from './routes/_storefront/hesap/giris'
 import { Route as StorefrontHesapKayitRouteImport } from './routes/_storefront/hesap/kayit'
 import { Route as StorefrontKategoriSlugRouteImport } from './routes/_storefront/kategori/$slug'
@@ -143,6 +144,12 @@ const StorefrontCustomerHesapRouteRoute =
     id: '/hesap',
     path: '/hesap',
     getParentRoute: () => StorefrontCustomerRouteRoute,
+  } as any)
+const StorefrontCollectionsSlugRoute =
+  StorefrontCollectionsSlugRouteImport.update({
+    id: '/collections/$slug',
+    path: '/collections/$slug',
+    getParentRoute: () => StorefrontRouteRoute,
   } as any)
 const StorefrontHesapGirisRoute = StorefrontHesapGirisRouteImport.update({
   id: '/hesap/giris',
@@ -402,6 +409,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/api/$': typeof ApiSplatRoute
   '/hesap': typeof StorefrontCustomerHesapRouteRouteWithChildren
+  '/collections/$slug': typeof StorefrontCollectionsSlugRoute
   '/hesap/giris': typeof StorefrontHesapGirisRoute
   '/hesap/kayit': typeof StorefrontHesapKayitRoute
   '/kategori/$slug': typeof StorefrontKategoriSlugRoute
@@ -461,6 +469,7 @@ export interface FileRoutesByTo {
   '/siparis-takip': typeof StorefrontSiparisTakipRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/$': typeof ApiSplatRoute
+  '/collections/$slug': typeof StorefrontCollectionsSlugRoute
   '/hesap/giris': typeof StorefrontHesapGirisRoute
   '/hesap/kayit': typeof StorefrontHesapKayitRoute
   '/kategori/$slug': typeof StorefrontKategoriSlugRoute
@@ -524,6 +533,7 @@ export interface FileRoutesById {
   '/api/$': typeof ApiSplatRoute
   '/_storefront/': typeof StorefrontIndexRoute
   '/_storefront/_customer/hesap': typeof StorefrontCustomerHesapRouteRouteWithChildren
+  '/_storefront/collections/$slug': typeof StorefrontCollectionsSlugRoute
   '/_storefront/hesap/giris': typeof StorefrontHesapGirisRoute
   '/_storefront/hesap/kayit': typeof StorefrontHesapKayitRoute
   '/_storefront/kategori/$slug': typeof StorefrontKategoriSlugRoute
@@ -586,6 +596,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/api/$'
     | '/hesap'
+    | '/collections/$slug'
     | '/hesap/giris'
     | '/hesap/kayit'
     | '/kategori/$slug'
@@ -645,6 +656,7 @@ export interface FileRouteTypes {
     | '/siparis-takip'
     | '/admin/login'
     | '/api/$'
+    | '/collections/$slug'
     | '/hesap/giris'
     | '/hesap/kayit'
     | '/kategori/$slug'
@@ -707,6 +719,7 @@ export interface FileRouteTypes {
     | '/api/$'
     | '/_storefront/'
     | '/_storefront/_customer/hesap'
+    | '/_storefront/collections/$slug'
     | '/_storefront/hesap/giris'
     | '/_storefront/hesap/kayit'
     | '/_storefront/kategori/$slug'
@@ -869,6 +882,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/hesap'
       preLoaderRoute: typeof StorefrontCustomerHesapRouteRouteImport
       parentRoute: typeof StorefrontCustomerRouteRoute
+    }
+    '/_storefront/collections/$slug': {
+      id: '/_storefront/collections/$slug'
+      path: '/collections/$slug'
+      fullPath: '/collections/$slug'
+      preLoaderRoute: typeof StorefrontCollectionsSlugRouteImport
+      parentRoute: typeof StorefrontRouteRoute
     }
     '/_storefront/hesap/giris': {
       id: '/_storefront/hesap/giris'
@@ -1245,6 +1265,7 @@ interface StorefrontRouteRouteChildren {
   StorefrontSiparisOnayiRoute: typeof StorefrontSiparisOnayiRoute
   StorefrontSiparisTakipRoute: typeof StorefrontSiparisTakipRoute
   StorefrontIndexRoute: typeof StorefrontIndexRoute
+  StorefrontCollectionsSlugRoute: typeof StorefrontCollectionsSlugRoute
   StorefrontHesapGirisRoute: typeof StorefrontHesapGirisRoute
   StorefrontHesapKayitRoute: typeof StorefrontHesapKayitRoute
   StorefrontKategoriSlugRoute: typeof StorefrontKategoriSlugRoute
@@ -1264,6 +1285,7 @@ const StorefrontRouteRouteChildren: StorefrontRouteRouteChildren = {
   StorefrontSiparisOnayiRoute: StorefrontSiparisOnayiRoute,
   StorefrontSiparisTakipRoute: StorefrontSiparisTakipRoute,
   StorefrontIndexRoute: StorefrontIndexRoute,
+  StorefrontCollectionsSlugRoute: StorefrontCollectionsSlugRoute,
   StorefrontHesapGirisRoute: StorefrontHesapGirisRoute,
   StorefrontHesapKayitRoute: StorefrontHesapKayitRoute,
   StorefrontKategoriSlugRoute: StorefrontKategoriSlugRoute,
