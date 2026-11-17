@@ -1057,6 +1057,7 @@ export interface components {
         CollectionPageOut: {
             /** Description */
             description: string;
+            image: components["schemas"]["CardImageOut"] | null;
             /** Items */
             items: components["schemas"]["ProductCardOut"][];
             /** Name */

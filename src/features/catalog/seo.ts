@@ -219,7 +219,7 @@ export function listingHead(o: {
 
 /** A Collection page: always indexable, one URL, no filters. */
 export function collectionHead(
-  collection: { name: string; slug: string; description: string },
+  collection: { name: string; slug: string; description: string; image?: Sized | null },
   origin: string,
 ): HeadResult {
   const title = `${collection.name} | ${STORE_NAME}`;
@@ -233,7 +233,13 @@ export function collectionHead(
     meta: [
       { title },
       { name: "description", content: description },
-      ...openGraph({ title, description, url, type: "website" }),
+      ...openGraph({
+        title,
+        description,
+        url,
+        type: "website",
+        image: collection.image ? largestUrl(collection.image, origin) : undefined,
+      }),
     ],
     links: [{ rel: "canonical", href: url }],
     scripts: [jsonLdScript(breadcrumbJsonLd([{ name: collection.name, path }], origin))],

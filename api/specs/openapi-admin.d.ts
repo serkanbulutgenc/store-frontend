@@ -418,6 +418,33 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/collections/{collection_id}/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Collection Image
+         * @description One cover image (JPEG, PNG or WebP), replacing any existing one; derivatives
+         *     are made in the background. Staff may on a draft; on a published Collection only
+         *     the Owner, and not while it has a pending change.
+         */
+        post: operations["collections_upload_image"];
+        /** Delete Collection Image */
+        delete: operations["collections_delete_image"];
+        options?: never;
+        head?: never;
+        /**
+         * Edit Collection Image
+         * @description Change the cover image's alt text.
+         */
+        patch: operations["collections_edit_image"];
+        trace?: never;
+    };
     "/api/admin/collections/{collection_id}/pending-change": {
         parameters: {
             query?: never;
@@ -2146,6 +2173,7 @@ export interface components {
             description: string;
             /** Id */
             id: number;
+            image: components["schemas"]["CoverImageOut"] | null;
             /** Name */
             name: string;
             pending_change: components["schemas"]["PendingChangeOut"] | null;
@@ -2252,6 +2280,26 @@ export interface components {
             is_active?: boolean | null;
             /** Name */
             name?: string | null;
+        };
+        /**
+         * CoverImageOut
+         * @description The cover image: `processing` until its derivatives exist.
+         */
+        CoverImageOut: {
+            /** Alt Text */
+            alt_text: string;
+            /** Derivatives */
+            derivatives: components["schemas"]["ImageDerivativeOut"][];
+            /** Error */
+            error: string;
+            /** Height */
+            height: number;
+            /** Original Url */
+            original_url: string;
+            /** Status */
+            status: string;
+            /** Width */
+            width: number;
         };
         /** CustomerDetail */
         CustomerDetail: {
@@ -2394,6 +2442,11 @@ export interface components {
             /** Return Id */
             return_id: number;
         };
+        /** ImageAltIn */
+        ImageAltIn: {
+            /** Alt Text */
+            alt_text: string;
+        };
         /** ImageDerivativeOut */
         ImageDerivativeOut: {
             /** Url */
@@ -2405,6 +2458,14 @@ export interface components {
         ImageOrderIn: {
             /** Ids */
             ids: number[];
+        };
+        /** ImageUploadIn */
+        ImageUploadIn: {
+            /**
+             * Alt Text
+             * @default
+             */
+            alt_text: string;
         };
         /** ImportCountsOut */
         ImportCountsOut: {
@@ -4769,6 +4830,91 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionOut"];
+                };
+            };
+        };
+    };
+    collections_upload_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * Alt Text
+                     * @default
+                     */
+                    alt_text?: string;
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionOut"];
+                };
+            };
+        };
+    };
+    collections_delete_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionOut"];
+                };
+            };
+        };
+    };
+    collections_edit_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImageAltIn"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
