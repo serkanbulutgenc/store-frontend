@@ -238,4 +238,29 @@ describe("collectionHead", () => {
     const description = head.meta.find((m) => m.name === "description");
     expect(description?.content).toContain("Editörün seçimi");
   });
+
+  it("uses the cover image as the social image, the largest size, made absolute", () => {
+    const head = collectionHead(
+      {
+        ...collection,
+        image: {
+          sizes: [
+            { url: "/media/c-400.webp", width: 400 },
+            { url: "/media/c-1600.webp", width: 1600 },
+          ],
+        },
+      },
+      ORIGIN,
+    );
+    expect(head.meta).toContainEqual({
+      property: "og:image",
+      content: "https://aura.example/media/c-1600.webp",
+    });
+    expect(head.meta).toContainEqual({ name: "twitter:card", content: "summary_large_image" });
+  });
+
+  it("has no social image without a cover image", () => {
+    const head = collectionHead({ ...collection, image: null }, ORIGIN);
+    expect(head.meta.some((m) => m.property === "og:image")).toBe(false);
+  });
 });
