@@ -217,6 +217,29 @@ export function listingHead(o: {
   };
 }
 
+/** A Collection page: always indexable, one URL, no filters. */
+export function collectionHead(
+  collection: { name: string; slug: string; description: string },
+  origin: string,
+): HeadResult {
+  const title = `${collection.name} | ${STORE_NAME}`;
+  const description = metaDescription(
+    collection.description,
+    `${collection.name} - ${STORE_NAME} koleksiyonunu inceleyin.`,
+  );
+  const path = `/collections/${collection.slug}`;
+  const url = absoluteUrl(origin, path);
+  return {
+    meta: [
+      { title },
+      { name: "description", content: description },
+      ...openGraph({ title, description, url, type: "website" }),
+    ],
+    links: [{ rel: "canonical", href: url }],
+    scripts: [jsonLdScript(breadcrumbJsonLd([{ name: collection.name, path }], origin))],
+  };
+}
+
 export function homeHead(origin: string): HeadResult {
   const description = `${STORE_NAME}: yeni gelen ürünler ve kategoriler.`;
   return {

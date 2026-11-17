@@ -12,6 +12,7 @@ export type Facets = components["schemas"]["FacetsOut"];
 export type CategoryNode = components["schemas"]["CategoryNodeOut"];
 export type CategoryPage = components["schemas"]["CategoryPageOut"];
 export type CardImage = components["schemas"]["CardImageOut"];
+export type CollectionPage = components["schemas"]["CollectionPageOut"];
 
 /** The menu shows categories, sub-categories and their children. */
 const MENU_DEPTH = 3;
@@ -74,3 +75,17 @@ export const productQuery = (slug: string) =>
  * skeleton and would not match the server's HTML.
  */
 export type SeedPages = { key: string; pages: ProductPage[] };
+
+export const collectionPageQuery = (slug: string) =>
+  queryOptions({
+    queryKey: [...ROOT, "collection", slug],
+    queryFn: async () => {
+      try {
+        return (await storeApi.GET("/api/store/collections/{slug}", { params: { path: { slug } } }))
+          .data as CollectionPage;
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 404) throw notFound();
+        throw e;
+      }
+    },
+  });

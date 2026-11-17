@@ -29,13 +29,16 @@ type Props = {
 
 /** The target an existing item points at, in the shape the picker returns. */
 const pickedFrom = (item?: MenuItemRow): MenuTarget | null =>
-  item && (item.category_id ?? item.product_id ?? item.brand_id ?? item.legal_page) != null
+  item &&
+  (item.category_id ?? item.product_id ?? item.brand_id ?? item.collection_id ?? item.legal_page) !=
+    null
     ? {
         target_type: item.target_type as MenuTarget["target_type"],
         target_label: item.target_label,
         category_id: item.category_id,
         product_id: item.product_id,
         brand_id: item.brand_id,
+        collection_id: item.collection_id,
         legal_page: item.legal_page,
       }
     : null;
@@ -63,7 +66,11 @@ function ItemForm({ item, depth, limit, subtreeDepth, onSave, onClose }: Props) 
   const [tried, setTried] = useState(false);
 
   const searchable =
-    type === "category" || type === "legal_page" || type === "product" || type === "brand";
+    type === "category" ||
+    type === "legal_page" ||
+    type === "product" ||
+    type === "brand" ||
+    type === "collection";
   const { data: found = [] } = useQuery({ ...menuTargetsQuery(q), enabled: searchable });
   const matches = found.filter((t) => t.target_type === type).slice(0, 8);
 
@@ -90,6 +97,7 @@ function ItemForm({ item, depth, limit, subtreeDepth, onSave, onClose }: Props) 
       category_id: type === "category" ? (picked?.category_id ?? null) : null,
       product_id: type === "product" ? (picked?.product_id ?? null) : null,
       brand_id: type === "brand" ? (picked?.brand_id ?? null) : null,
+      collection_id: type === "collection" ? (picked?.collection_id ?? null) : null,
       legal_page: type === "legal_page" ? (picked?.legal_page ?? null) : null,
       builtin: type === "builtin" ? builtin : null,
       url: type === "url" ? url.trim() : null,
@@ -151,7 +159,7 @@ function ItemForm({ item, depth, limit, subtreeDepth, onSave, onClose }: Props) 
             ) : (
               matches.map((t) => (
                 <li
-                  key={`${t.target_type}-${t.category_id ?? t.product_id ?? t.brand_id ?? t.legal_page}`}
+                  key={`${t.target_type}-${t.category_id ?? t.product_id ?? t.brand_id ?? t.collection_id ?? t.legal_page}`}
                 >
                   <button
                     type="button"

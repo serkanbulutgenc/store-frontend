@@ -388,6 +388,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/collections/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Collection
+         * @description A published Collection's Products in the Owner's order. Draft and archived
+         *     Products are left out, sold-out ones are shown as sold out. A Collection that is
+         *     not published or has no visible Product is 404.
+         */
+        get: operations["catalog_get_collection"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/store/csrf": {
         parameters: {
             query?: never;
@@ -1030,6 +1052,17 @@ export interface components {
              * @default
              */
             website: string;
+        };
+        /** CollectionPageOut */
+        CollectionPageOut: {
+            /** Description */
+            description: string;
+            /** Items */
+            items: components["schemas"]["ProductCardOut"][];
+            /** Name */
+            name: string;
+            /** Slug */
+            slug: string;
         };
         /** ColourFacet */
         ColourFacet: {
@@ -2454,6 +2487,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["QuoteOut"];
+                };
+            };
+        };
+    };
+    catalog_get_collection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionPageOut"];
                 };
             };
         };

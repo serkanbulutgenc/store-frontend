@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   breadcrumbJsonLd,
   categoryTrail,
+  collectionHead,
   isIndexableListing,
   jsonLdScript,
   listingCanonical,
@@ -212,5 +213,29 @@ describe("a Markdown product description in SEO", () => {
     expect(content("description")).toBe(plain);
     expect(content("og:description")).toBe(plain);
     expect(productJsonLd(marked, ORIGIN).description).toBe(plain);
+  });
+});
+
+describe("collectionHead", () => {
+  const collection = {
+    name: "Editörün seçimi",
+    slug: "editorun-secimi",
+    description: "Yeni sezon",
+  };
+
+  it("is indexable with its own canonical and the description as meta", () => {
+    const head = collectionHead(collection, ORIGIN);
+    expect(head.links).toEqual([
+      { rel: "canonical", href: "https://aura.example/collections/editorun-secimi" },
+    ]);
+    expect(head.meta).toContainEqual({ title: "Editörün seçimi | Aura Tekstil" });
+    expect(head.meta).toContainEqual({ name: "description", content: "Yeni sezon" });
+    expect(head.meta.some((m) => m.name === "robots")).toBe(false);
+  });
+
+  it("falls back to a generated description when there is none", () => {
+    const head = collectionHead({ ...collection, description: "" }, ORIGIN);
+    const description = head.meta.find((m) => m.name === "description");
+    expect(description?.content).toContain("Editörün seçimi");
   });
 });

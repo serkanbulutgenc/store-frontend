@@ -18,6 +18,7 @@ const row = (over: Partial<MenuItemRow> = {}): MenuItemRow => ({
   category_id: null,
   product_id: null,
   brand_id: null,
+  collection_id: null,
   include_subcategories: false,
   legal_page: null,
   builtin: null,
@@ -32,6 +33,11 @@ const row = (over: Partial<MenuItemRow> = {}): MenuItemRow => ({
 });
 
 describe("toBody", () => {
+  it("sends a Collection item's id", () => {
+    const [body] = toBody([row({ target_type: "collection", collection_id: 4 })]);
+    expect(body).toMatchObject({ target_type: "collection", collection_id: 4 });
+  });
+
   it("sends only what the API takes: no resolved label, link or reason, order and nesting kept", () => {
     const saved = [
       row({
@@ -55,6 +61,7 @@ describe("toBody", () => {
         category_id: 7,
         product_id: null,
         brand_id: null,
+        collection_id: null,
         include_subcategories: true,
         legal_page: null,
         builtin: null,
@@ -67,6 +74,7 @@ describe("toBody", () => {
             category_id: null,
             product_id: null,
             brand_id: 3,
+            collection_id: null,
             include_subcategories: false,
             legal_page: null,
             builtin: null,
@@ -82,6 +90,7 @@ describe("toBody", () => {
         category_id: null,
         product_id: null,
         brand_id: null,
+        collection_id: null,
         include_subcategories: false,
         legal_page: null,
         builtin: null,
@@ -206,7 +215,7 @@ describe("notShownText", () => {
     expect(texts.every((t) => typeof t === "string" && t.length > 0)).toBe(true);
     expect(new Set(texts).size).toBe(4);
     expect(notShownText("target_not_public")).toBe(
-      "Hedefi herkese açık değil (gizli, taslak ya da arşivde); mağazada görünmez.",
+      "Hedefi herkese açık değil (gizli, taslak, arşivde, yayında değil ya da görünür ürünü yok); mağazada görünmez.",
     );
   });
 });
