@@ -401,6 +401,43 @@ export interface paths {
         patch: operations["collections_edit"];
         trace?: never;
     };
+    "/api/admin/collections/{collection_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve Collection */
+        post: operations["collections_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/collections/{collection_id}/pending-change": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit Pending Change
+         * @description The Owner amends a pending change before approving it.
+         */
+        patch: operations["collections_edit_pending_change"];
+        trace?: never;
+    };
     "/api/admin/collections/{collection_id}/publish": {
         parameters: {
             query?: never;
@@ -418,6 +455,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/collections/{collection_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reject Collection */
+        post: operations["collections_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/collections/{collection_id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit Collection */
+        post: operations["collections_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/collections/{collection_id}/unpublish": {
         parameters: {
             query?: never;
@@ -429,6 +500,26 @@ export interface paths {
         put?: never;
         /** Unpublish Collection */
         post: operations["collections_unpublish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/collections/{collection_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Withdraw Collection
+         * @description Back to draft; only the Staff user who submitted it.
+         */
+        post: operations["collections_withdraw"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2057,17 +2148,23 @@ export interface components {
             id: number;
             /** Name */
             name: string;
+            pending_change: components["schemas"]["PendingChangeOut"] | null;
             /** Products */
             products: components["schemas"]["CollectionProductOut"][];
             /** Published At */
             published_at: string | null;
+            /** Rejection Reason */
+            rejection_reason: string;
             /** Slug */
             slug: string;
             /**
              * Status
              * @enum {string}
              */
-            status: "draft" | "published" | "unpublished";
+            status: "draft" | "pending_approval" | "published" | "unpublished";
+            /** Submitted At */
+            submitted_at: string | null;
+            submitted_by: components["schemas"]["PersonOut"] | null;
             /** Visible Product Count */
             visible_product_count: number;
         };
@@ -2104,6 +2201,8 @@ export interface components {
         CollectionRowOut: {
             /** Description */
             description: string;
+            /** Has Pending Change */
+            has_pending_change: boolean;
             /** Id */
             id: number;
             /** Name */
@@ -2112,13 +2211,18 @@ export interface components {
             product_count: number;
             /** Published At */
             published_at: string | null;
+            /** Rejection Reason */
+            rejection_reason: string;
             /** Slug */
             slug: string;
             /**
              * Status
              * @enum {string}
              */
-            status: "draft" | "published" | "unpublished";
+            status: "draft" | "pending_approval" | "published" | "unpublished";
+            /** Submitted At */
+            submitted_at: string | null;
+            submitted_by: components["schemas"]["PersonOut"] | null;
         };
         /** ColourIn */
         ColourIn: {
@@ -3072,6 +3176,38 @@ export interface components {
          * @enum {string}
          */
         PaymentMethod: "bank_transfer" | "cod";
+        /**
+         * PendingChangeOut
+         * @description A Staff edit of a published Collection, waiting for the Owner.
+         */
+        PendingChangeOut: {
+            /** Description */
+            description: string;
+            /** Name */
+            name: string;
+            /** Products */
+            products: components["schemas"]["CollectionProductOut"][];
+            /** Slug */
+            slug: string;
+            /**
+             * Submitted At
+             * Format: date-time
+             */
+            submitted_at: string;
+            submitted_by: components["schemas"]["PersonOut"] | null;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** PersonOut */
+        PersonOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+        };
         /** ProductClassIn */
         ProductClassIn: {
             /**
@@ -3380,6 +3516,14 @@ export interface components {
          * @enum {string}
          */
         RefundMethod: "bank_transfer" | "cash";
+        /** RejectIn */
+        RejectIn: {
+            /**
+             * Reason
+             * @default
+             */
+            reason: string;
+        };
         /** ReturnAdminOut */
         ReturnAdminOut: {
             /** Decided At */
@@ -4504,7 +4648,7 @@ export interface operations {
     collections_list: {
         parameters: {
             query?: {
-                status?: ("draft" | "published" | "unpublished") | null;
+                status?: ("draft" | "pending_approval" | "published" | "unpublished") | null;
             };
             header?: never;
             path?: never;
@@ -4615,6 +4759,54 @@ export interface operations {
             };
         };
     };
+    collections_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionOut"];
+                };
+            };
+        };
+    };
+    collections_edit_pending_change: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CollectionPatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionOut"];
+                };
+            };
+        };
+    };
     collections_publish: {
         parameters: {
             query?: never;
@@ -4637,7 +4829,77 @@ export interface operations {
             };
         };
     };
+    collections_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RejectIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionOut"];
+                };
+            };
+        };
+    };
+    collections_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionOut"];
+                };
+            };
+        };
+    };
     collections_unpublish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collection_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionOut"];
+                };
+            };
+        };
+    };
+    collections_withdraw: {
         parameters: {
             query?: never;
             header?: never;
