@@ -11,7 +11,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import type { Me } from "@/lib/api/me";
+import { can, type Me } from "@/lib/api/me";
+import { usePendingCollectionCount } from "../collections/queries";
 import { visibleGroups } from "../nav";
 
 function isActive(pathname: string, to: string): boolean {
@@ -22,6 +23,7 @@ function isActive(pathname: string, to: string): boolean {
 export function SidebarNav({ me }: { me: Me }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { setOpenMobile } = useSidebar();
+  const pendingCollections = usePendingCollectionCount(can(me, "manage_collections"));
   return (
     <SidebarContent>
       <nav aria-label="Yönetim" className="flex flex-col gap-2">
@@ -51,6 +53,15 @@ export function SidebarNav({ me }: { me: Me }) {
                           <Link to={item.to as "/admin"} onClick={() => setOpenMobile(false)}>
                             <item.icon aria-hidden />
                             <span>{item.label}</span>
+                            {item.badge === "pendingCollections" && !!pendingCollections && (
+                              <span
+                                role="status"
+                                aria-label={`${pendingCollections} bekleyen`}
+                                className="ml-auto rounded-full bg-amber-500 px-1.5 text-xs font-medium text-white group-data-[collapsible=icon]:hidden"
+                              >
+                                {pendingCollections}
+                              </span>
+                            )}
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
