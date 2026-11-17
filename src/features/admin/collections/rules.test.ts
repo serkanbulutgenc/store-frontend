@@ -3,8 +3,10 @@ import {
   availableActions,
   type CollectionState,
   collectionStatusLabel,
+  EMPTY_WARNING,
   editNote,
   editTarget,
+  emptyWarning,
   imageEditable,
   move,
 } from "./rules";
@@ -91,4 +93,21 @@ describe("move", () => {
 it("names every status in Turkish", () => {
   expect(collectionStatusLabel("pending_approval")).toBe("Onay bekliyor");
   expect(collectionStatusLabel("other")).toBe("other");
+});
+
+describe("emptyWarning", () => {
+  const publish = [{ action: "publish" as const }];
+  const published = { status: "published" };
+  const draft = { status: "draft" };
+  it("warns when publishing or approving a version with no published Product", () => {
+    expect(emptyWarning(publish, [])).toBe(EMPTY_WARNING);
+    expect(emptyWarning(publish, [draft, { status: "archived" }])).toBe(EMPTY_WARNING);
+    expect(emptyWarning([{ action: "approve" }], [draft])).toBe(EMPTY_WARNING);
+  });
+  it("stays quiet with one visible Product, or when nothing goes live", () => {
+    expect(emptyWarning(publish, [draft, published])).toBeNull();
+    expect(emptyWarning([{ action: "unpublish" }], [])).toBeNull();
+    expect(emptyWarning([{ action: "submit" }], [])).toBeNull();
+    expect(emptyWarning([], [])).toBeNull();
+  });
 });

@@ -1,3 +1,20 @@
+import {
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ArrowDown, ArrowUp, X } from "lucide-react";
@@ -23,6 +40,7 @@ import {
   collectionStatusTone,
   editNote,
   editTarget,
+  emptyWarning,
   imageEditable,
   imageNote,
   move,
@@ -45,6 +63,7 @@ export function CollectionEditor({ collectionId, me }: { collectionId: number; m
   const who = { owner, submitter: c.submitted_by?.id === me.id };
   const state = { status: c.status, hasPendingChange: c.pending_change !== null };
   const moves = availableActions(state, who);
+  const warning = emptyWarning(moves, (c.pending_change ?? c).products);
 
   async function run(action: CollectionAction, reason?: string) {
     await actions.move({ action, reason });
@@ -84,6 +103,11 @@ export function CollectionEditor({ collectionId, me }: { collectionId: number; m
           <p className="text-sm text-muted-foreground">
             {c.submitted_by.name} onaya gönderdi
             {c.submitted_at ? ` (${formatDate(c.submitted_at)})` : ""}.
+          </p>
+        )}
+        {warning && (
+          <p role="alert" className="rounded-md bg-amber-100 p-2 text-sm text-amber-900">
+            {warning}
           </p>
         )}
         <div className="flex flex-wrap gap-2">
@@ -319,48 +343,7 @@ function ProductList({ items, onChange }: { items: Item[]; onChange: (next: Item
       {items.length === 0 ? (
         <p className="text-muted-foreground">Henüz ürün yok.</p>
       ) : (
-        <ol className="divide-y divide-border rounded-md border border-border bg-card">
-          {items.map((p, i) => (
-            <li key={p.id} className="flex items-center gap-2 px-3 py-1.5">
-              <span className="w-6 text-muted-foreground">{i + 1}</span>
-              <span className="min-w-0 flex-1 truncate">{p.title}</span>
-              {p.status !== "published" && (
-                <Badge tone="warn">
-                  {p.status === "draft" ? "Taslak" : "Arşivde"} · mağazada görünmez
-                </Badge>
-              )}
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                aria-label={`${p.title} yukarı taşı`}
-                disabled={i === 0}
-                onClick={() => onChange(move(items, i, -1))}
-              >
-                <ArrowUp aria-hidden className="size-4" />
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                aria-label={`${p.title} aşağı taşı`}
-                disabled={i === items.length - 1}
-                onClick={() => onChange(move(items, i, 1))}
-              >
-                <ArrowDown aria-hidden className="size-4" />
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                aria-label={`${p.title} kaldır`}
-                onClick={() => onChange(items.filter((x) => x.id !== p.id))}
-              >
-                <X aria-hidden className="size-4" />
-              </Button>
-            </li>
-          ))}
-        </ol>
+        <SortableProducts items={items} onChange={onChange} />
       )}
       <div className="space-y-1">
         <label htmlFor={searchId} className="block font-medium">
@@ -402,6 +385,127 @@ function ProductList({ items, onChange }: { items: Item[]; onChange: (next: Item
         )}
       </div>
     </div>
+  );
+}
+
+/** The Products as a list that can be dragged (mouse, touch or keyboard: Space, arrows, Space)
+ * as well as stepped with the up and down buttons. */
+function SortableProducts({
+  items,
+  onChange,
+}: {
+  items: Item[];
+  onChange: (next: Item[]) => void;
+}) {
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+  const title = (id: unknown) => items.find((p) => p.id === Number(id))?.title ?? "";
+  const position = (id: unknown) => items.findIndex((p) => p.id === Number(id)) + 1;
+  function onDragEnd({ active, over }: DragEndEvent) {
+    if (!over || active.id === over.id) return;
+    const from = items.findIndex((p) => p.id === Number(active.id));
+    const to = items.findIndex((p) => p.id === Number(over.id));
+    if (from >= 0 && to >= 0) onChange(arrayMove(items, from, to));
+  }
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={onDragEnd}
+      accessibility={{
+        screenReaderInstructions: {
+          draggable:
+            "Ürünü tutmak için Boşluk veya Enter'a basın. Yukarı ve aşağı oklarla taşıyın, bırakmak için tekrar Boşluk veya Enter, vazgeçmek için Escape'e basın.",
+        },
+        announcements: {
+          onDragStart: ({ active }) => `${title(active.id)} tutuldu.`,
+          onDragOver: ({ active, over }) =>
+            over ? `${title(active.id)}, ${position(over.id)}. sıraya taşınacak.` : "",
+          onDragEnd: ({ active, over }) =>
+            over
+              ? `${title(active.id)}, ${position(over.id)}. sıraya bırakıldı.`
+              : `${title(active.id)} bırakılmadı.`,
+          onDragCancel: ({ active }) => `${title(active.id)} için taşıma iptal edildi.`,
+        },
+      }}
+    >
+      <SortableContext items={items.map((p) => p.id)} strategy={verticalListSortingStrategy}>
+        <ol className="divide-y divide-border rounded-md border border-border bg-card">
+          {items.map((p, i) => (
+            <SortableRow key={p.id} product={p} index={i} items={items} onChange={onChange} />
+          ))}
+        </ol>
+      </SortableContext>
+    </DndContext>
+  );
+}
+
+function SortableRow({
+  product: p,
+  index: i,
+  items,
+  onChange,
+}: {
+  product: Item;
+  index: number;
+  items: Item[];
+  onChange: (next: Item[]) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: p.id,
+  });
+  return (
+    <li
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={`flex items-center gap-2 bg-card px-3 py-1.5 ${isDragging ? "relative z-10 shadow-md" : ""}`}
+    >
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        aria-label={`${p.title} sürükle`}
+        className="size-6 shrink-0 cursor-grab touch-none rounded text-muted-foreground hover:bg-accent focus-visible:outline-2"
+      >
+        ⠿
+      </button>
+      <span className="w-6 text-muted-foreground">{i + 1}</span>
+      <span className="min-w-0 flex-1 truncate">{p.title}</span>
+      {p.status !== "published" && (
+        <Badge tone="warn">{p.status === "draft" ? "Taslak" : "Arşivde"} · mağazada görünmez</Badge>
+      )}
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        aria-label={`${p.title} yukarı taşı`}
+        disabled={i === 0}
+        onClick={() => onChange(move(items, i, -1))}
+      >
+        <ArrowUp aria-hidden className="size-4" />
+      </Button>
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        aria-label={`${p.title} aşağı taşı`}
+        disabled={i === items.length - 1}
+        onClick={() => onChange(move(items, i, 1))}
+      >
+        <ArrowDown aria-hidden className="size-4" />
+      </Button>
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        aria-label={`${p.title} kaldır`}
+        onClick={() => onChange(items.filter((x) => x.id !== p.id))}
+      >
+        <X aria-hidden className="size-4" />
+      </Button>
+    </li>
   );
 }
 
