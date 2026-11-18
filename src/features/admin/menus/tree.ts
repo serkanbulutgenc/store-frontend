@@ -136,3 +136,93 @@ export function moveItem(
     return next;
   });
 }
+
+/** The item at `path`, or undefined when there is none. */
+export function itemAt(items: MenuItemRow[], path: ItemPath): MenuItemRow | undefined {
+  let level = items;
+  let found: MenuItemRow | undefined;
+  for (const index of path) {
+    found = level[index];
+    if (!found) return undefined;
+    level = found.children;
+  }
+  return found;
+}
+
+/** How many levels an item takes with everything below it (1 for one without children). */
+export function subtreeHeight(item: MenuItemRow): number {
+  return 1 + Math.max(0, ...item.children.map(subtreeHeight));
+}
+
+export type DropKind = "before" | "after" | "inside";
+export type MoveTarget = { kind: DropKind; path: ItemPath };
+/** Why a move is refused: onto itself, into its own subtree, or past the Menu's depth limit. */
+export type MoveRefusal = "self" | "descendant" | "too-deep";
+export type MoveResult = { ok: true; items: MenuItemRow[] } | { ok: false; reason: MoveRefusal };
+
+const startsWith = (path: ItemPath, prefix: ItemPath) =>
+  prefix.length <= path.length && prefix.every((v, i) => path[i] === v);
+
+/**
+ * Move the item at `from`, with its children, before, after or inside the item at `target.path`.
+ * Paths refer to the tree as it is now. Refused when it would land in its own subtree or push the
+ * deepest of its descendants past `limit` (3 for the Header, 2 for the Footer).
+ */
+export function planMove(
+  items: MenuItemRow[],
+  from: ItemPath,
+  target: MoveTarget,
+  limit: number,
+): MoveResult {
+  const moving = itemAt(items, from);
+  if (!moving || !itemAt(items, target.path)) return { ok: false, reason: "self" };
+  if (target.path.join(".") === from.join(".")) return { ok: false, reason: "self" };
+  if (startsWith(target.path, from)) return { ok: false, reason: "descendant" };
+
+  const without = removeItem(items, from);
+  // Taking the item out shifts later siblings on the way to the target one place up.
+  const level = from.length - 1;
+  const at = [...target.path];
+  if (
+    at.length > level &&
+    startsWith(at, from.slice(0, -1)) &&
+    (at[level] ?? 0) > (from[level] ?? 0)
+  )
+    at[level] = (at[level] ?? 0) - 1;
+
+  const parent = target.kind === "inside" ? at : at.slice(0, -1);
+  if (parent.length + subtreeHeight(moving) > limit) return { ok: false, reason: "too-deep" };
+  const last = at[at.length - 1] ?? 0;
+  const index =
+    target.kind === "inside"
+      ? (itemAt(without, at)?.children.length ?? 0)
+      : target.kind === "before"
+        ? last
+        : last + 1;
+  return {
+    ok: true,
+    items: atParent(without, parent, (siblings) => [
+      ...siblings.slice(0, index),
+      moving,
+      ...siblings.slice(index),
+    ]),
+  };
+}
+
+/** Where "one level in" puts the item at `path`: last child of the sibling above it. */
+export function indentTarget(path: ItemPath): MoveTarget | null {
+  const index = path[path.length - 1] ?? 0;
+  return index === 0 ? null : { kind: "inside", path: [...path.slice(0, -1), index - 1] };
+}
+
+/** Where "one level out" puts the item at `path`: right after its parent. */
+export function outdentTarget(path: ItemPath): MoveTarget | null {
+  return path.length < 2 ? null : { kind: "after", path: path.slice(0, -1) };
+}
+
+/** The refusal in words for the Owner. */
+export function refusalText(reason: MoveRefusal, limit: number): string {
+  if (reason === "too-deep")
+    return `Menü en fazla ${limit} seviye olabilir; öğe oraya, altındakilerle birlikte sığmıyor.`;
+  return "Bir öğe kendi üzerine ya da kendi altındaki öğelerin içine taşınamaz.";
+}

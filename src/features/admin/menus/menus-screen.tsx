@@ -10,16 +10,23 @@ import { useDirtyGuard } from "../forms/use-dirty-guard";
 import { type MenuErrors, menuErrors } from "./errors";
 import { typeLabel } from "./item";
 import { ItemDialog } from "./item-dialog";
+import { DragHandle, MenuDnd, RowDropZones } from "./menu-drag";
 import { MENUS, type MenuKey, menuQuery, useSaveMenu } from "./queries";
 import {
   addItem,
   categorySubtreeDepth,
   type ItemPath,
+  indentTarget,
   isDimmed,
   isDirty,
+  itemAt,
   type MenuItemRow,
+  type MoveTarget,
   moveItem,
   notShownText,
+  outdentTarget,
+  planMove,
+  refusalText,
   removeItem,
   updateItem,
 } from "./tree";
@@ -54,17 +61,6 @@ type Dialogs =
   | { kind: "remove"; path: ItemPath }
   | null;
 
-function itemAt(items: MenuItemRow[], path: ItemPath): MenuItemRow | undefined {
-  let level = items;
-  let found: MenuItemRow | undefined;
-  for (const index of path) {
-    found = level[index];
-    if (!found) return undefined;
-    level = found.children;
-  }
-  return found;
-}
-
 function MenuEditor({ menuKey }: { menuKey: MenuKey }) {
   const { data: saved } = useSuspenseQuery(menuQuery(menuKey));
   const { data: categories } = useSuspenseQuery(categoriesQuery);
@@ -95,6 +91,17 @@ function MenuEditor({ menuKey }: { menuKey: MenuKey }) {
       setSaving(false);
     }
   }
+
+  const limit = saved.depth_limit;
+  const move = (from: ItemPath, target: MoveTarget) => planMove(draft, from, target, limit);
+  const refuse = (r: { reason: Parameters<typeof refusalText>[0] }) =>
+    toast.error(refusalText(r.reason, limit));
+  const shift = (from: ItemPath, target: MoveTarget | null) => {
+    if (!target) return;
+    const result = move(from, target);
+    if (result.ok) change(result.items);
+    else refuse(result);
+  };
 
   const editing = dialog?.kind === "edit" ? itemAt(draft, dialog.path) : undefined;
   const removing = dialog?.kind === "remove" ? itemAt(draft, dialog.path) : undefined;
@@ -129,25 +136,36 @@ function MenuEditor({ menuKey }: { menuKey: MenuKey }) {
         {draft.length === 0 ? (
           <p className="p-4 text-center text-muted-foreground">Menüde öğe yok.</p>
         ) : (
-          <ul>
-            {draft.map((item, i) => (
-              <Node
-                // biome-ignore lint/suspicious/noArrayIndexKey: items have no id until saved
-                key={i}
-                items={draft}
-                item={item}
-                path={[i]}
-                limit={saved.depth_limit}
-                errors={errors.items}
-                onAdd={(parent) => setDialog({ kind: "add", parent })}
-                onEdit={(path) => setDialog({ kind: "edit", path })}
-                onRemove={(path) => setDialog({ kind: "remove", path })}
-                onToggle={(path, hidden) => change(updateItem(draft, path, { is_hidden: hidden }))}
-                onMove={(path, direction) => change(moveItem(draft, path, direction))}
-                siblings={draft.length}
-              />
-            ))}
-          </ul>
+          <MenuDnd
+            items={draft}
+            planMove={(from, kind, path) => move(from, { kind, path })}
+            onMove={change}
+            onRefused={refuse}
+          >
+            <ul>
+              {draft.map((item, i) => (
+                <Node
+                  // biome-ignore lint/suspicious/noArrayIndexKey: items have no id until saved
+                  key={i}
+                  items={draft}
+                  item={item}
+                  path={[i]}
+                  limit={saved.depth_limit}
+                  errors={errors.items}
+                  onAdd={(parent) => setDialog({ kind: "add", parent })}
+                  onEdit={(path) => setDialog({ kind: "edit", path })}
+                  onRemove={(path) => setDialog({ kind: "remove", path })}
+                  onToggle={(path, hidden) =>
+                    change(updateItem(draft, path, { is_hidden: hidden }))
+                  }
+                  onMove={(path, direction) => change(moveItem(draft, path, direction))}
+                  onShift={shift}
+                  canShift={(path, target) => target !== null && move(path, target).ok}
+                  siblings={draft.length}
+                />
+              ))}
+            </ul>
+          </MenuDnd>
         )}
       </div>
 
@@ -228,6 +246,8 @@ function Node({
   onRemove,
   onToggle,
   onMove,
+  onShift,
+  canShift,
   siblings,
 }: {
   items: MenuItemRow[];
@@ -240,6 +260,9 @@ function Node({
   onRemove: (path: ItemPath) => void;
   onToggle: (path: ItemPath, hidden: boolean) => void;
   onMove: (path: ItemPath, direction: "up" | "down") => void;
+  /** One level in or out, the keyboard's way to re-parent; a refused move says why. */
+  onShift: (path: ItemPath, target: MoveTarget | null) => void;
+  canShift: (path: ItemPath, target: MoveTarget | null) => boolean;
   /** How many items share this item's parent. */
   siblings: number;
 }) {
@@ -250,10 +273,12 @@ function Node({
   return (
     <li>
       <div
-        className={`flex items-start justify-between gap-2 border-b border-border px-3 py-2 ${dimmed ? "opacity-50" : ""}`}
+        className={`relative flex items-start justify-between gap-2 border-b border-border px-3 py-2 ${dimmed ? "opacity-50" : ""}`}
         style={{ paddingLeft: `${0.75 + (path.length - 1) * 1.5}rem` }}
       >
-        <div className="min-w-0">
+        <RowDropZones path={path} />
+        <DragHandle path={path} name={name} />
+        <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-medium">{name}</span>
             <Badge>{typeLabel(item.target_type)}</Badge>
@@ -289,6 +314,24 @@ function Node({
             onClick={() => onMove(path, "down")}
           >
             ↓
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            aria-label={`${name} bir seviye dışarı al`}
+            disabled={!canShift(path, outdentTarget(path))}
+            onClick={() => onShift(path, outdentTarget(path))}
+          >
+            ←
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            aria-label={`${name} bir seviye içeri al`}
+            disabled={!canShift(path, indentTarget(path))}
+            onClick={() => onShift(path, indentTarget(path))}
+          >
+            →
           </Button>
           {path.length < limit && (
             <Button size="sm" variant="outline" onClick={() => onAdd(path)}>
@@ -327,6 +370,8 @@ function Node({
               onRemove={onRemove}
               onToggle={onToggle}
               onMove={onMove}
+              onShift={onShift}
+              canShift={canShift}
               siblings={item.children.length}
             />
           ))}

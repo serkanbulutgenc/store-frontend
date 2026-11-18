@@ -3,11 +3,16 @@ import {
   addItem,
   categorySubtreeDepth,
   cutOffNote,
+  type DropKind,
+  indentTarget,
   isDimmed,
   isDirty,
   type MenuItemRow,
   moveItem,
   notShownText,
+  outdentTarget,
+  planMove,
+  refusalText,
   removeItem,
   toBody,
   updateItem,
@@ -336,5 +341,106 @@ describe("moveItem", () => {
     const after = moveItem(before, [0], "down");
     expect(brands(before)).toEqual([1, 5]);
     expect(isDirty(before, after)).toBe(true);
+  });
+});
+
+describe("planMove", () => {
+  const leaf = (label: string, children: MenuItemRow[] = []) => row({ label, children });
+  const labels = (items: MenuItemRow[]): unknown[] =>
+    items.map((i) => (i.children.length ? [i.label, labels(i.children)] : i.label));
+  const tree = () => [
+    leaf("a"),
+    leaf("b", [leaf("b1"), leaf("b2")]),
+    leaf("c", [leaf("c1", [leaf("c11")])]),
+    leaf("d"),
+  ];
+  const moved = (from: number[], kind: DropKind, path: number[], limit = 4) => {
+    const r = planMove(tree(), from, { kind, path }, limit);
+    return r.ok ? labels(r.items) : r.reason;
+  };
+
+  it("reorders within a level, before and after", () => {
+    expect(moved([3], "before", [0])).toEqual([
+      "d",
+      "a",
+      ["b", ["b1", "b2"]],
+      ["c", [["c1", ["c11"]]]],
+    ]);
+    expect(moved([0], "after", [1])).toEqual([
+      ["b", ["b1", "b2"]],
+      "a",
+      ["c", [["c1", ["c11"]]]],
+      "d",
+    ]);
+  });
+
+  it("allows for the removal shifting later siblings, also under a parent", () => {
+    // a is before b: moving a inside b's second child's place must hit the right item.
+    expect(moved([0], "inside", [1])).toEqual([
+      ["b", ["b1", "b2", "a"]],
+      ["c", [["c1", ["c11"]]]],
+      "d",
+    ]);
+    expect(moved([1, 0], "after", [1, 1])).toEqual([
+      "a",
+      ["b", ["b2", "b1"]],
+      ["c", [["c1", ["c11"]]]],
+      "d",
+    ]);
+  });
+
+  it("re-parents into and out of a group, carrying children", () => {
+    expect(moved([2], "inside", [1])).toEqual([
+      "a",
+      ["b", ["b1", "b2", ["c", [["c1", ["c11"]]]]]],
+      "d",
+    ]);
+    expect(moved([1, 1], "before", [0])).toEqual([
+      "b2",
+      "a",
+      ["b", ["b1"]],
+      ["c", [["c1", ["c11"]]]],
+      "d",
+    ]);
+  });
+
+  it("refuses a move onto itself or into its own subtree", () => {
+    expect(moved([1], "inside", [1])).toBe("self");
+    expect(moved([2], "inside", [2, 0])).toBe("descendant");
+    expect(moved([2], "after", [2, 0, 0])).toBe("descendant");
+  });
+
+  it("refuses a move past the depth limit, counting the item's own children", () => {
+    // c has two levels below it (c, c1, c11 = height 3): inside b (level 1) needs 4 levels.
+    expect(moved([2], "inside", [1], 3)).toBe("too-deep");
+    expect(moved([2], "inside", [1], 4)).not.toBe("too-deep");
+    // A leaf fits at level 3 under a level-2 parent, but not inside a level-3 item.
+    expect(moved([0], "inside", [2, 0], 3)).not.toBe("too-deep");
+    expect(moved([0], "inside", [2, 0, 0], 3)).toBe("too-deep");
+    expect(moved([0], "inside", [1], 1)).toBe("too-deep");
+  });
+
+  it("leaves the original tree untouched", () => {
+    const t = tree();
+    planMove(t, [0], { kind: "inside", path: [1] }, 3);
+    expect(labels(t)).toEqual(labels(tree()));
+  });
+});
+
+describe("indent and outdent", () => {
+  it("indent goes into the sibling above, nothing for the first", () => {
+    expect(indentTarget([2])).toEqual({ kind: "inside", path: [1] });
+    expect(indentTarget([1, 3])).toEqual({ kind: "inside", path: [1, 2] });
+    expect(indentTarget([0])).toBeNull();
+  });
+  it("outdent goes right after the parent, nothing at the top", () => {
+    expect(outdentTarget([1, 2])).toEqual({ kind: "after", path: [1] });
+    expect(outdentTarget([1])).toBeNull();
+  });
+});
+
+describe("refusalText", () => {
+  it("names the limit for a too-deep move", () => {
+    expect(refusalText("too-deep", 2)).toContain("2 seviye");
   });
 });
