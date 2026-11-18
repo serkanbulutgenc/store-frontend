@@ -1,16 +1,23 @@
-import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminApi } from "@/lib/api/clients";
-import type { VoucherRow } from "./form";
+import type { components } from "../../../../api/specs/openapi-admin";
+import type { VoucherSearch } from "./search";
+
+export type PagedVoucherRow = components["schemas"]["PagedVoucherAdminOut"];
 
 export const voucherKeys = { all: ["admin", "vouchers"] as const };
 
-/** The vouchers, newest first. No status means all of them: an empty status is refused. */
-export const vouchersQuery = (status?: string) =>
+/** One page of the vouchers, newest first. No status means all of them: an empty status is refused. */
+export const vouchersQuery = (s: VoucherSearch) =>
   queryOptions({
-    queryKey: [...voucherKeys.all, "list", status ?? "all"],
+    queryKey: [...voucherKeys.all, "list", s],
+    placeholderData: keepPreviousData,
     queryFn: async () =>
-      (await adminApi.GET("/api/admin/vouchers", { params: { query: { status } } }))
-        .data as VoucherRow[],
+      (
+        await adminApi.GET("/api/admin/vouchers", {
+          params: { query: { status: s.status, page: s.page, page_size: s.size } },
+        })
+      ).data as PagedVoucherRow,
   });
 
 /** Open, close and delete a voucher; each refreshes the list when it succeeds. */

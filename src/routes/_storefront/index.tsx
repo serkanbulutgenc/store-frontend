@@ -1,27 +1,48 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { settingsQuery } from "@/features/basket/queries";
+import { HomeBanner } from "@/features/catalog/components/home-banner";
 import { HomeHero } from "@/features/catalog/components/home-hero";
 import { ProductRail } from "@/features/catalog/components/product-rail";
-import { categoriesQuery, productsPageQuery } from "@/features/catalog/queries";
+import {
+  categoriesQuery,
+  collectionPageQuery,
+  productsPageQuery,
+} from "@/features/catalog/queries";
 import { homeHead } from "@/features/catalog/seo";
+import { HOME_SLIDER_SLUG, sliderProducts } from "@/features/catalog/slider";
 
 export const Route = createFileRoute("/_storefront/")({
   loader: async ({ context }) => {
-    const [latest, popular, onSale, categories] = await Promise.all([
+    const [latest, popular, onSale, categories, settings, featured] = await Promise.all([
       context.queryClient.query(productsPageQuery({}, { page: 1 })),
       context.queryClient.query(productsPageQuery({ sort: "popular" }, { page: 1 })),
       context.queryClient.query(productsPageQuery({ on_sale: true }, { page: 1 })),
       context.queryClient.query(categoriesQuery),
+      // The banner is optional: the home page must still render when the settings do not load.
+      context.queryClient.query(settingsQuery).catch(() => null),
+      // An unpublished, empty or missing Collection is a 404: the slider then shows the newest.
+      context.queryClient
+        .query(collectionPageQuery(HOME_SLIDER_SLUG))
+        .then((c) => c.items)
+        .catch(() => null),
     ]);
-    return { latest: latest.items, popular: popular.items, onSale: onSale.items, categories };
+    return {
+      latest: latest.items,
+      popular: popular.items,
+      onSale: onSale.items,
+      categories,
+      banner: settings?.banner,
+      slider: sliderProducts(featured, latest.items),
+    };
   },
   head: ({ match }) => homeHead(match.context.siteOrigin),
   component: function Home() {
-    const { latest, popular, onSale, categories } = Route.useLoaderData();
+    const { latest, popular, onSale, categories, banner, slider } = Route.useLoaderData();
     return (
       <main>
         <h1 className="sr-only">Aura Tekstil</h1>
-        {/* The optional banner is a Store setting (ticket 20); it slots in here. */}
-        <HomeHero products={latest} />
+        <HomeBanner banner={banner} />
+        <HomeHero products={slider} />
         <div className="mx-auto max-w-6xl space-y-12 px-4 py-10">
           <ProductRail title="Yeni gelenler" products={latest} seeAll={{ sort: "newest" }} />
           <ProductRail

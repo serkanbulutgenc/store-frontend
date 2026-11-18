@@ -8,7 +8,7 @@ export const Route = createFileRoute("/admin/_app/vouchers")({
   validateSearch: voucherSearchSchema,
   beforeLoad: ({ context }) => requirePermission(context.me, "manage_vouchers"),
   loaderDeps: ({ search }) => search,
-  loader: ({ context, deps }) => context.queryClient.query(vouchersQuery(deps.status)),
+  loader: ({ context, deps }) => context.queryClient.query(vouchersQuery(deps)),
   component: function VouchersPage() {
     const search = Route.useSearch();
     const navigate = Route.useNavigate();

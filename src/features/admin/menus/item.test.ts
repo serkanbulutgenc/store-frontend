@@ -59,8 +59,15 @@ describe("checkItem", () => {
     );
   });
 
-  it("needs a target picked for a Category, Legal page, Product, Brand or built-in page", () => {
-    for (const target_type of ["category", "legal_page", "product", "brand", "builtin"] as const) {
+  it("needs a target picked for a Category, Legal page, Product, Brand, Collection or built-in page", () => {
+    for (const target_type of [
+      "category",
+      "legal_page",
+      "product",
+      "brand",
+      "collection",
+      "builtin",
+    ] as const) {
       expect(
         checkItem(draft({ target_type, url: "", has_target: false })).target,
         target_type,

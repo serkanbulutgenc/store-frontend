@@ -37,7 +37,7 @@ const DragContext = createContext<DragState>({ activeId: null, plan: () => null 
 
 /** Up and down arrows step through the enabled drop zones, so a keyboard drag can reach
  * every valid position (before, inside, after) and skips the invalid ones. */
-const zoneCoordinates: KeyboardCoordinateGetter = (
+export const zoneCoordinates: KeyboardCoordinateGetter = (
   event,
   { context: { active, droppableRects, droppableContainers, over, collisionRect } },
 ) => {

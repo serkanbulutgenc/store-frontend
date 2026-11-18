@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   breadcrumbJsonLd,
   categoryTrail,
+  collectionHead,
   isIndexableListing,
   jsonLdScript,
   listingCanonical,
@@ -212,5 +213,54 @@ describe("a Markdown product description in SEO", () => {
     expect(content("description")).toBe(plain);
     expect(content("og:description")).toBe(plain);
     expect(productJsonLd(marked, ORIGIN).description).toBe(plain);
+  });
+});
+
+describe("collectionHead", () => {
+  const collection = {
+    name: "Editörün seçimi",
+    slug: "editorun-secimi",
+    description: "Yeni sezon",
+  };
+
+  it("is indexable with its own canonical and the description as meta", () => {
+    const head = collectionHead(collection, ORIGIN);
+    expect(head.links).toEqual([
+      { rel: "canonical", href: "https://aura.example/collections/editorun-secimi" },
+    ]);
+    expect(head.meta).toContainEqual({ title: "Editörün seçimi | Aura Tekstil" });
+    expect(head.meta).toContainEqual({ name: "description", content: "Yeni sezon" });
+    expect(head.meta.some((m) => m.name === "robots")).toBe(false);
+  });
+
+  it("falls back to a generated description when there is none", () => {
+    const head = collectionHead({ ...collection, description: "" }, ORIGIN);
+    const description = head.meta.find((m) => m.name === "description");
+    expect(description?.content).toContain("Editörün seçimi");
+  });
+
+  it("uses the cover image as the social image, the largest size, made absolute", () => {
+    const head = collectionHead(
+      {
+        ...collection,
+        image: {
+          sizes: [
+            { url: "/media/c-400.webp", width: 400 },
+            { url: "/media/c-1600.webp", width: 1600 },
+          ],
+        },
+      },
+      ORIGIN,
+    );
+    expect(head.meta).toContainEqual({
+      property: "og:image",
+      content: "https://aura.example/media/c-1600.webp",
+    });
+    expect(head.meta).toContainEqual({ name: "twitter:card", content: "summary_large_image" });
+  });
+
+  it("has no social image without a cover image", () => {
+    const head = collectionHead({ ...collection, image: null }, ORIGIN);
+    expect(head.meta.some((m) => m.property === "og:image")).toBe(false);
   });
 });

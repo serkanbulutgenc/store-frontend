@@ -16,7 +16,14 @@ export const LABEL_MAX = 200;
 export const URL_MAX = 500;
 
 /** Types whose target is picked from a list rather than typed or left out. */
-const PICKED: TargetType[] = ["category", "legal_page", "product", "brand", "builtin"];
+const PICKED: TargetType[] = [
+  "category",
+  "legal_page",
+  "product",
+  "brand",
+  "collection",
+  "builtin",
+];
 
 /** No whitespace, control characters or backslashes anywhere in the address. */
 const PLAIN = (s: string) =>
@@ -55,6 +62,7 @@ export const TARGET_TYPES: { value: TargetType; label: string }[] = [
   { value: "legal_page", label: "Yasal sayfa" },
   { value: "product", label: "Ürün" },
   { value: "brand", label: "Marka" },
+  { value: "collection", label: "Koleksiyon" },
   { value: "builtin", label: "Hazır sayfa" },
   { value: "url", label: "Özel bağlantı" },
   { value: "group", label: "Grup başlığı" },

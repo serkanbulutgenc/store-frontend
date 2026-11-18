@@ -2,6 +2,7 @@ import {
   Boxes,
   Building2,
   FileSpreadsheet,
+  GalleryVerticalEnd,
   History,
   Home,
   Layers,
@@ -27,7 +28,14 @@ import {
 } from "lucide-react";
 import { can, type Me } from "@/lib/api/me";
 
-export type NavItem = { label: string; to: string; icon: LucideIcon; permission?: string };
+export type NavItem = {
+  label: string;
+  to: string;
+  icon: LucideIcon;
+  permission?: string;
+  /** A count shown beside the label; the sidebar looks the number up by this key. */
+  badge?: "pendingCollections";
+};
 export type NavGroup = { label: string; icon: LucideIcon; items: NavItem[] };
 
 /** Dashboard areas, grouped as in the approved shell (phase 2, section 3). */
@@ -71,6 +79,14 @@ export const NAV_GROUPS: NavGroup[] = [
         to: "/admin/reviews",
         icon: MessageSquareText,
         permission: "manage_products",
+      },
+      {
+        label: "Koleksiyonlar",
+        to: "/admin/collections",
+        icon: GalleryVerticalEnd,
+        permission: "edit_collections",
+        // Only the Owner gets a number: Staff cannot decide on what is waiting.
+        badge: "pendingCollections",
       },
       { label: "Markalar", to: "/admin/brands", icon: Tag, permission: "manage_brands" },
       {

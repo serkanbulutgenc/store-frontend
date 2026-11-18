@@ -126,3 +126,13 @@ it("gives Vouchers its own route and an icon", () => {
 it("builds breadcrumbs for the vouchers area", () => {
   expect(breadcrumbs("/admin/vouchers")).toEqual([{ label: "Satış" }, { label: "Kuponlar" }]);
 });
+
+it("puts the pending-Collection badge on the Koleksiyonlar item, which Staff also see", () => {
+  const item = (permissions: string[]) =>
+    visibleNav(me(permissions)).find((i) => i.to === "/admin/collections");
+  expect(item(["edit_collections"])?.badge).toBe("pendingCollections");
+  expect(item(["edit_collections", "manage_collections"])?.badge).toBe("pendingCollections");
+  expect(
+    visibleNav(me(["edit_collections", "manage_collections"])).map((i) => i.label),
+  ).not.toContain("Onay bekleyenler");
+});
