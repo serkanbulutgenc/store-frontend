@@ -144,8 +144,3 @@ export function pendingKind({ status, hasPendingChange }: CollectionState): Pend
   if (status === "published" && hasPendingChange) return "change";
   return null;
 }
-
-export const PENDING_KIND_LABEL: Record<PendingKind, string> = {
-  submission: "Yeni gönderim",
-  change: "Bekleyen değişiklik",
-};
