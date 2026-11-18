@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ProductCampaignNote } from "@/features/admin/campaigns/notices";
 import { can, type Me } from "@/lib/api/me";
 import { useCrumbLabel } from "../../components/crumb-labels";
 import { DeleteAction } from "../../components/delete-confirm";
@@ -133,6 +134,7 @@ export function ProductEditor({
           />
         </div>
       </div>
+      <ProductCampaignNote campaign={product.campaign ?? null} />
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as EditorTab)}>
         <div className="overflow-x-auto">
