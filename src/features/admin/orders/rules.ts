@@ -112,7 +112,7 @@ export function orderVoucherRow(
 export function orderLineCampaign(
   me: Me | null,
   line: { unit_price: string; campaign: { name: string } | null },
-): { name: string; price: string; href: string | null } | null {
+): { name: string; price: string; href: "/admin/campaigns" | null } | null {
   if (!line.campaign) return null;
   return {
     name: line.campaign.name,

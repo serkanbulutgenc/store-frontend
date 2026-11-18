@@ -1,4 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -120,9 +121,9 @@ export function OrderDetailScreen({ number, me }: { number: string; me: Me }) {
                         <span className="block text-muted-foreground">
                           Kampanya:{" "}
                           {campaign.href ? (
-                            <a href={campaign.href} className="underline">
+                            <Link to={campaign.href} className="underline">
                               {campaign.name}
-                            </a>
+                            </Link>
                           ) : (
                             campaign.name
                           )}{" "}
