@@ -14,6 +14,7 @@ import { formatDate, formatTry } from "@/lib/format";
 import { OrderReturns } from "../../returns/components/order-returns";
 import { orderQuery } from "../queries";
 import {
+  orderLineCampaign,
   orderStatusLabel,
   orderStatusTone,
   orderVoucherRow,
@@ -106,20 +107,36 @@ export function OrderDetailScreen({ number, me }: { number: string; me: Me }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {o.lines.map((l) => (
-                <TableRow key={l.sku}>
-                  <TableCell>
-                    {l.title}
-                    <span className="block text-muted-foreground">
-                      {l.colour} / {l.size}
-                    </span>
-                  </TableCell>
-                  <TableCell className="font-mono text-xs">{l.sku}</TableCell>
-                  <TableCell>{l.quantity}</TableCell>
-                  <TableCell>{formatTry(l.unit_price)}</TableCell>
-                  <TableCell>{formatTry(l.line_total)}</TableCell>
-                </TableRow>
-              ))}
+              {o.lines.map((l) => {
+                const campaign = orderLineCampaign(me, l);
+                return (
+                  <TableRow key={l.sku}>
+                    <TableCell>
+                      {l.title}
+                      <span className="block text-muted-foreground">
+                        {l.colour} / {l.size}
+                      </span>
+                      {campaign && (
+                        <span className="block text-muted-foreground">
+                          Kampanya:{" "}
+                          {campaign.href ? (
+                            <a href={campaign.href} className="underline">
+                              {campaign.name}
+                            </a>
+                          ) : (
+                            campaign.name
+                          )}{" "}
+                          ({campaign.price})
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className="font-mono text-xs">{l.sku}</TableCell>
+                    <TableCell>{l.quantity}</TableCell>
+                    <TableCell>{formatTry(l.unit_price)}</TableCell>
+                    <TableCell>{formatTry(l.line_total)}</TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
