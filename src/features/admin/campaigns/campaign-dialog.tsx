@@ -33,7 +33,10 @@ export function CampaignDialogBody({ id, onClose }: { id?: number; onClose: () =
 const includes = (name: string, q: string) =>
   name.toLocaleLowerCase("tr").includes(q.trim().toLocaleLowerCase("tr"));
 
-function CampaignEditor({ row, onClose }: { row?: CampaignRow; onClose: () => void }) {
+function CampaignEditor({ row: loaded, onClose }: { row?: CampaignRow; onClose: () => void }) {
+  // The Campaign as it was when the dialog opened. The form starts from it and an edit is
+  // worked out against it, so a refetch while the dialog is open cannot make them disagree.
+  const [row] = useState(loaded);
   const qc = useQueryClient();
   // Saving works whatever the Products cost; if some end up below cost the Owner is told here,
   // with the dialog left open until they have read it.
@@ -155,24 +158,26 @@ function CampaignEditor({ row, onClose }: { row?: CampaignRow; onClose: () => vo
                 .map((c) => ({ id: c.id, name: c.name }))}
               onSearch={setCategoryQ}
               footer={
-                <form.Field name="include_subcategories">
-                  {(sub) => (
-                    <label className="flex items-start gap-2 pt-1">
-                      <input
-                        type="checkbox"
-                        className="mt-1"
-                        checked={sub.state.value}
-                        onChange={(e) => sub.handleChange(e.target.checked)}
-                      />
-                      <span>
-                        <span className="font-medium">Alt kategorileri de kapsa</span>
-                        <span className="block text-muted-foreground">
-                          Seçilen kategorilerin altındaki kategorilerdeki ürünler de dahil olur.
+                f.state.value.length > 0 && (
+                  <form.Field name="include_subcategories">
+                    {(sub) => (
+                      <label className="flex items-start gap-2 pt-1">
+                        <input
+                          type="checkbox"
+                          className="mt-1"
+                          checked={sub.state.value}
+                          onChange={(e) => sub.handleChange(e.target.checked)}
+                        />
+                        <span>
+                          <span className="font-medium">Alt kategorileri de kapsa</span>
+                          <span className="block text-muted-foreground">
+                            Seçilen kategorilerin altındaki kategorilerdeki ürünler de dahil olur.
+                          </span>
                         </span>
-                      </span>
-                    </label>
-                  )}
-                </form.Field>
+                      </label>
+                    )}
+                  </form.Field>
+                )
               }
             />
           )}
