@@ -125,7 +125,14 @@ export function CollectionsScreen({
 }
 
 /** A name is all a draft needs; the rest is set on its own page. */
-function CreateForm({ onClose }: { onClose: () => void }) {
+export function CreateForm({
+  onClose,
+  closeOnCreate = true,
+}: {
+  onClose: () => void;
+  /** The dialog closes itself on success; a page has nothing to close and just moves on. */
+  closeOnCreate?: boolean;
+}) {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [name, setName] = useState("");
@@ -139,7 +146,7 @@ function CreateForm({ onClose }: { onClose: () => void }) {
       ).data,
     onSuccess: async (created) => {
       await qc.invalidateQueries({ queryKey: collectionKeys.all });
-      onClose();
+      if (closeOnCreate) onClose();
       if (created)
         await navigate({
           to: "/admin/collections/$collectionId",

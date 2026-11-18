@@ -59,6 +59,7 @@ import { Route as StorefrontHesapSifreSifirlaIndexRouteImport } from './routes/_
 import { Route as StorefrontHesapSifreSifirlaKeyRouteImport } from './routes/_storefront/hesap/sifre-sifirla.$key'
 import { Route as AdminAppCollectionsIndexRouteImport } from './routes/admin/_app/collections/index'
 import { Route as AdminAppCollectionsCollectionIdRouteImport } from './routes/admin/_app/collections/$collectionId'
+import { Route as AdminAppCollectionsNewRouteImport } from './routes/admin/_app/collections/new'
 import { Route as AdminAppCollectionsPendingRouteImport } from './routes/admin/_app/collections/pending'
 import { Route as AdminAppCustomersIndexRouteImport } from './routes/admin/_app/customers/index'
 import { Route as AdminAppCustomersIdRouteImport } from './routes/admin/_app/customers/$id'
@@ -334,6 +335,11 @@ const AdminAppCollectionsCollectionIdRoute =
     path: '/collections/$collectionId',
     getParentRoute: () => AdminAppRouteRoute,
   } as any)
+const AdminAppCollectionsNewRoute = AdminAppCollectionsNewRouteImport.update({
+  id: '/collections/new',
+  path: '/collections/new',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
 const AdminAppCollectionsPendingRoute =
   AdminAppCollectionsPendingRouteImport.update({
     id: '/collections/pending',
@@ -462,6 +468,7 @@ export interface FileRoutesByFullPath {
   '/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
   '/admin/collections/$collectionId': typeof AdminAppCollectionsCollectionIdRoute
+  '/admin/collections/new': typeof AdminAppCollectionsNewRoute
   '/admin/collections/pending': typeof AdminAppCollectionsPendingRoute
   '/admin/customers/$id': typeof AdminAppCustomersIdRoute
   '/admin/legal-pages/$page': typeof AdminAppLegalPagesPageRoute
@@ -524,6 +531,7 @@ export interface FileRoutesByTo {
   '/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
   '/admin/collections/$collectionId': typeof AdminAppCollectionsCollectionIdRoute
+  '/admin/collections/new': typeof AdminAppCollectionsNewRoute
   '/admin/collections/pending': typeof AdminAppCollectionsPendingRoute
   '/admin/customers/$id': typeof AdminAppCustomersIdRoute
   '/admin/legal-pages/$page': typeof AdminAppLegalPagesPageRoute
@@ -592,6 +600,7 @@ export interface FileRoutesById {
   '/_storefront/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/_storefront/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
   '/admin/_app/collections/$collectionId': typeof AdminAppCollectionsCollectionIdRoute
+  '/admin/_app/collections/new': typeof AdminAppCollectionsNewRoute
   '/admin/_app/collections/pending': typeof AdminAppCollectionsPendingRoute
   '/admin/_app/customers/$id': typeof AdminAppCustomersIdRoute
   '/admin/_app/legal-pages/$page': typeof AdminAppLegalPagesPageRoute
@@ -658,6 +667,7 @@ export interface FileRouteTypes {
     | '/hesap/eposta-dogrula/$key'
     | '/hesap/sifre-sifirla/$key'
     | '/admin/collections/$collectionId'
+    | '/admin/collections/new'
     | '/admin/collections/pending'
     | '/admin/customers/$id'
     | '/admin/legal-pages/$page'
@@ -720,6 +730,7 @@ export interface FileRouteTypes {
     | '/hesap/eposta-dogrula/$key'
     | '/hesap/sifre-sifirla/$key'
     | '/admin/collections/$collectionId'
+    | '/admin/collections/new'
     | '/admin/collections/pending'
     | '/admin/customers/$id'
     | '/admin/legal-pages/$page'
@@ -787,6 +798,7 @@ export interface FileRouteTypes {
     | '/_storefront/hesap/eposta-dogrula/$key'
     | '/_storefront/hesap/sifre-sifirla/$key'
     | '/admin/_app/collections/$collectionId'
+    | '/admin/_app/collections/new'
     | '/admin/_app/collections/pending'
     | '/admin/_app/customers/$id'
     | '/admin/_app/legal-pages/$page'
@@ -1167,6 +1179,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAppCollectionsCollectionIdRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
+    '/admin/_app/collections/new': {
+      id: '/admin/_app/collections/new'
+      path: '/collections/new'
+      fullPath: '/admin/collections/new'
+      preLoaderRoute: typeof AdminAppCollectionsNewRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
     '/admin/_app/collections/pending': {
       id: '/admin/_app/collections/pending'
       path: '/collections/pending'
@@ -1382,6 +1401,7 @@ interface AdminAppRouteRouteChildren {
   AdminAppVouchersRoute: typeof AdminAppVouchersRoute
   AdminAppIndexRoute: typeof AdminAppIndexRoute
   AdminAppCollectionsCollectionIdRoute: typeof AdminAppCollectionsCollectionIdRoute
+  AdminAppCollectionsNewRoute: typeof AdminAppCollectionsNewRoute
   AdminAppCollectionsPendingRoute: typeof AdminAppCollectionsPendingRoute
   AdminAppCustomersIdRoute: typeof AdminAppCustomersIdRoute
   AdminAppLegalPagesPageRoute: typeof AdminAppLegalPagesPageRoute
@@ -1419,6 +1439,7 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppVouchersRoute: AdminAppVouchersRoute,
   AdminAppIndexRoute: AdminAppIndexRoute,
   AdminAppCollectionsCollectionIdRoute: AdminAppCollectionsCollectionIdRoute,
+  AdminAppCollectionsNewRoute: AdminAppCollectionsNewRoute,
   AdminAppCollectionsPendingRoute: AdminAppCollectionsPendingRoute,
   AdminAppCustomersIdRoute: AdminAppCustomersIdRoute,
   AdminAppLegalPagesPageRoute: AdminAppLegalPagesPageRoute,

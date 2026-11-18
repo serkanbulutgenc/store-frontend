@@ -135,3 +135,33 @@ it("shows the pending-approval list, with its badge, only to the Owner (manage_c
   );
   expect(owner?.badge).toBe("pendingCollections");
 });
+
+it("nests Collection actions under Koleksiyonlar, each with its own permission", () => {
+  const sub = (permissions: string[]) =>
+    visibleGroups(me(permissions))
+      .flatMap((g) => g.items)
+      .find((i) => i.to === "/admin/collections")
+      ?.children?.map((c) => c.to);
+  expect(sub(["edit_collections"])).toEqual(["/admin/collections/new"]);
+  expect(sub(["edit_collections", "manage_collections"])).toEqual([
+    "/admin/collections/new",
+    "/admin/collections/pending",
+  ]);
+  expect(sub(["view_products"])).toBeUndefined();
+  // No longer a top-level entry of its own.
+  const top = visibleGroups(me(["edit_collections", "manage_collections"])).flatMap((g) => g.items);
+  expect(top.map((i) => i.to)).not.toContain("/admin/collections/pending");
+});
+
+it("labels the sub-pages of Koleksiyonlar in the breadcrumbs", () => {
+  expect(breadcrumbs("/admin/collections/pending").map((c) => c.label)).toEqual([
+    "Katalog",
+    "Koleksiyonlar",
+    "Onay bekleyenler",
+  ]);
+  expect(breadcrumbs("/admin/collections/new").map((c) => c.label)).toEqual([
+    "Katalog",
+    "Koleksiyonlar",
+    "Yeni",
+  ]);
+});

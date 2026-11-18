@@ -12,6 +12,7 @@ import {
   MessageSquareText,
   Package,
   Palette,
+  Plus,
   Scale,
   Settings,
   Shapes,
@@ -36,6 +37,8 @@ export type NavItem = {
   permission?: string;
   /** A count shown beside the label; the sidebar looks the number up by this key. */
   badge?: "pendingCollections";
+  /** Sub-items, shown under the item and folded away with it. The item itself still links to `to`. */
+  children?: NavItem[];
 };
 export type NavGroup = { label: string; icon: LucideIcon; items: NavItem[] };
 
@@ -86,13 +89,21 @@ export const NAV_GROUPS: NavGroup[] = [
         to: "/admin/collections",
         icon: GalleryVerticalEnd,
         permission: "edit_collections",
-      },
-      {
-        label: "Onay bekleyenler",
-        to: "/admin/collections/pending",
-        icon: ClipboardCheck,
-        permission: "manage_collections",
-        badge: "pendingCollections",
+        children: [
+          {
+            label: "Yeni koleksiyon",
+            to: "/admin/collections/new",
+            icon: Plus,
+            permission: "edit_collections",
+          },
+          {
+            label: "Onay bekleyenler",
+            to: "/admin/collections/pending",
+            icon: ClipboardCheck,
+            permission: "manage_collections",
+            badge: "pendingCollections",
+          },
+        ],
       },
       { label: "Markalar", to: "/admin/brands", icon: Tag, permission: "manage_brands" },
       {
@@ -151,21 +162,24 @@ export const NAV_GROUPS: NavGroup[] = [
 
 /** Hide what the user cannot use, and groups left empty. UX only: the API enforces every permission. */
 export function visibleGroups(me: Me | null): NavGroup[] {
+  const allowed = (item: NavItem) => !item.permission || can(me, item.permission);
   return NAV_GROUPS.map((g) => ({
     ...g,
-    items: g.items.filter((item) => !item.permission || can(me, item.permission)),
+    items: g.items
+      .filter(allowed)
+      .map((item) => (item.children ? { ...item, children: item.children.filter(allowed) } : item)),
   })).filter((g) => g.items.length > 0);
 }
 
-/** Flat view of `visibleGroups`. */
+/** Flat view of `visibleGroups`: each item, then its sub-items. */
 export function visibleNav(me: Me | null): NavItem[] {
-  return visibleGroups(me).flatMap((g) => g.items);
+  return visibleGroups(me).flatMap((g) => g.items.flatMap((i) => [i, ...(i.children ?? [])]));
 }
 
 export type Crumb = { label: string; to?: string };
 
 /** Fixed words for sub-paths below a nav area. Anything else is an entity id/number. */
-const SEGMENT_LABELS: Record<string, string> = { new: "Yeni" };
+const SEGMENT_LABELS: Record<string, string> = { new: "Yeni", pending: "Onay bekleyenler" };
 
 /**
  * Breadcrumbs for an /admin path: group, area, then one crumb per deeper segment.
