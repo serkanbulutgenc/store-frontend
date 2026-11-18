@@ -9,15 +9,42 @@ import type { ProductCard as Card } from "../queries";
 import { ProductImage } from "./product-image";
 import { QuickActions } from "./quick-view/quick-actions";
 
-export function Price({ price, oldPrice }: { price: string; oldPrice: string | null }) {
+/** "-20%" from the API's "20.00": whole numbers plain, fractions with a Turkish comma. */
+const badge = (percentage: string) => `-${Number(percentage).toLocaleString("tr-TR")}%`;
+
+/**
+ * The price block of every surface (card, quick view, detail). A running Campaign shows the
+ * Campaign price, the Shelf price struck through and a badge, and hides the Old price; without
+ * one it is the price and, if set, the Old price struck through. The Campaign's own name is
+ * never shown.
+ */
+export function Price({
+  price,
+  oldPrice,
+  shelfPrice,
+  campaignPercentage,
+}: {
+  price: string;
+  oldPrice: string | null;
+  shelfPrice?: string | null;
+  campaignPercentage?: string | null;
+}) {
+  const onCampaign = Boolean(shelfPrice && campaignPercentage);
+  const struck = onCampaign ? shelfPrice : oldPrice;
   return (
     <p className="flex flex-wrap items-baseline gap-x-2">
       <span className="font-semibold">{formatTry(price)}</span>
-      {oldPrice && (
+      {struck && (
         <s className="text-sm text-muted-foreground">
-          <span className="sr-only">Eski fiyat </span>
-          {formatTry(oldPrice)}
+          <span className="sr-only">{onCampaign ? "Liste fiyatı " : "Eski fiyat "}</span>
+          {formatTry(struck)}
         </s>
+      )}
+      {onCampaign && campaignPercentage && (
+        <span className="rounded-md bg-red-600 px-1.5 py-0.5 text-xs font-semibold text-white">
+          <span className="sr-only">İndirim </span>
+          {badge(campaignPercentage)}
+        </span>
       )}
     </p>
   );
@@ -57,7 +84,12 @@ export function ProductCard({
           )}
         </div>
         <h3 className="mt-2 line-clamp-2">{product.title}</h3>
-        <Price price={product.price} oldPrice={product.old_price} />
+        <Price
+          price={product.price}
+          oldPrice={product.old_price}
+          shelfPrice={product.shelf_price}
+          campaignPercentage={product.campaign_percentage}
+        />
         <RatingSummary average={product.rating_average} count={product.rating_count} />
         {product.colours.length > 1 && (
           <ul className="mt-1 flex gap-1" aria-label="Renkler">
