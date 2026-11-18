@@ -16,4 +16,23 @@ describe("voucherSearchSchema", () => {
       expect(voucherSearchSchema.parse({ status }).status, String(status)).toBeUndefined();
     }
   });
+
+  it("defaults to the first page of 25 and keeps a valid page and size", () => {
+    expect(voucherSearchSchema.parse({})).toMatchObject({ page: 1, size: 25 });
+    expect(voucherSearchSchema.parse({ page: "3", size: "50" })).toMatchObject({
+      page: 3,
+      size: 50,
+    });
+  });
+
+  it("falls back to the defaults for a page or size the table does not offer", () => {
+    expect(voucherSearchSchema.parse({ page: "0", size: "7" })).toMatchObject({
+      page: 1,
+      size: 25,
+    });
+    expect(voucherSearchSchema.parse({ page: "x", size: "x" })).toMatchObject({
+      page: 1,
+      size: 25,
+    });
+  });
 });

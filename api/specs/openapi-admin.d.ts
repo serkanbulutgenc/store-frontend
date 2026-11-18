@@ -3232,6 +3232,17 @@ export interface components {
             /** Total */
             total: number;
         };
+        /** PagedVoucherAdminOut */
+        PagedVoucherAdminOut: {
+            /** Items */
+            items: components["schemas"]["VoucherAdminOut"][];
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total */
+            total: number;
+        };
         /**
          * PaymentMethod
          * @enum {string}
@@ -6956,6 +6967,8 @@ export interface operations {
         parameters: {
             query?: {
                 status?: string | null;
+                page?: number;
+                page_size?: number;
             };
             header?: never;
             path?: never;
@@ -6969,7 +6982,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["VoucherAdminOut"][];
+                    "application/json": components["schemas"]["PagedVoucherAdminOut"];
                 };
             };
         };
