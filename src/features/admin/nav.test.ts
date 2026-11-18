@@ -127,11 +127,12 @@ it("builds breadcrumbs for the vouchers area", () => {
   expect(breadcrumbs("/admin/vouchers")).toEqual([{ label: "Satış" }, { label: "Kuponlar" }]);
 });
 
-it("shows the pending-approval list, with its badge, only to the Owner (manage_collections)", () => {
-  const staff = visibleNav(me(["edit_collections"])).map((i) => i.to);
-  expect(staff).not.toContain("/admin/collections/pending");
-  const owner = visibleNav(me(["edit_collections", "manage_collections"])).find(
-    (i) => i.to === "/admin/collections/pending",
-  );
-  expect(owner?.badge).toBe("pendingCollections");
+it("puts the pending-Collection badge on the Koleksiyonlar item, which Staff also see", () => {
+  const item = (permissions: string[]) =>
+    visibleNav(me(permissions)).find((i) => i.to === "/admin/collections");
+  expect(item(["edit_collections"])?.badge).toBe("pendingCollections");
+  expect(item(["edit_collections", "manage_collections"])?.badge).toBe("pendingCollections");
+  expect(
+    visibleNav(me(["edit_collections", "manage_collections"])).map((i) => i.label),
+  ).not.toContain("Onay bekleyenler");
 });
