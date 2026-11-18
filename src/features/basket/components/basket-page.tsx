@@ -14,6 +14,7 @@ import {
   useSetQuantity,
 } from "../queries";
 import { useVoucherField } from "../use-voucher-field";
+import { PriceChangeNotice } from "./price-change-notice";
 import { VoucherField } from "./voucher-field";
 
 function LineRow({ line }: { line: BasketLine }) {
@@ -78,6 +79,7 @@ function LineRow({ line }: { line: BasketLine }) {
             Kaldır
           </button>
         </div>
+        <PriceChangeNotice line={line} />
         {(problem || error) && (
           <p role="alert" className="text-red-700">
             {problem ?? error?.message}

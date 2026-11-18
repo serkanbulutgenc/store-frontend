@@ -79,7 +79,12 @@ function Content({ product, onAdded }: { product: ProductDetail; onAdded: () => 
           <h2 className="text-xl font-semibold">{product.title}</h2>
         </div>
         <div>
-          <Price price={product.price} oldPrice={product.old_price} />
+          <Price
+            price={product.price}
+            oldPrice={product.old_price}
+            shelfPrice={product.shelf_price}
+            campaignPercentage={product.campaign_percentage}
+          />
           <p className="text-sm text-muted-foreground">KDV dahil</p>
         </div>
         <ColourChips product={product} pick={pick} />

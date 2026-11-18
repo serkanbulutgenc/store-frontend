@@ -111,7 +111,12 @@ export function ProductPage({ product }: { product: ProductDetail }) {
             <HeartButton productId={product.id} className="shrink-0 border border-border" />
           </div>
           <div className="text-xl">
-            <Price price={product.price} oldPrice={product.old_price} />
+            <Price
+              price={product.price}
+              oldPrice={product.old_price}
+              shelfPrice={product.shelf_price}
+              campaignPercentage={product.campaign_percentage}
+            />
             <p className="text-sm text-muted-foreground">KDV dahil</p>
           </div>
           {product.sold_out && (
