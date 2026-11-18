@@ -115,7 +115,7 @@ export function createBody(v: VoucherValues): VoucherIn {
 }
 
 /** An ISO time as the shop's wall clock for a `datetime-local` input ("2026-07-01T00:30"). */
-function isoToShopTime(iso: string): string {
+export function isoToShopTime(iso: string): string {
   const shifted = new Date(Date.parse(iso) + 3 * 60 * 60 * 1000);
   return shifted.toISOString().slice(0, 16);
 }
