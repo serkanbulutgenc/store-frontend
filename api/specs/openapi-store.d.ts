@@ -912,6 +912,16 @@ export interface components {
              */
             line_total: string;
             /**
+             * Previous Unit Price
+             * @description The price last seen, when `price_changed`.
+             */
+            previous_unit_price?: string | null;
+            /**
+             * Price Changed
+             * @description The price differs from the one the Shopper last saw on this line.
+             */
+            price_changed: boolean;
+            /**
              * Problem
              * @description sold_out, insufficient_stock or unavailable; null when fine.
              */
@@ -1330,6 +1340,8 @@ export interface components {
             price: string;
             /** Remaining */
             remaining: number | null;
+            /** Shelf Price */
+            shelf_price: string | null;
             /** Size */
             size: string;
             /** Sku */
@@ -1384,6 +1396,8 @@ export interface components {
         };
         /** ProductCardOut */
         ProductCardOut: {
+            /** Campaign Percentage */
+            campaign_percentage: string | null;
             /** Colours */
             colours: components["schemas"]["SwatchOut"][];
             /** Id */
@@ -1400,6 +1414,8 @@ export interface components {
             rating_average: number | null;
             /** Rating Count */
             rating_count: number;
+            /** Shelf Price */
+            shelf_price: string | null;
             /** Slug */
             slug: string;
             /** Sold Out */
@@ -1414,6 +1430,8 @@ export interface components {
             brand: components["schemas"]["BrandOut"] | null;
             /** Breadcrumbs */
             breadcrumbs: components["schemas"]["CrumbOut"][];
+            /** Campaign Percentage */
+            campaign_percentage: string | null;
             /** Colours */
             colours: components["schemas"]["SwatchOut"][];
             /** Description */
@@ -1436,6 +1454,8 @@ export interface components {
             rating_average: number | null;
             /** Rating Count */
             rating_count: number;
+            /** Shelf Price */
+            shelf_price: string | null;
             /** Slug */
             slug: string;
             /** Sold Out */

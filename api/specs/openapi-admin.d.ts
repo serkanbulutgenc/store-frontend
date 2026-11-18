@@ -194,6 +194,77 @@ export interface paths {
         patch: operations["catalog_update_brand"];
         trace?: never;
     };
+    "/api/admin/campaigns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Campaigns */
+        get: operations["campaigns_list"];
+        put?: never;
+        /** Create Campaign */
+        post: operations["campaigns_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/campaigns/{campaign_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Campaign */
+        get: operations["campaigns_get"];
+        put?: never;
+        post?: never;
+        /** Delete Campaign */
+        delete: operations["campaigns_delete"];
+        options?: never;
+        head?: never;
+        /** Edit Campaign */
+        patch: operations["campaigns_edit"];
+        trace?: never;
+    };
+    "/api/admin/campaigns/{campaign_id}/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Activate Campaign */
+        post: operations["campaigns_activate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/campaigns/{campaign_id}/deactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Deactivate Campaign */
+        post: operations["campaigns_deactivate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/carriers": {
         parameters: {
             query?: never;
@@ -2053,6 +2124,23 @@ export interface components {
              */
             date_to?: string | null;
         };
+        /** BelowCostOut */
+        BelowCostOut: {
+            /**
+             * Campaign Price
+             * @example 349.90
+             */
+            campaign_price: string;
+            /**
+             * Cost Price
+             * @example 349.90
+             */
+            cost_price: string;
+            /** Product Id */
+            product_id: number;
+            /** Title */
+            title: string;
+        };
         /** BrandOut */
         BrandOut: {
             /** Id */
@@ -2061,6 +2149,122 @@ export interface components {
             menu_item_count: number;
             /** Name */
             name: string;
+        };
+        /** CampaignIn */
+        CampaignIn: {
+            /**
+             * Category Ids
+             * @default []
+             */
+            category_ids: number[];
+            /**
+             * Collection Ids
+             * @default []
+             */
+            collection_ids: number[];
+            /** Ends At */
+            ends_at?: string | null;
+            /**
+             * Include Subcategories
+             * @default false
+             */
+            include_subcategories: boolean;
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
+            /** Name */
+            name: string;
+            /** Percentage */
+            percentage: number | string;
+            /**
+             * Product Ids
+             * @default []
+             */
+            product_ids: number[];
+            /** Starts At */
+            starts_at?: string | null;
+        };
+        /** CampaignOut */
+        CampaignOut: {
+            /** Affected Products */
+            affected_products: number;
+            /** Below Cost */
+            below_cost: components["schemas"]["BelowCostOut"][];
+            /** Categories */
+            categories: components["schemas"]["TargetOut"][];
+            /** Collections */
+            collections: components["schemas"]["TargetOut"][];
+            /** Ends At */
+            ends_at: string | null;
+            /** Id */
+            id: number;
+            /** Include Subcategories */
+            include_subcategories: boolean;
+            /** Is Active */
+            is_active: boolean;
+            /** Name */
+            name: string;
+            /**
+             * Percentage
+             * @example 349.90
+             */
+            percentage: string;
+            /** Products */
+            products: components["schemas"]["TargetOut"][];
+            /** Starts At */
+            starts_at: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "active" | "inactive" | "scheduled" | "ended";
+        };
+        /**
+         * CampaignPatch
+         * @description What the Owner changes; anything left out stays as it is.
+         */
+        CampaignPatch: {
+            /** Category Ids */
+            category_ids?: number[] | null;
+            /** Collection Ids */
+            collection_ids?: number[] | null;
+            /** Ends At */
+            ends_at?: string | null;
+            /** Include Subcategories */
+            include_subcategories?: boolean | null;
+            /** Name */
+            name?: string | null;
+            /** Percentage */
+            percentage?: number | string | null;
+            /** Product Ids */
+            product_ids?: number[] | null;
+            /** Starts At */
+            starts_at?: string | null;
+        };
+        /** CampaignRowOut */
+        CampaignRowOut: {
+            /** Ends At */
+            ends_at: string | null;
+            /** Id */
+            id: number;
+            /** Is Active */
+            is_active: boolean;
+            /** Name */
+            name: string;
+            /**
+             * Percentage
+             * @example 349.90
+             */
+            percentage: string;
+            /** Starts At */
+            starts_at: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "active" | "inactive" | "scheduled" | "ended";
         };
         /** CarrierOut */
         CarrierOut: {
@@ -2974,8 +3178,29 @@ export interface components {
             /** Company Title */
             company_title?: string | null;
         };
+        /**
+         * OrderLineCampaignOut
+         * @description The Campaign that priced the line, as it was when the Shopper bought.
+         */
+        OrderLineCampaignOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /**
+             * Percentage
+             * @example 349.90
+             */
+            percentage: string;
+            /**
+             * Shelf Unit Price
+             * @example 349.90
+             */
+            shelf_unit_price: string;
+        };
         /** OrderLineOut */
         OrderLineOut: {
+            campaign: components["schemas"]["OrderLineCampaignOut"] | null;
             /** Colour */
             colour: string;
             /**
@@ -3148,6 +3373,17 @@ export interface components {
         PagedAuditEntryOut: {
             /** Items */
             items: components["schemas"]["AuditEntryOut"][];
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total */
+            total: number;
+        };
+        /** PagedCampaignRowOut */
+        PagedCampaignRowOut: {
+            /** Items */
+            items: components["schemas"]["CampaignRowOut"][];
             /** Page */
             page: number;
             /** Page Size */
@@ -3413,6 +3649,7 @@ export interface components {
         };
         /** ProductListOut */
         ProductListOut: {
+            campaign: components["schemas"]["WinningCampaignOut"] | null;
             category: components["schemas"]["NamedOut"] | null;
             /** Id */
             id: number;
@@ -3438,6 +3675,7 @@ export interface components {
             /** Attribute Values */
             attribute_values: components["schemas"]["AttributeValueIO"][];
             brand: components["schemas"]["NamedOut"] | null;
+            campaign?: components["schemas"]["WinningCampaignOut"] | null;
             category: components["schemas"]["NamedOut"] | null;
             /** Cost Price */
             cost_price?: string | null;
@@ -3935,6 +4173,13 @@ export interface components {
             /** Name */
             name?: string | null;
         };
+        /** TargetOut */
+        TargetOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+        };
         /** UnphotographedRow */
         UnphotographedRow: {
             /** Product Id */
@@ -4087,6 +4332,18 @@ export interface components {
             starts_at?: string | null;
             /** Value */
             value?: number | string | null;
+        };
+        /** WinningCampaignOut */
+        WinningCampaignOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /**
+             * Percentage
+             * @example 349.90
+             */
+            percentage: string;
         };
         /** ZoneOut */
         ZoneOut: {
@@ -4439,6 +4696,166 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["NamedOut"];
+                };
+            };
+        };
+    };
+    campaigns_list: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedCampaignRowOut"];
+                };
+            };
+        };
+    };
+    campaigns_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CampaignIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignOut"];
+                };
+            };
+        };
+    };
+    campaigns_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                campaign_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignOut"];
+                };
+            };
+        };
+    };
+    campaigns_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                campaign_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    campaigns_edit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                campaign_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CampaignPatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignOut"];
+                };
+            };
+        };
+    };
+    campaigns_activate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                campaign_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignOut"];
+                };
+            };
+        };
+    };
+    campaigns_deactivate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                campaign_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignOut"];
                 };
             };
         };

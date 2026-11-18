@@ -107,3 +107,16 @@ export function orderVoucherRow(
     note: VOUCHER_NOTE,
   };
 }
+
+/** What an Order line shows about the Campaign that priced it, frozen when the Shopper bought. */
+export function orderLineCampaign(
+  me: Me | null,
+  line: { unit_price: string; campaign: { name: string } | null },
+): { name: string; price: string; href: string | null } | null {
+  if (!line.campaign) return null;
+  return {
+    name: line.campaign.name,
+    price: formatTry(line.unit_price),
+    href: can(me, "manage_campaigns") ? "/admin/campaigns" : null,
+  };
+}
