@@ -116,15 +116,13 @@ export async function uploadCollectionImage(
   return body as CollectionOut;
 }
 
-/** The Collections the Owner has to decide on, oldest submission first. Shares the "all" list's
- * cache entry, so any move or edit refreshes it. */
+/** The Collections the Owner has to decide on: waiting submissions, and published ones with a
+ * pending change. Shares the "all" list's cache entry, so any move or edit refreshes it. */
 export const pendingCollectionsQuery = () =>
   queryOptions({
     ...collectionsQuery(),
     select: (rows) =>
-      rows
-        .filter((c) => pendingKind({ status: c.status, hasPendingChange: c.has_pending_change }))
-        .sort((a, b) => (a.submitted_at ?? "").localeCompare(b.submitted_at ?? "")),
+      rows.filter((c) => pendingKind({ status: c.status, hasPendingChange: c.has_pending_change })),
   });
 
 /** How many Collections wait for the Owner; undefined until known. For the nav badge. */
