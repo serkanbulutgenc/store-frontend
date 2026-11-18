@@ -1,7 +1,6 @@
 import {
   Boxes,
   Building2,
-  ClipboardCheck,
   FileSpreadsheet,
   GalleryVerticalEnd,
   History,
@@ -86,12 +85,7 @@ export const NAV_GROUPS: NavGroup[] = [
         to: "/admin/collections",
         icon: GalleryVerticalEnd,
         permission: "edit_collections",
-      },
-      {
-        label: "Onay bekleyenler",
-        to: "/admin/collections/pending",
-        icon: ClipboardCheck,
-        permission: "manage_collections",
+        // Only the Owner gets a number: Staff cannot decide on what is waiting.
         badge: "pendingCollections",
       },
       { label: "Markalar", to: "/admin/brands", icon: Tag, permission: "manage_brands" },
