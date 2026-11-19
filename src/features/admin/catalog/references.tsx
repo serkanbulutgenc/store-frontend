@@ -169,7 +169,7 @@ export function ColoursScreen({ me }: { me: Me }) {
       ]}
       fields={[
         { name: "name", label: "Ad" },
-        { name: "hex_code", label: "Renk kodu", hint: "Örn. #6b2d5c" },
+        { name: "hex_code", label: "Renk kodu", hint: "Örn. #6b2d5c", kind: "colour" },
         {
           name: "is_active",
           label: "Durum",

@@ -17,11 +17,12 @@ import {
 import { ConfirmDeleteDialog } from "../../components/delete-confirm";
 import { apiErrorToFormErrors } from "../../forms/api-errors";
 import { bind, Field, FormActions, FormMessage } from "../../forms/field";
+import { ColourField } from "./colour-field";
 
 export type FieldDef = {
   name: string;
   label: string;
-  kind?: "text" | "select";
+  kind?: "text" | "select" | "colour";
   options?: { value: string; label: string }[];
   hint?: string;
   /** Only shown when creating (the API cannot change it afterwards). */
@@ -198,6 +199,8 @@ function RefForm<Row extends { id: number; name: string }>({
                       </option>
                     ))}
                   </Select>
+                ) : def.kind === "colour" ? (
+                  <ColourField bound={bind(f)} disabled={def.name in locked} />
                 ) : (
                   <Input autoFocus={i === 0} {...bind(f)} disabled={def.name in locked} />
                 )}
