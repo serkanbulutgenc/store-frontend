@@ -46,6 +46,19 @@ describe("Price", () => {
     expect(out).toContain("₺100,00");
   });
 
+  it("hides the Old price and shows the badge whenever a percentage is sent, even without a Shelf price", () => {
+    const out = html({ price: "80.00", oldPrice: "250.00", campaignPercentage: "20.00" });
+    expect(out).not.toContain("₺250,00");
+    expect(out).not.toMatch(STRUCK);
+    expect(out).toContain("-20%");
+  });
+
+  it("ignores the Shelf price when no Campaign runs: the Old price still shows, with no badge", () => {
+    const out = html({ price: "100.00", oldPrice: "120.00", shelfPrice: "100.00" });
+    expect(out).toContain("₺120,00");
+    expect(out).not.toContain("%");
+  });
+
   it("writes a fractional percentage without trailing zeros", () => {
     const out = html({ price: "87.50", shelfPrice: "100.00", campaignPercentage: "12.50" });
     expect(out).toContain("-12,5%");

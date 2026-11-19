@@ -29,7 +29,8 @@ export function Price({
   shelfPrice?: string | null;
   campaignPercentage?: string | null;
 }) {
-  const onCampaign = Boolean(shelfPrice && campaignPercentage);
+  // The percentage is the signal: the API always sends the Shelf price, Campaign or not.
+  const onCampaign = Boolean(campaignPercentage);
   const struck = onCampaign ? shelfPrice : oldPrice;
   return (
     <p className="flex flex-wrap items-baseline gap-x-2">
