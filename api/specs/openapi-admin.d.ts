@@ -194,6 +194,28 @@ export interface paths {
         patch: operations["catalog_update_brand"];
         trace?: never;
     };
+    "/api/admin/brands/{brand_id}/logo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Brand Logo
+         * @description One logo (PNG, JPEG or WebP, up to 2 MB, long edge at least 200 px), replacing
+         *     any existing one; derivatives are made in the background.
+         */
+        post: operations["catalog_upload_brand_logo"];
+        /** Delete Brand Logo */
+        delete: operations["catalog_delete_brand_logo"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/campaigns": {
         parameters: {
             query?: never;
@@ -2145,6 +2167,12 @@ export interface components {
         BrandOut: {
             /** Id */
             id: number;
+            /** Logo Error */
+            logo_error: string;
+            /** Logo Status */
+            logo_status: string;
+            /** Logo Url */
+            logo_url: string | null;
             /** Menu Item Count */
             menu_item_count: number;
             /** Name */
@@ -4696,6 +4724,60 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["NamedOut"];
+                };
+            };
+        };
+    };
+    catalog_upload_brand_logo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                brand_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BrandOut"];
+                };
+            };
+        };
+    };
+    catalog_delete_brand_logo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                brand_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BrandOut"];
                 };
             };
         };

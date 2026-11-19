@@ -7,6 +7,7 @@ import { ReviewsSection } from "@/features/reviews/components/reviews-section";
 import { reviewsQuery } from "@/features/reviews/queries";
 import { cn } from "@/lib/utils";
 import { type ProductDetail, productsPageQuery } from "../queries";
+import { BrandLogo } from "./brand-logo";
 import { Price, ProductGrid } from "./product-card";
 import { ProductDescription } from "./product-description";
 import { ProductGallery } from "./product-gallery";
@@ -105,7 +106,12 @@ export function ProductPage({ product }: { product: ProductDetail }) {
         <div className="mt-6 space-y-5 lg:mt-0">
           <div className="flex items-start justify-between gap-3">
             <div>
-              {product.brand && <p className="text-muted-foreground">{product.brand.name}</p>}
+              {product.brand && (
+                <p className="flex items-center gap-2 text-muted-foreground">
+                  <BrandLogo url={product.brand.logo_url} />
+                  {product.brand.name}
+                </p>
+              )}
               <h1 className="text-2xl font-semibold">{product.title}</h1>
             </div>
             <HeartButton productId={product.id} className="shrink-0 border border-border" />

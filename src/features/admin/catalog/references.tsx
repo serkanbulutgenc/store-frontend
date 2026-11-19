@@ -2,6 +2,7 @@ import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-q
 import { z } from "zod";
 import { adminApi } from "@/lib/api/clients";
 import { can, type Me } from "@/lib/api/me";
+import { LOGO_ACCEPT, uploadBrandLogo, validateLogo } from "./brand-logo";
 import { ReferenceScreen } from "./components/reference-screen";
 import {
   brandsQuery,
@@ -43,6 +44,9 @@ export function BrandsScreen({ me }: { me: Me }) {
   const remove = useSave(async (id: number) =>
     adminApi.DELETE("/api/admin/brands/{brand_id}", { params: { path: { brand_id: id } } }),
   );
+  // The logo is sent after the Brand is saved, so the list is refreshed again once it is.
+  const qc = useQueryClient();
+  const refresh = () => qc.invalidateQueries({ queryKey: keys.refs });
   return (
     <ReferenceScreen
       title="Markalar"
@@ -51,11 +55,42 @@ export function BrandsScreen({ me }: { me: Me }) {
       canManage={can(me, "manage_brands")}
       canDelete={can(me, "delete_catalogue")}
       remove={{ run: (r) => remove(r.id), menuItemCount: (r) => r.menu_item_count }}
-      columns={[{ header: "Ad", cell: (r) => r.name }]}
+      columns={[
+        {
+          header: "Ad",
+          cell: (r) => (
+            <span className="inline-flex items-center gap-2">
+              {r.logo_url && (
+                <img src={r.logo_url} alt="" className="h-5 w-auto max-w-12 object-contain" />
+              )}
+              {r.name}
+            </span>
+          ),
+        },
+      ]}
       fields={[{ name: "name", label: "Ad" }]}
       schema={nameOnly}
       defaults={(r) => ({ name: r?.name ?? "" })}
-      save={(values, row) => save({ values: values as { name: string }, row })}
+      save={async (values, row) => {
+        const saved = await save({ values: values as { name: string }, row });
+        return { id: row?.id ?? (saved as { data?: { id: number } }).data?.id };
+      }}
+      image={{
+        label: "Logo",
+        inputLabel: "Logo dosyası seç",
+        accept: LOGO_ACCEPT,
+        validate: validateLogo,
+        upload: async (id, file) => {
+          await uploadBrandLogo(id, file).finally(refresh);
+        },
+        remove: async (id) => {
+          await adminApi
+            .DELETE("/api/admin/brands/{brand_id}/logo", { params: { path: { brand_id: id } } })
+            .finally(refresh);
+        },
+        current: (r) =>
+          r.logo_status ? { url: r.logo_url, status: r.logo_status, error: r.logo_error } : null,
+      }}
     />
   );
 }
@@ -169,7 +204,7 @@ export function ColoursScreen({ me }: { me: Me }) {
       ]}
       fields={[
         { name: "name", label: "Ad" },
-        { name: "hex_code", label: "Renk kodu", hint: "Örn. #6b2d5c" },
+        { name: "hex_code", label: "Renk kodu", hint: "Örn. #6b2d5c", kind: "colour" },
         {
           name: "is_active",
           label: "Durum",

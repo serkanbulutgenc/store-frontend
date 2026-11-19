@@ -5,6 +5,7 @@ import { Dialog } from "radix-ui";
 import { Button } from "@/components/ui/button";
 import { descriptionExcerpt } from "../../description-excerpt";
 import { type ProductDetail, productQuery } from "../../queries";
+import { BrandLogo } from "../brand-logo";
 import { Price } from "../product-card";
 import { ProductGallery } from "../product-gallery";
 import { ColourChips, SizeChips } from "./option-chips";
@@ -75,7 +76,12 @@ function Content({ product, onAdded }: { product: ProductDetail; onAdded: () => 
       />
       <div className="space-y-4">
         <div>
-          {product.brand && <p className="text-muted-foreground">{product.brand.name}</p>}
+          {product.brand && (
+            <p className="flex items-center gap-2 text-muted-foreground">
+              <BrandLogo url={product.brand.logo_url} />
+              {product.brand.name}
+            </p>
+          )}
           <h2 className="text-xl font-semibold">{product.title}</h2>
         </div>
         <div>

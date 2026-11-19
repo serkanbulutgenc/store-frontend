@@ -1,5 +1,5 @@
 import { useForm } from "@tanstack/react-form";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -17,17 +17,32 @@ import {
 import { ConfirmDeleteDialog } from "../../components/delete-confirm";
 import { apiErrorToFormErrors } from "../../forms/api-errors";
 import { bind, Field, FormActions, FormMessage } from "../../forms/field";
+import { ColourField } from "./colour-field";
 
 export type FieldDef = {
   name: string;
   label: string;
-  kind?: "text" | "select";
+  kind?: "text" | "select" | "colour";
   options?: { value: string; label: string }[];
   hint?: string;
   /** Only shown when creating (the API cannot change it afterwards). */
   createOnly?: boolean;
   /** Only shown when editing (the API cannot set it on create). */
   editOnly?: boolean;
+};
+
+/** An optional image (a Brand's logo) in the dialog. It is uploaded after the row is saved, so
+ * `save` must then resolve to `{ id }` for a new row. */
+export type ImageFieldDef<Row> = {
+  label: string;
+  /** Names the file input for assistive tech and tests. */
+  inputLabel: string;
+  accept: string;
+  /** A reason to refuse the file before it is sent, or null. */
+  validate: (file: File) => string | null;
+  upload: (id: number, file: File) => Promise<unknown>;
+  remove: (id: number) => Promise<unknown>;
+  current: (row: Row) => { url: string | null; status: string; error: string } | null;
 };
 
 export type ReferenceProps<Row extends { id: number; name: string }> = {
@@ -44,6 +59,7 @@ export type ReferenceProps<Row extends { id: number; name: string }> = {
   save: (values: Record<string, string>, row?: Row) => Promise<unknown>;
   /** Extra per-row controls, shown before "Düzenle" (for example a link to a detail page). */
   rowActions?: (row: Row) => ReactNode;
+  image?: ImageFieldDef<Row>;
   /** Fields the API will not change for this row, with the reason shown under the field. */
   lockedFields?: (row: Row) => Record<string, string>;
   /** Delete button per row, through the shared confirm dialog. The backend's refusal names
@@ -157,21 +173,43 @@ function RefForm<Row extends { id: number; name: string }>({
   onClose,
   ...props
 }: ReferenceProps<Row> & { row?: Row; onClose: () => void }) {
+  const { image } = props;
+  const [file, setFile] = useState<File | null>(null);
+  const [removeCurrent, setRemoveCurrent] = useState(false);
+  const [fileError, setFileError] = useState<string | null>(null);
+  const imageFailed = useRef(false);
   const form = useForm({
     defaultValues: props.defaults(row),
     validators: {
       onSubmit: props.schema,
       onSubmitAsync: async ({ value }) => {
+        let saved: unknown;
         try {
-          await props.save(props.schema.parse(value), row);
+          saved = await props.save(props.schema.parse(value), row);
         } catch (e) {
           return apiErrorToFormErrors(e);
+        }
+        // The row is saved; a failed image step must not make Save look like it failed
+        // (saving again would create the row twice), so it is reported on its own.
+        const id = row?.id ?? (saved as { id?: number } | undefined)?.id;
+        if (image && id !== undefined && (file || removeCurrent)) {
+          try {
+            await (file ? image.upload(id, file) : image.remove(id));
+          } catch (e) {
+            imageFailed.current = true;
+            const reason = apiErrorToFormErrors(e);
+            toast.error(
+              `Kaydedildi, ancak ${image.label.toLocaleLowerCase("tr")} güncellenemedi: ${
+                typeof reason === "string" ? reason : (reason.form ?? "Hata oluştu.")
+              }`,
+            );
+          }
         }
         return undefined;
       },
     },
     onSubmit: () => {
-      toast.success("Kaydedildi.");
+      if (!imageFailed.current) toast.success("Kaydedildi.");
       onClose();
     },
   });
@@ -198,6 +236,8 @@ function RefForm<Row extends { id: number; name: string }>({
                       </option>
                     ))}
                   </Select>
+                ) : def.kind === "colour" ? (
+                  <ColourField bound={bind(f)} disabled={def.name in locked} />
                 ) : (
                   <Input autoFocus={i === 0} {...bind(f)} disabled={def.name in locked} />
                 )}
@@ -205,6 +245,25 @@ function RefForm<Row extends { id: number; name: string }>({
             )}
           </form.Field>
         ))}
+      {image && (
+        <ImageInput
+          def={image}
+          current={row ? image.current(row) : null}
+          file={file}
+          removed={removeCurrent}
+          error={fileError}
+          onPick={(picked) => {
+            const problem = image.validate(picked);
+            setFileError(problem);
+            if (!problem) {
+              setFile(picked);
+              setRemoveCurrent(false);
+            }
+          }}
+          onClearFile={() => setFile(null)}
+          onToggleRemove={() => setRemoveCurrent((r) => !r)}
+        />
+      )}
       <form.Subscribe selector={(s) => s.errorMap.onSubmit}>
         {(err) => <FormMessage error={err} />}
       </form.Subscribe>
@@ -212,5 +271,92 @@ function RefForm<Row extends { id: number; name: string }>({
         {(submitting) => <FormActions submitting={submitting} onClose={onClose} />}
       </form.Subscribe>
     </form>
+  );
+}
+
+function ImageInput<Row>({
+  def,
+  current,
+  file,
+  removed,
+  error,
+  onPick,
+  onClearFile,
+  onToggleRemove,
+}: {
+  def: ImageFieldDef<Row>;
+  current: ReturnType<ImageFieldDef<Row>["current"]>;
+  file: File | null;
+  removed: boolean;
+  error: string | null;
+  onPick: (file: File) => void;
+  onClearFile: () => void;
+  onToggleRemove: () => void;
+}) {
+  const [preview, setPreview] = useState<string | null>(null);
+  useEffect(() => {
+    if (!file) return setPreview(null);
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+  const shown = preview ?? (removed ? null : (current?.url ?? null));
+  const has = current !== null && !removed;
+  return (
+    <div className="space-y-1.5">
+      <span className="block font-medium">{def.label}</span>
+      <div className="flex items-center gap-3">
+        <div className="flex h-14 w-24 items-center justify-center rounded-md border border-border bg-card text-xs text-muted-foreground">
+          {shown ? (
+            <img src={shown} alt="" className="max-h-full max-w-full object-contain" />
+          ) : removed ? (
+            "Kaldırılacak"
+          ) : current?.status === "processing" ? (
+            "İşleniyor…"
+          ) : current?.status === "failed" ? (
+            "İşlenemedi"
+          ) : (
+            "Yok"
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <label className="inline-flex cursor-pointer items-center rounded-md border border-input px-3 py-1.5 hover:bg-accent">
+            {has || file ? "Değiştir" : `${def.label} seç`}
+            <input
+              type="file"
+              aria-label={def.inputLabel}
+              accept={def.accept}
+              className="sr-only"
+              onChange={(e) => {
+                const picked = e.target.files?.[0];
+                e.target.value = "";
+                if (picked) onPick(picked);
+              }}
+            />
+          </label>
+          {file ? (
+            <Button type="button" variant="outline" size="sm" onClick={onClearFile}>
+              Seçimi geri al
+            </Button>
+          ) : (
+            current && (
+              <Button type="button" variant="outline" size="sm" onClick={onToggleRemove}>
+                {removed ? "Kaldırmayı geri al" : "Kaldır"}
+              </Button>
+            )
+          )}
+        </div>
+      </div>
+      {error && (
+        <span role="alert" className="block text-red-700">
+          {error}
+        </span>
+      )}
+      {current?.status === "failed" && !file && (
+        <span role="alert" className="block text-red-700">
+          Logo işlenemedi; başka bir dosya yükleyin.
+        </span>
+      )}
+    </div>
   );
 }
