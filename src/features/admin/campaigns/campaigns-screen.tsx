@@ -30,8 +30,13 @@ export function CampaignsScreen({
   onSearchChange: (patch: Partial<CampaignSearch>) => void;
 }) {
   const { data, isFetching } = useSuspenseQuery(campaignsQuery(search));
-  const [editing, setEditing] = useState<CampaignListRow | "new" | null>(null);
-  const close = () => setEditing(null);
+  // The Campaign being edited, by id: an Order's link opens one through `?edit=`, and closing
+  // the dialog takes the param off the address again.
+  const [editing, setEditing] = useState<number | "new" | null>(search.edit ?? null);
+  const close = () => {
+    setEditing(null);
+    if (search.edit !== undefined) onSearchChange({ edit: undefined });
+  };
   const [deleting, setDeleting] = useState<CampaignListRow | null>(null);
   const { toggle, remove } = useCampaignActions();
   const pages = Math.max(1, Math.ceil(data.total / data.page_size));
@@ -72,7 +77,7 @@ export function CampaignsScreen({
       header: "",
       cell: ({ row: { original: c } }) => (
         <div className="flex justify-end gap-2">
-          <Button size="sm" variant="outline" onClick={() => setEditing(c)}>
+          <Button size="sm" variant="outline" onClick={() => setEditing(c.id)}>
             Düzenle
           </Button>
           <Button size="sm" variant="outline" onClick={() => void flip(c)}>
@@ -146,7 +151,7 @@ export function CampaignsScreen({
         title={editing === "new" ? "Yeni kampanya" : "Kampanyayı düzenle"}
       >
         {editing !== null && (
-          <CampaignDialogBody id={editing === "new" ? undefined : editing.id} onClose={close} />
+          <CampaignDialogBody id={editing === "new" ? undefined : editing} onClose={close} />
         )}
       </Dialog>
     </div>

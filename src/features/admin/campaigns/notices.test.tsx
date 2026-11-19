@@ -23,7 +23,9 @@ describe("BelowCostWarning", () => {
     expect(out).toContain("₺90,00");
     expect(out).toContain("Keten Gömlek");
     expect(out).toContain("₺45,50");
-    expect(out).toContain("kaydedildi");
+    // True both right after a save and when an existing Campaign is only opened: no "saved".
+    expect(out).toContain("kaydedilir");
+    expect(out).not.toContain("kaydedildi");
   });
 });
 

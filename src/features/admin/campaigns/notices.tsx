@@ -4,7 +4,8 @@ import { percentageText } from "./rules";
 
 /**
  * Products the Campaign would sell under their cost price. It only warns: the Campaign is
- * saved either way, so the wording says so. The API reports this with a saved Campaign.
+ * saved either way, so the wording says so. The API reports this with a saved Campaign, and the
+ * edit form shows it for one that is merely opened, so the wording must not say it was just saved.
  */
 export function BelowCostWarning({ items }: { items: CampaignRow["below_cost"] }) {
   if (items.length === 0) return null;
@@ -14,7 +15,7 @@ export function BelowCostWarning({ items }: { items: CampaignRow["below_cost"] }
         Maliyetin altında satılacak {items.length} ürün var
       </p>
       <p className="text-amber-900">
-        Kampanya kaydedildi; yine de bu ürünlerde kampanya fiyatı maliyet fiyatının altında kalıyor.
+        Kampanya yine de kaydedilir; bu ürünlerde kampanya fiyatı maliyet fiyatının altında kalıyor.
       </p>
       <ul className="space-y-1 text-amber-900">
         {items.map((p) => (

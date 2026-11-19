@@ -88,11 +88,11 @@ describe("orderLineCampaign", () => {
   const line = { unit_price: "400.00", campaign };
   const campaignOwner = me([...owner.permissions, "manage_campaigns"]);
 
-  it("gives the Owner the Campaign's name, the frozen price and a link to the Campaign screen", () => {
+  it("gives the Owner the Campaign's name, the frozen price and which Campaign to open", () => {
     expect(orderLineCampaign(campaignOwner, line)).toEqual({
       name: "Kara Cuma",
       price: "₺400,00",
-      href: "/admin/campaigns",
+      openId: 7,
     });
   });
 
@@ -100,9 +100,9 @@ describe("orderLineCampaign", () => {
     expect(orderLineCampaign(staff, line)).toEqual({
       name: "Kara Cuma",
       price: "₺400,00",
-      href: null,
+      openId: null,
     });
-    expect(orderLineCampaign(null, line)?.href).toBeNull();
+    expect(orderLineCampaign(null, line)?.openId).toBeNull();
   });
 
   it("shows nothing for a line no Campaign priced", () => {
