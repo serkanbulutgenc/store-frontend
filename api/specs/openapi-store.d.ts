@@ -966,6 +966,8 @@ export interface components {
             count: number;
             /** Id */
             id: number;
+            /** Logo Url */
+            logo_url: string | null;
             /** Name */
             name: string;
         };
@@ -973,6 +975,8 @@ export interface components {
         BrandOut: {
             /** Id */
             id: number;
+            /** Logo Url */
+            logo_url: string | null;
             /** Name */
             name: string;
         };
