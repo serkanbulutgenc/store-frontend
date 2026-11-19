@@ -1,12 +1,10 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { Select } from "@/components/ui/select";
-import { ApiError } from "@/lib/api/errors";
-import { ConfirmDeleteDialog } from "../components/delete-confirm";
+import { useFlip, useStepBackWhenEmpty } from "../components/row-actions";
+import { RowDeleteDialog, StatusFilter } from "../components/row-list";
 import { type Column, columnHelper, DataTable } from "../data-table/data-table";
 import { CampaignDialogBody } from "./campaign-dialog";
 import { type CampaignListRow, campaignsQuery, useCampaignActions } from "./queries";
@@ -39,20 +37,8 @@ export function CampaignsScreen({
   };
   const [deleting, setDeleting] = useState<CampaignListRow | null>(null);
   const { toggle, remove } = useCampaignActions();
-  const pages = Math.max(1, Math.ceil(data.total / data.page_size));
-  // Deleting the last Campaign of a later page leaves that page empty: step back.
-  useEffect(() => {
-    if (data.items.length === 0 && search.page > pages) onSearchChange({ page: pages });
-  }, [data.items.length, search.page, pages, onSearchChange]);
-  async function flip(c: CampaignListRow) {
-    const next = campaignToggle(c.status);
-    try {
-      await toggle({ id: c.id, action: next.action });
-      toast.success(next.success);
-    } catch (e) {
-      toast.error(e instanceof ApiError ? e.message : "Beklenmeyen bir hata oluştu.");
-    }
-  }
+  useStepBackWhenEmpty(data, search.page, onSearchChange);
+  const flip = useFlip<CampaignListRow>(toggle, campaignToggle);
   const columns: Column<CampaignListRow>[] = [
     helper.accessor("name", { header: "Kampanya", enableSorting: false }),
     helper.display({
@@ -113,35 +99,21 @@ export function CampaignsScreen({
         searchable={false}
         emptyMessage="Kampanya yok."
         toolbar={
-          <Select
-            aria-label="Duruma göre filtrele"
-            className="w-44"
-            value={search.status ?? ""}
-            onChange={(e) => onSearchChange({ status: e.target.value || undefined, page: 1 })}
-          >
-            <option value="">Tüm durumlar</option>
-            {CAMPAIGN_STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {campaignStatusLabel(s)}
-              </option>
-            ))}
-          </Select>
+          <StatusFilter
+            statuses={CAMPAIGN_STATUSES}
+            label={campaignStatusLabel}
+            value={search.status}
+            onChange={(status) => onSearchChange({ status, page: 1 })}
+          />
         }
       />
-      <ConfirmDeleteDialog
-        target={deleting && { key: deleting.id, name: deleting.name }}
+      <RowDeleteDialog
+        row={deleting}
+        name={deleting?.name}
         title="Kampanyayı sil"
-        touches={[]}
-        run={() => (deleting ? remove(deleting.id) : Promise.resolve())}
-        alternative={
-          deleting && deleting.status !== "inactive"
-            ? {
-                label: "Kapat",
-                run: () => toggle({ id: deleting.id, action: "deactivate" }),
-                success: "Kampanya kapatıldı.",
-              }
-            : undefined
-        }
+        closedMessage="Kampanya kapatıldı."
+        toggle={toggle}
+        remove={remove}
         onClose={() => setDeleting(null)}
       />
       <Dialog

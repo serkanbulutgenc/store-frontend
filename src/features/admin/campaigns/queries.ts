@@ -1,6 +1,7 @@
-import { keepPreviousData, queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import { adminApi } from "@/lib/api/clients";
 import type { components } from "../../../../api/specs/openapi-admin";
+import { useRowActions } from "../components/row-actions";
 import type { CampaignSearch } from "./search";
 
 export type PagedCampaignRow = components["schemas"]["PagedCampaignRowOut"];
@@ -35,19 +36,11 @@ export const campaignQuery = (id: number) =>
 
 /** Open, close and delete a Campaign; each refreshes the list when it succeeds. */
 export function useCampaignActions() {
-  const qc = useQueryClient();
-  const refresh = () => qc.invalidateQueries({ queryKey: campaignKeys.all });
   const path = (id: number) => ({ params: { path: { campaign_id: id } } });
-  const toggle = useMutation({
-    mutationFn: ({ id, action }: { id: number; action: "activate" | "deactivate" }) =>
-      action === "activate"
-        ? adminApi.POST("/api/admin/campaigns/{campaign_id}/activate", path(id))
-        : adminApi.POST("/api/admin/campaigns/{campaign_id}/deactivate", path(id)),
-    onSuccess: refresh,
-  }).mutateAsync;
-  const remove = useMutation({
-    mutationFn: (id: number) => adminApi.DELETE("/api/admin/campaigns/{campaign_id}", path(id)),
-    onSuccess: refresh,
-  }).mutateAsync;
-  return { toggle, remove };
+  return useRowActions({
+    queryKey: campaignKeys.all,
+    activate: (id) => adminApi.POST("/api/admin/campaigns/{campaign_id}/activate", path(id)),
+    deactivate: (id) => adminApi.POST("/api/admin/campaigns/{campaign_id}/deactivate", path(id)),
+    remove: (id) => adminApi.DELETE("/api/admin/campaigns/{campaign_id}", path(id)),
+  });
 }

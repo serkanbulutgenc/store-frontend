@@ -1,6 +1,6 @@
 import { z } from "zod";
+import { isoToShopTime, shopTimeToIso } from "@/lib/shop-time";
 import type { components } from "../../../../api/specs/openapi-admin";
-import { isoToShopTime, shopTimeToIso } from "../vouchers/form";
 
 type CampaignIn = components["schemas"]["CampaignIn"];
 type CampaignPatch = components["schemas"]["CampaignPatch"];
