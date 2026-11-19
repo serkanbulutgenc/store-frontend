@@ -136,3 +136,13 @@ it("puts the pending-Collection badge on the Koleksiyonlar item, which Staff als
     visibleNav(me(["edit_collections", "manage_collections"])).map((i) => i.label),
   ).not.toContain("Onay bekleyenler");
 });
+
+it("shows the Campaigns entry only with the manage_campaigns permission (Owner, not Staff)", () => {
+  const staff = visibleNav(me(["view_products", "manage_products", "manage_vouchers"])).map(
+    (i) => i.to,
+  );
+  expect(staff).not.toContain("/admin/campaigns");
+  const owner = visibleNav(me(["manage_campaigns"])).map((i) => i);
+  expect(owner.map((i) => i.to)).toContain("/admin/campaigns");
+  expect(owner.find((i) => i.to === "/admin/campaigns")?.label).toBe("Kampanyalar");
+});

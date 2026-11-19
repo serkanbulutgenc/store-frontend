@@ -36,6 +36,7 @@ import { Route as AdminAppSplatRouteImport } from './routes/admin/_app/$'
 import { Route as AdminAppAccountDeletionsRouteImport } from './routes/admin/_app/account-deletions'
 import { Route as AdminAppAuditLogRouteImport } from './routes/admin/_app/audit-log'
 import { Route as AdminAppBrandsRouteImport } from './routes/admin/_app/brands'
+import { Route as AdminAppCampaignsRouteImport } from './routes/admin/_app/campaigns'
 import { Route as AdminAppCategoriesRouteImport } from './routes/admin/_app/categories'
 import { Route as AdminAppColoursRouteImport } from './routes/admin/_app/colours'
 import { Route as AdminAppExportRouteImport } from './routes/admin/_app/export'
@@ -207,6 +208,11 @@ const AdminAppAuditLogRoute = AdminAppAuditLogRouteImport.update({
 const AdminAppBrandsRoute = AdminAppBrandsRouteImport.update({
   id: '/brands',
   path: '/brands',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
+const AdminAppCampaignsRoute = AdminAppCampaignsRouteImport.update({
+  id: '/campaigns',
+  path: '/campaigns',
   getParentRoute: () => AdminAppRouteRoute,
 } as any)
 const AdminAppCategoriesRoute = AdminAppCategoriesRouteImport.update({
@@ -433,6 +439,7 @@ export interface FileRoutesByFullPath {
   '/admin/account-deletions': typeof AdminAppAccountDeletionsRoute
   '/admin/audit-log': typeof AdminAppAuditLogRoute
   '/admin/brands': typeof AdminAppBrandsRoute
+  '/admin/campaigns': typeof AdminAppCampaignsRoute
   '/admin/categories': typeof AdminAppCategoriesRoute
   '/admin/colours': typeof AdminAppColoursRoute
   '/admin/export': typeof AdminAppExportRoute
@@ -495,6 +502,7 @@ export interface FileRoutesByTo {
   '/admin/account-deletions': typeof AdminAppAccountDeletionsRoute
   '/admin/audit-log': typeof AdminAppAuditLogRoute
   '/admin/brands': typeof AdminAppBrandsRoute
+  '/admin/campaigns': typeof AdminAppCampaignsRoute
   '/admin/categories': typeof AdminAppCategoriesRoute
   '/admin/colours': typeof AdminAppColoursRoute
   '/admin/export': typeof AdminAppExportRoute
@@ -561,6 +569,7 @@ export interface FileRoutesById {
   '/admin/_app/account-deletions': typeof AdminAppAccountDeletionsRoute
   '/admin/_app/audit-log': typeof AdminAppAuditLogRoute
   '/admin/_app/brands': typeof AdminAppBrandsRoute
+  '/admin/_app/campaigns': typeof AdminAppCampaignsRoute
   '/admin/_app/categories': typeof AdminAppCategoriesRoute
   '/admin/_app/colours': typeof AdminAppColoursRoute
   '/admin/_app/export': typeof AdminAppExportRoute
@@ -626,6 +635,7 @@ export interface FileRouteTypes {
     | '/admin/account-deletions'
     | '/admin/audit-log'
     | '/admin/brands'
+    | '/admin/campaigns'
     | '/admin/categories'
     | '/admin/colours'
     | '/admin/export'
@@ -688,6 +698,7 @@ export interface FileRouteTypes {
     | '/admin/account-deletions'
     | '/admin/audit-log'
     | '/admin/brands'
+    | '/admin/campaigns'
     | '/admin/categories'
     | '/admin/colours'
     | '/admin/export'
@@ -753,6 +764,7 @@ export interface FileRouteTypes {
     | '/admin/_app/account-deletions'
     | '/admin/_app/audit-log'
     | '/admin/_app/brands'
+    | '/admin/_app/campaigns'
     | '/admin/_app/categories'
     | '/admin/_app/colours'
     | '/admin/_app/export'
@@ -991,6 +1003,13 @@ declare module '@tanstack/react-router' {
       path: '/brands'
       fullPath: '/admin/brands'
       preLoaderRoute: typeof AdminAppBrandsRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/campaigns': {
+      id: '/admin/_app/campaigns'
+      path: '/campaigns'
+      fullPath: '/admin/campaigns'
+      preLoaderRoute: typeof AdminAppCampaignsRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
     '/admin/_app/categories': {
@@ -1346,6 +1365,7 @@ interface AdminAppRouteRouteChildren {
   AdminAppAccountDeletionsRoute: typeof AdminAppAccountDeletionsRoute
   AdminAppAuditLogRoute: typeof AdminAppAuditLogRoute
   AdminAppBrandsRoute: typeof AdminAppBrandsRoute
+  AdminAppCampaignsRoute: typeof AdminAppCampaignsRoute
   AdminAppCategoriesRoute: typeof AdminAppCategoriesRoute
   AdminAppColoursRoute: typeof AdminAppColoursRoute
   AdminAppExportRoute: typeof AdminAppExportRoute
@@ -1382,6 +1402,7 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppAccountDeletionsRoute: AdminAppAccountDeletionsRoute,
   AdminAppAuditLogRoute: AdminAppAuditLogRoute,
   AdminAppBrandsRoute: AdminAppBrandsRoute,
+  AdminAppCampaignsRoute: AdminAppCampaignsRoute,
   AdminAppCategoriesRoute: AdminAppCategoriesRoute,
   AdminAppColoursRoute: AdminAppColoursRoute,
   AdminAppExportRoute: AdminAppExportRoute,

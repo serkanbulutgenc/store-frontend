@@ -5,11 +5,14 @@ export function Dialog({
   open,
   onClose,
   title,
+  size = "md",
   children,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
+  /** "lg" for forms with several fields (pickers, date pairs); "md" for short prompts. */
+  size?: "md" | "lg";
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -24,10 +27,10 @@ export function Dialog({
       ref={ref}
       onClose={onClose}
       aria-labelledby="dialog-title"
-      className="m-auto w-full max-w-md rounded-md border border-border bg-card p-0 text-foreground backdrop:bg-black/40"
+      className={`m-auto w-full ${size === "lg" ? "max-w-2xl" : "max-w-md"} rounded-md border border-border bg-card p-0 text-foreground backdrop:bg-black/40`}
     >
       {open && (
-        <div className="space-y-3 p-4">
+        <div className="max-h-[calc(100dvh-2rem)] space-y-3 overflow-y-auto p-4">
           <h2 id="dialog-title" className="text-base font-semibold">
             {title}
           </h2>

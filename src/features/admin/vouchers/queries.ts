@@ -1,6 +1,7 @@
-import { keepPreviousData, queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import { adminApi } from "@/lib/api/clients";
 import type { components } from "../../../../api/specs/openapi-admin";
+import { useRowActions } from "../components/row-actions";
 import type { VoucherSearch } from "./search";
 
 export type PagedVoucherRow = components["schemas"]["PagedVoucherAdminOut"];
@@ -22,19 +23,11 @@ export const vouchersQuery = (s: VoucherSearch) =>
 
 /** Open, close and delete a voucher; each refreshes the list when it succeeds. */
 export function useVoucherActions() {
-  const qc = useQueryClient();
-  const refresh = () => qc.invalidateQueries({ queryKey: voucherKeys.all });
   const path = (id: number) => ({ params: { path: { voucher_id: id } } });
-  const toggle = useMutation({
-    mutationFn: ({ id, action }: { id: number; action: "activate" | "deactivate" }) =>
-      action === "activate"
-        ? adminApi.POST("/api/admin/vouchers/{voucher_id}/activate", path(id))
-        : adminApi.POST("/api/admin/vouchers/{voucher_id}/deactivate", path(id)),
-    onSuccess: refresh,
-  }).mutateAsync;
-  const remove = useMutation({
-    mutationFn: (id: number) => adminApi.DELETE("/api/admin/vouchers/{voucher_id}", path(id)),
-    onSuccess: refresh,
-  }).mutateAsync;
-  return { toggle, remove };
+  return useRowActions({
+    queryKey: voucherKeys.all,
+    activate: (id) => adminApi.POST("/api/admin/vouchers/{voucher_id}/activate", path(id)),
+    deactivate: (id) => adminApi.POST("/api/admin/vouchers/{voucher_id}/deactivate", path(id)),
+    remove: (id) => adminApi.DELETE("/api/admin/vouchers/{voucher_id}", path(id)),
+  });
 }

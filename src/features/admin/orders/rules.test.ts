@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import type { Me } from "@/lib/api/me";
-import { allowedActions, canBulkMarkPaid, canBulkShip, canDo, orderVoucherRow } from "./rules";
+import {
+  allowedActions,
+  canBulkMarkPaid,
+  canBulkShip,
+  canDo,
+  orderLineCampaign,
+  orderVoucherRow,
+} from "./rules";
 
 const me = (permissions: string[]): Me => ({
   id: 1,
@@ -73,5 +80,32 @@ describe("orderVoucherRow", () => {
   it("shows nothing for an order that used no voucher", () => {
     expect(orderVoucherRow(null)).toBeNull();
     expect(orderVoucherRow(undefined)).toBeNull();
+  });
+});
+
+describe("orderLineCampaign", () => {
+  const campaign = { id: 7, name: "Kara Cuma", percentage: "20.00", shelf_unit_price: "500.00" };
+  const line = { unit_price: "400.00", campaign };
+  const campaignOwner = me([...owner.permissions, "manage_campaigns"]);
+
+  it("gives the Owner the Campaign's name, the frozen price and which Campaign to open", () => {
+    expect(orderLineCampaign(campaignOwner, line)).toEqual({
+      name: "Kara Cuma",
+      price: "₺400,00",
+      openId: 7,
+    });
+  });
+
+  it("shows Staff the same Campaign but no way to the Campaign screen", () => {
+    expect(orderLineCampaign(staff, line)).toEqual({
+      name: "Kara Cuma",
+      price: "₺400,00",
+      openId: null,
+    });
+    expect(orderLineCampaign(null, line)?.openId).toBeNull();
+  });
+
+  it("shows nothing for a line no Campaign priced", () => {
+    expect(orderLineCampaign(campaignOwner, { unit_price: "500.00", campaign: null })).toBeNull();
   });
 });

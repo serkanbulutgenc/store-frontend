@@ -1,13 +1,11 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { Select } from "@/components/ui/select";
-import { ApiError } from "@/lib/api/errors";
 import { formatDate, formatTry } from "@/lib/format";
-import { ConfirmDeleteDialog } from "../components/delete-confirm";
+import { useFlip, useStepBackWhenEmpty } from "../components/row-actions";
+import { RowDeleteDialog, StatusFilter } from "../components/row-list";
 import { type Column, columnHelper, DataTable } from "../data-table/data-table";
 import type { VoucherRow } from "./form";
 import { useVoucherActions, vouchersQuery } from "./queries";
@@ -37,20 +35,8 @@ export function VouchersScreen({
   const close = () => setEditing(null);
   const [deleting, setDeleting] = useState<VoucherRow | null>(null);
   const { toggle, remove } = useVoucherActions();
-  const pages = Math.max(1, Math.ceil(data.total / data.page_size));
-  // Deleting the last voucher of a later page leaves that page empty: step back.
-  useEffect(() => {
-    if (data.items.length === 0 && search.page > pages) onSearchChange({ page: pages });
-  }, [data.items.length, search.page, pages, onSearchChange]);
-  async function flip(v: VoucherRow) {
-    const next = voucherToggle(v.status);
-    try {
-      await toggle({ id: v.id, action: next.action });
-      toast.success(next.success);
-    } catch (e) {
-      toast.error(e instanceof ApiError ? e.message : "Beklenmeyen bir hata oluştu.");
-    }
-  }
+  useStepBackWhenEmpty(data, search.page, onSearchChange);
+  const flip = useFlip<VoucherRow>(toggle, voucherToggle);
   const columns: Column<VoucherRow>[] = [
     helper.accessor("code", {
       header: "Kod",
@@ -136,35 +122,21 @@ export function VouchersScreen({
         searchable={false}
         emptyMessage="Kupon yok."
         toolbar={
-          <Select
-            aria-label="Duruma göre filtrele"
-            className="w-44"
-            value={search.status ?? ""}
-            onChange={(e) => onSearchChange({ status: e.target.value || undefined, page: 1 })}
-          >
-            <option value="">Tüm durumlar</option>
-            {VOUCHER_STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {voucherStatusLabel(s)}
-              </option>
-            ))}
-          </Select>
+          <StatusFilter
+            statuses={VOUCHER_STATUSES}
+            label={voucherStatusLabel}
+            value={search.status}
+            onChange={(status) => onSearchChange({ status, page: 1 })}
+          />
         }
       />
-      <ConfirmDeleteDialog
-        target={deleting && { key: deleting.id, name: deleting.code }}
+      <RowDeleteDialog
+        row={deleting}
+        name={deleting?.code}
         title="Kuponu sil"
-        touches={[]}
-        run={() => (deleting ? remove(deleting.id) : Promise.resolve())}
-        alternative={
-          deleting && deleting.status !== "inactive"
-            ? {
-                label: "Kapat",
-                run: () => toggle({ id: deleting.id, action: "deactivate" }),
-                success: "Kupon kapatıldı.",
-              }
-            : undefined
-        }
+        closedMessage="Kupon kapatıldı."
+        toggle={toggle}
+        remove={remove}
         onClose={() => setDeleting(null)}
       />
       <Dialog

@@ -107,3 +107,20 @@ export function orderVoucherRow(
     note: VOUCHER_NOTE,
   };
 }
+
+/**
+ * What an Order line shows about the Campaign that priced it, frozen when the Shopper bought.
+ * `openId` is the Campaign to open on the Campaign screen: only for a user who may manage
+ * Campaigns, so for Staff the name is plain text.
+ */
+export function orderLineCampaign(
+  me: Me | null,
+  line: { unit_price: string; campaign: { id: number; name: string } | null },
+): { name: string; price: string; openId: number | null } | null {
+  if (!line.campaign) return null;
+  return {
+    name: line.campaign.name,
+    price: formatTry(line.unit_price),
+    openId: can(me, "manage_campaigns") ? line.campaign.id : null,
+  };
+}
