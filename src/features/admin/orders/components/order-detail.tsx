@@ -120,8 +120,12 @@ export function OrderDetailScreen({ number, me }: { number: string; me: Me }) {
                       {campaign && (
                         <span className="block text-muted-foreground">
                           Kampanya:{" "}
-                          {campaign.href ? (
-                            <Link to={campaign.href} className="underline">
+                          {campaign.openId !== null ? (
+                            <Link
+                              to="/admin/campaigns"
+                              search={{ edit: campaign.openId }}
+                              className="underline"
+                            >
                               {campaign.name}
                             </Link>
                           ) : (

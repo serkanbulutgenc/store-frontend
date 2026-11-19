@@ -26,7 +26,20 @@ import { TargetPicker } from "./target-picker";
 /** The dialog body: a new Campaign is a blank form, an existing one loads in full first (the
  * list rows carry no targets or below-cost Products). */
 export function CampaignDialogBody({ id, onClose }: { id?: number; onClose: () => void }) {
-  const { data: row } = useQuery({ ...campaignQuery(id ?? 0), enabled: id !== undefined });
+  const { data: row, isError } = useQuery({ ...campaignQuery(id ?? 0), enabled: id !== undefined });
+  if (id !== undefined && isError) {
+    // A stale or mistyped `?edit=` address: say so instead of loading forever.
+    return (
+      <div className="space-y-3">
+        <p role="alert">Kampanya bulunamadı.</p>
+        <div className="flex justify-end">
+          <Button size="sm" onClick={onClose}>
+            Tamam
+          </Button>
+        </div>
+      </div>
+    );
+  }
   if (id !== undefined && !row) return <p className="text-muted-foreground">Yükleniyor…</p>;
   return <CampaignEditor row={row} onClose={onClose} />;
 }
