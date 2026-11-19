@@ -10,6 +10,7 @@ import { collectionsQuery } from "../collections/queries";
 import { apiErrorToFormErrors } from "../forms/api-errors";
 import { bind, errorText, Field, FormActions, FormMessage } from "../forms/field";
 import {
+  activationChange,
   type CampaignRow,
   type CampaignValues,
   campaignDefaults,
@@ -58,13 +59,23 @@ function CampaignEditor({ row: loaded, onClose }: { row?: CampaignRow; onClose: 
           .data as CampaignRow;
       }
       const body = editBody(values, row);
-      if (Object.keys(body).length === 0) return null; // nothing changed: nothing to send
-      return (
-        await adminApi.PATCH("/api/admin/campaigns/{campaign_id}", {
-          params: { path: { campaign_id: row.id } },
-          body,
-        })
-      ).data as CampaignRow;
+      const params = { params: { path: { campaign_id: row.id } } };
+      let result: CampaignRow | null = null;
+      if (Object.keys(body).length > 0) {
+        result = (await adminApi.PATCH("/api/admin/campaigns/{campaign_id}", { ...params, body }))
+          .data as CampaignRow;
+      }
+      // The on/off switch has its own endpoints, so it goes after the fields. If it fails the
+      // fields are already saved; sending the form again repeats only what is still different.
+      const change = activationChange(values, row);
+      if (change === "activate") {
+        result = (await adminApi.POST("/api/admin/campaigns/{campaign_id}/activate", params))
+          .data as CampaignRow;
+      } else if (change === "deactivate") {
+        result = (await adminApi.POST("/api/admin/campaigns/{campaign_id}/deactivate", params))
+          .data as CampaignRow;
+      }
+      return result;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: campaignKeys.all }),
   }).mutateAsync;
@@ -214,26 +225,24 @@ function CampaignEditor({ row: loaded, onClose }: { row?: CampaignRow; onClose: 
           )}
         </form.Field>
       </div>
-      {!row && (
-        <form.Field name="is_active">
-          {(f) => (
-            <label className="flex items-start gap-2">
-              <input
-                type="checkbox"
-                className="mt-1"
-                checked={f.state.value}
-                onChange={(e) => f.handleChange(e.target.checked)}
-              />
-              <span>
-                <span className="font-medium">Açık</span>
-                <span className="block text-muted-foreground">
-                  Kapalı bir kampanya, tarihleri ne olursa olsun uygulanmaz.
-                </span>
+      <form.Field name="is_active">
+        {(f) => (
+          <label className="flex items-start gap-2">
+            <input
+              type="checkbox"
+              className="mt-1"
+              checked={f.state.value}
+              onChange={(e) => f.handleChange(e.target.checked)}
+            />
+            <span>
+              <span className="font-medium">Açık</span>
+              <span className="block text-muted-foreground">
+                Kapalı bir kampanya, tarihleri ne olursa olsun uygulanmaz.
               </span>
-            </label>
-          )}
-        </form.Field>
-      )}
+            </span>
+          </label>
+        )}
+      </form.Field>
       <form.Subscribe selector={(s) => s.errorMap.onSubmit}>
         {(err) => <FormMessage error={err} />}
       </form.Subscribe>

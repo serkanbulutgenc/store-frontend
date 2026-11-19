@@ -131,3 +131,12 @@ export function editBody(v: CampaignValues, row: CampaignRow): CampaignPatch {
   if (!sameIds(v.collections, was.collections)) body.collection_ids = ids(v.collections);
   return body;
 }
+
+/** Which on/off endpoint an edit needs, if the switch was moved: the PATCH body has no switch. */
+export function activationChange(
+  v: CampaignValues,
+  row: CampaignRow,
+): "activate" | "deactivate" | null {
+  if (v.is_active === row.is_active) return null;
+  return v.is_active ? "activate" : "deactivate";
+}

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  activationChange,
   type CampaignForm,
   type CampaignRow,
   campaignDefaults,
@@ -144,5 +145,20 @@ describe("editing", () => {
       starts_at: "",
     });
     expect(editBody(values, row)).toEqual({ percentage: "25", starts_at: null });
+  });
+});
+
+describe("activationChange", () => {
+  const values = (is_active: boolean) =>
+    campaignFormSchema.parse({ ...campaignDefaults(row), is_active });
+
+  it("is nothing while the switch stays where the Campaign has it", () => {
+    expect(activationChange(values(true), row)).toBeNull();
+    expect(activationChange(values(false), { ...row, is_active: false })).toBeNull();
+  });
+
+  it("closes a Campaign whose switch was turned off, and opens one turned on", () => {
+    expect(activationChange(values(false), row)).toBe("deactivate");
+    expect(activationChange(values(true), { ...row, is_active: false })).toBe("activate");
   });
 });
