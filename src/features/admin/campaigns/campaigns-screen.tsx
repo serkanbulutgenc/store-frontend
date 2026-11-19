@@ -142,6 +142,7 @@ export function CampaignsScreen({
       <Dialog
         open={editing !== null}
         onClose={close}
+        size="lg"
         title={editing === "new" ? "Yeni kampanya" : "Kampanyayı düzenle"}
       >
         {editing !== null && (
