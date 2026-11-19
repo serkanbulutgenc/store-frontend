@@ -81,10 +81,14 @@ export const categoriesQuery = queryOptions({
   refetchInterval: (q) =>
     q.state.data?.some((c) => c.image?.status === "processing") ? 2500 : false,
 });
-export const brandsQuery = ref(
-  "brands",
-  async () => (await adminApi.GET("/api/admin/brands")).data as BrandOut[],
-);
+export const brandsQuery = queryOptions({
+  queryKey: [...keys.refs, "brands"] as const,
+  staleTime: 5 * 60_000,
+  queryFn: async () => (await adminApi.GET("/api/admin/brands")).data as BrandOut[],
+  // While a logo is still being processed, poll until its derivatives exist.
+  refetchInterval: (q) =>
+    q.state.data?.some((b) => b.logo_status === "processing") ? 2500 : false,
+});
 export const coloursQuery = ref(
   "colours",
   async () => (await adminApi.GET("/api/admin/colours")).data as ColourOut[],

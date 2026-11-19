@@ -5,6 +5,7 @@ import { formatTry } from "@/lib/format";
 import { facetLabels } from "../attribute-facets";
 import { type BrowseSearch, toggleValue } from "../browse-search";
 import type { Facets } from "../queries";
+import { BrandLogo } from "./brand-logo";
 
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -21,12 +22,14 @@ function Check({
   onChange,
   hint,
   swatch,
+  logo,
 }: {
   label: string;
   checked: boolean;
   onChange: () => void;
   hint?: number;
   swatch?: string;
+  logo?: string | null;
 }) {
   return (
     <label className="flex cursor-pointer items-center gap-2">
@@ -43,6 +46,7 @@ function Check({
           style={{ backgroundColor: swatch }}
         />
       )}
+      <BrandLogo url={logo} />
       <span>{label}</span>
       {hint !== undefined && <span className="ml-auto text-muted-foreground">{hint}</span>}
     </label>
@@ -130,6 +134,7 @@ export function FilterPanel({
             <Check
               key={b.id}
               label={b.name}
+              logo={b.logo_url}
               hint={b.count}
               checked={search.brand?.includes(b.id) ?? false}
               onChange={() => onChange({ brand: toggleValue(search.brand, b.id) })}
