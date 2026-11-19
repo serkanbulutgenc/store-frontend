@@ -1,4 +1,4 @@
-import { formatDate } from "@/lib/format";
+import { formatDate, formatPercent } from "@/lib/format";
 
 const STATUS: Record<string, string> = {
   active: "Aktif",
@@ -32,7 +32,7 @@ export function campaignToggle(status: string): CampaignToggle {
 }
 
 /** "%20", or "%12,5" for a fraction: the API sends "20.00" and "12.50". */
-export const percentageText = (value: string) => `%${String(Number(value)).replace(".", ",")}`;
+export const percentageText = (value: string) => `%${formatPercent(value)}`;
 
 /** When the Campaign runs, in shop time: "Süresiz", or each end with "Hemen" / "Süresiz" for an open one. */
 export function scheduleText(startsAt: string | null, endsAt: string | null): string {

@@ -3,14 +3,14 @@ import type { ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HeartButton } from "@/features/favorites/components/heart-button";
 import { RatingSummary } from "@/features/reviews/components/stars";
-import { formatTry } from "@/lib/format";
+import { formatPercent, formatTry } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { ProductCard as Card } from "../queries";
 import { ProductImage } from "./product-image";
 import { QuickActions } from "./quick-view/quick-actions";
 
 /** "-20%" from the API's "20.00": whole numbers plain, fractions with a Turkish comma. */
-const badge = (percentage: string) => `-${Number(percentage).toLocaleString("tr-TR")}%`;
+const badge = (percentage: string) => `-${formatPercent(percentage)}%`;
 
 /**
  * The price block of every surface (card, quick view, detail). A running Campaign shows the

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDate, formatTry } from "./format";
+import { formatDate, formatPercent, formatTry } from "./format";
 
 describe("formatTry", () => {
   it("formats a decimal string in tr-TR without float arithmetic", () => {
@@ -18,5 +18,14 @@ describe("formatTry", () => {
 describe("formatDate", () => {
   it("uses Europe/Istanbul", () => {
     expect(formatDate("2026-11-09T22:30:00Z")).toBe("10.11.2026 01:30");
+  });
+});
+
+describe("formatPercent", () => {
+  it("writes the API's decimal string with a Turkish comma and no trailing zeros", () => {
+    expect(formatPercent("20.00")).toBe("20");
+    expect(formatPercent("12.50")).toBe("12,5");
+    expect(formatPercent("0.5")).toBe("0,5");
+    expect(formatPercent("99")).toBe("99");
   });
 });

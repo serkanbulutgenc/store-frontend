@@ -1,4 +1,4 @@
-import { formatDate, formatTry } from "@/lib/format";
+import { formatDate, formatPercent, formatTry } from "@/lib/format";
 
 const STATUS: Record<string, string> = {
   active: "Aktif",
@@ -21,7 +21,7 @@ export function voucherStatusTone(s: string): "neutral" | "good" | "warn" {
 /** What the code takes off: "%10 indirim", "%12,5 indirim" or "₺50,00 indirim". */
 export function benefitText(kind: string, value: string): string {
   if (kind === "percentage") {
-    return `%${String(Number(value)).replace(".", ",")} indirim`;
+    return `%${formatPercent(value)} indirim`;
   }
   return `${formatTry(value)} indirim`;
 }

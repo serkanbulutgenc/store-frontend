@@ -19,3 +19,6 @@ export function formatTry(amount: string | null | undefined): string {
 export function formatDate(iso: string): string {
   return DATE.format(new Date(iso)).replace(",", "");
 }
+
+/** A percentage from the API's decimal string ("20.00", "12.50") as "20" or "12,5": a Turkish comma, no trailing zeros. */
+export const formatPercent = (value: string): string => String(Number(value)).replace(".", ",");
