@@ -69,6 +69,19 @@ export const productQuery = (slug: string) =>
     },
   });
 
+/** The ranked "Benzer ürünler" cards of a Product: up to 8, empty when nothing is similar. */
+export const similarQuery = (slug: string) =>
+  queryOptions({
+    queryKey: [...ROOT, "similar", slug],
+    staleTime: 60_000,
+    queryFn: async () =>
+      (
+        await storeApi.GET("/api/store/products/{slug}/similar", {
+          params: { path: { slug } },
+        })
+      ).data as ProductCard[],
+  });
+
 /** The Size guide text, fetched only when the dialog opens so it stays out of the page HTML. */
 export const sizeGuideQuery = (slug: string) =>
   queryOptions({
