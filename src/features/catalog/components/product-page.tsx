@@ -6,31 +6,14 @@ import { HeartButton } from "@/features/favorites/components/heart-button";
 import { ReviewsSection } from "@/features/reviews/components/reviews-section";
 import { reviewsQuery } from "@/features/reviews/queries";
 import { cn } from "@/lib/utils";
-import { type ProductDetail, productsPageQuery } from "../queries";
+import type { ProductCard, ProductDetail } from "../queries";
 import { BrandLogo } from "./brand-logo";
-import { Price, ProductGrid } from "./product-card";
+import { Price } from "./product-card";
 import { ProductDescription } from "./product-description";
 import { ProductGallery } from "./product-gallery";
 import { useQuickPick } from "./quick-view/use-quick-pick";
+import { SimilarProducts } from "./similar-products";
 import { SizePickerExtras } from "./size-guide";
-
-function Similar({ product }: { product: ProductDetail }) {
-  const category = product.breadcrumbs.at(-1)?.slug;
-  const { data } = useQuery({
-    ...productsPageQuery({ in_stock: true }, { category, page: 1 }),
-    enabled: Boolean(category),
-  });
-  const items = data?.items.filter((p) => p.id !== product.id).slice(0, 4) ?? [];
-  if (items.length === 0) return null;
-  return (
-    <section className="mt-12" aria-labelledby="similar">
-      <h2 id="similar" className="mb-4 text-lg font-semibold">
-        Benzer ürünler
-      </h2>
-      <ProductGrid products={items} />
-    </section>
-  );
-}
 
 function ProductTabs({ product }: { product: ProductDetail }) {
   // Page 1 is the same query the reviews tab renders, so this costs no extra request.
@@ -71,7 +54,13 @@ function ProductTabs({ product }: { product: ProductDetail }) {
   );
 }
 
-export function ProductPage({ product }: { product: ProductDetail }) {
+export function ProductPage({
+  product,
+  similar,
+}: {
+  product: ProductDetail;
+  similar: ProductCard[];
+}) {
   const pick = useQuickPick(product);
   const { colourId, sizes, size: activeSize, variant, needsSize } = pick;
   const colour = product.colours.find((c) => c.id === colourId);
@@ -206,7 +195,9 @@ export function ProductPage({ product }: { product: ProductDetail }) {
         </div>
       </div>
       <ProductTabs product={product} />
-      <Similar product={product} />
+      <div className="mt-12">
+        <SimilarProducts products={similar} />
+      </div>
     </main>
   );
 }
