@@ -1,5 +1,6 @@
 import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { Save } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,8 @@ import {
   useCreateProduct,
   useUpdateProduct,
 } from "../queries";
-import { type ProductFormValues, productFormSchema, toProductBody } from "../schemas";
+import { FIT_NOTE_MAX, type ProductFormValues, productFormSchema, toProductBody } from "../schemas";
+import { guideSource } from "../size-guide-form";
 import { DescriptionEditor } from "./description-editor";
 
 const EMPTY: ProductFormValues = {
@@ -36,6 +38,8 @@ const EMPTY: ProductFormValues = {
   low_stock_threshold: "",
   desi: "",
   description: "",
+  size_guide: "",
+  fit_note: "",
 };
 
 function toFormValues(p: ProductOut): ProductFormValues {
@@ -53,6 +57,8 @@ function toFormValues(p: ProductOut): ProductFormValues {
     low_stock_threshold: String(p.low_stock_threshold),
     desi: p.desi == null ? "" : String(p.desi),
     description: p.description,
+    size_guide: p.size_guide ?? "",
+    fit_note: p.fit_note,
   };
 }
 
@@ -66,6 +72,7 @@ export const GENERAL_FIELDS: (keyof ProductFormValues)[] = [
   "slug",
 ];
 export const DESCRIPTION_FIELDS: (keyof ProductFormValues)[] = ["description"];
+export const SIZE_GUIDE_FIELDS: (keyof ProductFormValues)[] = ["size_guide", "fit_note"];
 export const PRICE_FIELDS: (keyof ProductFormValues)[] = [
   "shelf_price",
   "old_price",
@@ -312,6 +319,71 @@ export function DescriptionFields({ form, me }: FieldsProps) {
             disabled={!can(me, "manage_products")}
           />
         )}
+      </form.Field>
+    </fieldset>
+  );
+}
+
+/**
+ * Beden tablosu: the Fit note and this Product's own Size guide. Without an override the
+ * Product shows its class guide, which has its own editor; the reset puts it back to that.
+ */
+export function SizeGuideFields({ form, me, product }: FieldsProps) {
+  const canEdit = can(me, "manage_products");
+  return (
+    <fieldset disabled={!canEdit} className="space-y-4">
+      <form.Field name="fit_note">
+        {(f) => (
+          <Field
+            field={f}
+            label="Kalıp notu"
+            hint="İsteğe bağlı, tek satır. Beden seçicinin altında görünür. Örn. Dar kalıp, bir beden büyük alın."
+          >
+            <Input {...bind(f)} maxLength={FIT_NOTE_MAX * 2} />
+          </Field>
+        )}
+      </form.Field>
+      <form.Field name="size_guide">
+        {(f) => {
+          const source = guideSource((f.state.value ?? "") as string);
+          return (
+            <div className="space-y-2">
+              <DescriptionEditor
+                field={f}
+                label="Bu ürüne özel beden tablosu"
+                canUpload={can(me, "manage_product_photos")}
+                disabled={!canEdit}
+              />
+              <p className="text-sm text-muted-foreground" data-testid="guide-source">
+                {source === "override"
+                  ? "Bu ürün kendi tablosunu gösterir."
+                  : `Boş: bu ürün ${product ? `“${product.product_class.name}” sınıfının` : "sınıfının"} tablosunu gösterir.`}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {source === "override" && canEdit && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => f.handleChange("")}
+                  >
+                    Sınıf tablosunu kullan
+                  </Button>
+                )}
+                {product && (
+                  <Button type="button" size="sm" variant="outline" asChild>
+                    <Link
+                      to="/admin/product-classes/$classId/size-guide"
+                      params={{ classId: String(product.product_class.id) }}
+                    >
+                      Sınıf tablosunu düzenle
+                    </Link>
+                  </Button>
+                )}
+              </div>
+            </div>
+          );
+        }}
       </form.Field>
     </fieldset>
   );

@@ -73,6 +73,7 @@ import { Route as AdminAppProductsProductIdRouteImport } from './routes/admin/_a
 import { Route as AdminAppProductsNewRouteImport } from './routes/admin/_app/products/new'
 import { Route as StorefrontCustomerHesapSiparislerIndexRouteImport } from './routes/_storefront/_customer/hesap/siparisler/index'
 import { Route as StorefrontCustomerHesapSiparislerNumberRouteImport } from './routes/_storefront/_customer/hesap/siparisler/$number'
+import { Route as AdminAppProductClassesClassIdSizeGuideRouteImport } from './routes/admin/_app/product-classes/$classId_.size-guide'
 import { Route as AdminAppProductsProductIdPhotosRouteImport } from './routes/admin/_app/products/$productId_.photos'
 
 const StorefrontRouteRoute = StorefrontRouteRouteImport.update({
@@ -409,6 +410,12 @@ const StorefrontCustomerHesapSiparislerNumberRoute =
     path: '/siparisler/$number',
     getParentRoute: () => StorefrontCustomerHesapRouteRoute,
   } as any)
+const AdminAppProductClassesClassIdSizeGuideRoute =
+  AdminAppProductClassesClassIdSizeGuideRouteImport.update({
+    id: '/product-classes/$classId_/size-guide',
+    path: '/product-classes/$classId/size-guide',
+    getParentRoute: () => AdminAppRouteRoute,
+  } as any)
 const AdminAppProductsProductIdPhotosRoute =
   AdminAppProductsProductIdPhotosRouteImport.update({
     id: '/products/$productId_/photos',
@@ -477,6 +484,7 @@ export interface FileRoutesByFullPath {
   '/admin/product-classes/': typeof AdminAppProductClassesIndexRoute
   '/admin/products/': typeof AdminAppProductsIndexRoute
   '/hesap/siparisler/$number': typeof StorefrontCustomerHesapSiparislerNumberRoute
+  '/admin/product-classes/$classId/size-guide': typeof AdminAppProductClassesClassIdSizeGuideRoute
   '/admin/products/$productId/photos': typeof AdminAppProductsProductIdPhotosRoute
   '/hesap/siparisler/': typeof StorefrontCustomerHesapSiparislerIndexRoute
 }
@@ -539,6 +547,7 @@ export interface FileRoutesByTo {
   '/admin/product-classes': typeof AdminAppProductClassesIndexRoute
   '/admin/products': typeof AdminAppProductsIndexRoute
   '/hesap/siparisler/$number': typeof StorefrontCustomerHesapSiparislerNumberRoute
+  '/admin/product-classes/$classId/size-guide': typeof AdminAppProductClassesClassIdSizeGuideRoute
   '/admin/products/$productId/photos': typeof AdminAppProductsProductIdPhotosRoute
   '/hesap/siparisler': typeof StorefrontCustomerHesapSiparislerIndexRoute
 }
@@ -607,6 +616,7 @@ export interface FileRoutesById {
   '/admin/_app/product-classes/': typeof AdminAppProductClassesIndexRoute
   '/admin/_app/products/': typeof AdminAppProductsIndexRoute
   '/_storefront/_customer/hesap/siparisler/$number': typeof StorefrontCustomerHesapSiparislerNumberRoute
+  '/admin/_app/product-classes/$classId_/size-guide': typeof AdminAppProductClassesClassIdSizeGuideRoute
   '/admin/_app/products/$productId_/photos': typeof AdminAppProductsProductIdPhotosRoute
   '/_storefront/_customer/hesap/siparisler/': typeof StorefrontCustomerHesapSiparislerIndexRoute
 }
@@ -673,6 +683,7 @@ export interface FileRouteTypes {
     | '/admin/product-classes/'
     | '/admin/products/'
     | '/hesap/siparisler/$number'
+    | '/admin/product-classes/$classId/size-guide'
     | '/admin/products/$productId/photos'
     | '/hesap/siparisler/'
   fileRoutesByTo: FileRoutesByTo
@@ -735,6 +746,7 @@ export interface FileRouteTypes {
     | '/admin/product-classes'
     | '/admin/products'
     | '/hesap/siparisler/$number'
+    | '/admin/product-classes/$classId/size-guide'
     | '/admin/products/$productId/photos'
     | '/hesap/siparisler'
   id:
@@ -802,6 +814,7 @@ export interface FileRouteTypes {
     | '/admin/_app/product-classes/'
     | '/admin/_app/products/'
     | '/_storefront/_customer/hesap/siparisler/$number'
+    | '/admin/_app/product-classes/$classId_/size-guide'
     | '/admin/_app/products/$productId_/photos'
     | '/_storefront/_customer/hesap/siparisler/'
   fileRoutesById: FileRoutesById
@@ -1264,6 +1277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StorefrontCustomerHesapSiparislerNumberRouteImport
       parentRoute: typeof StorefrontCustomerHesapRouteRoute
     }
+    '/admin/_app/product-classes/$classId_/size-guide': {
+      id: '/admin/_app/product-classes/$classId_/size-guide'
+      path: '/product-classes/$classId/size-guide'
+      fullPath: '/admin/product-classes/$classId/size-guide'
+      preLoaderRoute: typeof AdminAppProductClassesClassIdSizeGuideRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
     '/admin/_app/products/$productId_/photos': {
       id: '/admin/_app/products/$productId_/photos'
       path: '/products/$productId/photos'
@@ -1394,6 +1414,7 @@ interface AdminAppRouteRouteChildren {
   AdminAppOrdersIndexRoute: typeof AdminAppOrdersIndexRoute
   AdminAppProductClassesIndexRoute: typeof AdminAppProductClassesIndexRoute
   AdminAppProductsIndexRoute: typeof AdminAppProductsIndexRoute
+  AdminAppProductClassesClassIdSizeGuideRoute: typeof AdminAppProductClassesClassIdSizeGuideRoute
   AdminAppProductsProductIdPhotosRoute: typeof AdminAppProductsProductIdPhotosRoute
 }
 
@@ -1431,6 +1452,8 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppOrdersIndexRoute: AdminAppOrdersIndexRoute,
   AdminAppProductClassesIndexRoute: AdminAppProductClassesIndexRoute,
   AdminAppProductsIndexRoute: AdminAppProductsIndexRoute,
+  AdminAppProductClassesClassIdSizeGuideRoute:
+    AdminAppProductClassesClassIdSizeGuideRoute,
   AdminAppProductsProductIdPhotosRoute: AdminAppProductsProductIdPhotosRoute,
 }
 

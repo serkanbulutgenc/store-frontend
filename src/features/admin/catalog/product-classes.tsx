@@ -99,11 +99,21 @@ export function ProductClassesScreen({ me }: { me: Me }) {
       })}
       save={(values, row) => save({ values: values as ProductClassForm, id: row?.id })}
       rowActions={(r) => (
-        <Button size="sm" variant="outline" asChild>
-          <Link to="/admin/product-classes/$classId" params={{ classId: String(r.id) }}>
-            Özellikler
-          </Link>
-        </Button>
+        <>
+          <Button size="sm" variant="outline" asChild>
+            <Link to="/admin/product-classes/$classId" params={{ classId: String(r.id) }}>
+              Özellikler
+            </Link>
+          </Button>
+          <Button size="sm" variant="outline" asChild>
+            <Link
+              to="/admin/product-classes/$classId/size-guide"
+              params={{ classId: String(r.id) }}
+            >
+              Beden tablosu
+            </Link>
+          </Button>
+        </>
       )}
       lockedFields={classLocks}
       canDelete={can(me, "manage_product_classes")}
