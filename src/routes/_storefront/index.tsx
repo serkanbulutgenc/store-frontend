@@ -3,6 +3,7 @@ import { settingsQuery } from "@/features/basket/queries";
 import { HomeBanner } from "@/features/catalog/components/home-banner";
 import { HomeHero } from "@/features/catalog/components/home-hero";
 import { ProductRail } from "@/features/catalog/components/product-rail";
+import { RecentlyViewed } from "@/features/catalog/components/recently-viewed";
 import {
   categoriesQuery,
   collectionPageQuery,
@@ -44,6 +45,7 @@ export const Route = createFileRoute("/_storefront/")({
         <HomeBanner banner={banner} />
         <HomeHero products={slider} />
         <div className="mx-auto max-w-6xl space-y-12 px-4 py-10">
+          <RecentlyViewed />
           <ProductRail title="Yeni gelenler" products={latest} seeAll={{ sort: "newest" }} />
           <ProductRail
             title="İndirimdekiler"

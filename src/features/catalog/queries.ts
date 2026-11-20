@@ -82,6 +82,18 @@ export const similarQuery = (slug: string) =>
       ).data as ProductCard[],
   });
 
+/** Fresh cards for the slugs this browser kept. Sold-out and unpublished Products are left out. */
+export const recentlyViewedQuery = (slugs: string[]) =>
+  queryOptions({
+    queryKey: [...ROOT, "recently-viewed", slugs],
+    queryFn: async () =>
+      (
+        await storeApi.GET("/api/store/recently-viewed", {
+          params: { query: { slugs: slugs.join(",") } },
+        })
+      ).data as ProductCard[],
+  });
+
 /** The Size guide text, fetched only when the dialog opens so it stays out of the page HTML. */
 export const sizeGuideQuery = (slug: string) =>
   queryOptions({
