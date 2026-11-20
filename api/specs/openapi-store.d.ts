@@ -605,6 +605,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/products/{slug}/size-guide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Product Size Guide
+         * @description The Size guide that applies to a published Product, loaded when the dialog
+         *     opens. 404 when none applies (no guide written, or a One-size Product).
+         */
+        get: operations["catalog_get_product_size_guide"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/store/settings": {
         parameters: {
             query?: never;
@@ -1440,6 +1461,10 @@ export interface components {
             colours: components["schemas"]["SwatchOut"][];
             /** Description */
             description: string;
+            /** Fit Note */
+            fit_note: string;
+            /** Has Size Guide */
+            has_size_guide: boolean;
             /** Id */
             id: number;
             image: components["schemas"]["CardImageOut"] | null;
@@ -1781,6 +1806,11 @@ export interface components {
             count: number;
             /** Size */
             size: string;
+        };
+        /** SizeGuideOut */
+        SizeGuideOut: {
+            /** Text */
+            text: string;
         };
         /** SwatchOut */
         SwatchOut: {
@@ -2765,6 +2795,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReviewPageOut"];
+                };
+            };
+        };
+    };
+    catalog_get_product_size_guide: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SizeGuideOut"];
                 };
             };
         };

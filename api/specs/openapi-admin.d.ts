@@ -1351,6 +1351,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/product-classes/{class_id}/size-guide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Class Size Guide */
+        get: operations["catalog_get_class_size_guide"];
+        /** Set Class Size Guide */
+        put: operations["catalog_set_class_size_guide"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/products": {
         parameters: {
             query?: never;
@@ -3711,6 +3729,8 @@ export interface components {
             description: string;
             /** Desi */
             desi: number | null;
+            /** Fit Note */
+            fit_note: string;
             /** Id */
             id: number;
             /**
@@ -3733,6 +3753,8 @@ export interface components {
              * @example 349.90
              */
             shelf_price: string;
+            /** Size Guide */
+            size_guide: string | null;
             /** Slug */
             slug: string;
             status: components["schemas"]["ProductStatus"];
@@ -3756,6 +3778,8 @@ export interface components {
             description?: string | null;
             /** Desi */
             desi?: number | null;
+            /** Fit Note */
+            fit_note?: string | null;
             /** Kdv Rate */
             kdv_rate?: number | string | null;
             /** Low Stock Threshold */
@@ -3764,6 +3788,8 @@ export interface components {
             old_price?: string | null;
             /** Shelf Price */
             shelf_price?: string | null;
+            /** Size Guide */
+            size_guide?: string | null;
             /** Slug */
             slug?: string | null;
             /** Supplier Code */
@@ -4124,6 +4150,11 @@ export interface components {
             rates: components["schemas"]["RateOut"][];
             /** Zones */
             zones: components["schemas"]["ZoneOut"][];
+        };
+        /** SizeGuideIO */
+        SizeGuideIO: {
+            /** Text */
+            text: string;
         };
         /** SkippedCombinationOut */
         SkippedCombinationOut: {
@@ -6619,6 +6650,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AttributeOut"];
+                };
+            };
+        };
+    };
+    catalog_get_class_size_guide: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                class_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SizeGuideIO"];
+                };
+            };
+        };
+    };
+    catalog_set_class_size_guide: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                class_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SizeGuideIO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SizeGuideIO"];
                 };
             };
         };
