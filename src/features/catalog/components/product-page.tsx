@@ -12,6 +12,7 @@ import { Price, ProductGrid } from "./product-card";
 import { ProductDescription } from "./product-description";
 import { ProductGallery } from "./product-gallery";
 import { useQuickPick } from "./quick-view/use-quick-pick";
+import { SizePickerExtras } from "./size-guide";
 
 function Similar({ product }: { product: ProductDetail }) {
   const category = product.breadcrumbs.at(-1)?.slug;
@@ -178,6 +179,7 @@ export function ProductPage({ product }: { product: ProductDetail }) {
               </div>
             </fieldset>
           )}
+          <SizePickerExtras product={product} />
 
           <div className="space-y-2">
             <p aria-live="polite" className="min-h-6 font-medium text-primary">
