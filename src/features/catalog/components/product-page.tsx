@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HeartButton } from "@/features/favorites/components/heart-button";
@@ -7,11 +8,13 @@ import { ReviewsSection } from "@/features/reviews/components/reviews-section";
 import { reviewsQuery } from "@/features/reviews/queries";
 import { cn } from "@/lib/utils";
 import type { ProductCard, ProductDetail } from "../queries";
+import { recordViewed } from "../recently-viewed";
 import { BrandLogo } from "./brand-logo";
 import { Price } from "./product-card";
 import { ProductDescription } from "./product-description";
 import { ProductGallery } from "./product-gallery";
 import { useQuickPick } from "./quick-view/use-quick-pick";
+import { RecentlyViewed } from "./recently-viewed";
 import { SimilarProducts } from "./similar-products";
 import { SizePickerExtras } from "./size-guide";
 
@@ -62,6 +65,7 @@ export function ProductPage({
   similar: ProductCard[];
 }) {
   const pick = useQuickPick(product);
+  useEffect(() => recordViewed(product.slug), [product.slug]);
   const { colourId, sizes, size: activeSize, variant, needsSize } = pick;
   const colour = product.colours.find((c) => c.id === colourId);
 
@@ -195,8 +199,11 @@ export function ProductPage({
         </div>
       </div>
       <ProductTabs product={product} />
-      <div className="mt-12">
+      <div className="mt-12 empty:hidden">
         <SimilarProducts products={similar} />
+      </div>
+      <div className="mt-12 empty:hidden">
+        <RecentlyViewed currentSlug={product.slug} />
       </div>
     </main>
   );

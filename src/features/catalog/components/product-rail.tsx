@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { ProductCard as Card } from "../queries";
 import { ProductCard } from "./product-card";
@@ -66,11 +66,14 @@ export function ProductRail({
   products,
   seeAll,
   showDiscount,
+  action,
 }: {
   title: string;
   products: Card[];
   seeAll?: { sort?: "newest" | "popular"; on_sale?: true };
   showDiscount?: boolean;
+  /** Replaces the "see all" link, e.g. a "Temizle" button. */
+  action?: ReactNode;
 }) {
   const [ref, api] = useEmblaCarousel({
     align: "start",
@@ -86,6 +89,7 @@ export function ProductRail({
         <h2 id={id} className="text-xl font-semibold">
           {title}
         </h2>
+        {action}
         {seeAll && (
           <Link to="/ara" search={seeAll} className="text-sm underline underline-offset-4">
             Tümünü gör

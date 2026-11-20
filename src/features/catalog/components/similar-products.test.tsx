@@ -1,14 +1,6 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  createMemoryHistory,
-  createRootRoute,
-  createRoute,
-  createRouter,
-  RouterContextProvider,
-} from "@tanstack/react-router";
-import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import type { ProductCard } from "../queries";
+import { renderInStorefront } from "./render-in-storefront";
 import { SimilarProducts } from "./similar-products";
 
 const card = (n: number): ProductCard => ({
@@ -26,21 +18,8 @@ const card = (n: number): ProductCard => ({
   image: null,
 });
 
-// Cards render router Links, so the rail needs a router and a query client around it.
-const root = createRootRoute();
-const router = createRouter({
-  routeTree: root.addChildren([createRoute({ getParentRoute: () => root, path: "/urun/$slug" })]),
-  history: createMemoryHistory({ initialEntries: ["/"] }),
-});
-
 const html = (products: ProductCard[]) =>
-  renderToStaticMarkup(
-    <QueryClientProvider client={new QueryClient()}>
-      <RouterContextProvider router={router}>
-        <SimilarProducts products={products} />
-      </RouterContextProvider>
-    </QueryClientProvider>,
-  );
+  renderInStorefront(<SimilarProducts products={products} />);
 
 describe("SimilarProducts", () => {
   it("renders the 'Benzer ürünler' rail with a plain link to each product", () => {
