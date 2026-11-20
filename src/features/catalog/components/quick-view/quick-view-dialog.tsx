@@ -8,6 +8,7 @@ import { type ProductDetail, productQuery } from "../../queries";
 import { BrandLogo } from "../brand-logo";
 import { Price } from "../product-card";
 import { ProductGallery } from "../product-gallery";
+import { SizePickerExtras } from "../size-guide";
 import { ColourChips, SizeChips } from "./option-chips";
 import { useQuickPick } from "./use-quick-pick";
 
@@ -95,6 +96,7 @@ function Content({ product, onAdded }: { product: ProductDetail; onAdded: () => 
         </div>
         <ColourChips product={product} pick={pick} />
         <SizeChips pick={pick} />
+        <SizePickerExtras product={product} />
         <p aria-live="polite" className="min-h-5 text-sm font-medium text-primary">
           {pick.label}
         </p>

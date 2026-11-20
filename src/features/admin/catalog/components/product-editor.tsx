@@ -8,6 +8,7 @@ import {
   FileText,
   Layers,
   ListChecks,
+  Ruler,
 } from "lucide-react";
 import { Suspense, useState } from "react";
 import { toast } from "sonner";
@@ -31,6 +32,8 @@ import {
   PRICE_FIELDS,
   PriceFields,
   ProductFormFooter,
+  SIZE_GUIDE_FIELDS,
+  SizeGuideFields,
   useProductForm,
 } from "./product-form";
 import { VariantsSection } from "./variants-section";
@@ -49,11 +52,19 @@ export function statusActions(status: ProductStatus, perms: { manage: boolean; a
   return actions;
 }
 
-export type EditorTab = "general" | "price" | "description" | "variants" | "attributes" | "photos";
+export type EditorTab =
+  | "general"
+  | "price"
+  | "description"
+  | "size-guide"
+  | "variants"
+  | "attributes"
+  | "photos";
 export const EDITOR_TABS: EditorTab[] = [
   "general",
   "price",
   "description",
+  "size-guide",
   "variants",
   "attributes",
   "photos",
@@ -166,6 +177,11 @@ export function ProductEditor({
                     Açıklama
                     {marker(bad(DESCRIPTION_FIELDS))}
                   </TabsTrigger>
+                  <TabsTrigger value="size-guide" className="gap-1.5">
+                    <Ruler aria-hidden className="size-4" />
+                    Beden tablosu
+                    {marker(bad(SIZE_GUIDE_FIELDS))}
+                  </TabsTrigger>
                   <TabsTrigger value="variants" className="gap-1.5">
                     <Layers aria-hidden className="size-4" />
                     Varyantlar
@@ -203,9 +219,13 @@ export function ProductEditor({
           <TabsContent value="description" forceMount className={panelClass}>
             <DescriptionFields form={form} me={me} />
           </TabsContent>
-          {(tab === "general" || tab === "price" || tab === "description") && (
-            <ProductFormFooter form={form} me={me} label="Kaydet" />
-          )}
+          <TabsContent value="size-guide" forceMount className={panelClass}>
+            <SizeGuideFields form={form} me={me} product={product} />
+          </TabsContent>
+          {(tab === "general" ||
+            tab === "price" ||
+            tab === "description" ||
+            tab === "size-guide") && <ProductFormFooter form={form} me={me} label="Kaydet" />}
         </form>
 
         <TabsContent value="variants" forceMount className={panelClass}>

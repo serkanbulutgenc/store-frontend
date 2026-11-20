@@ -69,6 +69,44 @@ export const productQuery = (slug: string) =>
     },
   });
 
+/** The ranked "Benzer ürünler" cards of a Product: up to 8, empty when nothing is similar. */
+export const similarQuery = (slug: string) =>
+  queryOptions({
+    queryKey: [...ROOT, "similar", slug],
+    staleTime: 60_000,
+    queryFn: async () =>
+      (
+        await storeApi.GET("/api/store/products/{slug}/similar", {
+          params: { path: { slug } },
+        })
+      ).data as ProductCard[],
+  });
+
+/** Fresh cards for the slugs this browser kept. Sold-out and unpublished Products are left out. */
+export const recentlyViewedQuery = (slugs: string[]) =>
+  queryOptions({
+    queryKey: [...ROOT, "recently-viewed", slugs],
+    queryFn: async () =>
+      (
+        await storeApi.GET("/api/store/recently-viewed", {
+          params: { query: { slugs: slugs.join(",") } },
+        })
+      ).data as ProductCard[],
+  });
+
+/** The Size guide text, fetched only when the dialog opens so it stays out of the page HTML. */
+export const sizeGuideQuery = (slug: string) =>
+  queryOptions({
+    queryKey: [...ROOT, "size-guide", slug],
+    staleTime: 5 * 60_000,
+    queryFn: async () =>
+      (
+        await storeApi.GET("/api/store/products/{slug}/size-guide", {
+          params: { path: { slug } },
+        })
+      ).data as components["schemas"]["SizeGuideOut"],
+  });
+
 /**
  * Pages the server loaded for a listing, sent to the browser inside the route's loader data.
  * The browser has no query cache at hydration, so without them its first render would be a

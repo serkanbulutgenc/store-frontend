@@ -1,35 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HeartButton } from "@/features/favorites/components/heart-button";
 import { ReviewsSection } from "@/features/reviews/components/reviews-section";
 import { reviewsQuery } from "@/features/reviews/queries";
 import { cn } from "@/lib/utils";
-import { type ProductDetail, productsPageQuery } from "../queries";
+import type { ProductCard, ProductDetail } from "../queries";
+import { recordViewed } from "../recently-viewed";
 import { BrandLogo } from "./brand-logo";
-import { Price, ProductGrid } from "./product-card";
+import { Price } from "./product-card";
 import { ProductDescription } from "./product-description";
 import { ProductGallery } from "./product-gallery";
 import { useQuickPick } from "./quick-view/use-quick-pick";
-
-function Similar({ product }: { product: ProductDetail }) {
-  const category = product.breadcrumbs.at(-1)?.slug;
-  const { data } = useQuery({
-    ...productsPageQuery({ in_stock: true }, { category, page: 1 }),
-    enabled: Boolean(category),
-  });
-  const items = data?.items.filter((p) => p.id !== product.id).slice(0, 4) ?? [];
-  if (items.length === 0) return null;
-  return (
-    <section className="mt-12" aria-labelledby="similar">
-      <h2 id="similar" className="mb-4 text-lg font-semibold">
-        Benzer ürünler
-      </h2>
-      <ProductGrid products={items} />
-    </section>
-  );
-}
+import { RecentlyViewed } from "./recently-viewed";
+import { SimilarProducts } from "./similar-products";
+import { SizePickerExtras } from "./size-guide";
 
 function ProductTabs({ product }: { product: ProductDetail }) {
   // Page 1 is the same query the reviews tab renders, so this costs no extra request.
@@ -70,8 +57,15 @@ function ProductTabs({ product }: { product: ProductDetail }) {
   );
 }
 
-export function ProductPage({ product }: { product: ProductDetail }) {
+export function ProductPage({
+  product,
+  similar,
+}: {
+  product: ProductDetail;
+  similar: ProductCard[];
+}) {
   const pick = useQuickPick(product);
+  useEffect(() => recordViewed(product.slug), [product.slug]);
   const { colourId, sizes, size: activeSize, variant, needsSize } = pick;
   const colour = product.colours.find((c) => c.id === colourId);
 
@@ -178,6 +172,7 @@ export function ProductPage({ product }: { product: ProductDetail }) {
               </div>
             </fieldset>
           )}
+          <SizePickerExtras product={product} />
 
           <div className="space-y-2">
             <p aria-live="polite" className="min-h-6 font-medium text-primary">
@@ -204,7 +199,12 @@ export function ProductPage({ product }: { product: ProductDetail }) {
         </div>
       </div>
       <ProductTabs product={product} />
-      <Similar product={product} />
+      <div className="mt-12 empty:hidden">
+        <SimilarProducts products={similar} />
+      </div>
+      <div className="mt-12 empty:hidden">
+        <RecentlyViewed currentSlug={product.slug} />
+      </div>
     </main>
   );
 }

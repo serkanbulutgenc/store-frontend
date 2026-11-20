@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link, Outlet, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { logout } from "@/features/admin/auth/allauth";
+import { endSession } from "../sign-out";
 
 const LINKS = [
   { to: "/hesap", label: "Profil" },
@@ -12,14 +12,13 @@ const LINKS = [
   { to: "/hesap/guvenlik", label: "Güvenlik" },
 ] as const;
 
-/** Sign out, then drop everything cached for this person so the next visitor never sees it. */
+/** Sign out and forget this person (see `endSession`), then go home. */
 export function useSignOut() {
   const qc = useQueryClient();
   const router = useRouter();
   return async () => {
     try {
-      await logout();
-      qc.clear();
+      await endSession(qc);
       await router.invalidate();
       await router.navigate({ to: "/" });
     } catch {
