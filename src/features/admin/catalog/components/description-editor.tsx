@@ -63,10 +63,12 @@ export function DescriptionEditor({
   field,
   canUpload,
   disabled,
+  label = "Açıklama",
 }: {
   field: AnyFieldApi;
   canUpload: boolean;
   disabled?: boolean;
+  label?: string;
 }) {
   const value = (field.state.value ?? "") as string;
   const area = useRef<HTMLTextAreaElement>(null);
@@ -116,7 +118,7 @@ export function DescriptionEditor({
   const tools = disabled || preview;
 
   return (
-    <Field field={field} label="Açıklama">
+    <Field field={field} label={label}>
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-1">
           <div role="toolbar" aria-label="Biçimlendirme" className="flex flex-wrap gap-0.5">

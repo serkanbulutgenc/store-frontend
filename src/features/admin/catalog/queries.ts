@@ -310,3 +310,35 @@ export const useReorderImages = (productId: number) => {
     onSettled: () => qc.invalidateQueries({ queryKey: keys.images(productId) }),
   });
 };
+
+/** The Size guide of one Product class; Owner and Staff both edit it. */
+export const classGuideQuery = (classId: number) =>
+  queryOptions({
+    queryKey: [...keys.refs, "size-guide", classId] as const,
+    queryFn: async () =>
+      (
+        await adminApi.GET("/api/admin/product-classes/{class_id}/size-guide", {
+          params: { path: { class_id: classId } },
+        })
+      ).data as components["schemas"]["SizeGuideIO"],
+  });
+
+export const useSetClassGuide = (classId: number) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: { text: string }) =>
+      (
+        await adminApi.PUT("/api/admin/product-classes/{class_id}/size-guide", {
+          params: { path: { class_id: classId } },
+          body,
+        })
+      ).data as components["schemas"]["SizeGuideIO"],
+    // Every Product of the class shows this guide, and the audit log gained an entry.
+    onSuccess: () =>
+      Promise.all(
+        [classGuideQuery(classId).queryKey, keys.products].map((queryKey) =>
+          qc.invalidateQueries({ queryKey }),
+        ),
+      ),
+  });
+};

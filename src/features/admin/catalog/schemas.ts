@@ -7,7 +7,8 @@ import { desiError } from "../shipping/desi";
 type ProductIn = Omit<components["schemas"]["ProductIn"], "supplier_code"> & {
   supplier_code?: string;
 };
-export type ProductBody = ProductIn;
+// Editing only: the create API does not take the Size guide override or the Fit note.
+export type ProductBody = ProductIn & { size_guide?: string | null; fit_note?: string };
 
 /** Money is a decimal string with up to two places. Never parsed to a number. */
 export const moneySchema = z
@@ -22,6 +23,9 @@ const toId = (v: string) => (v === "" ? null : Number(v));
 /** The API's limit on a Product Description, counted in characters (code points), not bytes. */
 export const DESCRIPTION_MAX = 5000;
 export const descriptionLength = (text: string) => Array.from(text).length;
+
+/** The API's limit on a Fit note: one line of plain text. */
+export const FIT_NOTE_MAX = 120;
 
 /** Form values are strings (inputs); `toProductBody` turns them into the API body. */
 export const productFormSchema = z.object({
@@ -42,6 +46,19 @@ export const productFormSchema = z.object({
       (v) => descriptionLength(v) <= DESCRIPTION_MAX,
       `Açıklama en fazla ${DESCRIPTION_MAX} karakter olabilir.`,
     ),
+  size_guide: z
+    .string()
+    .refine(
+      (v) => descriptionLength(v) <= DESCRIPTION_MAX,
+      `Beden tablosu en fazla ${DESCRIPTION_MAX} karakter olabilir.`,
+    ),
+  fit_note: z
+    .string()
+    .refine((v) => !/[\r\n]/.test(v), "Kalıp notu tek satır olmalı.")
+    .refine(
+      (v) => descriptionLength(v.trim()) <= FIT_NOTE_MAX,
+      `Kalıp notu en fazla ${FIT_NOTE_MAX} karakter olabilir.`,
+    ),
   desi: z.string().superRefine((v, ctx) => {
     const message = desiError(v, { optional: true });
     if (message) ctx.addIssue({ code: "custom", message });
@@ -58,7 +75,7 @@ export function toProductBody(
   can: { cost: boolean; supplier: boolean; desi: boolean },
   mode: "create" | "edit" = "create",
 ) {
-  const body: ProductIn = {
+  const body: ProductBody = {
     title: v.title,
     category_id: Number(v.category_id),
     brand_id: toId(v.brand_id),
@@ -75,6 +92,11 @@ export function toProductBody(
     body.low_stock_threshold = toId(v.low_stock_threshold);
   // Owner only: Blank clears the override, so the class default applies; null is a valid value here.
   if (can.desi) body.desi = v.desi.trim() === "" ? null : Number(v.desi);
+  if (mode === "edit") {
+    // Empty removes the override, so the Product shows its class guide; an empty note clears it.
+    body.size_guide = v.size_guide.trim() === "" ? null : v.size_guide;
+    body.fit_note = v.fit_note.trim();
+  }
   if (can.cost) body.cost_price = nullIfEmpty(v.cost_price);
   if (can.supplier) {
     body.supplier_id = toId(v.supplier_id);

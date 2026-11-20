@@ -33,6 +33,8 @@ const product = {
   low_stock_threshold: "",
   desi: "",
   description: "",
+  size_guide: "",
+  fit_note: "",
 };
 
 describe("productFormSchema", () => {
@@ -226,5 +228,52 @@ describe("product description", () => {
     expect(toProductBody(parsed(text), can, "create").description).toBe(text);
     expect(toProductBody(parsed(text), can, "edit").description).toBe(text);
     expect(toProductBody(parsed(""), can, "edit").description).toBe("");
+  });
+});
+
+describe("Size guide override and Fit note", () => {
+  const can = { cost: false, supplier: false, desi: false };
+
+  it("sends the override and the trimmed Fit note when editing", () => {
+    const values = productFormSchema.parse({
+      ...product,
+      size_guide: "| Beden | Bel |\n|---|---|\n| M | 70 |",
+      fit_note: "  Dar kalıp  ",
+    });
+
+    expect(toProductBody(values, can, "edit")).toMatchObject({
+      size_guide: "| Beden | Bel |\n|---|---|\n| M | 70 |",
+      fit_note: "Dar kalıp",
+    });
+  });
+
+  it("sends null for an empty override, which makes the Product use its class guide", () => {
+    const values = productFormSchema.parse({ ...product, size_guide: "  \n " });
+
+    expect(toProductBody(values, can, "edit").size_guide).toBeNull();
+  });
+
+  it("sends an empty Fit note to remove it", () => {
+    const values = productFormSchema.parse({ ...product, fit_note: "" });
+
+    expect(toProductBody(values, can, "edit").fit_note).toBe("");
+  });
+
+  it("leaves both out when creating: the create API does not take them", () => {
+    const values = productFormSchema.parse({ ...product, size_guide: "x", fit_note: "y" });
+    const body = toProductBody(values, can, "create");
+
+    expect(body).not.toHaveProperty("size_guide");
+    expect(body).not.toHaveProperty("fit_note");
+  });
+
+  it("limits the override like a Description and the Fit note to one short line", () => {
+    const bad = (extra: object) => productFormSchema.safeParse({ ...product, ...extra }).success;
+
+    expect(bad({ size_guide: "x".repeat(5000) })).toBe(true);
+    expect(bad({ size_guide: "x".repeat(5001) })).toBe(false);
+    expect(bad({ fit_note: "x".repeat(120) })).toBe(true);
+    expect(bad({ fit_note: "x".repeat(121) })).toBe(false);
+    expect(bad({ fit_note: "iki\nsatır" })).toBe(false);
   });
 });
