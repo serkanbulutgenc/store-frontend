@@ -7,6 +7,7 @@ import {
   invalidCells,
   missingCount,
   toggle,
+  waitingCaption,
 } from "./variant-tools";
 
 const v = (id: number, colourId: number, size: string, onHand: number): VariantOut =>
@@ -14,7 +15,7 @@ const v = (id: number, colourId: number, size: string, onHand: number): VariantO
     id,
     colour: { id: colourId, name: `C${colourId}`, hex_code: "#000000" },
     size,
-    stock: { on_hand: onHand, allocated: 0 },
+    stock: { on_hand: onHand, allocated: 0, waiting: 0 },
   }) as VariantOut;
 
 const variants = [v(1, 1, "S", 5), v(2, 1, "M", 5), v(3, 2, "M", 0)];
@@ -46,4 +47,9 @@ it("toggles and counts missing combinations", () => {
   expect(toggle([1, 2], 2)).toEqual([1]);
   expect(toggle([1], 3)).toEqual([1, 3]);
   expect(missingCount(variants, [1, 2], ["S", "M"])).toBe(1);
+});
+
+it("captions the Shoppers waiting on a Variant, and nothing for none", () => {
+  expect(waitingCaption(3)).toBe("3 bekliyor");
+  expect(waitingCaption(0)).toBeNull();
 });
