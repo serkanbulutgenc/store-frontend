@@ -4039,6 +4039,8 @@ export interface components {
              * @example 349.90
              */
             shipping_fee: string;
+            /** Stock Alerts Enabled */
+            stock_alerts_enabled: boolean;
         };
         /**
          * SettingsPatch
@@ -4083,6 +4085,8 @@ export interface components {
             seller_tax_number?: string | null;
             /** Shipping Fee */
             shipping_fee?: string | null;
+            /** Stock Alerts Enabled */
+            stock_alerts_enabled?: boolean | null;
         };
         /** SheetBuyer */
         SheetBuyer: {
@@ -4208,6 +4212,11 @@ export interface components {
             allocated: number;
             /** On Hand */
             on_hand: number;
+            /**
+             * Waiting
+             * @description Shoppers waiting for a Stock alert on this Variant (confirmed, not lapsed). Never their addresses.
+             */
+            waiting: number;
         };
         /** SupplierIn */
         SupplierIn: {

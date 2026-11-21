@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HeartButton } from "@/features/favorites/components/heart-button";
 import { ReviewsSection } from "@/features/reviews/components/reviews-section";
 import { reviewsQuery } from "@/features/reviews/queries";
+import { NotifyMe } from "@/features/stock-alerts/components/notify-me";
 import { cn } from "@/lib/utils";
 import type { ProductCard, ProductDetail } from "../queries";
 import { recordViewed } from "../recently-viewed";
@@ -186,6 +187,9 @@ export function ProductPage({
             >
               {variant && !variant.in_stock ? "Tükendi" : needsSize ? "Beden seçin" : "Sepete ekle"}
             </Button>
+            {variant && !variant.in_stock && (
+              <NotifyMe productSlug={product.slug} variantId={variant.id} />
+            )}
           </div>
 
           <p className="rounded-md bg-muted px-3 py-2 text-sm">
