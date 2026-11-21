@@ -1,8 +1,23 @@
-import { Banknote, Bell, FileText, Image, type LucideIcon, Store, Truck } from "lucide-react";
+import {
+  Banknote,
+  Bell,
+  BellRing,
+  FileText,
+  Image,
+  type LucideIcon,
+  Store,
+  Truck,
+} from "lucide-react";
 import type { SettingsFormValues } from "./schemas";
 
 export type FieldName = keyof SettingsFormValues;
-export type FieldSpec = { name: FieldName; label: string; hint?: string; area?: boolean };
+export type FieldSpec = {
+  name: FieldName;
+  label: string;
+  hint?: string;
+  area?: boolean;
+  kind?: "switch";
+};
 export type SettingsTab = {
   id: string;
   label: string;
@@ -73,6 +88,19 @@ export const SETTINGS_TABS: SettingsTab[] = [
       { name: "seller_phone", label: "Telefon" },
       { name: "return_carrier", label: "İade kargo firması" },
       { name: "complaint_contact", label: "Şikayet iletişimi" },
+    ],
+  },
+  {
+    id: "stock_alerts",
+    label: "Stok bildirimi",
+    icon: BellRing,
+    fields: [
+      {
+        name: "stock_alerts_enabled",
+        label: "Stok bildirimini aç (Haber ver)",
+        kind: "switch",
+        hint: "Açmadan önce İYS kaydı tamamlanmış olmalıdır. Bildirim e-postaları ticari elektronik iletidir; İYS girişlerini siz elle yaparsınız.",
+      },
     ],
   },
   { id: "legal", label: "Yasal metin sürümleri", icon: FileText, fields: [] },

@@ -61,6 +61,11 @@ export function invalidCells(variants: VariantOut[], draft: GridDraft) {
     .map(([id]) => Number(id));
 }
 
+/** The grid caption for Shoppers waiting on a Variant (confirmed only, never addresses); none for 0. */
+export function waitingCaption(waiting: number) {
+  return waiting > 0 ? `${waiting} bekliyor` : null;
+}
+
 /** Toggle `value` in a selection list, keeping first-chosen order. */
 export function toggle<T>(list: T[], value: T): T[] {
   return list.includes(value) ? list.filter((x) => x !== value) : [...list, value];
