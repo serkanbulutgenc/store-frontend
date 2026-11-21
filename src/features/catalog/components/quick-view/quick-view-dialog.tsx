@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { X } from "lucide-react";
 import { Dialog } from "radix-ui";
 import { Button } from "@/components/ui/button";
+import { NotifyMe } from "@/features/stock-alerts/components/notify-me";
 import { descriptionExcerpt } from "../../description-excerpt";
 import { type ProductDetail, productQuery } from "../../queries";
 import { BrandLogo } from "../brand-logo";
@@ -112,6 +113,9 @@ function Content({ product, onAdded }: { product: ProductDetail; onAdded: () => 
               ? "Beden seçin"
               : "Sepete ekle"}
         </Button>
+        {pick.variant && !pick.variant.in_stock && (
+          <NotifyMe productSlug={product.slug} variantId={pick.variant.id} />
+        )}
         {product.description && (
           <p className="line-clamp-4 text-sm text-muted-foreground">
             {descriptionExcerpt(product.description, EXCERPT_LENGTH)}
