@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatTry } from "@/lib/format";
-import { compare, type SeriesPoint } from "./rules";
+import { compare, reasonMix, returnRateText, type SeriesPoint } from "./rules";
 
 export type ProductReportRow = {
   product_id: number | null;
@@ -213,5 +213,106 @@ export function ReportFailed({ onRetry }: { onRetry: () => void }) {
         Tekrar dene
       </Button>
     </div>
+  );
+}
+
+export type ReturnRow = {
+  key: string;
+  name: string;
+  shipped: number;
+  returned: number;
+  rate: number | null;
+  reasons: Parameters<typeof reasonMix>[0];
+};
+
+/** Returns by Product or by Size: the rate (counts only when the API sends none) and why they came back. */
+export function ReturnsTable({ nameHeader, rows }: { nameHeader: string; rows: ReturnRow[] }) {
+  if (rows.length === 0)
+    return <p className="text-sm text-muted-foreground">Bu dönemde iade verisi yok.</p>;
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>{nameHeader}</TableHead>
+          <TableHead>İade oranı</TableHead>
+          <TableHead>Nedenler</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rows.map((row) => (
+          <TableRow key={row.key}>
+            <TableCell>{row.name}</TableCell>
+            <TableCell>{returnRateText(row)}</TableCell>
+            <TableCell>
+              {reasonMix(row.reasons)
+                .map((r) => `${r.label}: ${r.count}`)
+                .join(", ")}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
+type DiscountRow = { orders: number; revenue: string; discount: string };
+
+function DiscountTable({
+  nameHeader,
+  rows,
+  empty,
+}: {
+  nameHeader: string;
+  rows: (DiscountRow & { key: string; name: string })[];
+  empty: string;
+}) {
+  if (rows.length === 0) return <p className="text-sm text-muted-foreground">{empty}</p>;
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>{nameHeader}</TableHead>
+          <TableHead className="text-right">Sipariş</TableHead>
+          <TableHead className="text-right">Ciro</TableHead>
+          <TableHead className="text-right">Verilen indirim</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rows.map((row) => (
+          <TableRow key={row.key}>
+            <TableCell>{row.name}</TableCell>
+            <TableCell className="text-right">{row.orders}</TableCell>
+            <TableCell className="text-right">{formatTry(row.revenue)}</TableCell>
+            <TableCell className="text-right">{formatTry(row.discount)}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
+/** The discount each Campaign gave. */
+export function CampaignsTable({
+  rows,
+}: {
+  rows: (DiscountRow & { campaign_id: number; name: string })[];
+}) {
+  return (
+    <DiscountTable
+      nameHeader="Kampanya"
+      empty="Bu dönemde kampanya satışı yok."
+      rows={rows.map((r) => ({ ...r, key: String(r.campaign_id) }))}
+    />
+  );
+}
+
+/** The discount each Voucher gave. */
+export function VouchersTable({ rows }: { rows: (DiscountRow & { code: string })[] }) {
+  return (
+    <DiscountTable
+      nameHeader="Kupon"
+      empty="Bu dönemde kupon kullanılmadı."
+      rows={rows.map((r) => ({ ...r, key: r.code, name: r.code }))}
+    />
   );
 }

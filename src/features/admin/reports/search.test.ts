@@ -6,13 +6,14 @@ describe("reportSearchSchema report", () => {
     expect(reportSearchSchema.parse({}).report).toBe("sales");
   });
 
-  it("takes either report the screen has", () => {
-    expect(reportSearchSchema.parse({ report: "products" }).report).toBe("products");
-    expect(reportSearchSchema.parse({ report: "sales" }).report).toBe("sales");
+  it("takes every report the screen has", () => {
+    for (const report of ["sales", "products", "returns", "campaigns-vouchers"]) {
+      expect(reportSearchSchema.parse({ report }).report).toBe(report);
+    }
   });
 
-  it("falls back to Sales for a report that does not exist (yet)", () => {
-    for (const bad of ["returns", "", 3, null]) {
+  it("falls back to Sales for a report that does not exist", () => {
+    for (const bad of ["campaigns_vouchers", "refunds", "", 3, null]) {
       expect(reportSearchSchema.parse({ report: bad }).report).toBe("sales");
     }
   });

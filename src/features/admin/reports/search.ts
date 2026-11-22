@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-/** The reports the screen has. #81 adds returns and campaigns-vouchers. */
+/** The reports the screen has. */
 /** The ranges the API names itself. */
 export const PRESETS = ["today", "7d", "30d", "this_month", "last_month"] as const;
 
-export const REPORTS = ["sales", "products"] as const;
+export const REPORTS = ["sales", "products", "returns", "campaigns-vouchers"] as const;
 
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 const MAX_RANGE_DAYS = 366;

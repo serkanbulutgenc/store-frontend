@@ -1,6 +1,15 @@
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { CsvButton, ProductsTable, ReportFailed, SalesChart, SalesSummary } from "./report-parts";
+import {
+  CampaignsTable,
+  CsvButton,
+  ProductsTable,
+  ReportFailed,
+  ReturnsTable,
+  SalesChart,
+  SalesSummary,
+  VouchersTable,
+} from "./report-parts";
 
 const product = (over: object) => ({
   product_id: 1,
@@ -169,5 +178,99 @@ describe("ReportFailed", () => {
     expect(out).toContain('role="alert"');
     expect(out).toContain("Rapor yüklenemedi");
     expect(out).toContain("Tekrar dene");
+  });
+});
+
+const none = {
+  wrong_size: 0,
+  changed_mind: 0,
+  defective: 0,
+  wrong_item: 0,
+  other: 0,
+  unspecified: 0,
+};
+
+describe("ReturnsTable", () => {
+  const rows = [
+    {
+      key: "1",
+      name: "Yazlık Elbise",
+      shipped: 16,
+      returned: 2,
+      rate: 12.5,
+      reasons: { ...none, wrong_size: 2 },
+    },
+    {
+      key: "2",
+      name: "Keten Gömlek",
+      shipped: 4,
+      returned: 1,
+      rate: null,
+      reasons: { ...none, unspecified: 1 },
+    },
+  ];
+
+  it("shows the rate with its counts, and the reason mix", () => {
+    const out = renderToString(<ReturnsTable nameHeader="Ürün" rows={rows} />);
+    expect(out).toContain("Ürün");
+    expect(out).toContain("Yazlık Elbise");
+    expect(out).toContain("%12,5 (2 / 16 adet)");
+    expect(out).toContain("Beden uymadı: 2");
+  });
+
+  it("shows counts only, no percentage, for a row with too few units, and names a whole-Order return Belirtilmedi", () => {
+    const out = renderToString(
+      <ReturnsTable nameHeader="Ürün" rows={[rows[1] as (typeof rows)[number]]} />,
+    );
+    expect(out).toContain("1 / 4 adet");
+    expect(out).not.toContain("%");
+    expect(out).toContain("Belirtilmedi: 1");
+  });
+
+  it("says so, instead of an empty table, when nothing was shipped", () => {
+    const out = renderToString(<ReturnsTable nameHeader="Beden" rows={[]} />);
+    expect(out).toContain("Bu dönemde iade verisi yok");
+    expect(out).not.toContain("<table");
+  });
+});
+
+describe("CampaignsTable and VouchersTable", () => {
+  it("lists the discount each Campaign gave, with its orders and revenue", () => {
+    const out = renderToString(
+      <CampaignsTable
+        rows={[
+          {
+            campaign_id: 1,
+            name: "Yaz İndirimi",
+            orders: 12,
+            revenue: "4800.00",
+            discount: "1200.00",
+          },
+        ]}
+      />,
+    );
+    expect(out).toContain("Yaz İndirimi");
+    expect(out).toContain("₺4.800,00");
+    expect(out).toContain("₺1.200,00");
+    expect(out).toMatch(/>12</);
+  });
+
+  it("lists the discount each Voucher gave, by its code", () => {
+    const out = renderToString(
+      <VouchersTable
+        rows={[{ code: "HOSGELDIN", orders: 3, revenue: "900.00", discount: "90.00" }]}
+      />,
+    );
+    expect(out).toContain("HOSGELDIN");
+    expect(out).toContain("₺900,00");
+    expect(out).toContain("₺90,00");
+  });
+
+  it("says so, instead of an empty table, when none was used", () => {
+    expect(renderToString(<CampaignsTable rows={[]} />)).toContain(
+      "Bu dönemde kampanya satışı yok",
+    );
+    expect(renderToString(<VouchersTable rows={[]} />)).toContain("Bu dönemde kupon kullanılmadı");
+    expect(renderToString(<VouchersTable rows={[]} />)).not.toContain("<table");
   });
 });
