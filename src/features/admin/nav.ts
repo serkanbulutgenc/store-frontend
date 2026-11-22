@@ -1,6 +1,7 @@
 import {
   Boxes,
   Building2,
+  ChartColumn,
   FileSpreadsheet,
   GalleryVerticalEnd,
   History,
@@ -27,13 +28,15 @@ import {
   UserCog,
   Users,
 } from "lucide-react";
-import { can, type Me } from "@/lib/api/me";
+import { can, isOwner, type Me } from "@/lib/api/me";
 
 export type NavItem = {
   label: string;
   to: string;
   icon: LucideIcon;
   permission?: string;
+  /** The Owner role itself, for a screen that is not a grantable permission. */
+  ownerOnly?: boolean;
   /** A count shown beside the label; the sidebar looks the number up by this key. */
   badge?: "pendingCollections";
 };
@@ -61,6 +64,7 @@ export const NAV_GROUPS: NavGroup[] = [
         icon: Percent,
         permission: "manage_campaigns",
       },
+      { label: "Raporlar", to: "/admin/reports", icon: ChartColumn, ownerOnly: true },
     ],
   },
   {
@@ -154,7 +158,9 @@ export const NAV_GROUPS: NavGroup[] = [
 export function visibleGroups(me: Me | null): NavGroup[] {
   return NAV_GROUPS.map((g) => ({
     ...g,
-    items: g.items.filter((item) => !item.permission || can(me, item.permission)),
+    items: g.items.filter(
+      (item) => (!item.permission || can(me, item.permission)) && (!item.ownerOnly || isOwner(me)),
+    ),
   })).filter((g) => g.items.length > 0);
 }
 
