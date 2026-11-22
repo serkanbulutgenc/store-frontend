@@ -44,6 +44,7 @@ import { Route as AdminAppColoursRouteImport } from './routes/admin/_app/colours
 import { Route as AdminAppExportRouteImport } from './routes/admin/_app/export'
 import { Route as AdminAppImportRouteImport } from './routes/admin/_app/import'
 import { Route as AdminAppMenusRouteImport } from './routes/admin/_app/menus'
+import { Route as AdminAppReportsRouteImport } from './routes/admin/_app/reports'
 import { Route as AdminAppReturnsRouteImport } from './routes/admin/_app/returns'
 import { Route as AdminAppReviewsRouteImport } from './routes/admin/_app/reviews'
 import { Route as AdminAppSecurityRouteImport } from './routes/admin/_app/security'
@@ -253,6 +254,11 @@ const AdminAppImportRoute = AdminAppImportRouteImport.update({
 const AdminAppMenusRoute = AdminAppMenusRouteImport.update({
   id: '/menus',
   path: '/menus',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
+const AdminAppReportsRoute = AdminAppReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
   getParentRoute: () => AdminAppRouteRoute,
 } as any)
 const AdminAppReturnsRoute = AdminAppReturnsRouteImport.update({
@@ -468,6 +474,7 @@ export interface FileRoutesByFullPath {
   '/admin/export': typeof AdminAppExportRoute
   '/admin/import': typeof AdminAppImportRoute
   '/admin/menus': typeof AdminAppMenusRoute
+  '/admin/reports': typeof AdminAppReportsRoute
   '/admin/returns': typeof AdminAppReturnsRoute
   '/admin/reviews': typeof AdminAppReviewsRoute
   '/admin/security': typeof AdminAppSecurityRoute
@@ -534,6 +541,7 @@ export interface FileRoutesByTo {
   '/admin/export': typeof AdminAppExportRoute
   '/admin/import': typeof AdminAppImportRoute
   '/admin/menus': typeof AdminAppMenusRoute
+  '/admin/reports': typeof AdminAppReportsRoute
   '/admin/returns': typeof AdminAppReturnsRoute
   '/admin/reviews': typeof AdminAppReviewsRoute
   '/admin/security': typeof AdminAppSecurityRoute
@@ -604,6 +612,7 @@ export interface FileRoutesById {
   '/admin/_app/export': typeof AdminAppExportRoute
   '/admin/_app/import': typeof AdminAppImportRoute
   '/admin/_app/menus': typeof AdminAppMenusRoute
+  '/admin/_app/reports': typeof AdminAppReportsRoute
   '/admin/_app/returns': typeof AdminAppReturnsRoute
   '/admin/_app/reviews': typeof AdminAppReviewsRoute
   '/admin/_app/security': typeof AdminAppSecurityRoute
@@ -673,6 +682,7 @@ export interface FileRouteTypes {
     | '/admin/export'
     | '/admin/import'
     | '/admin/menus'
+    | '/admin/reports'
     | '/admin/returns'
     | '/admin/reviews'
     | '/admin/security'
@@ -739,6 +749,7 @@ export interface FileRouteTypes {
     | '/admin/export'
     | '/admin/import'
     | '/admin/menus'
+    | '/admin/reports'
     | '/admin/returns'
     | '/admin/reviews'
     | '/admin/security'
@@ -808,6 +819,7 @@ export interface FileRouteTypes {
     | '/admin/_app/export'
     | '/admin/_app/import'
     | '/admin/_app/menus'
+    | '/admin/_app/reports'
     | '/admin/_app/returns'
     | '/admin/_app/reviews'
     | '/admin/_app/security'
@@ -1098,6 +1110,13 @@ declare module '@tanstack/react-router' {
       path: '/menus'
       fullPath: '/admin/menus'
       preLoaderRoute: typeof AdminAppMenusRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/reports': {
+      id: '/admin/_app/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminAppReportsRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
     '/admin/_app/returns': {
@@ -1435,6 +1454,7 @@ interface AdminAppRouteRouteChildren {
   AdminAppExportRoute: typeof AdminAppExportRoute
   AdminAppImportRoute: typeof AdminAppImportRoute
   AdminAppMenusRoute: typeof AdminAppMenusRoute
+  AdminAppReportsRoute: typeof AdminAppReportsRoute
   AdminAppReturnsRoute: typeof AdminAppReturnsRoute
   AdminAppReviewsRoute: typeof AdminAppReviewsRoute
   AdminAppSecurityRoute: typeof AdminAppSecurityRoute
@@ -1473,6 +1493,7 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppExportRoute: AdminAppExportRoute,
   AdminAppImportRoute: AdminAppImportRoute,
   AdminAppMenusRoute: AdminAppMenusRoute,
+  AdminAppReportsRoute: AdminAppReportsRoute,
   AdminAppReturnsRoute: AdminAppReturnsRoute,
   AdminAppReviewsRoute: AdminAppReviewsRoute,
   AdminAppSecurityRoute: AdminAppSecurityRoute,

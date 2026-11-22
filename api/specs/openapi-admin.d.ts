@@ -1551,6 +1551,177 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/reports/campaigns-vouchers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Campaigns Vouchers
+         * @description Owner only. Per Campaign and per Voucher code: orders, the discount given
+         *     and revenue, over the same sale rules as Sales. Prices include KDV unless
+         *     `kdv=excl`.
+         */
+        get: operations["reports_campaigns_vouchers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/reports/campaigns-vouchers.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Campaigns Vouchers Csv
+         * @description Owner only. Campaigns and Vouchers as one CSV, for the same query as the
+         *     report. Audit-logged.
+         */
+        get: operations["reports_campaigns_vouchers_csv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/reports/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Products
+         * @description Owner only. Products ranked by `sort` (revenue or units), best first, over
+         *     the same ranges, KDV choice and sale rules as Sales.
+         */
+        get: operations["reports_products"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/reports/products.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Products Csv
+         * @description Owner only. The Products ranking as CSV, for the same query as the report.
+         *     Audit-logged.
+         */
+        get: operations["reports_products_csv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/reports/returns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Returns Report
+         * @description Owner only. Return rate by Product: returned units over units shipped, by
+         *     order date. A row under 5 shipped units carries counts only (no rate).
+         */
+        get: operations["reports_returns"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/reports/returns.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Returns Csv
+         * @description Owner only. Both Returns views as one CSV, for the same query as the
+         *     report. Audit-logged.
+         */
+        get: operations["reports_returns_csv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/reports/sales": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Sales
+         * @description Owner only. A custom `date_from`..`date_to` (at most 366 days) or a `preset`
+         *     (default 30 days), compared with the same number of days just before it.
+         *     Prices include KDV unless `kdv=excl`. `rows` are by `group` (day, week from
+         *     Monday, or month).
+         */
+        get: operations["reports_sales"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/reports/sales.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Sales Csv
+         * @description Owner only. The Sales rows as CSV, for the same query as the report.
+         *     Audit-logged.
+         */
+        get: operations["reports_sales_csv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/returns": {
         parameters: {
             query?: never;
@@ -2289,6 +2460,25 @@ export interface components {
             /** Starts At */
             starts_at?: string | null;
         };
+        /** CampaignReportRowOut */
+        CampaignReportRowOut: {
+            /** Campaign Id */
+            campaign_id: number;
+            /**
+             * Discount
+             * @example 349.90
+             */
+            discount: string;
+            /** Name */
+            name: string;
+            /** Orders */
+            orders: number;
+            /**
+             * Revenue
+             * @example 349.90
+             */
+            revenue: string;
+        };
         /** CampaignRowOut */
         CampaignRowOut: {
             /** Ends At */
@@ -2311,6 +2501,16 @@ export interface components {
              * @enum {string}
              */
             status: "active" | "inactive" | "scheduled" | "ended";
+        };
+        /** CampaignsVouchersReportOut */
+        CampaignsVouchersReportOut: {
+            /** Campaigns */
+            campaigns: components["schemas"]["CampaignReportRowOut"][];
+            kdv: components["schemas"]["Kdv"];
+            previous: components["schemas"]["SpanOut"];
+            range: components["schemas"]["SpanOut"];
+            /** Vouchers */
+            vouchers: components["schemas"]["VoucherReportRowOut"][];
         };
         /** CarrierOut */
         CarrierOut: {
@@ -2647,6 +2847,25 @@ export interface components {
             /** Rows */
             rows: components["schemas"]["ExpiringRow"][];
         };
+        /** FeesOut */
+        FeesOut: {
+            /**
+             * Cod
+             * @example 349.90
+             */
+            cod: string;
+            /**
+             * Shipping
+             * @example 349.90
+             */
+            shipping: string;
+        };
+        /**
+         * Group
+         * @description How Sales rows are bucketed. Weeks start on Monday.
+         * @enum {string}
+         */
+        Group: "day" | "week" | "month";
         /** HomeOrderRow */
         HomeOrderRow: {
             /** Customer */
@@ -2898,6 +3117,22 @@ export interface components {
          * @enum {string}
          */
         InvoiceStatus: "not_issued" | "issued" | "cancelled";
+        /**
+         * Kdv
+         * @description Which price column a Report adds up: with KDV (default) or without.
+         * @enum {string}
+         */
+        Kdv: "incl" | "excl";
+        /** KdvRangeParams */
+        KdvRangeParams: {
+            /** Date From */
+            date_from?: string | null;
+            /** Date To */
+            date_to?: string | null;
+            /** @default incl */
+            kdv: "incl" | "excl";
+            preset?: components["schemas"]["Preset"] | null;
+        };
         /** LowStock */
         LowStock: {
             /** Count */
@@ -3555,6 +3790,16 @@ export interface components {
              */
             updated_at: string;
         };
+        /** PendingOut */
+        PendingOut: {
+            /** Orders */
+            orders: number;
+            /**
+             * Revenue
+             * @example 349.90
+             */
+            revenue: string;
+        };
         /** PersonOut */
         PersonOut: {
             /** Id */
@@ -3562,6 +3807,11 @@ export interface components {
             /** Name */
             name: string;
         };
+        /**
+         * Preset
+         * @enum {string}
+         */
+        Preset: "today" | "7d" | "30d" | "this_month" | "last_month";
         /** ProductClassIn */
         ProductClassIn: {
             /**
@@ -3799,11 +4049,53 @@ export interface components {
             /** Title */
             title?: string | null;
         };
+        /** ProductRowOut */
+        ProductRowOut: {
+            /**
+             * Previous Revenue
+             * @example 349.90
+             */
+            previous_revenue: string;
+            /** Previous Units */
+            previous_units: number;
+            /** Product Id */
+            product_id: number | null;
+            /**
+             * Revenue
+             * @example 349.90
+             */
+            revenue: string;
+            /** Title */
+            title: string;
+            /** Units */
+            units: number;
+        };
         /**
          * ProductStatus
          * @enum {string}
          */
         ProductStatus: "draft" | "published" | "archived";
+        /** ProductsParams */
+        ProductsParams: {
+            /** Date From */
+            date_from?: string | null;
+            /** Date To */
+            date_to?: string | null;
+            /** @default incl */
+            kdv: "incl" | "excl";
+            preset?: components["schemas"]["Preset"] | null;
+            /** @default revenue */
+            sort: "revenue" | "units";
+        };
+        /** ProductsReportOut */
+        ProductsReportOut: {
+            kdv: components["schemas"]["Kdv"];
+            previous: components["schemas"]["SpanOut"];
+            range: components["schemas"]["SpanOut"];
+            /** Rows */
+            rows: components["schemas"]["ProductRowOut"][];
+            sort: components["schemas"]["Sort"];
+        };
         /** ProductsWithoutPhotos */
         ProductsWithoutPhotos: {
             /** Count */
@@ -3831,6 +4123,14 @@ export interface components {
             body: string;
             /** Title */
             title: string;
+        };
+        /** RangeParams */
+        RangeParams: {
+            /** Date From */
+            date_from?: string | null;
+            /** Date To */
+            date_to?: string | null;
+            preset?: components["schemas"]["Preset"] | null;
         };
         /** RateOut */
         RateOut: {
@@ -3874,6 +4174,24 @@ export interface components {
             band_6_10?: string | null;
             /** Per Extra Desi */
             per_extra_desi?: string | null;
+        };
+        /**
+         * ReasonsOut
+         * @description Returned units by why they came back; `unspecified` is a whole-order return.
+         */
+        ReasonsOut: {
+            /** Changed Mind */
+            changed_mind: number;
+            /** Defective */
+            defective: number;
+            /** Other */
+            other: number;
+            /** Unspecified */
+            unspecified: number;
+            /** Wrong Item */
+            wrong_item: number;
+            /** Wrong Size */
+            wrong_size: number;
         };
         /**
          * RefundMethod
@@ -3935,6 +4253,20 @@ export interface components {
             /** Title */
             title: string;
         };
+        /** ReturnProductRowOut */
+        ReturnProductRowOut: {
+            /** Product Id */
+            product_id: number | null;
+            /** Rate */
+            rate: number | null;
+            reasons: components["schemas"]["ReasonsOut"];
+            /** Returned */
+            returned: number;
+            /** Shipped */
+            shipped: number;
+            /** Title */
+            title: string;
+        };
         /**
          * ReturnReason
          * @enum {string}
@@ -3984,11 +4316,79 @@ export interface components {
             requested_at: string;
             status: components["schemas"]["ReturnStatus"];
         };
+        /** ReturnSizeRowOut */
+        ReturnSizeRowOut: {
+            /** Rate */
+            rate: number | null;
+            reasons: components["schemas"]["ReasonsOut"];
+            /** Returned */
+            returned: number;
+            /** Shipped */
+            shipped: number;
+            /** Size */
+            size: string;
+        };
         /**
          * ReturnStatus
          * @enum {string}
          */
         ReturnStatus: "requested" | "approved" | "rejected" | "received" | "refunded";
+        /** ReturnsReportOut */
+        ReturnsReportOut: {
+            /** By Product */
+            by_product: components["schemas"]["ReturnProductRowOut"][];
+            /** By Size */
+            by_size: components["schemas"]["ReturnSizeRowOut"][];
+            previous: components["schemas"]["SpanOut"];
+            range: components["schemas"]["SpanOut"];
+        };
+        /** SalesParams */
+        SalesParams: {
+            /** Date From */
+            date_from?: string | null;
+            /** Date To */
+            date_to?: string | null;
+            /** @default day */
+            group: "day" | "week" | "month";
+            /** @default incl */
+            kdv: "incl" | "excl";
+            preset?: components["schemas"]["Preset"] | null;
+        };
+        /** SalesReportOut */
+        SalesReportOut: {
+            fees: components["schemas"]["FeesOut"];
+            group: components["schemas"]["Group"];
+            kdv: components["schemas"]["Kdv"];
+            pending: components["schemas"]["PendingOut"];
+            previous: components["schemas"]["SpanOut"];
+            previous_totals: components["schemas"]["TotalsOut"];
+            range: components["schemas"]["SpanOut"];
+            /** Rows */
+            rows: components["schemas"]["SalesRowOut"][];
+            totals: components["schemas"]["TotalsOut"];
+        };
+        /** SalesRowOut */
+        SalesRowOut: {
+            /**
+             * Average Order
+             * @example 349.90
+             */
+            average_order: string;
+            /** Items */
+            items: number;
+            /** Orders */
+            orders: number;
+            /**
+             * Period
+             * Format: date
+             */
+            period: string;
+            /**
+             * Revenue
+             * @example 349.90
+             */
+            revenue: string;
+        };
         /** SettingsOut */
         SettingsOut: {
             /** Bank Account Holder */
@@ -4166,6 +4566,25 @@ export interface components {
             /** Size */
             size: string;
         };
+        /**
+         * Sort
+         * @description What the Products report ranks by.
+         * @enum {string}
+         */
+        Sort: "revenue" | "units";
+        /** SpanOut */
+        SpanOut: {
+            /**
+             * End
+             * Format: date
+             */
+            end: string;
+            /**
+             * Start
+             * Format: date
+             */
+            start: string;
+        };
         /** StaffUserOut */
         StaffUserOut: {
             /** Email */
@@ -4247,6 +4666,23 @@ export interface components {
             id: number;
             /** Name */
             name: string;
+        };
+        /** TotalsOut */
+        TotalsOut: {
+            /**
+             * Average Order
+             * @example 349.90
+             */
+            average_order: string;
+            /** Items */
+            items: number;
+            /** Orders */
+            orders: number;
+            /**
+             * Revenue
+             * @example 349.90
+             */
+            revenue: string;
         };
         /** UnphotographedRow */
         UnphotographedRow: {
@@ -4400,6 +4836,23 @@ export interface components {
             starts_at?: string | null;
             /** Value */
             value?: number | string | null;
+        };
+        /** VoucherReportRowOut */
+        VoucherReportRowOut: {
+            /** Code */
+            code: string;
+            /**
+             * Discount
+             * @example 349.90
+             */
+            discount: string;
+            /** Orders */
+            orders: number;
+            /**
+             * Revenue
+             * @example 349.90
+             */
+            revenue: string;
         };
         /** WinningCampaignOut */
         WinningCampaignOut: {
@@ -7038,6 +7491,208 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VariantGenerateOut"];
+                };
+            };
+        };
+    };
+    reports_campaigns_vouchers: {
+        parameters: {
+            query?: {
+                preset?: components["schemas"]["Preset"] | null;
+                date_from?: string | null;
+                date_to?: string | null;
+                kdv?: "incl" | "excl";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignsVouchersReportOut"];
+                };
+            };
+        };
+    };
+    reports_campaigns_vouchers_csv: {
+        parameters: {
+            query?: {
+                preset?: components["schemas"]["Preset"] | null;
+                date_from?: string | null;
+                date_to?: string | null;
+                kdv?: "incl" | "excl";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    reports_products: {
+        parameters: {
+            query?: {
+                preset?: components["schemas"]["Preset"] | null;
+                date_from?: string | null;
+                date_to?: string | null;
+                kdv?: "incl" | "excl";
+                sort?: "revenue" | "units";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductsReportOut"];
+                };
+            };
+        };
+    };
+    reports_products_csv: {
+        parameters: {
+            query?: {
+                preset?: components["schemas"]["Preset"] | null;
+                date_from?: string | null;
+                date_to?: string | null;
+                kdv?: "incl" | "excl";
+                sort?: "revenue" | "units";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    reports_returns: {
+        parameters: {
+            query?: {
+                preset?: components["schemas"]["Preset"] | null;
+                date_from?: string | null;
+                date_to?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReturnsReportOut"];
+                };
+            };
+        };
+    };
+    reports_returns_csv: {
+        parameters: {
+            query?: {
+                preset?: components["schemas"]["Preset"] | null;
+                date_from?: string | null;
+                date_to?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    reports_sales: {
+        parameters: {
+            query?: {
+                preset?: components["schemas"]["Preset"] | null;
+                date_from?: string | null;
+                date_to?: string | null;
+                kdv?: "incl" | "excl";
+                group?: "day" | "week" | "month";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SalesReportOut"];
+                };
+            };
+        };
+    };
+    reports_sales_csv: {
+        parameters: {
+            query?: {
+                preset?: components["schemas"]["Preset"] | null;
+                date_from?: string | null;
+                date_to?: string | null;
+                kdv?: "incl" | "excl";
+                group?: "day" | "week" | "month";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
                 };
             };
         };
