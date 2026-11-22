@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { compare, csvDownload, reasonMix, reportQuery, returnRateText, salesSeries } from "./rules";
+import {
+  compare,
+  csvDownload,
+  pageOf,
+  reasonMix,
+  reportQuery,
+  returnRateText,
+  salesSeries,
+} from "./rules";
 import { reportSearchSchema } from "./search";
 
 const search = (raw: object) => reportSearchSchema.parse(raw);
@@ -213,5 +221,39 @@ describe("reasonMix", () => {
       unspecified: 0,
     };
     expect(reasonMix(none)).toEqual([]);
+  });
+});
+
+describe("pageOf", () => {
+  const rows = Array.from({ length: 23 }, (_, i) => i + 1);
+
+  it("slices one page of rows, with the number of pages", () => {
+    expect(pageOf(rows, 1, 10)).toEqual({
+      rows: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      page: 1,
+      pageCount: 3,
+    });
+    expect(pageOf(rows, 2, 10).rows).toEqual([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
+  });
+
+  it("gives the short last page", () => {
+    expect(pageOf(rows, 3, 10)).toEqual({ rows: [21, 22, 23], page: 3, pageCount: 3 });
+  });
+
+  it("steps back to the last page when the rows shrank under the page it was on", () => {
+    expect(pageOf(rows.slice(0, 11), 3, 10)).toEqual({ rows: [11], page: 2, pageCount: 2 });
+    expect(pageOf(rows, 0, 10).page).toBe(1);
+  });
+
+  it("is one empty page for no rows", () => {
+    expect(pageOf([], 4, 10)).toEqual({ rows: [], page: 1, pageCount: 1 });
+  });
+
+  it("keeps everything on one page when the rows fit exactly", () => {
+    expect(pageOf(rows.slice(0, 10), 1, 10)).toEqual({
+      rows: rows.slice(0, 10),
+      page: 1,
+      pageCount: 1,
+    });
   });
 });

@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import { ChartColumn, Check, Package, TicketPercent, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   campaignsVouchersReportQuery,
   productsReportQuery,
@@ -29,6 +31,12 @@ const REPORT_LABEL: Record<(typeof REPORTS)[number], string> = {
   returns: "İadeler",
   "campaigns-vouchers": "Kampanya ve kuponlar",
 };
+const REPORT_ICON = {
+  sales: ChartColumn,
+  products: Package,
+  returns: Undo2,
+  "campaigns-vouchers": TicketPercent,
+} as const;
 const PRESET_LABEL: Record<(typeof PRESETS)[number], string> = {
   today: "Bugün",
   "7d": "Son 7 gün",
@@ -48,20 +56,22 @@ export function ReportsScreen({
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-xl font-semibold">Raporlar</h1>
-      <div role="tablist" aria-label="Rapor" className="flex flex-wrap gap-2">
-        {REPORTS.map((r) => (
-          <Button
-            key={r}
-            role="tab"
-            aria-selected={search.report === r}
-            variant={search.report === r ? "default" : "outline"}
-            size="sm"
-            onClick={() => onSearchChange({ report: r })}
-          >
-            {REPORT_LABEL[r]}
-          </Button>
-        ))}
-      </div>
+      <Tabs
+        value={search.report}
+        onValueChange={(report) => onSearchChange({ report: report as ReportSearch["report"] })}
+      >
+        <TabsList className="group-data-[orientation=horizontal]/tabs:h-auto flex-wrap justify-start">
+          {REPORTS.map((r) => {
+            const Icon = REPORT_ICON[r];
+            return (
+              <TabsTrigger key={r} value={r}>
+                <Icon />
+                {REPORT_LABEL[r]}
+              </TabsTrigger>
+            );
+          })}
+        </TabsList>
+      </Tabs>
       <div className="flex flex-wrap items-end gap-3">
         <Select
           aria-label="Dönem"
@@ -143,7 +153,7 @@ function RangePicker({
 }) {
   return (
     <form
-      className="flex items-end gap-2"
+      className="flex flex-wrap items-end gap-2"
       onSubmit={(e) => {
         e.preventDefault();
         const data = new FormData(e.currentTarget);
@@ -152,9 +162,10 @@ function RangePicker({
         if (a && b) onApply(a, b);
       }}
     >
-      <Input aria-label="Başlangıç" name="from" type="date" defaultValue={from} className="w-40" />
-      <Input aria-label="Bitiş" name="to" type="date" defaultValue={to} className="w-40" />
+      <Input aria-label="Başlangıç" name="from" type="date" defaultValue={from} className="w-36" />
+      <Input aria-label="Bitiş" name="to" type="date" defaultValue={to} className="w-36" />
       <Button type="submit" variant="outline" size="sm">
+        <Check className="size-4" />
         Uygula
       </Button>
     </form>

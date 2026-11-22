@@ -123,3 +123,11 @@ export function reasonMix(reasons: Record<(typeof REASON_ORDER)[number], number>
     .filter((r) => r.count > 0)
     .sort((a, b) => b.count - a.count);
 }
+
+/** One page of rows for a table that holds them all (the report endpoints send every row). A page past the end, as
+ * after a new period with fewer rows, steps back to the last one. */
+export function pageOf<T>(rows: T[], page: number, size: number) {
+  const pageCount = Math.max(1, Math.ceil(rows.length / size));
+  const current = Math.min(Math.max(1, page), pageCount);
+  return { rows: rows.slice((current - 1) * size, current * size), page: current, pageCount };
+}
