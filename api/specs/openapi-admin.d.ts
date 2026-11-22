@@ -2938,6 +2938,8 @@ export interface components {
         };
         /** ImportCountsOut */
         ImportCountsOut: {
+            /** Products Changed */
+            products_changed: number;
             /** Products To Create */
             products_to_create: number;
             /** Products To Update */
