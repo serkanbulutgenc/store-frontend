@@ -13,6 +13,7 @@ const plan = (over: Partial<ImportPlan> = {}): ImportPlan => ({
   counts: {
     products_to_create: 1,
     products_to_update: 0,
+    products_changed: 0,
     variants_to_create: 3,
     variants_to_update: 0,
     variants_unchanged: 0,
@@ -50,6 +51,7 @@ describe("confirmBlocker", () => {
       counts: {
         products_to_create: 0,
         products_to_update: 0,
+        products_changed: 0,
         variants_to_create: 0,
         variants_to_update: 0,
         variants_unchanged: 4,
@@ -58,10 +60,25 @@ describe("confirmBlocker", () => {
     expect(changeCount(same.counts)).toBe(0);
     expect(confirmBlocker(same)).not.toBeNull();
   });
+  it("lets a file through that changes only a product's own fields", () => {
+    const descriptionOnly = plan({
+      counts: {
+        products_to_create: 0,
+        products_to_update: 1,
+        products_changed: 1,
+        variants_to_create: 0,
+        variants_to_update: 0,
+        variants_unchanged: 4,
+      },
+    });
+    expect(changeCount(descriptionOnly.counts)).toBe(1);
+    expect(confirmBlocker(descriptionOnly)).toBeNull();
+  });
 });
 
 it("describes counts and lists only what will be created", () => {
   expect(describeCounts(plan().counts)).toContain("3 yeni varyant");
+  expect(describeCounts({ ...plan().counts, products_changed: 2 })).toContain("2 değişen ürün");
   const lists = createdLists(plan({ new_brands: ["Moda"], new_categories: [] }));
   expect(lists).toEqual([{ label: "Yeni markalar", items: ["Moda"] }]);
 });
