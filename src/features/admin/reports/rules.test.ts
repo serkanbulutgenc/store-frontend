@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { compare, csvDownload, reportQuery, salesSeries } from "./rules";
+import {
+  compare,
+  csvDownload,
+  pageOf,
+  reasonMix,
+  reportQuery,
+  returnRateText,
+  salesSeries,
+} from "./rules";
 import { reportSearchSchema } from "./search";
 
 const search = (raw: object) => reportSearchSchema.parse(raw);
@@ -23,6 +31,28 @@ describe("reportQuery", () => {
       kdv: "incl",
       sort: "units",
     });
+  });
+
+  it("asks Returns for the period only: it has no KDV, grouping or sort", () => {
+    expect(
+      reportQuery(search({ report: "returns", kdv: "excl", group: "week", sort: "units" })),
+    ).toEqual({
+      preset: "30d",
+    });
+  });
+
+  it("asks Campaigns and Vouchers for the period and KDV, but not the grouping or sort", () => {
+    expect(
+      reportQuery(
+        search({ report: "campaigns-vouchers", kdv: "excl", group: "week", sort: "units" }),
+      ),
+    ).toEqual({ preset: "30d", kdv: "excl" });
+  });
+
+  it("sends a custom range to Returns instead of the preset, never both", () => {
+    expect(
+      reportQuery(search({ report: "returns", date_from: "2026-11-01", date_to: "2026-11-21" })),
+    ).toEqual({ date_from: "2026-11-01", date_to: "2026-11-21" });
   });
 
   it("sends a custom range instead of the preset, never both", () => {
@@ -112,5 +142,118 @@ describe("csvDownload", () => {
     expect(download.path).toBe("/api/admin/reports/products.csv");
     expect(download.query).toEqual({ preset: "30d", kdv: "incl", sort: "units" });
     expect(download.filename).toBe("rapor-urunler-2026-10-23-2026-11-21.csv");
+  });
+
+  it("does the same for Returns, with no KDV in the query", () => {
+    const download = csvDownload(search({ report: "returns", kdv: "excl" }), range);
+    expect(download).toEqual({
+      path: "/api/admin/reports/returns.csv",
+      query: { preset: "30d" },
+      filename: "rapor-iadeler-2026-10-23-2026-11-21.csv",
+    });
+  });
+
+  it("does the same for Campaigns and Vouchers", () => {
+    const download = csvDownload(search({ report: "campaigns-vouchers", kdv: "excl" }), range);
+    expect(download).toEqual({
+      path: "/api/admin/reports/campaigns-vouchers.csv",
+      query: { preset: "30d", kdv: "excl" },
+      filename: "rapor-kampanya-kupon-2026-10-23-2026-11-21.csv",
+    });
+  });
+});
+
+describe("returnRateText", () => {
+  it("gives the rate and the counts behind it", () => {
+    expect(returnRateText({ shipped: 16, returned: 2, rate: 12.5 })).toBe("%12,5 (2 / 16 adet)");
+    expect(returnRateText({ shipped: 20, returned: 0, rate: 0 })).toBe("%0 (0 / 20 adet)");
+    expect(returnRateText({ shipped: 6, returned: 2, rate: 33.3 })).toBe("%33,3 (2 / 6 adet)");
+  });
+
+  it("gives counts only, no percentage, when there are too few units to call a rate", () => {
+    expect(returnRateText({ shipped: 4, returned: 1, rate: null })).toBe("1 / 4 adet");
+    expect(returnRateText({ shipped: 0, returned: 0, rate: null })).toBe("0 / 0 adet");
+  });
+});
+
+describe("reasonMix", () => {
+  const reasons = {
+    wrong_size: 3,
+    changed_mind: 0,
+    defective: 1,
+    wrong_item: 0,
+    other: 0,
+    unspecified: 2,
+  };
+
+  it("lists the reasons that happened, most first, with Turkish names", () => {
+    expect(reasonMix(reasons)).toEqual([
+      { reason: "wrong_size", label: "Beden uymadı", count: 3 },
+      { reason: "unspecified", label: "Belirtilmedi", count: 2 },
+      { reason: "defective", label: "Ürün kusurlu", count: 1 },
+    ]);
+  });
+
+  it("keeps the fixed order of reasons when counts tie", () => {
+    const tie = {
+      wrong_size: 0,
+      changed_mind: 1,
+      defective: 0,
+      wrong_item: 1,
+      other: 1,
+      unspecified: 1,
+    };
+    expect(reasonMix(tie).map((r) => r.reason)).toEqual([
+      "changed_mind",
+      "wrong_item",
+      "other",
+      "unspecified",
+    ]);
+  });
+
+  it("is empty when nothing was returned", () => {
+    const none = {
+      wrong_size: 0,
+      changed_mind: 0,
+      defective: 0,
+      wrong_item: 0,
+      other: 0,
+      unspecified: 0,
+    };
+    expect(reasonMix(none)).toEqual([]);
+  });
+});
+
+describe("pageOf", () => {
+  const rows = Array.from({ length: 23 }, (_, i) => i + 1);
+
+  it("slices one page of rows, with the number of pages", () => {
+    expect(pageOf(rows, 1, 10)).toEqual({
+      rows: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      page: 1,
+      pageCount: 3,
+    });
+    expect(pageOf(rows, 2, 10).rows).toEqual([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
+  });
+
+  it("gives the short last page", () => {
+    expect(pageOf(rows, 3, 10)).toEqual({ rows: [21, 22, 23], page: 3, pageCount: 3 });
+  });
+
+  it("steps back to the last page when the rows shrank under the page it was on", () => {
+    expect(pageOf(rows.slice(0, 11), 3, 10)).toEqual({ rows: [11], page: 2, pageCount: 2 });
+    expect(pageOf(rows, 0, 10).page).toBe(1);
+  });
+
+  it("is one empty page for no rows", () => {
+    expect(pageOf([], 4, 10)).toEqual({ rows: [], page: 1, pageCount: 1 });
+  });
+
+  it("keeps everything on one page when the rows fit exactly", () => {
+    expect(pageOf(rows.slice(0, 10), 1, 10)).toEqual({
+      rows: rows.slice(0, 10),
+      page: 1,
+      pageCount: 1,
+    });
   });
 });

@@ -6,6 +6,8 @@ import type { ReportSearch } from "./search";
 
 export type SalesReport = components["schemas"]["SalesReportOut"];
 export type ProductsReport = components["schemas"]["ProductsReportOut"];
+export type ReturnsReport = components["schemas"]["ReturnsReportOut"];
+export type CampaignsVouchersReport = components["schemas"]["CampaignsVouchersReportOut"];
 
 export const reportKeys = { all: ["admin", "reports"] as const };
 
@@ -32,6 +34,32 @@ export const productsReportQuery = (s: ReportSearch) =>
       });
       if (!data) throw new Error(JSON.stringify(error));
       return data as ProductsReport;
+    },
+  });
+
+/** Returns by Product and by Size for what the URL asks. */
+export const returnsReportQuery = (s: ReportSearch) =>
+  queryOptions({
+    queryKey: [...reportKeys.all, "returns", reportQuery(s)],
+    queryFn: async () => {
+      const { data, error } = await adminApi.GET("/api/admin/reports/returns", {
+        params: { query: reportQuery(s) },
+      });
+      if (!data) throw new Error(JSON.stringify(error));
+      return data as ReturnsReport;
+    },
+  });
+
+/** The discount given per Campaign and per Voucher for what the URL asks. */
+export const campaignsVouchersReportQuery = (s: ReportSearch) =>
+  queryOptions({
+    queryKey: [...reportKeys.all, "campaigns-vouchers", reportQuery(s)],
+    queryFn: async () => {
+      const { data, error } = await adminApi.GET("/api/admin/reports/campaigns-vouchers", {
+        params: { query: reportQuery(s) },
+      });
+      if (!data) throw new Error(JSON.stringify(error));
+      return data as CampaignsVouchersReport;
     },
   });
 

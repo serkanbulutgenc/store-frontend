@@ -1,16 +1,24 @@
 import { formatPercent } from "@/lib/format";
+import { returnReasonLabel } from "../returns/rules";
 import type { ReportSearch } from "./search";
 
-/** The query the report endpoints take: a custom range replaces the preset, and the grouping and the sort go only to
- * the report that has them. */
+/** The query the report endpoints take: a custom range replaces the preset, and KDV, the grouping and the sort go only
+ * to the reports that have them (Returns counts units, so it has no KDV). */
 export function reportQuery(search: ReportSearch) {
   const period =
     search.date_from && search.date_to
       ? { date_from: search.date_from, date_to: search.date_to }
       : { preset: search.preset };
-  return search.report === "sales"
-    ? { ...period, kdv: search.kdv, group: search.group }
-    : { ...period, kdv: search.kdv, sort: search.sort };
+  switch (search.report) {
+    case "sales":
+      return { ...period, kdv: search.kdv, group: search.group };
+    case "products":
+      return { ...period, kdv: search.kdv, sort: search.sort };
+    case "returns":
+      return period;
+    case "campaigns-vouchers":
+      return { ...period, kdv: search.kdv };
+  }
 }
 
 export type Comparison = { direction: "up" | "down" | "flat" | "none"; text: string };
@@ -56,10 +64,22 @@ export function salesSeries(
 
 const CSV: Record<
   ReportSearch["report"],
-  { path: "/api/admin/reports/sales.csv" | "/api/admin/reports/products.csv"; name: string }
+  {
+    path:
+      | "/api/admin/reports/sales.csv"
+      | "/api/admin/reports/products.csv"
+      | "/api/admin/reports/returns.csv"
+      | "/api/admin/reports/campaigns-vouchers.csv";
+    name: string;
+  }
 > = {
   sales: { path: "/api/admin/reports/sales.csv", name: "satis" },
   products: { path: "/api/admin/reports/products.csv", name: "urunler" },
+  returns: { path: "/api/admin/reports/returns.csv", name: "iadeler" },
+  "campaigns-vouchers": {
+    path: "/api/admin/reports/campaigns-vouchers.csv",
+    name: "kampanya-kupon",
+  },
 };
 
 /** The CSV of the report on screen: the same query, and a file named after the range the report resolved to. */
@@ -70,4 +90,44 @@ export function csvDownload(search: ReportSearch, range: { start: string; end: s
     query: reportQuery(search),
     filename: `rapor-${name}-${range.start}-${range.end}.csv`,
   };
+}
+
+/** A rate (the API sends it as a percent) with the counts behind it. Under 5 shipped units the API sends no rate, and
+ * the row shows its counts only. */
+export function returnRateText(row: {
+  shipped: number;
+  returned: number;
+  rate: number | null;
+}): string {
+  const counts = `${row.returned} / ${row.shipped} adet`;
+  return row.rate === null ? counts : `%${formatPercent(String(row.rate))} (${counts})`;
+}
+
+const REASON_ORDER = [
+  "wrong_size",
+  "changed_mind",
+  "defective",
+  "wrong_item",
+  "other",
+  "unspecified",
+] as const;
+
+/** The reasons that happened, most first (ties keep the fixed order). "unspecified" is a whole-Order return, which
+ * has no reason. */
+export function reasonMix(reasons: Record<(typeof REASON_ORDER)[number], number>) {
+  return REASON_ORDER.map((reason) => ({
+    reason,
+    label: reason === "unspecified" ? "Belirtilmedi" : returnReasonLabel(reason),
+    count: reasons[reason],
+  }))
+    .filter((r) => r.count > 0)
+    .sort((a, b) => b.count - a.count);
+}
+
+/** One page of rows for a table that holds them all (the report endpoints send every row). A page past the end, as
+ * after a new period with fewer rows, steps back to the last one. */
+export function pageOf<T>(rows: T[], page: number, size: number) {
+  const pageCount = Math.max(1, Math.ceil(rows.length / size));
+  const current = Math.min(Math.max(1, page), pageCount);
+  return { rows: rows.slice((current - 1) * size, current * size), page: current, pageCount };
 }
