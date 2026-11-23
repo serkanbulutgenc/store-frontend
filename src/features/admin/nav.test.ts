@@ -171,3 +171,17 @@ it("hides Raporlar from an Owner who has not enrolled 2FA yet (the API refuses t
 it("labels the Raporlar breadcrumb", () => {
   expect(breadcrumbs("/admin/reports")).toEqual([{ label: "Satış" }, { label: "Raporlar" }]);
 });
+
+it("shows Onay bekleyenler, with the approvals badge, to the Owner only", () => {
+  const owner: Me = { ...me(["edit_collections", "manage_collections"]), role: "owner" };
+  const item = visibleNav(owner).find((i) => i.to === "/admin/approvals");
+  expect(item?.label).toBe("Onay bekleyenler");
+  expect(item?.badge).toBe("approvals");
+  const staff = visibleNav(me(["edit_collections"])).map((i) => i.to);
+  expect(staff).not.toContain("/admin/approvals");
+});
+
+it("hides Onay bekleyenler from an Owner who has not enrolled two-factor yet", () => {
+  const unenrolled: Me = { ...me([]), role: "owner", mfa_required: true, mfa_enrolled: false };
+  expect(visibleNav(unenrolled).map((i) => i.to)).not.toContain("/admin/approvals");
+});
