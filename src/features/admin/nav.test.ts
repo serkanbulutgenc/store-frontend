@@ -137,21 +137,26 @@ it("puts the pending-Collection badge on the Koleksiyonlar item, which Staff als
   ).not.toContain("Onay bekleyenler");
 });
 
-it("shows Kampanya sayfaları to anyone who may edit them, Staff included", () => {
-  const entry = (permissions: string[]) =>
-    visibleNav(me(permissions)).find((i) => i.to === "/admin/campaign-pages");
-  expect(entry(["edit_campaign_pages"])?.label).toBe("Kampanya sayfaları");
-  expect(entry(["view_products"])).toBeUndefined();
+it("shows one Kampanyalar entry to anyone who may manage Campaigns or edit Campaign pages", () => {
+  const entries = (permissions: string[]) =>
+    visibleNav(me(permissions)).filter((i) => i.to === "/admin/campaigns");
+  expect(entries(["edit_campaign_pages"])).toHaveLength(1); // Staff: pages only
+  expect(entries(["manage_campaigns"])).toHaveLength(1); // the Owner
+  expect(entries(["manage_campaigns", "edit_campaign_pages"])).toHaveLength(1);
+  expect(entries(["view_products", "manage_vouchers"])).toHaveLength(0);
+  expect(entries(["manage_campaigns"])[0]?.label).toBe("Kampanyalar");
+  // The old second entry is gone.
+  expect(
+    visibleNav(me(["edit_campaign_pages", "manage_campaigns"])).map((i) => i.to),
+  ).not.toContain("/admin/campaign-pages");
 });
 
-it("shows the Campaigns entry only with the manage_campaigns permission (Owner, not Staff)", () => {
-  const staff = visibleNav(me(["view_products", "manage_products", "manage_vouchers"])).map(
-    (i) => i.to,
-  );
-  expect(staff).not.toContain("/admin/campaigns");
-  const owner = visibleNav(me(["manage_campaigns"])).map((i) => i);
-  expect(owner.map((i) => i.to)).toContain("/admin/campaigns");
-  expect(owner.find((i) => i.to === "/admin/campaigns")?.label).toBe("Kampanyalar");
+it("keeps breadcrumbs for the Campaign page editor under Kampanyalar", () => {
+  expect(breadcrumbs("/admin/campaign-pages/7", { "7": "Yaz" }).map((c) => c.label)).toEqual([
+    "Satış",
+    "Kampanyalar",
+    "Yaz",
+  ]);
 });
 
 const owner = (over: Partial<Me> = {}): Me => ({

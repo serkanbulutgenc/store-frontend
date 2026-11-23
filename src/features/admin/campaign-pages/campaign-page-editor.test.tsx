@@ -44,7 +44,9 @@ describe("FieldsForm", () => {
       />,
     );
     expect(out).toContain('value="Yaz indirimi"');
-    expect(out).toContain("<strong>Yaz</strong>");
+    // The preview sits behind a toggle, not beside the text.
+    expect(out).toContain("Önizleme");
+    expect(out).not.toContain("<strong>Yaz</strong>");
     expect(out).toContain("/kampanyalar/yaz-indirimi");
     expect(out).toContain(">Kaydet<");
   });

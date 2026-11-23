@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   availableActions,
   type BannerState,
+  canDelete,
   changedFields,
   checkFields,
   completeness,
@@ -9,6 +10,7 @@ import {
   imageEditable,
   isImageSlot,
   slotLabel,
+  warnings,
 } from "./rules";
 
 const staff = { owner: false, submitter: false };
@@ -90,13 +92,11 @@ describe("checkFields", () => {
 });
 
 describe("completeness", () => {
-  it("flags a missing image and a missing alt text on image slots", () => {
+  it("flags a missing image on image slots, but not a missing alt text", () => {
     expect(completeness({ slot: "home_hero", message: "", image: null })).toEqual([
       "Görsel yüklenmemiş.",
     ]);
-    expect(completeness({ slot: "home_hero", message: "", image: { alt_text: " " } })).toEqual([
-      "Görselin alternatif metni yok.",
-    ]);
+    expect(completeness({ slot: "home_hero", message: "", image: { alt_text: " " } })).toEqual([]);
     expect(completeness({ slot: "home_hero", message: "", image: { alt_text: "Yaz" } })).toEqual(
       [],
     );
@@ -105,6 +105,21 @@ describe("completeness", () => {
   it("needs only a message on the announcement bar", () => {
     expect(completeness({ slot: "announcement", message: "", image: null })).toHaveLength(1);
     expect(completeness({ slot: "announcement", message: "Merhaba", image: null })).toEqual([]);
+  });
+});
+
+describe("warnings and deleting", () => {
+  it("warns, without blocking, about a missing alt text", () => {
+    expect(warnings({ slot: "home_hero", image: { alt_text: " " } })).toHaveLength(1);
+    expect(warnings({ slot: "home_hero", image: { alt_text: "Yaz" } })).toEqual([]);
+    expect(warnings({ slot: "home_hero", image: null })).toEqual([]);
+  });
+
+  it("lets the Owner delete any Banner and Staff only a draft", () => {
+    expect(canDelete(s("published"), owner)).toBe(true);
+    expect(canDelete(s("draft"), staff)).toBe(true);
+    expect(canDelete(s("pending_approval"), staff)).toBe(false);
+    expect(canDelete(s("published"), staff)).toBe(false);
   });
 });
 

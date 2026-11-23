@@ -17,8 +17,10 @@ import {
 import { adminApi } from "@/lib/api/clients";
 import { ApiError } from "@/lib/api/errors";
 import { formatDate } from "@/lib/format";
+import { DeleteBannerButton } from "./delete-banner-button";
 import { bannerKeys, bannersQuery } from "./queries";
 import {
+  canDelete,
   isImageSlot,
   MESSAGE_MAX,
   SLOT_KEYS,
@@ -38,7 +40,9 @@ const range = (start: string | null, end: string | null) =>
 export function BannersScreen({
   search,
   onSearchChange,
+  owner,
 }: {
+  owner: boolean;
   search: BannerSearch;
   onSearchChange: (patch: Partial<BannerSearch>) => void;
 }) {
@@ -126,7 +130,7 @@ export function BannersScreen({
                     </TableCell>
                     <TableCell>{b.position}</TableCell>
                     <TableCell>{range(b.starts_at, b.ends_at)}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="space-x-2 text-right">
                       <Button size="sm" variant="outline" asChild>
                         <Link
                           to="/admin/banners/$bannerId"
@@ -136,6 +140,10 @@ export function BannersScreen({
                           Düzenle
                         </Link>
                       </Button>
+                      {canDelete(
+                        { status: b.status as never, hasPendingChange: b.has_pending_change },
+                        { owner, submitter: false },
+                      ) && <DeleteBannerButton id={b.id} name={name} />}
                     </TableCell>
                   </TableRow>
                 );

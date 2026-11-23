@@ -80,4 +80,5 @@ export const BUILTIN_PAGES: { value: string; label: string }[] = [
   { value: "basket", label: "Sepet" },
   { value: "legal_search", label: "Yasal sayfalarda ara" },
   { value: "campaigns", label: "Kampanyalar" },
+  { value: "contact", label: "İletişim" },
 ];

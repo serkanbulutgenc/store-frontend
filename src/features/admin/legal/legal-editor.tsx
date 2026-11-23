@@ -4,12 +4,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Markdown } from "@/features/legal/markdown";
 import { formatDate } from "@/lib/format";
 import { useCrumbLabel } from "../components/crumb-labels";
 import { apiErrorToFormErrors } from "../forms/api-errors";
 import { bind, Field, FormMessage } from "../forms/field";
+import { MarkdownField } from "../forms/markdown-field";
 import { useDirtyGuard } from "../forms/use-dirty-guard";
 import {
   type LegalRow,
@@ -20,7 +20,7 @@ import {
 import { isUnchanged, legalFormSchema } from "./schemas";
 import { LegalSlugEditor } from "./slug-editor";
 
-/** Edit one Legal page: the text of the newest version, a live preview, and the history. */
+/** Edit one Legal page: the text of the newest version (with a preview toggle), and the history. */
 export function LegalEditor({ page, owner }: { page: string; owner: boolean }) {
   const { data: versions } = useSuspenseQuery(legalVersionsQuery(page));
   const latest = versions[0] as LegalRow;
@@ -87,7 +87,7 @@ export function LegalEditor({ page, owner }: { page: string; owner: boolean }) {
                 label="Metin (Markdown)"
                 hint="Başlık için #, liste için - veya 1., kalın için **metin**, bağlantı için [metin](/adres)."
               >
-                <Textarea rows={22} className="font-mono text-xs" {...bind(f)} />
+                <MarkdownField rows={22} {...bind(f)} />
               </Field>
             )}
           </form.Field>
@@ -108,17 +108,6 @@ export function LegalEditor({ page, owner }: { page: string; owner: boolean }) {
             }}
           </form.Subscribe>
         </form>
-
-        <section aria-label="Önizleme" className="space-y-2">
-          <h2 className="font-medium">Önizleme</h2>
-          <form.Subscribe selector={(s) => s.values.body}>
-            {(body) => (
-              <div className="rounded-md border p-4">
-                <Markdown source={body} />
-              </div>
-            )}
-          </form.Subscribe>
-        </section>
       </div>
 
       <LegalSlugEditor
