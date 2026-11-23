@@ -13,9 +13,9 @@ export function metaDescription(text: string | null | undefined, fallback: strin
   return clean ? clean.slice(0, DESCRIPTION_LENGTH).trimEnd() : fallback;
 }
 
-type Sized = { sizes: { url: string; width: number }[] };
+export type Sized = { sizes: { url: string; width: number }[] };
 
-function largestUrl(image: Sized, origin: string): string | undefined {
+export function largestUrl(image: Sized, origin: string): string | undefined {
   const best = [...image.sizes].sort((a, b) => b.width - a.width)[0];
   if (!best) return undefined;
   return best.url.startsWith("http") ? best.url : absoluteUrl(origin, best.url);
@@ -114,7 +114,7 @@ export function jsonLdScript(data: unknown): { type: string; children: string } 
 
 type Meta = Record<string, string>;
 
-function openGraph(o: {
+export function openGraph(o: {
   title: string;
   description: string;
   url: string;

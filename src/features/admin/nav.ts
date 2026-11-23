@@ -9,6 +9,7 @@ import {
   Home,
   Layers,
   type LucideIcon,
+  Mail,
   Megaphone,
   Menu,
   MessageSquareText,
@@ -40,7 +41,7 @@ export type NavItem = {
   /** The Owner role itself, for a screen that is not a grantable permission. */
   ownerOnly?: boolean;
   /** A count shown beside the label; the sidebar looks the number up by this key. */
-  badge?: "pendingCollections" | "approvals";
+  badge?: "pendingCollections" | "approvals" | "contactReplies";
 };
 export type NavGroup = { label: string; icon: LucideIcon; items: NavItem[] };
 
@@ -142,6 +143,14 @@ export const NAV_GROUPS: NavGroup[] = [
         to: "/admin/legal-pages",
         icon: Scale,
         permission: "manage_legal_pages",
+      },
+      {
+        label: "İletişim",
+        to: "/admin/contact",
+        icon: Mail,
+        permission: "edit_contact",
+        // Only the Owner gets a number: Staff cannot decide on a waiting reply.
+        badge: "contactReplies",
       },
       { label: "Menüler", to: "/admin/menus", icon: Menu, permission: "manage_menus" },
       { label: "Personel", to: "/admin/staff", icon: UserCog, permission: "manage_staff_users" },
