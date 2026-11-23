@@ -27,6 +27,8 @@ import { Route as StorefrontCustomerHesapRouteRouteImport } from './routes/_stor
 import { Route as StorefrontCollectionsSlugRouteImport } from './routes/_storefront/collections/$slug'
 import { Route as StorefrontHesapGirisRouteImport } from './routes/_storefront/hesap/giris'
 import { Route as StorefrontHesapKayitRouteImport } from './routes/_storefront/hesap/kayit'
+import { Route as StorefrontKampanyalarIndexRouteImport } from './routes/_storefront/kampanyalar/index'
+import { Route as StorefrontKampanyalarSlugRouteImport } from './routes/_storefront/kampanyalar/$slug'
 import { Route as StorefrontKategoriSlugRouteImport } from './routes/_storefront/kategori/$slug'
 import { Route as StorefrontStokBildirimiOnaylaRouteImport } from './routes/_storefront/stok-bildirimi/onayla'
 import { Route as StorefrontStokBildirimiVazgecRouteImport } from './routes/_storefront/stok-bildirimi/vazgec'
@@ -171,6 +173,18 @@ const StorefrontHesapKayitRoute = StorefrontHesapKayitRouteImport.update({
   path: '/hesap/kayit',
   getParentRoute: () => StorefrontRouteRoute,
 } as any)
+const StorefrontKampanyalarIndexRoute =
+  StorefrontKampanyalarIndexRouteImport.update({
+    id: '/kampanyalar/',
+    path: '/kampanyalar/',
+    getParentRoute: () => StorefrontRouteRoute,
+  } as any)
+const StorefrontKampanyalarSlugRoute =
+  StorefrontKampanyalarSlugRouteImport.update({
+    id: '/kampanyalar/$slug',
+    path: '/kampanyalar/$slug',
+    getParentRoute: () => StorefrontRouteRoute,
+  } as any)
 const StorefrontKategoriSlugRoute = StorefrontKategoriSlugRouteImport.update({
   id: '/kategori/$slug',
   path: '/kategori/$slug',
@@ -479,6 +493,7 @@ export interface FileRoutesByFullPath {
   '/collections/$slug': typeof StorefrontCollectionsSlugRoute
   '/hesap/giris': typeof StorefrontHesapGirisRoute
   '/hesap/kayit': typeof StorefrontHesapKayitRoute
+  '/kampanyalar/$slug': typeof StorefrontKampanyalarSlugRoute
   '/kategori/$slug': typeof StorefrontKategoriSlugRoute
   '/stok-bildirimi/onayla': typeof StorefrontStokBildirimiOnaylaRoute
   '/stok-bildirimi/vazgec': typeof StorefrontStokBildirimiVazgecRoute
@@ -505,6 +520,7 @@ export interface FileRoutesByFullPath {
   '/admin/stock': typeof AdminAppStockRoute
   '/admin/suppliers': typeof AdminAppSuppliersRoute
   '/admin/vouchers': typeof AdminAppVouchersRoute
+  '/kampanyalar/': typeof StorefrontKampanyalarIndexRoute
   '/yasal/': typeof StorefrontYasalIndexRoute
   '/admin/': typeof AdminAppIndexRoute
   '/hesap/adresler': typeof StorefrontCustomerHesapAdreslerRoute
@@ -549,6 +565,7 @@ export interface FileRoutesByTo {
   '/collections/$slug': typeof StorefrontCollectionsSlugRoute
   '/hesap/giris': typeof StorefrontHesapGirisRoute
   '/hesap/kayit': typeof StorefrontHesapKayitRoute
+  '/kampanyalar/$slug': typeof StorefrontKampanyalarSlugRoute
   '/kategori/$slug': typeof StorefrontKategoriSlugRoute
   '/stok-bildirimi/onayla': typeof StorefrontStokBildirimiOnaylaRoute
   '/stok-bildirimi/vazgec': typeof StorefrontStokBildirimiVazgecRoute
@@ -575,6 +592,7 @@ export interface FileRoutesByTo {
   '/admin/stock': typeof AdminAppStockRoute
   '/admin/suppliers': typeof AdminAppSuppliersRoute
   '/admin/vouchers': typeof AdminAppVouchersRoute
+  '/kampanyalar': typeof StorefrontKampanyalarIndexRoute
   '/yasal': typeof StorefrontYasalIndexRoute
   '/hesap/adresler': typeof StorefrontCustomerHesapAdreslerRoute
   '/hesap/favoriler': typeof StorefrontCustomerHesapFavorilerRoute
@@ -623,6 +641,7 @@ export interface FileRoutesById {
   '/_storefront/collections/$slug': typeof StorefrontCollectionsSlugRoute
   '/_storefront/hesap/giris': typeof StorefrontHesapGirisRoute
   '/_storefront/hesap/kayit': typeof StorefrontHesapKayitRoute
+  '/_storefront/kampanyalar/$slug': typeof StorefrontKampanyalarSlugRoute
   '/_storefront/kategori/$slug': typeof StorefrontKategoriSlugRoute
   '/_storefront/stok-bildirimi/onayla': typeof StorefrontStokBildirimiOnaylaRoute
   '/_storefront/stok-bildirimi/vazgec': typeof StorefrontStokBildirimiVazgecRoute
@@ -649,6 +668,7 @@ export interface FileRoutesById {
   '/admin/_app/stock': typeof AdminAppStockRoute
   '/admin/_app/suppliers': typeof AdminAppSuppliersRoute
   '/admin/_app/vouchers': typeof AdminAppVouchersRoute
+  '/_storefront/kampanyalar/': typeof StorefrontKampanyalarIndexRoute
   '/_storefront/yasal/': typeof StorefrontYasalIndexRoute
   '/admin/_app/': typeof AdminAppIndexRoute
   '/_storefront/_customer/hesap/adresler': typeof StorefrontCustomerHesapAdreslerRoute
@@ -696,6 +716,7 @@ export interface FileRouteTypes {
     | '/collections/$slug'
     | '/hesap/giris'
     | '/hesap/kayit'
+    | '/kampanyalar/$slug'
     | '/kategori/$slug'
     | '/stok-bildirimi/onayla'
     | '/stok-bildirimi/vazgec'
@@ -722,6 +743,7 @@ export interface FileRouteTypes {
     | '/admin/stock'
     | '/admin/suppliers'
     | '/admin/vouchers'
+    | '/kampanyalar/'
     | '/yasal/'
     | '/admin/'
     | '/hesap/adresler'
@@ -766,6 +788,7 @@ export interface FileRouteTypes {
     | '/collections/$slug'
     | '/hesap/giris'
     | '/hesap/kayit'
+    | '/kampanyalar/$slug'
     | '/kategori/$slug'
     | '/stok-bildirimi/onayla'
     | '/stok-bildirimi/vazgec'
@@ -792,6 +815,7 @@ export interface FileRouteTypes {
     | '/admin/stock'
     | '/admin/suppliers'
     | '/admin/vouchers'
+    | '/kampanyalar'
     | '/yasal'
     | '/hesap/adresler'
     | '/hesap/favoriler'
@@ -839,6 +863,7 @@ export interface FileRouteTypes {
     | '/_storefront/collections/$slug'
     | '/_storefront/hesap/giris'
     | '/_storefront/hesap/kayit'
+    | '/_storefront/kampanyalar/$slug'
     | '/_storefront/kategori/$slug'
     | '/_storefront/stok-bildirimi/onayla'
     | '/_storefront/stok-bildirimi/vazgec'
@@ -865,6 +890,7 @@ export interface FileRouteTypes {
     | '/admin/_app/stock'
     | '/admin/_app/suppliers'
     | '/admin/_app/vouchers'
+    | '/_storefront/kampanyalar/'
     | '/_storefront/yasal/'
     | '/admin/_app/'
     | '/_storefront/_customer/hesap/adresler'
@@ -1029,6 +1055,20 @@ declare module '@tanstack/react-router' {
       path: '/hesap/kayit'
       fullPath: '/hesap/kayit'
       preLoaderRoute: typeof StorefrontHesapKayitRouteImport
+      parentRoute: typeof StorefrontRouteRoute
+    }
+    '/_storefront/kampanyalar/': {
+      id: '/_storefront/kampanyalar/'
+      path: '/kampanyalar'
+      fullPath: '/kampanyalar/'
+      preLoaderRoute: typeof StorefrontKampanyalarIndexRouteImport
+      parentRoute: typeof StorefrontRouteRoute
+    }
+    '/_storefront/kampanyalar/$slug': {
+      id: '/_storefront/kampanyalar/$slug'
+      path: '/kampanyalar/$slug'
+      fullPath: '/kampanyalar/$slug'
+      preLoaderRoute: typeof StorefrontKampanyalarSlugRouteImport
       parentRoute: typeof StorefrontRouteRoute
     }
     '/_storefront/kategori/$slug': {
@@ -1465,11 +1505,13 @@ interface StorefrontRouteRouteChildren {
   StorefrontCollectionsSlugRoute: typeof StorefrontCollectionsSlugRoute
   StorefrontHesapGirisRoute: typeof StorefrontHesapGirisRoute
   StorefrontHesapKayitRoute: typeof StorefrontHesapKayitRoute
+  StorefrontKampanyalarSlugRoute: typeof StorefrontKampanyalarSlugRoute
   StorefrontKategoriSlugRoute: typeof StorefrontKategoriSlugRoute
   StorefrontStokBildirimiOnaylaRoute: typeof StorefrontStokBildirimiOnaylaRoute
   StorefrontStokBildirimiVazgecRoute: typeof StorefrontStokBildirimiVazgecRoute
   StorefrontUrunSlugRoute: typeof StorefrontUrunSlugRoute
   StorefrontYasalSlugRoute: typeof StorefrontYasalSlugRoute
+  StorefrontKampanyalarIndexRoute: typeof StorefrontKampanyalarIndexRoute
   StorefrontYasalIndexRoute: typeof StorefrontYasalIndexRoute
   StorefrontHesapEpostaDogrulaKeyRoute: typeof StorefrontHesapEpostaDogrulaKeyRoute
   StorefrontHesapSifreSifirlaKeyRoute: typeof StorefrontHesapSifreSifirlaKeyRoute
@@ -1487,11 +1529,13 @@ const StorefrontRouteRouteChildren: StorefrontRouteRouteChildren = {
   StorefrontCollectionsSlugRoute: StorefrontCollectionsSlugRoute,
   StorefrontHesapGirisRoute: StorefrontHesapGirisRoute,
   StorefrontHesapKayitRoute: StorefrontHesapKayitRoute,
+  StorefrontKampanyalarSlugRoute: StorefrontKampanyalarSlugRoute,
   StorefrontKategoriSlugRoute: StorefrontKategoriSlugRoute,
   StorefrontStokBildirimiOnaylaRoute: StorefrontStokBildirimiOnaylaRoute,
   StorefrontStokBildirimiVazgecRoute: StorefrontStokBildirimiVazgecRoute,
   StorefrontUrunSlugRoute: StorefrontUrunSlugRoute,
   StorefrontYasalSlugRoute: StorefrontYasalSlugRoute,
+  StorefrontKampanyalarIndexRoute: StorefrontKampanyalarIndexRoute,
   StorefrontYasalIndexRoute: StorefrontYasalIndexRoute,
   StorefrontHesapEpostaDogrulaKeyRoute: StorefrontHesapEpostaDogrulaKeyRoute,
   StorefrontHesapSifreSifirlaKeyRoute: StorefrontHesapSifreSifirlaKeyRoute,
