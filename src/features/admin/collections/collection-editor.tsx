@@ -28,6 +28,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ApiError } from "@/lib/api/errors";
 import { can, type Me } from "@/lib/api/me";
 import { formatDate } from "@/lib/format";
+import { showsRejection } from "../approvals/rules";
 import { productsQuery } from "../catalog/queries";
 import { useCrumbLabel } from "../components/crumb-labels";
 import { ConfirmDeleteDialog } from "../components/delete-confirm";
@@ -94,7 +95,7 @@ export function CollectionEditor({ collectionId, me }: { collectionId: number; m
             Mağazada gör
           </Link>
         )}
-        {c.rejection_reason && c.status === "draft" && (
+        {showsRejection(c) && (
           <p role="status" className="rounded-md bg-amber-100 p-2 text-sm text-amber-900">
             Reddedildi: {c.rejection_reason}
           </p>

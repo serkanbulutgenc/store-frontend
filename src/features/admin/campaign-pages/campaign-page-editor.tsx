@@ -11,6 +11,7 @@ import { Markdown } from "@/features/legal/markdown";
 import { ApiError } from "@/lib/api/errors";
 import { can, type Me } from "@/lib/api/me";
 import { formatDate } from "@/lib/format";
+import { showsRejection } from "../approvals/rules";
 import { useCrumbLabel } from "../components/crumb-labels";
 import { ActionDialog } from "../forms/action-dialog";
 import {
@@ -77,7 +78,7 @@ export function CampaignPageEditor({ pageId, me }: { pageId: number; me: Me }) {
             Mağazada gör
           </a>
         )}
-        {page.rejection_reason && page.status === "draft" && (
+        {showsRejection(page) && (
           <p role="status" className="rounded-md bg-amber-100 p-2 text-sm text-amber-900">
             Reddedildi: {page.rejection_reason}
           </p>

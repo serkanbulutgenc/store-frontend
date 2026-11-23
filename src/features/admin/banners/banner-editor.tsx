@@ -9,6 +9,7 @@ import { Select } from "@/components/ui/select";
 import { ApiError } from "@/lib/api/errors";
 import { can, type Me } from "@/lib/api/me";
 import { formatDate } from "@/lib/format";
+import { showsRejection } from "../approvals/rules";
 import { categoriesQuery } from "../catalog/queries";
 import { useCrumbLabel } from "../components/crumb-labels";
 import { ActionDialog } from "../forms/action-dialog";
@@ -77,7 +78,7 @@ export function BannerEditor({ bannerId, me }: { bannerId: number; me: Me }) {
           <Badge tone={statusTone(banner.status)}>{statusLabel(banner.status)}</Badge>
         </div>
         <p className="text-sm text-muted-foreground">{slotLabel(banner.slot)}</p>
-        {banner.rejection_reason && banner.status === "draft" && (
+        {showsRejection(banner) && (
           <p role="status" className="rounded-md bg-amber-100 p-2 text-sm text-amber-900">
             Reddedildi: {banner.rejection_reason}
           </p>

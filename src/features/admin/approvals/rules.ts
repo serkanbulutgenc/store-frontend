@@ -53,3 +53,14 @@ export function formatValue(value: unknown): string {
 
 /** The fields that differ, or all of them when nothing is marked (a first draft marks all). */
 export const changedFields = (fields: FieldDiff[]): FieldDiff[] => fields.filter((f) => f.changed);
+
+/** A rejection reason is for the submitter: on a draft sent back, or on a live item whose
+ * edit was rejected. A waiting item or one with a new change pending has nothing to explain. */
+export const showsRejection = (item: {
+  rejection_reason: string;
+  status: string;
+  pending_change: unknown;
+}) =>
+  item.rejection_reason !== "" &&
+  item.pending_change === null &&
+  (item.status === "draft" || item.status === "published");
