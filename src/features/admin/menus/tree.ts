@@ -11,6 +11,7 @@ export function toBody(items: MenuItemRow[]): MenuItemBody[] {
     product_id: i.product_id,
     brand_id: i.brand_id,
     collection_id: i.collection_id,
+    campaign_page_id: i.campaign_page_id,
     include_subcategories: i.include_subcategories,
     legal_page: i.legal_page,
     builtin: i.builtin,

@@ -22,6 +22,7 @@ const PICKED: TargetType[] = [
   "product",
   "brand",
   "collection",
+  "campaign_page",
   "builtin",
 ];
 
@@ -63,6 +64,7 @@ export const TARGET_TYPES: { value: TargetType; label: string }[] = [
   { value: "product", label: "Ürün" },
   { value: "brand", label: "Marka" },
   { value: "collection", label: "Koleksiyon" },
+  { value: "campaign_page", label: "Kampanya sayfası" },
   { value: "builtin", label: "Hazır sayfa" },
   { value: "url", label: "Özel bağlantı" },
   { value: "group", label: "Grup başlığı" },
@@ -77,4 +79,5 @@ export const BUILTIN_PAGES: { value: string; label: string }[] = [
   { value: "favorites", label: "Favorilerim" },
   { value: "basket", label: "Sepet" },
   { value: "legal_search", label: "Yasal sayfalarda ara" },
+  { value: "campaigns", label: "Kampanyalar" },
 ];

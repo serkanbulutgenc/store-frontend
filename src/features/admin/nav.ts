@@ -9,6 +9,7 @@ import {
   Home,
   Layers,
   type LucideIcon,
+  Megaphone,
   Menu,
   MessageSquareText,
   Package,
@@ -99,6 +100,12 @@ export const NAV_GROUPS: NavGroup[] = [
         permission: "edit_collections",
         // Only the Owner gets a number: Staff cannot decide on what is waiting.
         badge: "pendingCollections",
+      },
+      {
+        label: "Kampanya sayfaları",
+        to: "/admin/campaign-pages",
+        icon: Megaphone,
+        permission: "edit_campaign_pages",
       },
       { label: "Markalar", to: "/admin/brands", icon: Tag, permission: "manage_brands" },
       {

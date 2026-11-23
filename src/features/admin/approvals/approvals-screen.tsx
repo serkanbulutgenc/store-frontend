@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { ApiError } from "@/lib/api/errors";
+import { pageKeys } from "../campaign-pages/queries";
 import { collectionKeys } from "../collections/queries";
 import { DiffTable, QueueTable } from "./approval-parts";
 import { approvalDetailQuery, approvalKeys, approvalsQuery, decide } from "./queries";
@@ -36,10 +37,11 @@ function ReviewForm({ item, onClose }: { item: ApprovalItem; onClose: () => void
   const move = useMutation({
     mutationFn: (decision: "approve" | "reject") => decide(item.type, item.id, decision, reason),
     onSuccess: async (_count, decision) => {
-      // A Collection decided here is also shown on its own screen and in the nav badge.
+      // A Collection or Campaign page decided here is also shown on its own screen and in the nav badge.
       await Promise.all([
         qc.invalidateQueries({ queryKey: approvalKeys.all }),
         qc.invalidateQueries({ queryKey: collectionKeys.all }),
+        qc.invalidateQueries({ queryKey: pageKeys.all }),
       ]);
       toast.success(decision === "approve" ? "Onaylandı." : "Reddedildi.");
       onClose();

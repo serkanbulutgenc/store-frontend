@@ -24,6 +24,7 @@ const row = (over: Partial<MenuItemRow> = {}): MenuItemRow => ({
   product_id: null,
   brand_id: null,
   collection_id: null,
+  campaign_page_id: null,
   include_subcategories: false,
   legal_page: null,
   builtin: null,
@@ -38,6 +39,11 @@ const row = (over: Partial<MenuItemRow> = {}): MenuItemRow => ({
 });
 
 describe("toBody", () => {
+  it("sends a Campaign page item's id", () => {
+    const [body] = toBody([row({ target_type: "campaign_page", campaign_page_id: 7 })]);
+    expect(body).toMatchObject({ target_type: "campaign_page", campaign_page_id: 7 });
+  });
+
   it("sends a Collection item's id", () => {
     const [body] = toBody([row({ target_type: "collection", collection_id: 4 })]);
     expect(body).toMatchObject({ target_type: "collection", collection_id: 4 });
@@ -67,6 +73,7 @@ describe("toBody", () => {
         product_id: null,
         brand_id: null,
         collection_id: null,
+        campaign_page_id: null,
         include_subcategories: true,
         legal_page: null,
         builtin: null,
@@ -80,6 +87,7 @@ describe("toBody", () => {
             product_id: null,
             brand_id: 3,
             collection_id: null,
+            campaign_page_id: null,
             include_subcategories: false,
             legal_page: null,
             builtin: null,
@@ -96,6 +104,7 @@ describe("toBody", () => {
         product_id: null,
         brand_id: null,
         collection_id: null,
+        campaign_page_id: null,
         include_subcategories: false,
         legal_page: null,
         builtin: null,

@@ -66,6 +66,7 @@ describe("checkItem", () => {
       "product",
       "brand",
       "collection",
+      "campaign_page",
       "builtin",
     ] as const) {
       expect(

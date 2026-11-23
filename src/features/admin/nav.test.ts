@@ -137,6 +137,13 @@ it("puts the pending-Collection badge on the Koleksiyonlar item, which Staff als
   ).not.toContain("Onay bekleyenler");
 });
 
+it("shows Kampanya sayfaları to anyone who may edit them, Staff included", () => {
+  const entry = (permissions: string[]) =>
+    visibleNav(me(permissions)).find((i) => i.to === "/admin/campaign-pages");
+  expect(entry(["edit_campaign_pages"])?.label).toBe("Kampanya sayfaları");
+  expect(entry(["view_products"])).toBeUndefined();
+});
+
 it("shows the Campaigns entry only with the manage_campaigns permission (Owner, not Staff)", () => {
   const staff = visibleNav(me(["view_products", "manage_products", "manage_vouchers"])).map(
     (i) => i.to,
