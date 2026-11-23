@@ -8,6 +8,7 @@ import {
   kindBadge,
   REASON_MAX,
   reasonError,
+  showsRejection,
 } from "./rules";
 
 describe("kindBadge", () => {
@@ -78,5 +79,19 @@ describe("changedFields", () => {
 describe("itemKey", () => {
   it("is unique across kinds that share an id", () => {
     expect(itemKey({ type: "collection", id: 1 })).not.toBe(itemKey({ type: "banner", id: 1 }));
+  });
+});
+
+describe("showsRejection", () => {
+  const item = { rejection_reason: "Eksik", status: "draft", pending_change: null };
+  it("shows the reason on a sent-back draft and on a live item whose edit was rejected", () => {
+    expect(showsRejection(item)).toBe(true);
+    expect(showsRejection({ ...item, status: "published" })).toBe(true);
+  });
+  it("shows nothing without a reason, or while something waits", () => {
+    expect(showsRejection({ ...item, rejection_reason: "" })).toBe(false);
+    expect(showsRejection({ ...item, status: "pending_approval" })).toBe(false);
+    expect(showsRejection({ ...item, status: "published", pending_change: {} })).toBe(false);
+    expect(showsRejection({ ...item, status: "unpublished" })).toBe(false);
   });
 });
