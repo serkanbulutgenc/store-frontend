@@ -2,12 +2,16 @@ import {
   Boxes,
   Building2,
   ChartColumn,
+  ClipboardCheck,
   FileSpreadsheet,
   GalleryVerticalEnd,
   History,
   Home,
+  Images,
   Layers,
   type LucideIcon,
+  Mail,
+  Megaphone,
   Menu,
   MessageSquareText,
   Package,
@@ -38,7 +42,7 @@ export type NavItem = {
   /** The Owner role itself, for a screen that is not a grantable permission. */
   ownerOnly?: boolean;
   /** A count shown beside the label; the sidebar looks the number up by this key. */
-  badge?: "pendingCollections";
+  badge?: "pendingCollections" | "approvals" | "contactReplies";
 };
 export type NavGroup = { label: string; icon: LucideIcon; items: NavItem[] };
 
@@ -99,6 +103,18 @@ export const NAV_GROUPS: NavGroup[] = [
         // Only the Owner gets a number: Staff cannot decide on what is waiting.
         badge: "pendingCollections",
       },
+      {
+        label: "Kampanya sayfaları",
+        to: "/admin/campaign-pages",
+        icon: Megaphone,
+        permission: "edit_campaign_pages",
+      },
+      {
+        label: "Banner'lar",
+        to: "/admin/banners",
+        icon: Images,
+        permission: "edit_banners",
+      },
       { label: "Markalar", to: "/admin/brands", icon: Tag, permission: "manage_brands" },
       {
         label: "Tedarikçiler",
@@ -114,6 +130,14 @@ export const NAV_GROUPS: NavGroup[] = [
     label: "Yönetim",
     icon: Settings,
     items: [
+      // The Owner's one list of what Staff have submitted; the number is how many wait.
+      {
+        label: "Onay bekleyenler",
+        to: "/admin/approvals",
+        icon: ClipboardCheck,
+        ownerOnly: true,
+        badge: "approvals",
+      },
       { label: "Ayarlar", to: "/admin/settings", icon: Settings, permission: "manage_settings" },
       {
         label: "Kargo fiyatları",
@@ -126,6 +150,14 @@ export const NAV_GROUPS: NavGroup[] = [
         to: "/admin/legal-pages",
         icon: Scale,
         permission: "manage_legal_pages",
+      },
+      {
+        label: "İletişim",
+        to: "/admin/contact",
+        icon: Mail,
+        permission: "edit_contact",
+        // Only the Owner gets a number: Staff cannot decide on a waiting reply.
+        badge: "contactReplies",
       },
       { label: "Menüler", to: "/admin/menus", icon: Menu, permission: "manage_menus" },
       { label: "Personel", to: "/admin/staff", icon: UserCog, permission: "manage_staff_users" },

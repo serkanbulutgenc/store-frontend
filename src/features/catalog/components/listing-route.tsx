@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BannerStrip } from "@/features/banners/components/picture-banner";
+import type { PictureBanner } from "@/features/banners/queries";
 import type { BrowseSearch } from "../browse-search";
 import type { CardImage, CategoryNode, SeedPages } from "../queries";
 import { ProductImage } from "./product-image";
@@ -16,6 +18,7 @@ export function ListingRoute({
   seed,
   navigate,
   intro,
+  banners = [],
 }: {
   title: string;
   search: BrowseSearch;
@@ -26,9 +29,12 @@ export function ListingRoute({
   navigate: Nav;
   /** A Category page's copy and image, shown above the products. */
   intro?: { description: string; image: CardImage | null };
+  /** The Category-top Banners; an empty slot draws nothing. */
+  banners?: PictureBanner[];
 }) {
   return (
     <main className="mx-auto max-w-6xl px-4 py-6">
+      <BannerStrip banners={banners} label="Kampanya" className="mb-4" eager />
       <h1 className="mb-4 text-2xl font-semibold">{title}</h1>
       {intro?.image && (
         <ProductImage

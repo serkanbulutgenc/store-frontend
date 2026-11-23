@@ -22,3 +22,19 @@ export type LegalFormValues = z.infer<typeof legalFormSchema>;
 export function isUnchanged(values: LegalFormValues, saved: { title: string; body: string }) {
   return values.title.trim() === saved.title.trim() && values.body.trim() === saved.body.trim();
 }
+
+export const SLUG_MAX = 100;
+/** The backend refuses these: `/legal-pages/search` is a route of its own. */
+export const RESERVED_SLUGS = ["search"];
+
+export const slugFormSchema = z.object({
+  slug: z
+    .string()
+    .trim()
+    .min(1, "Adres boş olamaz.")
+    .max(SLUG_MAX, `En fazla ${SLUG_MAX} karakter.`)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Adres küçük harf, rakam ve tek tire içermeli.")
+    .refine((s) => !RESERVED_SLUGS.includes(s), "Bu adres sistem tarafından kullanılıyor."),
+});
+
+export type SlugFormValues = z.infer<typeof slugFormSchema>;

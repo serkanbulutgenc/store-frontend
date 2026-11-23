@@ -62,6 +62,91 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/approvals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Queue */
+        get: operations["approvals_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/approvals/{kind}/{item_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Item */
+        get: operations["approvals_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/approvals/{kind}/{item_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve */
+        post: operations["approvals_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/approvals/{kind}/{item_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reject */
+        post: operations["approvals_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/approvals/{kind}/{item_id}/unpublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Unpublish */
+        post: operations["approvals_unpublish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/attribute-options/{option_id}": {
         parameters: {
             query?: never;
@@ -155,6 +240,177 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/banners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Banners
+         * @description Every Banner by slot and order; `status` and `slot` narrow it.
+         */
+        get: operations["banners_list"];
+        put?: never;
+        /**
+         * Create Banner
+         * @description A new draft.
+         */
+        post: operations["banners_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/banners/{banner_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Banner */
+        get: operations["banners_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit Banner
+         * @description Edit a draft; the Owner edits any Banner. A Staff edit of a published Banner is
+         *     saved as a pending change and the live Banner stays as it is.
+         */
+        patch: operations["banners_edit"];
+        trace?: never;
+    };
+    "/api/admin/banners/{banner_id}/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Image
+         * @description The main image (JPEG, PNG or WebP), replacing any existing one; derivatives are
+         *     made in the background. `alt_text`, when sent, is the Banner's alt text. Staff on a
+         *     draft; otherwise the Owner. Not for the announcement bar.
+         */
+        post: operations["banners_upload_image"];
+        /** Delete Image */
+        delete: operations["banners_delete_image"];
+        options?: never;
+        head?: never;
+        /**
+         * Edit Image
+         * @description Change the alt text, which covers both images.
+         */
+        patch: operations["banners_edit_image"];
+        trace?: never;
+    };
+    "/api/admin/banners/{banner_id}/mobile-image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Mobile Image
+         * @description The optional image for narrow screens; same formats and limits.
+         */
+        post: operations["banners_upload_mobile_image"];
+        /** Delete Mobile Image */
+        delete: operations["banners_delete_mobile_image"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/banners/{banner_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish Banner
+         * @description Owner only: a draft or unpublished Banner goes live.
+         */
+        post: operations["banners_publish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/banners/{banner_id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Banner
+         * @description Draft to pending approval.
+         */
+        post: operations["banners_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/banners/{banner_id}/unpublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Unpublish Banner */
+        post: operations["banners_unpublish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/banners/{banner_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Withdraw Banner
+         * @description Back to draft; only the user who submitted it.
+         */
+        post: operations["banners_withdraw"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/brands": {
         parameters: {
             query?: never;
@@ -211,6 +467,176 @@ export interface paths {
         post: operations["catalog_upload_brand_logo"];
         /** Delete Brand Logo */
         delete: operations["catalog_delete_brand_logo"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/campaign-pages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Pages
+         * @description Every page, newest first; `status` narrows to one state.
+         */
+        get: operations["campaign_pages_list"];
+        put?: never;
+        /**
+         * Create Page
+         * @description A new draft. Without `slug` it is made from the title.
+         */
+        post: operations["campaign_pages_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/campaign-pages/{page_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Page */
+        get: operations["campaign_pages_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit Page
+         * @description Edit a draft; the Owner edits any page. A Staff edit of a published page is
+         *     saved as a pending change and the live page stays as it is.
+         */
+        patch: operations["campaign_pages_edit"];
+        trace?: never;
+    };
+    "/api/admin/campaign-pages/{page_id}/campaign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Link Campaign
+         * @description Owner only: link the page to a discount Campaign, or unlink with null. The
+         *     Campaign itself is not changed.
+         */
+        put: operations["campaign_pages_link_campaign"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/campaign-pages/{page_id}/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Image
+         * @description One cover image (JPEG, PNG or WebP), replacing any existing one; derivatives
+         *     are made in the background. Staff on a draft; otherwise the Owner.
+         */
+        post: operations["campaign_pages_upload_image"];
+        /** Delete Image */
+        delete: operations["campaign_pages_delete_image"];
+        options?: never;
+        head?: never;
+        /**
+         * Edit Image
+         * @description Change the cover image's alt text.
+         */
+        patch: operations["campaign_pages_edit_image"];
+        trace?: never;
+    };
+    "/api/admin/campaign-pages/{page_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish Page
+         * @description Owner only: a draft or unpublished page goes live.
+         */
+        post: operations["campaign_pages_publish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/campaign-pages/{page_id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Page
+         * @description Draft to pending approval.
+         */
+        post: operations["campaign_pages_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/campaign-pages/{page_id}/unpublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Unpublish Page */
+        post: operations["campaign_pages_unpublish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/campaign-pages/{page_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Withdraw Page
+         * @description Back to draft; only the user who submitted it.
+         */
+        post: operations["campaign_pages_withdraw"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -685,6 +1111,204 @@ export interface paths {
         patch: operations["catalog_update_colour"];
         trace?: never;
     };
+    "/api/admin/contact-categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Categories
+         * @description Every category, inactive ones too, with how many threads use it.
+         */
+        get: operations["contact_categories_list"];
+        put?: never;
+        /**
+         * Create Category
+         * @description Add a category at the end. 422 for an empty or repeated name.
+         */
+        post: operations["contact_categories_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/contact-categories/{category_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Category
+         * @description Delete an unused category. 409 `contact_category_in_use` once it has threads:
+         *     deactivate it instead.
+         */
+        delete: operations["contact_categories_delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Category
+         * @description Rename, deactivate or reorder. Existing threads keep the category.
+         */
+        patch: operations["contact_categories_update"];
+        trace?: never;
+    };
+    "/api/admin/contact-replies/{reply_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit Reply
+         * @description Change a draft or a rejected reply (its author, or the Owner).
+         */
+        patch: operations["contact_replies_update"];
+        trace?: never;
+    };
+    "/api/admin/contact-replies/{reply_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve Reply
+         * @description Owner: send the waiting reply as written, or with `body` as the edited text.
+         */
+        post: operations["contact_replies_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/contact-replies/{reply_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reject Reply
+         * @description Owner: send the waiting reply back to Staff with a note they can read.
+         */
+        post: operations["contact_replies_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/contact-replies/{reply_id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Reply
+         * @description Send the author's draft to the Owner for approval.
+         */
+        post: operations["contact_replies_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/contact-threads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Threads
+         * @description Threads, latest activity first, as a page. Filters combine.
+         *
+         *     `q` searches name, email, order number, category and message text (anonymised
+         *     threads never match it). `date_from`/`date_to` (YYYY-MM-DD) bound the last activity,
+         *     both days included. `has_pending_reply` finds threads with a reply waiting for the
+         *     Owner.
+         */
+        get: operations["contact_threads_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/contact-threads/{thread_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Thread
+         * @description The Shopper's message, then drafts, decisions and sent replies in order.
+         */
+        get: operations["contact_threads_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Thread
+         * @description Set the status and/or the assignee. `assignee_id: null` clears the assignee.
+         */
+        patch: operations["contact_threads_update"];
+        trace?: never;
+    };
+    "/api/admin/contact-threads/{thread_id}/replies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Write Reply
+         * @description Staff: a draft (state `draft`). The Owner: sent at once (state `sent`).
+         */
+        post: operations["contact_replies_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/customers": {
         parameters: {
             query?: never;
@@ -812,10 +1436,31 @@ export interface paths {
         };
         /**
          * List Pages
-         * @description The current version of every page.
+         * @description The current version of every page, with the earlier addresses that redirect.
          */
         get: operations["legal_pages_list"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/legal-pages/{page}/slug": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Change Slug
+         * @description Give a page a new address. The old one keeps redirecting to it; the page's
+         *     versions and the Consent records that point at them do not move.
+         */
+        put: operations["legal_pages_change_slug"];
         post?: never;
         delete?: never;
         options?: never;
@@ -894,7 +1539,8 @@ export interface paths {
         };
         /**
          * Search Menu Targets
-         * @description Categories, Legal pages, Products, Brands, Collections matching `q` by name.
+         * @description Categories, Legal pages, Products, Brands, Collections and Campaign pages
+         *     matching `q` by name.
          */
         get: operations["menus_search_targets"];
         put?: never;
@@ -2115,6 +2761,11 @@ export interface components {
             created_by?: string | null;
             /** Page */
             page: string;
+            /**
+             * Redirects
+             * @default []
+             */
+            redirects: string[];
             /** Slug */
             slug: string;
             /** Title */
@@ -2135,6 +2786,11 @@ export interface components {
             created_by?: string | null;
             /** Page */
             page: string;
+            /**
+             * Redirects
+             * @default []
+             */
+            redirects: string[];
             /** Slug */
             slug: string;
             /** Title */
@@ -2335,6 +2991,157 @@ export interface components {
              */
             date_to?: string | null;
         };
+        /** BannerCategoryOut */
+        BannerCategoryOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+        };
+        /** BannerChangeOut */
+        BannerChangeOut: {
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+            submitted_by: components["schemas"]["PersonOut"] | null;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** BannerImageUploadIn */
+        BannerImageUploadIn: {
+            /** Alt Text */
+            alt_text?: string | null;
+        };
+        /** BannerIn */
+        BannerIn: {
+            /** Category Id */
+            category_id?: number | null;
+            /** Ends At */
+            ends_at?: string | null;
+            /**
+             * Link
+             * @default
+             */
+            link: string;
+            /**
+             * Message
+             * @default
+             */
+            message: string;
+            /**
+             * Position
+             * @default 0
+             */
+            position: number;
+            /** Slot */
+            slot: string;
+            /** Starts At */
+            starts_at?: string | null;
+        };
+        /** BannerOut */
+        BannerOut: {
+            category: components["schemas"]["BannerCategoryOut"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Ends At */
+            ends_at: string | null;
+            /** Id */
+            id: number;
+            image: components["schemas"]["CoverImageOut"] | null;
+            /** Link */
+            link: string;
+            /** Message */
+            message: string;
+            mobile_image: components["schemas"]["CoverImageOut"] | null;
+            pending_change: components["schemas"]["BannerChangeOut"] | null;
+            /** Position */
+            position: number;
+            /** Published At */
+            published_at: string | null;
+            /** Rejection Reason */
+            rejection_reason: string;
+            /** Slot */
+            slot: string;
+            /** Starts At */
+            starts_at: string | null;
+            /** Status */
+            status: string;
+            /** Submitted At */
+            submitted_at: string | null;
+            submitted_by: components["schemas"]["PersonOut"] | null;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * BannerPatch
+         * @description What changes; anything left out stays. Staff's edit of a published Banner is
+         *     held for the Owner. The images are separate.
+         */
+        BannerPatch: {
+            /** Category Id */
+            category_id?: number | null;
+            /** Ends At */
+            ends_at?: string | null;
+            /** Link */
+            link?: string | null;
+            /** Message */
+            message?: string | null;
+            /** Position */
+            position?: number | null;
+            /** Slot */
+            slot?: string | null;
+            /** Starts At */
+            starts_at?: string | null;
+        };
+        /** BannerRowOut */
+        BannerRowOut: {
+            category: components["schemas"]["BannerCategoryOut"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Ends At */
+            ends_at: string | null;
+            /** Has Pending Change */
+            has_pending_change: boolean;
+            /** Id */
+            id: number;
+            /** Link */
+            link: string;
+            /** Message */
+            message: string;
+            /** Position */
+            position: number;
+            /** Published At */
+            published_at: string | null;
+            /** Rejection Reason */
+            rejection_reason: string;
+            /** Slot */
+            slot: string;
+            /** Starts At */
+            starts_at: string | null;
+            /** Status */
+            status: string;
+            /** Submitted At */
+            submitted_at: string | null;
+            submitted_by: components["schemas"]["PersonOut"] | null;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
         /** BelowCostOut */
         BelowCostOut: {
             /**
@@ -2403,6 +3210,11 @@ export interface components {
             /** Starts At */
             starts_at?: string | null;
         };
+        /** CampaignLinkIn */
+        CampaignLinkIn: {
+            /** Campaign Id */
+            campaign_id?: number | null;
+        };
         /** CampaignOut */
         CampaignOut: {
             /** Affected Products */
@@ -2437,6 +3249,135 @@ export interface components {
              * @enum {string}
              */
             status: "active" | "inactive" | "scheduled" | "ended";
+        };
+        /** CampaignPageChangeOut */
+        CampaignPageChangeOut: {
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+            submitted_by: components["schemas"]["PersonOut"] | null;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** CampaignPageIn */
+        CampaignPageIn: {
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Ends At */
+            ends_at?: string | null;
+            /** Slug */
+            slug?: string | null;
+            /** Starts At */
+            starts_at?: string | null;
+            /** Title */
+            title: string;
+        };
+        /** CampaignPageLinkOut */
+        CampaignPageLinkOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Status */
+            status: string;
+        };
+        /** CampaignPageOut */
+        CampaignPageOut: {
+            campaign: components["schemas"]["CampaignPageLinkOut"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Description */
+            description: string;
+            /** Ends At */
+            ends_at: string | null;
+            /** Id */
+            id: number;
+            image: components["schemas"]["CoverImageOut"] | null;
+            pending_change: components["schemas"]["CampaignPageChangeOut"] | null;
+            /** Published At */
+            published_at: string | null;
+            /** Rejection Reason */
+            rejection_reason: string;
+            /** Slug */
+            slug: string;
+            /** Starts At */
+            starts_at: string | null;
+            /** Status */
+            status: string;
+            /** Submitted At */
+            submitted_at: string | null;
+            submitted_by: components["schemas"]["PersonOut"] | null;
+            /** Title */
+            title: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * CampaignPagePatch
+         * @description What changes; anything left out stays. Staff's edit of a published page is held
+         *     for the Owner. The discount Campaign link and the cover image are separate.
+         */
+        CampaignPagePatch: {
+            /** Description */
+            description?: string | null;
+            /** Ends At */
+            ends_at?: string | null;
+            /** Slug */
+            slug?: string | null;
+            /** Starts At */
+            starts_at?: string | null;
+            /** Title */
+            title?: string | null;
+        };
+        /** CampaignPageRowOut */
+        CampaignPageRowOut: {
+            campaign: components["schemas"]["CampaignPageLinkOut"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Description */
+            description: string;
+            /** Ends At */
+            ends_at: string | null;
+            /** Has Pending Change */
+            has_pending_change: boolean;
+            /** Id */
+            id: number;
+            /** Published At */
+            published_at: string | null;
+            /** Rejection Reason */
+            rejection_reason: string;
+            /** Slug */
+            slug: string;
+            /** Starts At */
+            starts_at: string | null;
+            /** Status */
+            status: string;
+            /** Submitted At */
+            submitted_at: string | null;
+            submitted_by: components["schemas"]["PersonOut"] | null;
+            /** Title */
+            title: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
         };
         /**
          * CampaignPatch
@@ -2731,6 +3672,36 @@ export interface components {
             /** Name */
             name?: string | null;
         };
+        /** ContactCategoryIn */
+        ContactCategoryIn: {
+            /** Name */
+            name: string;
+        };
+        /** ContactCategoryPatch */
+        ContactCategoryPatch: {
+            /** Is Active */
+            is_active?: boolean | null;
+            /** Name */
+            name?: string | null;
+            /** Position */
+            position?: number | null;
+        };
+        /** ContactCategoryRow */
+        ContactCategoryRow: {
+            /** Id */
+            id: number;
+            /** Is Active */
+            is_active: boolean;
+            /** Name */
+            name: string;
+            /** Position */
+            position: number;
+            /**
+             * Thread Count
+             * @default 0
+             */
+            thread_count: number;
+        };
         /**
          * CoverImageOut
          * @description The cover image: `processing` until its derivatives exist.
@@ -2818,6 +3789,11 @@ export interface components {
             /** Url */
             url: string;
         };
+        /** DoneOut */
+        DoneOut: {
+            /** Count */
+            count: number;
+        };
         /** ExpiringRow */
         ExpiringRow: {
             /** Customer */
@@ -2859,6 +3835,17 @@ export interface components {
              * @example 349.90
              */
             shipping: string;
+        };
+        /** FieldDiffOut */
+        FieldDiffOut: {
+            /** Changed */
+            changed: boolean;
+            /** Field */
+            field: string;
+            /** Live */
+            live?: unknown;
+            /** Pending */
+            pending?: unknown;
         };
         /**
          * Group
@@ -3209,6 +4196,8 @@ export interface components {
             brand_id?: number | null;
             /** Builtin */
             builtin?: string | null;
+            /** Campaign Page Id */
+            campaign_page_id?: number | null;
             /** Category Id */
             category_id?: number | null;
             /**
@@ -3241,7 +4230,7 @@ export interface components {
              * Target Type
              * @enum {string}
              */
-            target_type: "category" | "product" | "brand" | "collection" | "legal_page" | "builtin" | "url" | "group";
+            target_type: "category" | "product" | "brand" | "collection" | "campaign_page" | "legal_page" | "builtin" | "url" | "group";
             /** Url */
             url?: string | null;
         };
@@ -3251,6 +4240,8 @@ export interface components {
             brand_id: number | null;
             /** Builtin */
             builtin: string | null;
+            /** Campaign Page Id */
+            campaign_page_id: number | null;
             /** Category Id */
             category_id: number | null;
             /** Children */
@@ -3277,7 +4268,7 @@ export interface components {
              * Target Type
              * @enum {string}
              */
-            target_type: "category" | "product" | "brand" | "collection" | "legal_page" | "builtin" | "url" | "group";
+            target_type: "category" | "product" | "brand" | "collection" | "campaign_page" | "legal_page" | "builtin" | "url" | "group";
             /** Url */
             url: string | null;
         };
@@ -3297,6 +4288,8 @@ export interface components {
         MenuTargetOut: {
             /** Brand Id */
             brand_id: number | null;
+            /** Campaign Page Id */
+            campaign_page_id: number | null;
             /** Category Id */
             category_id: number | null;
             /** Collection Id */
@@ -3311,7 +4304,7 @@ export interface components {
              * Target Type
              * @enum {string}
              */
-            target_type: "category" | "product" | "brand" | "collection" | "legal_page";
+            target_type: "category" | "product" | "brand" | "collection" | "campaign_page" | "legal_page";
         };
         /** NameIn */
         NameIn: {
@@ -3751,6 +4744,17 @@ export interface components {
             /** Total */
             total: number;
         };
+        /** PagedThreadSummary */
+        PagedThreadSummary: {
+            /** Items */
+            items: components["schemas"]["ThreadSummary"][];
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total */
+            total: number;
+        };
         /** PagedVoucherAdminOut */
         PagedVoucherAdminOut: {
             /** Items */
@@ -4126,6 +5130,47 @@ export interface components {
             /** Title */
             title: string;
         };
+        /** QueueDetailOut */
+        QueueDetailOut: {
+            /** Fields */
+            fields: components["schemas"]["FieldDiffOut"][];
+            /** Id */
+            id: number;
+            /** Is Change */
+            is_change: boolean;
+            /** Label */
+            label: string;
+            /** Submitted At */
+            submitted_at: string | null;
+            submitted_by: components["schemas"]["PersonOut"] | null;
+            /** Title */
+            title: string;
+            /** Type */
+            type: string;
+        };
+        /** QueueItemOut */
+        QueueItemOut: {
+            /** Id */
+            id: number;
+            /** Is Change */
+            is_change: boolean;
+            /** Label */
+            label: string;
+            /** Submitted At */
+            submitted_at: string | null;
+            submitted_by: components["schemas"]["PersonOut"] | null;
+            /** Title */
+            title: string;
+            /** Type */
+            type: string;
+        };
+        /** QueueOut */
+        QueueOut: {
+            /** Count */
+            count: number;
+            /** Items */
+            items: components["schemas"]["QueueItemOut"][];
+        };
         /** RangeParams */
         RangeParams: {
             /** Date From */
@@ -4207,6 +5252,48 @@ export interface components {
              * @default
              */
             reason: string;
+        };
+        /** ReplyApproveIn */
+        ReplyApproveIn: {
+            /** Body */
+            body?: string | null;
+        };
+        /** ReplyIn */
+        ReplyIn: {
+            /** Body */
+            body: string;
+        };
+        /** ReplyOut */
+        ReplyOut: {
+            author: components["schemas"]["PersonOut"] | null;
+            /** Body */
+            body: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            decided_by: components["schemas"]["PersonOut"] | null;
+            /** Drafted Body */
+            drafted_body: string;
+            /** Id */
+            id: number;
+            /** Kind */
+            kind: string;
+            /** Rejection Note */
+            rejection_note: string;
+            /** Sent At */
+            sent_at: string | null;
+            /** State */
+            state: string;
+        };
+        /** ReplyRejectIn */
+        ReplyRejectIn: {
+            /**
+             * Note
+             * @default
+             */
+            note: string;
         };
         /** ReturnAdminOut */
         ReturnAdminOut: {
@@ -4568,6 +5655,11 @@ export interface components {
             /** Size */
             size: string;
         };
+        /** SlugIn */
+        SlugIn: {
+            /** Slug */
+            slug: string;
+        };
         /**
          * Sort
          * @description What the Products report ranks by.
@@ -4668,6 +5760,77 @@ export interface components {
             id: number;
             /** Name */
             name: string;
+        };
+        /** ThreadOut */
+        ThreadOut: {
+            /** Anonymised */
+            anonymised: boolean;
+            assignee: components["schemas"]["PersonOut"] | null;
+            /** Category */
+            category: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Email */
+            email: string;
+            /** Id */
+            id: number;
+            /**
+             * Last Activity At
+             * Format: date-time
+             */
+            last_activity_at: string;
+            /** Messages */
+            messages: components["schemas"]["ReplyOut"][];
+            /** Name */
+            name: string;
+            /** Order Linked */
+            order_linked: boolean;
+            /** Order Number */
+            order_number: string;
+            /** Status */
+            status: string;
+        };
+        /** ThreadPatch */
+        ThreadPatch: {
+            /** Assignee Id */
+            assignee_id?: number | null;
+            /** Status */
+            status?: string | null;
+        };
+        /** ThreadSummary */
+        ThreadSummary: {
+            /** Anonymised */
+            anonymised: boolean;
+            assignee: components["schemas"]["PersonOut"] | null;
+            /** Category */
+            category: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Email */
+            email: string;
+            /** Id */
+            id: number;
+            /**
+             * Last Activity At
+             * Format: date-time
+             */
+            last_activity_at: string;
+            /** Name */
+            name: string;
+            /** Order Number */
+            order_number: string;
+            /** Pending Reply Count */
+            pending_reply_count: number;
+            /** Snippet */
+            snippet: string;
+            /** Status */
+            status: string;
         };
         /** TotalsOut */
         TotalsOut: {
@@ -4958,6 +6121,122 @@ export interface operations {
             };
         };
     };
+    approvals_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueueOut"];
+                };
+            };
+        };
+    };
+    approvals_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: string;
+                item_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueueDetailOut"];
+                };
+            };
+        };
+    };
+    approvals_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: string;
+                item_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DoneOut"];
+                };
+            };
+        };
+    };
+    approvals_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: string;
+                item_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RejectIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DoneOut"];
+                };
+            };
+        };
+    };
+    approvals_unpublish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: string;
+                item_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DoneOut"];
+                };
+            };
+        };
+    };
     catalog_delete_attribute_option: {
         parameters: {
             query?: {
@@ -5133,6 +6412,325 @@ export interface operations {
             };
         };
     };
+    banners_list: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                slot?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BannerRowOut"][];
+                };
+            };
+        };
+    };
+    banners_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BannerIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BannerOut"];
+                };
+            };
+        };
+    };
+    banners_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                banner_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BannerOut"];
+                };
+            };
+        };
+    };
+    banners_edit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                banner_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BannerPatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BannerOut"];
+                };
+            };
+        };
+    };
+    banners_upload_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                banner_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Alt Text */
+                    alt_text?: string | null;
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BannerOut"];
+                };
+            };
+        };
+    };
+    banners_delete_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                banner_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BannerOut"];
+                };
+            };
+        };
+    };
+    banners_edit_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                banner_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImageAltIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BannerOut"];
+                };
+            };
+        };
+    };
+    banners_upload_mobile_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                banner_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BannerOut"];
+                };
+            };
+        };
+    };
+    banners_delete_mobile_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                banner_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BannerOut"];
+                };
+            };
+        };
+    };
+    banners_publish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                banner_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BannerOut"];
+                };
+            };
+        };
+    };
+    banners_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                banner_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BannerOut"];
+                };
+            };
+        };
+    };
+    banners_unpublish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                banner_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BannerOut"];
+                };
+            };
+        };
+    };
+    banners_withdraw: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                banner_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BannerOut"];
+                };
+            };
+        };
+    };
     catalog_list_brands: {
         parameters: {
             query?: never;
@@ -5273,6 +6871,299 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BrandOut"];
+                };
+            };
+        };
+    };
+    campaign_pages_list: {
+        parameters: {
+            query?: {
+                status?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignPageRowOut"][];
+                };
+            };
+        };
+    };
+    campaign_pages_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CampaignPageIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignPageOut"];
+                };
+            };
+        };
+    };
+    campaign_pages_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                page_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignPageOut"];
+                };
+            };
+        };
+    };
+    campaign_pages_edit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                page_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CampaignPagePatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignPageOut"];
+                };
+            };
+        };
+    };
+    campaign_pages_link_campaign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                page_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CampaignLinkIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignPageOut"];
+                };
+            };
+        };
+    };
+    campaign_pages_upload_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                page_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * Alt Text
+                     * @default
+                     */
+                    alt_text?: string;
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignPageOut"];
+                };
+            };
+        };
+    };
+    campaign_pages_delete_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                page_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignPageOut"];
+                };
+            };
+        };
+    };
+    campaign_pages_edit_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                page_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImageAltIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignPageOut"];
+                };
+            };
+        };
+    };
+    campaign_pages_publish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                page_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignPageOut"];
+                };
+            };
+        };
+    };
+    campaign_pages_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                page_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignPageOut"];
+                };
+            };
+        };
+    };
+    campaign_pages_unpublish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                page_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignPageOut"];
+                };
+            };
+        };
+    };
+    campaign_pages_withdraw: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                page_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignPageOut"];
                 };
             };
         };
@@ -6162,6 +8053,300 @@ export interface operations {
             };
         };
     };
+    contact_categories_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactCategoryRow"][];
+                };
+            };
+        };
+    };
+    contact_categories_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContactCategoryIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactCategoryRow"];
+                };
+            };
+        };
+    };
+    contact_categories_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    contact_categories_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContactCategoryPatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactCategoryRow"];
+                };
+            };
+        };
+    };
+    contact_replies_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reply_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplyIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplyOut"];
+                };
+            };
+        };
+    };
+    contact_replies_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reply_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplyApproveIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplyOut"];
+                };
+            };
+        };
+    };
+    contact_replies_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reply_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplyRejectIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplyOut"];
+                };
+            };
+        };
+    };
+    contact_replies_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reply_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplyOut"];
+                };
+            };
+        };
+    };
+    contact_threads_list: {
+        parameters: {
+            query?: {
+                q?: string | null;
+                status?: string | null;
+                assignee_id?: number | null;
+                category_id?: number | null;
+                date_from?: string | null;
+                date_to?: string | null;
+                has_pending_reply?: boolean | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedThreadSummary"];
+                };
+            };
+        };
+    };
+    contact_threads_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                thread_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThreadOut"];
+                };
+            };
+        };
+    };
+    contact_threads_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                thread_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ThreadPatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThreadOut"];
+                };
+            };
+        };
+    };
+    contact_replies_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                thread_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplyIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplyOut"];
+                };
+            };
+        };
+    };
     customers_list: {
         parameters: {
             query?: {
@@ -6343,6 +8528,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminLegalRow"][];
+                };
+            };
+        };
+    };
+    legal_pages_change_slug: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                page: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SlugIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminLegalRow"];
                 };
             };
         };

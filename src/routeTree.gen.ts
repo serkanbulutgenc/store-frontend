@@ -16,6 +16,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as StorefrontIndexRouteImport } from './routes/_storefront/index'
 import { Route as StorefrontCustomerRouteRouteImport } from './routes/_storefront/_customer/route'
 import { Route as StorefrontAraRouteImport } from './routes/_storefront/ara'
+import { Route as StorefrontIletisimRouteImport } from './routes/_storefront/iletisim'
 import { Route as StorefrontOdemeRouteImport } from './routes/_storefront/odeme'
 import { Route as StorefrontSepetRouteImport } from './routes/_storefront/sepet'
 import { Route as StorefrontSiparisOnayiRouteImport } from './routes/_storefront/siparis-onayi'
@@ -27,6 +28,8 @@ import { Route as StorefrontCustomerHesapRouteRouteImport } from './routes/_stor
 import { Route as StorefrontCollectionsSlugRouteImport } from './routes/_storefront/collections/$slug'
 import { Route as StorefrontHesapGirisRouteImport } from './routes/_storefront/hesap/giris'
 import { Route as StorefrontHesapKayitRouteImport } from './routes/_storefront/hesap/kayit'
+import { Route as StorefrontKampanyalarIndexRouteImport } from './routes/_storefront/kampanyalar/index'
+import { Route as StorefrontKampanyalarSlugRouteImport } from './routes/_storefront/kampanyalar/$slug'
 import { Route as StorefrontKategoriSlugRouteImport } from './routes/_storefront/kategori/$slug'
 import { Route as StorefrontStokBildirimiOnaylaRouteImport } from './routes/_storefront/stok-bildirimi/onayla'
 import { Route as StorefrontStokBildirimiVazgecRouteImport } from './routes/_storefront/stok-bildirimi/vazgec'
@@ -36,6 +39,7 @@ import { Route as StorefrontYasalSlugRouteImport } from './routes/_storefront/ya
 import { Route as AdminAppIndexRouteImport } from './routes/admin/_app/index'
 import { Route as AdminAppSplatRouteImport } from './routes/admin/_app/$'
 import { Route as AdminAppAccountDeletionsRouteImport } from './routes/admin/_app/account-deletions'
+import { Route as AdminAppApprovalsRouteImport } from './routes/admin/_app/approvals'
 import { Route as AdminAppAuditLogRouteImport } from './routes/admin/_app/audit-log'
 import { Route as AdminAppBrandsRouteImport } from './routes/admin/_app/brands'
 import { Route as AdminAppCampaignsRouteImport } from './routes/admin/_app/campaigns'
@@ -61,8 +65,14 @@ import { Route as StorefrontCustomerHesapGuvenlikRouteImport } from './routes/_s
 import { Route as StorefrontHesapEpostaDogrulaKeyRouteImport } from './routes/_storefront/hesap/eposta-dogrula.$key'
 import { Route as StorefrontHesapSifreSifirlaIndexRouteImport } from './routes/_storefront/hesap/sifre-sifirla.index'
 import { Route as StorefrontHesapSifreSifirlaKeyRouteImport } from './routes/_storefront/hesap/sifre-sifirla.$key'
+import { Route as AdminAppBannersIndexRouteImport } from './routes/admin/_app/banners/index'
+import { Route as AdminAppBannersBannerIdRouteImport } from './routes/admin/_app/banners/$bannerId'
+import { Route as AdminAppCampaignPagesIndexRouteImport } from './routes/admin/_app/campaign-pages/index'
+import { Route as AdminAppCampaignPagesPageIdRouteImport } from './routes/admin/_app/campaign-pages/$pageId'
 import { Route as AdminAppCollectionsIndexRouteImport } from './routes/admin/_app/collections/index'
 import { Route as AdminAppCollectionsCollectionIdRouteImport } from './routes/admin/_app/collections/$collectionId'
+import { Route as AdminAppContactIndexRouteImport } from './routes/admin/_app/contact/index'
+import { Route as AdminAppContactThreadIdRouteImport } from './routes/admin/_app/contact/$threadId'
 import { Route as AdminAppCustomersIndexRouteImport } from './routes/admin/_app/customers/index'
 import { Route as AdminAppCustomersIdRouteImport } from './routes/admin/_app/customers/$id'
 import { Route as AdminAppLegalPagesIndexRouteImport } from './routes/admin/_app/legal-pages/index'
@@ -110,6 +120,11 @@ const StorefrontCustomerRouteRoute = StorefrontCustomerRouteRouteImport.update({
 const StorefrontAraRoute = StorefrontAraRouteImport.update({
   id: '/ara',
   path: '/ara',
+  getParentRoute: () => StorefrontRouteRoute,
+} as any)
+const StorefrontIletisimRoute = StorefrontIletisimRouteImport.update({
+  id: '/iletisim',
+  path: '/iletisim',
   getParentRoute: () => StorefrontRouteRoute,
 } as any)
 const StorefrontOdemeRoute = StorefrontOdemeRouteImport.update({
@@ -168,6 +183,18 @@ const StorefrontHesapKayitRoute = StorefrontHesapKayitRouteImport.update({
   path: '/hesap/kayit',
   getParentRoute: () => StorefrontRouteRoute,
 } as any)
+const StorefrontKampanyalarIndexRoute =
+  StorefrontKampanyalarIndexRouteImport.update({
+    id: '/kampanyalar/',
+    path: '/kampanyalar/',
+    getParentRoute: () => StorefrontRouteRoute,
+  } as any)
+const StorefrontKampanyalarSlugRoute =
+  StorefrontKampanyalarSlugRouteImport.update({
+    id: '/kampanyalar/$slug',
+    path: '/kampanyalar/$slug',
+    getParentRoute: () => StorefrontRouteRoute,
+  } as any)
 const StorefrontKategoriSlugRoute = StorefrontKategoriSlugRouteImport.update({
   id: '/kategori/$slug',
   path: '/kategori/$slug',
@@ -216,6 +243,11 @@ const AdminAppAccountDeletionsRoute =
     path: '/account-deletions',
     getParentRoute: () => AdminAppRouteRoute,
   } as any)
+const AdminAppApprovalsRoute = AdminAppApprovalsRouteImport.update({
+  id: '/approvals',
+  path: '/approvals',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
 const AdminAppAuditLogRoute = AdminAppAuditLogRouteImport.update({
   id: '/audit-log',
   path: '/audit-log',
@@ -348,6 +380,28 @@ const StorefrontHesapSifreSifirlaKeyRoute =
     path: '/hesap/sifre-sifirla/$key',
     getParentRoute: () => StorefrontRouteRoute,
   } as any)
+const AdminAppBannersIndexRoute = AdminAppBannersIndexRouteImport.update({
+  id: '/banners/',
+  path: '/banners/',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
+const AdminAppBannersBannerIdRoute = AdminAppBannersBannerIdRouteImport.update({
+  id: '/banners/$bannerId',
+  path: '/banners/$bannerId',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
+const AdminAppCampaignPagesIndexRoute =
+  AdminAppCampaignPagesIndexRouteImport.update({
+    id: '/campaign-pages/',
+    path: '/campaign-pages/',
+    getParentRoute: () => AdminAppRouteRoute,
+  } as any)
+const AdminAppCampaignPagesPageIdRoute =
+  AdminAppCampaignPagesPageIdRouteImport.update({
+    id: '/campaign-pages/$pageId',
+    path: '/campaign-pages/$pageId',
+    getParentRoute: () => AdminAppRouteRoute,
+  } as any)
 const AdminAppCollectionsIndexRoute =
   AdminAppCollectionsIndexRouteImport.update({
     id: '/collections/',
@@ -360,6 +414,16 @@ const AdminAppCollectionsCollectionIdRoute =
     path: '/collections/$collectionId',
     getParentRoute: () => AdminAppRouteRoute,
   } as any)
+const AdminAppContactIndexRoute = AdminAppContactIndexRouteImport.update({
+  id: '/contact/',
+  path: '/contact/',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
+const AdminAppContactThreadIdRoute = AdminAppContactThreadIdRouteImport.update({
+  id: '/contact/$threadId',
+  path: '/contact/$threadId',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
 const AdminAppCustomersIndexRoute = AdminAppCustomersIndexRouteImport.update({
   id: '/customers/',
   path: '/customers/',
@@ -449,6 +513,7 @@ export interface FileRoutesByFullPath {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ara': typeof StorefrontAraRoute
+  '/iletisim': typeof StorefrontIletisimRoute
   '/odeme': typeof StorefrontOdemeRoute
   '/sepet': typeof StorefrontSepetRoute
   '/siparis-onayi': typeof StorefrontSiparisOnayiRoute
@@ -459,6 +524,7 @@ export interface FileRoutesByFullPath {
   '/collections/$slug': typeof StorefrontCollectionsSlugRoute
   '/hesap/giris': typeof StorefrontHesapGirisRoute
   '/hesap/kayit': typeof StorefrontHesapKayitRoute
+  '/kampanyalar/$slug': typeof StorefrontKampanyalarSlugRoute
   '/kategori/$slug': typeof StorefrontKategoriSlugRoute
   '/stok-bildirimi/onayla': typeof StorefrontStokBildirimiOnaylaRoute
   '/stok-bildirimi/vazgec': typeof StorefrontStokBildirimiVazgecRoute
@@ -466,6 +532,7 @@ export interface FileRoutesByFullPath {
   '/yasal/$slug': typeof StorefrontYasalSlugRoute
   '/admin/$': typeof AdminAppSplatRoute
   '/admin/account-deletions': typeof AdminAppAccountDeletionsRoute
+  '/admin/approvals': typeof AdminAppApprovalsRoute
   '/admin/audit-log': typeof AdminAppAuditLogRoute
   '/admin/brands': typeof AdminAppBrandsRoute
   '/admin/campaigns': typeof AdminAppCampaignsRoute
@@ -484,6 +551,7 @@ export interface FileRoutesByFullPath {
   '/admin/stock': typeof AdminAppStockRoute
   '/admin/suppliers': typeof AdminAppSuppliersRoute
   '/admin/vouchers': typeof AdminAppVouchersRoute
+  '/kampanyalar/': typeof StorefrontKampanyalarIndexRoute
   '/yasal/': typeof StorefrontYasalIndexRoute
   '/admin/': typeof AdminAppIndexRoute
   '/hesap/adresler': typeof StorefrontCustomerHesapAdreslerRoute
@@ -491,7 +559,10 @@ export interface FileRoutesByFullPath {
   '/hesap/guvenlik': typeof StorefrontCustomerHesapGuvenlikRoute
   '/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
+  '/admin/banners/$bannerId': typeof AdminAppBannersBannerIdRoute
+  '/admin/campaign-pages/$pageId': typeof AdminAppCampaignPagesPageIdRoute
   '/admin/collections/$collectionId': typeof AdminAppCollectionsCollectionIdRoute
+  '/admin/contact/$threadId': typeof AdminAppContactThreadIdRoute
   '/admin/customers/$id': typeof AdminAppCustomersIdRoute
   '/admin/legal-pages/$page': typeof AdminAppLegalPagesPageRoute
   '/admin/orders/$number': typeof AdminAppOrdersNumberRoute
@@ -500,7 +571,10 @@ export interface FileRoutesByFullPath {
   '/admin/products/new': typeof AdminAppProductsNewRoute
   '/hesap/': typeof StorefrontCustomerHesapIndexRoute
   '/hesap/sifre-sifirla/': typeof StorefrontHesapSifreSifirlaIndexRoute
+  '/admin/banners/': typeof AdminAppBannersIndexRoute
+  '/admin/campaign-pages/': typeof AdminAppCampaignPagesIndexRoute
   '/admin/collections/': typeof AdminAppCollectionsIndexRoute
+  '/admin/contact/': typeof AdminAppContactIndexRoute
   '/admin/customers/': typeof AdminAppCustomersIndexRoute
   '/admin/legal-pages/': typeof AdminAppLegalPagesIndexRoute
   '/admin/orders/': typeof AdminAppOrdersIndexRoute
@@ -517,6 +591,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/': typeof StorefrontIndexRoute
   '/ara': typeof StorefrontAraRoute
+  '/iletisim': typeof StorefrontIletisimRoute
   '/odeme': typeof StorefrontOdemeRoute
   '/sepet': typeof StorefrontSepetRoute
   '/siparis-onayi': typeof StorefrontSiparisOnayiRoute
@@ -526,6 +601,7 @@ export interface FileRoutesByTo {
   '/collections/$slug': typeof StorefrontCollectionsSlugRoute
   '/hesap/giris': typeof StorefrontHesapGirisRoute
   '/hesap/kayit': typeof StorefrontHesapKayitRoute
+  '/kampanyalar/$slug': typeof StorefrontKampanyalarSlugRoute
   '/kategori/$slug': typeof StorefrontKategoriSlugRoute
   '/stok-bildirimi/onayla': typeof StorefrontStokBildirimiOnaylaRoute
   '/stok-bildirimi/vazgec': typeof StorefrontStokBildirimiVazgecRoute
@@ -533,6 +609,7 @@ export interface FileRoutesByTo {
   '/yasal/$slug': typeof StorefrontYasalSlugRoute
   '/admin/$': typeof AdminAppSplatRoute
   '/admin/account-deletions': typeof AdminAppAccountDeletionsRoute
+  '/admin/approvals': typeof AdminAppApprovalsRoute
   '/admin/audit-log': typeof AdminAppAuditLogRoute
   '/admin/brands': typeof AdminAppBrandsRoute
   '/admin/campaigns': typeof AdminAppCampaignsRoute
@@ -551,13 +628,17 @@ export interface FileRoutesByTo {
   '/admin/stock': typeof AdminAppStockRoute
   '/admin/suppliers': typeof AdminAppSuppliersRoute
   '/admin/vouchers': typeof AdminAppVouchersRoute
+  '/kampanyalar': typeof StorefrontKampanyalarIndexRoute
   '/yasal': typeof StorefrontYasalIndexRoute
   '/hesap/adresler': typeof StorefrontCustomerHesapAdreslerRoute
   '/hesap/favoriler': typeof StorefrontCustomerHesapFavorilerRoute
   '/hesap/guvenlik': typeof StorefrontCustomerHesapGuvenlikRoute
   '/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
+  '/admin/banners/$bannerId': typeof AdminAppBannersBannerIdRoute
+  '/admin/campaign-pages/$pageId': typeof AdminAppCampaignPagesPageIdRoute
   '/admin/collections/$collectionId': typeof AdminAppCollectionsCollectionIdRoute
+  '/admin/contact/$threadId': typeof AdminAppContactThreadIdRoute
   '/admin/customers/$id': typeof AdminAppCustomersIdRoute
   '/admin/legal-pages/$page': typeof AdminAppLegalPagesPageRoute
   '/admin/orders/$number': typeof AdminAppOrdersNumberRoute
@@ -566,7 +647,10 @@ export interface FileRoutesByTo {
   '/admin/products/new': typeof AdminAppProductsNewRoute
   '/hesap': typeof StorefrontCustomerHesapIndexRoute
   '/hesap/sifre-sifirla': typeof StorefrontHesapSifreSifirlaIndexRoute
+  '/admin/banners': typeof AdminAppBannersIndexRoute
+  '/admin/campaign-pages': typeof AdminAppCampaignPagesIndexRoute
   '/admin/collections': typeof AdminAppCollectionsIndexRoute
+  '/admin/contact': typeof AdminAppContactIndexRoute
   '/admin/customers': typeof AdminAppCustomersIndexRoute
   '/admin/legal-pages': typeof AdminAppLegalPagesIndexRoute
   '/admin/orders': typeof AdminAppOrdersIndexRoute
@@ -586,6 +670,7 @@ export interface FileRoutesById {
   '/_storefront/_customer': typeof StorefrontCustomerRouteRouteWithChildren
   '/admin/_app': typeof AdminAppRouteRouteWithChildren
   '/_storefront/ara': typeof StorefrontAraRoute
+  '/_storefront/iletisim': typeof StorefrontIletisimRoute
   '/_storefront/odeme': typeof StorefrontOdemeRoute
   '/_storefront/sepet': typeof StorefrontSepetRoute
   '/_storefront/siparis-onayi': typeof StorefrontSiparisOnayiRoute
@@ -597,6 +682,7 @@ export interface FileRoutesById {
   '/_storefront/collections/$slug': typeof StorefrontCollectionsSlugRoute
   '/_storefront/hesap/giris': typeof StorefrontHesapGirisRoute
   '/_storefront/hesap/kayit': typeof StorefrontHesapKayitRoute
+  '/_storefront/kampanyalar/$slug': typeof StorefrontKampanyalarSlugRoute
   '/_storefront/kategori/$slug': typeof StorefrontKategoriSlugRoute
   '/_storefront/stok-bildirimi/onayla': typeof StorefrontStokBildirimiOnaylaRoute
   '/_storefront/stok-bildirimi/vazgec': typeof StorefrontStokBildirimiVazgecRoute
@@ -604,6 +690,7 @@ export interface FileRoutesById {
   '/_storefront/yasal/$slug': typeof StorefrontYasalSlugRoute
   '/admin/_app/$': typeof AdminAppSplatRoute
   '/admin/_app/account-deletions': typeof AdminAppAccountDeletionsRoute
+  '/admin/_app/approvals': typeof AdminAppApprovalsRoute
   '/admin/_app/audit-log': typeof AdminAppAuditLogRoute
   '/admin/_app/brands': typeof AdminAppBrandsRoute
   '/admin/_app/campaigns': typeof AdminAppCampaignsRoute
@@ -622,6 +709,7 @@ export interface FileRoutesById {
   '/admin/_app/stock': typeof AdminAppStockRoute
   '/admin/_app/suppliers': typeof AdminAppSuppliersRoute
   '/admin/_app/vouchers': typeof AdminAppVouchersRoute
+  '/_storefront/kampanyalar/': typeof StorefrontKampanyalarIndexRoute
   '/_storefront/yasal/': typeof StorefrontYasalIndexRoute
   '/admin/_app/': typeof AdminAppIndexRoute
   '/_storefront/_customer/hesap/adresler': typeof StorefrontCustomerHesapAdreslerRoute
@@ -629,7 +717,10 @@ export interface FileRoutesById {
   '/_storefront/_customer/hesap/guvenlik': typeof StorefrontCustomerHesapGuvenlikRoute
   '/_storefront/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/_storefront/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
+  '/admin/_app/banners/$bannerId': typeof AdminAppBannersBannerIdRoute
+  '/admin/_app/campaign-pages/$pageId': typeof AdminAppCampaignPagesPageIdRoute
   '/admin/_app/collections/$collectionId': typeof AdminAppCollectionsCollectionIdRoute
+  '/admin/_app/contact/$threadId': typeof AdminAppContactThreadIdRoute
   '/admin/_app/customers/$id': typeof AdminAppCustomersIdRoute
   '/admin/_app/legal-pages/$page': typeof AdminAppLegalPagesPageRoute
   '/admin/_app/orders/$number': typeof AdminAppOrdersNumberRoute
@@ -638,7 +729,10 @@ export interface FileRoutesById {
   '/admin/_app/products/new': typeof AdminAppProductsNewRoute
   '/_storefront/_customer/hesap/': typeof StorefrontCustomerHesapIndexRoute
   '/_storefront/hesap/sifre-sifirla/': typeof StorefrontHesapSifreSifirlaIndexRoute
+  '/admin/_app/banners/': typeof AdminAppBannersIndexRoute
+  '/admin/_app/campaign-pages/': typeof AdminAppCampaignPagesIndexRoute
   '/admin/_app/collections/': typeof AdminAppCollectionsIndexRoute
+  '/admin/_app/contact/': typeof AdminAppContactIndexRoute
   '/admin/_app/customers/': typeof AdminAppCustomersIndexRoute
   '/admin/_app/legal-pages/': typeof AdminAppLegalPagesIndexRoute
   '/admin/_app/orders/': typeof AdminAppOrdersIndexRoute
@@ -657,6 +751,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/ara'
+    | '/iletisim'
     | '/odeme'
     | '/sepet'
     | '/siparis-onayi'
@@ -667,6 +762,7 @@ export interface FileRouteTypes {
     | '/collections/$slug'
     | '/hesap/giris'
     | '/hesap/kayit'
+    | '/kampanyalar/$slug'
     | '/kategori/$slug'
     | '/stok-bildirimi/onayla'
     | '/stok-bildirimi/vazgec'
@@ -674,6 +770,7 @@ export interface FileRouteTypes {
     | '/yasal/$slug'
     | '/admin/$'
     | '/admin/account-deletions'
+    | '/admin/approvals'
     | '/admin/audit-log'
     | '/admin/brands'
     | '/admin/campaigns'
@@ -692,6 +789,7 @@ export interface FileRouteTypes {
     | '/admin/stock'
     | '/admin/suppliers'
     | '/admin/vouchers'
+    | '/kampanyalar/'
     | '/yasal/'
     | '/admin/'
     | '/hesap/adresler'
@@ -699,7 +797,10 @@ export interface FileRouteTypes {
     | '/hesap/guvenlik'
     | '/hesap/eposta-dogrula/$key'
     | '/hesap/sifre-sifirla/$key'
+    | '/admin/banners/$bannerId'
+    | '/admin/campaign-pages/$pageId'
     | '/admin/collections/$collectionId'
+    | '/admin/contact/$threadId'
     | '/admin/customers/$id'
     | '/admin/legal-pages/$page'
     | '/admin/orders/$number'
@@ -708,7 +809,10 @@ export interface FileRouteTypes {
     | '/admin/products/new'
     | '/hesap/'
     | '/hesap/sifre-sifirla/'
+    | '/admin/banners/'
+    | '/admin/campaign-pages/'
     | '/admin/collections/'
+    | '/admin/contact/'
     | '/admin/customers/'
     | '/admin/legal-pages/'
     | '/admin/orders/'
@@ -725,6 +829,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/'
     | '/ara'
+    | '/iletisim'
     | '/odeme'
     | '/sepet'
     | '/siparis-onayi'
@@ -734,6 +839,7 @@ export interface FileRouteTypes {
     | '/collections/$slug'
     | '/hesap/giris'
     | '/hesap/kayit'
+    | '/kampanyalar/$slug'
     | '/kategori/$slug'
     | '/stok-bildirimi/onayla'
     | '/stok-bildirimi/vazgec'
@@ -741,6 +847,7 @@ export interface FileRouteTypes {
     | '/yasal/$slug'
     | '/admin/$'
     | '/admin/account-deletions'
+    | '/admin/approvals'
     | '/admin/audit-log'
     | '/admin/brands'
     | '/admin/campaigns'
@@ -759,13 +866,17 @@ export interface FileRouteTypes {
     | '/admin/stock'
     | '/admin/suppliers'
     | '/admin/vouchers'
+    | '/kampanyalar'
     | '/yasal'
     | '/hesap/adresler'
     | '/hesap/favoriler'
     | '/hesap/guvenlik'
     | '/hesap/eposta-dogrula/$key'
     | '/hesap/sifre-sifirla/$key'
+    | '/admin/banners/$bannerId'
+    | '/admin/campaign-pages/$pageId'
     | '/admin/collections/$collectionId'
+    | '/admin/contact/$threadId'
     | '/admin/customers/$id'
     | '/admin/legal-pages/$page'
     | '/admin/orders/$number'
@@ -774,7 +885,10 @@ export interface FileRouteTypes {
     | '/admin/products/new'
     | '/hesap'
     | '/hesap/sifre-sifirla'
+    | '/admin/banners'
+    | '/admin/campaign-pages'
     | '/admin/collections'
+    | '/admin/contact'
     | '/admin/customers'
     | '/admin/legal-pages'
     | '/admin/orders'
@@ -793,6 +907,7 @@ export interface FileRouteTypes {
     | '/_storefront/_customer'
     | '/admin/_app'
     | '/_storefront/ara'
+    | '/_storefront/iletisim'
     | '/_storefront/odeme'
     | '/_storefront/sepet'
     | '/_storefront/siparis-onayi'
@@ -804,6 +919,7 @@ export interface FileRouteTypes {
     | '/_storefront/collections/$slug'
     | '/_storefront/hesap/giris'
     | '/_storefront/hesap/kayit'
+    | '/_storefront/kampanyalar/$slug'
     | '/_storefront/kategori/$slug'
     | '/_storefront/stok-bildirimi/onayla'
     | '/_storefront/stok-bildirimi/vazgec'
@@ -811,6 +927,7 @@ export interface FileRouteTypes {
     | '/_storefront/yasal/$slug'
     | '/admin/_app/$'
     | '/admin/_app/account-deletions'
+    | '/admin/_app/approvals'
     | '/admin/_app/audit-log'
     | '/admin/_app/brands'
     | '/admin/_app/campaigns'
@@ -829,6 +946,7 @@ export interface FileRouteTypes {
     | '/admin/_app/stock'
     | '/admin/_app/suppliers'
     | '/admin/_app/vouchers'
+    | '/_storefront/kampanyalar/'
     | '/_storefront/yasal/'
     | '/admin/_app/'
     | '/_storefront/_customer/hesap/adresler'
@@ -836,7 +954,10 @@ export interface FileRouteTypes {
     | '/_storefront/_customer/hesap/guvenlik'
     | '/_storefront/hesap/eposta-dogrula/$key'
     | '/_storefront/hesap/sifre-sifirla/$key'
+    | '/admin/_app/banners/$bannerId'
+    | '/admin/_app/campaign-pages/$pageId'
     | '/admin/_app/collections/$collectionId'
+    | '/admin/_app/contact/$threadId'
     | '/admin/_app/customers/$id'
     | '/admin/_app/legal-pages/$page'
     | '/admin/_app/orders/$number'
@@ -845,7 +966,10 @@ export interface FileRouteTypes {
     | '/admin/_app/products/new'
     | '/_storefront/_customer/hesap/'
     | '/_storefront/hesap/sifre-sifirla/'
+    | '/admin/_app/banners/'
+    | '/admin/_app/campaign-pages/'
     | '/admin/_app/collections/'
+    | '/admin/_app/contact/'
     | '/admin/_app/customers/'
     | '/admin/_app/legal-pages/'
     | '/admin/_app/orders/'
@@ -914,6 +1038,13 @@ declare module '@tanstack/react-router' {
       path: '/ara'
       fullPath: '/ara'
       preLoaderRoute: typeof StorefrontAraRouteImport
+      parentRoute: typeof StorefrontRouteRoute
+    }
+    '/_storefront/iletisim': {
+      id: '/_storefront/iletisim'
+      path: '/iletisim'
+      fullPath: '/iletisim'
+      preLoaderRoute: typeof StorefrontIletisimRouteImport
       parentRoute: typeof StorefrontRouteRoute
     }
     '/_storefront/odeme': {
@@ -993,6 +1124,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StorefrontHesapKayitRouteImport
       parentRoute: typeof StorefrontRouteRoute
     }
+    '/_storefront/kampanyalar/': {
+      id: '/_storefront/kampanyalar/'
+      path: '/kampanyalar'
+      fullPath: '/kampanyalar/'
+      preLoaderRoute: typeof StorefrontKampanyalarIndexRouteImport
+      parentRoute: typeof StorefrontRouteRoute
+    }
+    '/_storefront/kampanyalar/$slug': {
+      id: '/_storefront/kampanyalar/$slug'
+      path: '/kampanyalar/$slug'
+      fullPath: '/kampanyalar/$slug'
+      preLoaderRoute: typeof StorefrontKampanyalarSlugRouteImport
+      parentRoute: typeof StorefrontRouteRoute
+    }
     '/_storefront/kategori/$slug': {
       id: '/_storefront/kategori/$slug'
       path: '/kategori/$slug'
@@ -1054,6 +1199,13 @@ declare module '@tanstack/react-router' {
       path: '/account-deletions'
       fullPath: '/admin/account-deletions'
       preLoaderRoute: typeof AdminAppAccountDeletionsRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/approvals': {
+      id: '/admin/_app/approvals'
+      path: '/approvals'
+      fullPath: '/admin/approvals'
+      preLoaderRoute: typeof AdminAppApprovalsRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
     '/admin/_app/audit-log': {
@@ -1231,6 +1383,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StorefrontHesapSifreSifirlaKeyRouteImport
       parentRoute: typeof StorefrontRouteRoute
     }
+    '/admin/_app/banners/': {
+      id: '/admin/_app/banners/'
+      path: '/banners'
+      fullPath: '/admin/banners/'
+      preLoaderRoute: typeof AdminAppBannersIndexRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/banners/$bannerId': {
+      id: '/admin/_app/banners/$bannerId'
+      path: '/banners/$bannerId'
+      fullPath: '/admin/banners/$bannerId'
+      preLoaderRoute: typeof AdminAppBannersBannerIdRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/campaign-pages/': {
+      id: '/admin/_app/campaign-pages/'
+      path: '/campaign-pages'
+      fullPath: '/admin/campaign-pages/'
+      preLoaderRoute: typeof AdminAppCampaignPagesIndexRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/campaign-pages/$pageId': {
+      id: '/admin/_app/campaign-pages/$pageId'
+      path: '/campaign-pages/$pageId'
+      fullPath: '/admin/campaign-pages/$pageId'
+      preLoaderRoute: typeof AdminAppCampaignPagesPageIdRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
     '/admin/_app/collections/': {
       id: '/admin/_app/collections/'
       path: '/collections'
@@ -1243,6 +1423,20 @@ declare module '@tanstack/react-router' {
       path: '/collections/$collectionId'
       fullPath: '/admin/collections/$collectionId'
       preLoaderRoute: typeof AdminAppCollectionsCollectionIdRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/contact/': {
+      id: '/admin/_app/contact/'
+      path: '/contact'
+      fullPath: '/admin/contact/'
+      preLoaderRoute: typeof AdminAppContactIndexRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/contact/$threadId': {
+      id: '/admin/_app/contact/$threadId'
+      path: '/contact/$threadId'
+      fullPath: '/admin/contact/$threadId'
+      preLoaderRoute: typeof AdminAppContactThreadIdRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
     '/admin/_app/customers/': {
@@ -1398,6 +1592,7 @@ const StorefrontCustomerRouteRouteWithChildren =
 interface StorefrontRouteRouteChildren {
   StorefrontCustomerRouteRoute: typeof StorefrontCustomerRouteRouteWithChildren
   StorefrontAraRoute: typeof StorefrontAraRoute
+  StorefrontIletisimRoute: typeof StorefrontIletisimRoute
   StorefrontOdemeRoute: typeof StorefrontOdemeRoute
   StorefrontSepetRoute: typeof StorefrontSepetRoute
   StorefrontSiparisOnayiRoute: typeof StorefrontSiparisOnayiRoute
@@ -1406,11 +1601,13 @@ interface StorefrontRouteRouteChildren {
   StorefrontCollectionsSlugRoute: typeof StorefrontCollectionsSlugRoute
   StorefrontHesapGirisRoute: typeof StorefrontHesapGirisRoute
   StorefrontHesapKayitRoute: typeof StorefrontHesapKayitRoute
+  StorefrontKampanyalarSlugRoute: typeof StorefrontKampanyalarSlugRoute
   StorefrontKategoriSlugRoute: typeof StorefrontKategoriSlugRoute
   StorefrontStokBildirimiOnaylaRoute: typeof StorefrontStokBildirimiOnaylaRoute
   StorefrontStokBildirimiVazgecRoute: typeof StorefrontStokBildirimiVazgecRoute
   StorefrontUrunSlugRoute: typeof StorefrontUrunSlugRoute
   StorefrontYasalSlugRoute: typeof StorefrontYasalSlugRoute
+  StorefrontKampanyalarIndexRoute: typeof StorefrontKampanyalarIndexRoute
   StorefrontYasalIndexRoute: typeof StorefrontYasalIndexRoute
   StorefrontHesapEpostaDogrulaKeyRoute: typeof StorefrontHesapEpostaDogrulaKeyRoute
   StorefrontHesapSifreSifirlaKeyRoute: typeof StorefrontHesapSifreSifirlaKeyRoute
@@ -1420,6 +1617,7 @@ interface StorefrontRouteRouteChildren {
 const StorefrontRouteRouteChildren: StorefrontRouteRouteChildren = {
   StorefrontCustomerRouteRoute: StorefrontCustomerRouteRouteWithChildren,
   StorefrontAraRoute: StorefrontAraRoute,
+  StorefrontIletisimRoute: StorefrontIletisimRoute,
   StorefrontOdemeRoute: StorefrontOdemeRoute,
   StorefrontSepetRoute: StorefrontSepetRoute,
   StorefrontSiparisOnayiRoute: StorefrontSiparisOnayiRoute,
@@ -1428,11 +1626,13 @@ const StorefrontRouteRouteChildren: StorefrontRouteRouteChildren = {
   StorefrontCollectionsSlugRoute: StorefrontCollectionsSlugRoute,
   StorefrontHesapGirisRoute: StorefrontHesapGirisRoute,
   StorefrontHesapKayitRoute: StorefrontHesapKayitRoute,
+  StorefrontKampanyalarSlugRoute: StorefrontKampanyalarSlugRoute,
   StorefrontKategoriSlugRoute: StorefrontKategoriSlugRoute,
   StorefrontStokBildirimiOnaylaRoute: StorefrontStokBildirimiOnaylaRoute,
   StorefrontStokBildirimiVazgecRoute: StorefrontStokBildirimiVazgecRoute,
   StorefrontUrunSlugRoute: StorefrontUrunSlugRoute,
   StorefrontYasalSlugRoute: StorefrontYasalSlugRoute,
+  StorefrontKampanyalarIndexRoute: StorefrontKampanyalarIndexRoute,
   StorefrontYasalIndexRoute: StorefrontYasalIndexRoute,
   StorefrontHesapEpostaDogrulaKeyRoute: StorefrontHesapEpostaDogrulaKeyRoute,
   StorefrontHesapSifreSifirlaKeyRoute: StorefrontHesapSifreSifirlaKeyRoute,
@@ -1446,6 +1646,7 @@ const StorefrontRouteRouteWithChildren = StorefrontRouteRoute._addFileChildren(
 interface AdminAppRouteRouteChildren {
   AdminAppSplatRoute: typeof AdminAppSplatRoute
   AdminAppAccountDeletionsRoute: typeof AdminAppAccountDeletionsRoute
+  AdminAppApprovalsRoute: typeof AdminAppApprovalsRoute
   AdminAppAuditLogRoute: typeof AdminAppAuditLogRoute
   AdminAppBrandsRoute: typeof AdminAppBrandsRoute
   AdminAppCampaignsRoute: typeof AdminAppCampaignsRoute
@@ -1465,14 +1666,20 @@ interface AdminAppRouteRouteChildren {
   AdminAppSuppliersRoute: typeof AdminAppSuppliersRoute
   AdminAppVouchersRoute: typeof AdminAppVouchersRoute
   AdminAppIndexRoute: typeof AdminAppIndexRoute
+  AdminAppBannersBannerIdRoute: typeof AdminAppBannersBannerIdRoute
+  AdminAppCampaignPagesPageIdRoute: typeof AdminAppCampaignPagesPageIdRoute
   AdminAppCollectionsCollectionIdRoute: typeof AdminAppCollectionsCollectionIdRoute
+  AdminAppContactThreadIdRoute: typeof AdminAppContactThreadIdRoute
   AdminAppCustomersIdRoute: typeof AdminAppCustomersIdRoute
   AdminAppLegalPagesPageRoute: typeof AdminAppLegalPagesPageRoute
   AdminAppOrdersNumberRoute: typeof AdminAppOrdersNumberRoute
   AdminAppProductClassesClassIdRoute: typeof AdminAppProductClassesClassIdRoute
   AdminAppProductsProductIdRoute: typeof AdminAppProductsProductIdRoute
   AdminAppProductsNewRoute: typeof AdminAppProductsNewRoute
+  AdminAppBannersIndexRoute: typeof AdminAppBannersIndexRoute
+  AdminAppCampaignPagesIndexRoute: typeof AdminAppCampaignPagesIndexRoute
   AdminAppCollectionsIndexRoute: typeof AdminAppCollectionsIndexRoute
+  AdminAppContactIndexRoute: typeof AdminAppContactIndexRoute
   AdminAppCustomersIndexRoute: typeof AdminAppCustomersIndexRoute
   AdminAppLegalPagesIndexRoute: typeof AdminAppLegalPagesIndexRoute
   AdminAppOrdersIndexRoute: typeof AdminAppOrdersIndexRoute
@@ -1485,6 +1692,7 @@ interface AdminAppRouteRouteChildren {
 const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppSplatRoute: AdminAppSplatRoute,
   AdminAppAccountDeletionsRoute: AdminAppAccountDeletionsRoute,
+  AdminAppApprovalsRoute: AdminAppApprovalsRoute,
   AdminAppAuditLogRoute: AdminAppAuditLogRoute,
   AdminAppBrandsRoute: AdminAppBrandsRoute,
   AdminAppCampaignsRoute: AdminAppCampaignsRoute,
@@ -1504,14 +1712,20 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppSuppliersRoute: AdminAppSuppliersRoute,
   AdminAppVouchersRoute: AdminAppVouchersRoute,
   AdminAppIndexRoute: AdminAppIndexRoute,
+  AdminAppBannersBannerIdRoute: AdminAppBannersBannerIdRoute,
+  AdminAppCampaignPagesPageIdRoute: AdminAppCampaignPagesPageIdRoute,
   AdminAppCollectionsCollectionIdRoute: AdminAppCollectionsCollectionIdRoute,
+  AdminAppContactThreadIdRoute: AdminAppContactThreadIdRoute,
   AdminAppCustomersIdRoute: AdminAppCustomersIdRoute,
   AdminAppLegalPagesPageRoute: AdminAppLegalPagesPageRoute,
   AdminAppOrdersNumberRoute: AdminAppOrdersNumberRoute,
   AdminAppProductClassesClassIdRoute: AdminAppProductClassesClassIdRoute,
   AdminAppProductsProductIdRoute: AdminAppProductsProductIdRoute,
   AdminAppProductsNewRoute: AdminAppProductsNewRoute,
+  AdminAppBannersIndexRoute: AdminAppBannersIndexRoute,
+  AdminAppCampaignPagesIndexRoute: AdminAppCampaignPagesIndexRoute,
   AdminAppCollectionsIndexRoute: AdminAppCollectionsIndexRoute,
+  AdminAppContactIndexRoute: AdminAppContactIndexRoute,
   AdminAppCustomersIndexRoute: AdminAppCustomersIndexRoute,
   AdminAppLegalPagesIndexRoute: AdminAppLegalPagesIndexRoute,
   AdminAppOrdersIndexRoute: AdminAppOrdersIndexRoute,

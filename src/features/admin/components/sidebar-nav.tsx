@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -11,8 +12,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { can, type Me } from "@/lib/api/me";
+import { can, isOwner, type Me } from "@/lib/api/me";
+import { useApprovalCount } from "../approvals/queries";
+import { badgeText } from "../approvals/rules";
 import { usePendingCollectionCount } from "../collections/queries";
+import { waitingRepliesQuery } from "../contact/queries";
 import { visibleGroups } from "../nav";
 
 function isActive(pathname: string, to: string): boolean {
@@ -24,6 +28,10 @@ export function SidebarNav({ me }: { me: Me }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { setOpenMobile } = useSidebar();
   const pendingCollections = usePendingCollectionCount(can(me, "manage_collections"));
+  const approvals = badgeText(useApprovalCount(isOwner(me)));
+  const contactReplies = badgeText(
+    useQuery({ ...waitingRepliesQuery(), enabled: isOwner(me), refetchOnWindowFocus: true }).data,
+  );
   return (
     <SidebarContent>
       <nav aria-label="Yönetim" className="flex flex-col gap-2">
@@ -53,6 +61,24 @@ export function SidebarNav({ me }: { me: Me }) {
                           <Link to={item.to as "/admin"} onClick={() => setOpenMobile(false)}>
                             <item.icon aria-hidden />
                             <span>{item.label}</span>
+                            {item.badge === "approvals" && !!approvals && (
+                              <span
+                                role="status"
+                                aria-label={`${approvals} bekleyen`}
+                                className="ml-auto rounded-full bg-amber-500 px-1.5 text-xs font-medium text-white group-data-[collapsible=icon]:hidden"
+                              >
+                                {approvals}
+                              </span>
+                            )}
+                            {item.badge === "contactReplies" && !!contactReplies && (
+                              <span
+                                role="status"
+                                aria-label={`${contactReplies} bekleyen`}
+                                className="ml-auto rounded-full bg-amber-500 px-1.5 text-xs font-medium text-white group-data-[collapsible=icon]:hidden"
+                              >
+                                {contactReplies}
+                              </span>
+                            )}
                             {item.badge === "pendingCollections" && !!pendingCollections && (
                               <span
                                 role="status"

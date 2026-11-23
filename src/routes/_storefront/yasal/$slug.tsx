@@ -1,9 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Markdown } from "@/features/legal/markdown";
 import { legalPageQuery } from "@/features/legal/queries";
 
 export const Route = createFileRoute("/_storefront/yasal/$slug")({
-  loader: ({ context, params }) => context.queryClient.query(legalPageQuery(params.slug)),
+  loader: async ({ context, params }) => {
+    const page = await context.queryClient.query(legalPageQuery(params.slug));
+    // The API resolves an earlier address to its page; send Shoppers and crawlers to the current one.
+    if (page.slug !== params.slug)
+      throw redirect({ to: "/yasal/$slug", params: { slug: page.slug }, statusCode: 301 });
+    return page;
+  },
   head: ({ loaderData }) => ({
     meta: [{ title: `${loaderData?.title ?? "Yasal"} | Aura Tekstil` }],
   }),

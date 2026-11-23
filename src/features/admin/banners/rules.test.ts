@@ -1,0 +1,137 @@
+import { describe, expect, it } from "vitest";
+import {
+  availableActions,
+  type BannerState,
+  changedFields,
+  checkFields,
+  completeness,
+  editNote,
+  imageEditable,
+  isImageSlot,
+  slotLabel,
+} from "./rules";
+
+const staff = { owner: false, submitter: false };
+const owner = { owner: true, submitter: false };
+const s = (status: BannerState["status"], hasPendingChange = false): BannerState => ({
+  status,
+  hasPendingChange,
+});
+
+const valid = {
+  slot: "home_hero",
+  message: "",
+  link: "",
+  position: "0",
+  starts: "",
+  ends: "",
+};
+
+describe("availableActions", () => {
+  it("lets Staff submit a draft and the Owner publish it, with Banner wording", () => {
+    expect(availableActions(s("draft"), staff).map((a) => a.action)).toEqual(["submit"]);
+    const publish = availableActions(s("draft"), owner)[0];
+    expect(publish?.action).toBe("publish");
+    expect(publish?.success).toBe("Banner yayınlandı.");
+  });
+});
+
+describe("slots", () => {
+  it("treats every slot but the announcement bar as image-led", () => {
+    expect(isImageSlot("announcement")).toBe(false);
+    expect(isImageSlot("home_hero")).toBe(true);
+    expect(isImageSlot("category_top")).toBe(true);
+    expect(slotLabel("home_mid")).toBe("Ana sayfa ortası");
+  });
+});
+
+describe("checkFields", () => {
+  it("accepts an image Banner with no message", () => {
+    expect(checkFields(valid)).toEqual({});
+  });
+
+  it("requires a message for the announcement bar, within 200 characters", () => {
+    expect(checkFields({ ...valid, slot: "announcement" }).message).toBe(
+      "Duyuru için bir mesaj yazın.",
+    );
+    expect(
+      checkFields({ ...valid, slot: "announcement", message: "x".repeat(201) }).message,
+    ).toMatch(/en fazla 200/);
+    expect(checkFields({ ...valid, slot: "announcement", message: "Kargo bedava" })).toEqual({});
+  });
+
+  it("takes a site path or an https address as the link, and nothing else", () => {
+    expect(checkFields({ ...valid, link: "/kampanyalar/yaz" })).toEqual({});
+    expect(checkFields({ ...valid, link: "https://example.com" })).toEqual({});
+    expect(checkFields({ ...valid, link: "http://example.com" }).link).toBeDefined();
+    expect(checkFields({ ...valid, link: "//example.com" }).link).toBeDefined();
+    expect(checkFields({ ...valid, link: "javascript:alert(1)" }).link).toBeDefined();
+  });
+
+  it("keeps the order a whole number from 0 to 10000", () => {
+    expect(checkFields({ ...valid, position: "" }).position).toBeDefined();
+    expect(checkFields({ ...valid, position: "-1" }).position).toBeDefined();
+    expect(checkFields({ ...valid, position: "1.5" }).position).toBeDefined();
+    expect(checkFields({ ...valid, position: "10001" }).position).toBeDefined();
+    expect(checkFields({ ...valid, position: "10000" })).toEqual({});
+  });
+
+  it("rejects an end that is not after the start", () => {
+    const bad = checkFields({ ...valid, starts: "2026-07-02T10:00", ends: "2026-07-01T10:00" });
+    expect(bad.ends).toBe("Bitiş tarihi başlangıçtan sonra olmalı.");
+    expect(
+      checkFields({ ...valid, starts: "2026-07-01T10:00", ends: "2026-07-01T10:00" }).ends,
+    ).toBeDefined();
+    expect(checkFields({ ...valid, starts: "2026-07-01T10:00", ends: "2026-07-02T10:00" })).toEqual(
+      {},
+    );
+    expect(checkFields({ ...valid, ends: "2026-07-02T10:00" })).toEqual({});
+  });
+});
+
+describe("completeness", () => {
+  it("flags a missing image and a missing alt text on image slots", () => {
+    expect(completeness({ slot: "home_hero", message: "", image: null })).toEqual([
+      "Görsel yüklenmemiş.",
+    ]);
+    expect(completeness({ slot: "home_hero", message: "", image: { alt_text: " " } })).toEqual([
+      "Görselin alternatif metni yok.",
+    ]);
+    expect(completeness({ slot: "home_hero", message: "", image: { alt_text: "Yaz" } })).toEqual(
+      [],
+    );
+  });
+
+  it("needs only a message on the announcement bar", () => {
+    expect(completeness({ slot: "announcement", message: "", image: null })).toHaveLength(1);
+    expect(completeness({ slot: "announcement", message: "Merhaba", image: null })).toEqual([]);
+  });
+});
+
+describe("edit rules", () => {
+  it("lets Staff change images of a draft only, the Owner any time", () => {
+    expect(imageEditable(s("draft"), staff)).toBe(true);
+    expect(imageEditable(s("published"), staff)).toBe(false);
+    expect(imageEditable(s("published"), owner)).toBe(true);
+  });
+
+  it("explains a Staff edit of a live Banner", () => {
+    expect(editNote(s("published"), staff)).toMatch(/onayına gider/);
+    expect(editNote(s("draft"), staff)).toBeNull();
+  });
+});
+
+describe("changedFields", () => {
+  it("lists only what differs", () => {
+    const live = {
+      slot: "home_hero",
+      message: "",
+      link: "/a",
+      position: 0,
+      starts_at: null,
+      ends_at: null,
+      category_id: null,
+    };
+    expect(changedFields(live, { link: "/b", position: 0 }).map((c) => c.field)).toEqual(["link"]);
+  });
+});

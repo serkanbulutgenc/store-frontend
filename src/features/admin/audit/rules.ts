@@ -26,6 +26,7 @@ export const AUDIT_ACTIONS: Record<string, string> = {
   catalogue_import: "Katalog içe aktarma",
   account_deletion: "Hesap silme",
   legal_page_published: "Yasal sayfa yayını",
+  legal_slug_changed: "Yasal sayfa adresi",
   review_approved: "Yorum onayı",
   review_rejected: "Yorum reddi",
   review_deleted: "Yorum silme",
@@ -34,6 +35,16 @@ export const AUDIT_ACTIONS: Record<string, string> = {
   voucher_deactivated: "Kupon kapatıldı",
   voucher_activated: "Kupon açıldı",
   voucher_deleted: "Kupon silindi",
+  approval_submitted: "Onaya gönderildi",
+  approval_withdrawn: "Onaydan geri çekildi",
+  approval_approved: "Onaylandı ve yayınlandı",
+  approval_rejected: "Reddedildi",
+  approval_published: "Yayınlandı",
+  approval_unpublished: "Yayından kaldırıldı",
+  approval_edited: "Düzenlendi",
+  approval_change_submitted: "Değişiklik onaya gönderildi",
+  approval_change_approved: "Değişiklik onaylandı",
+  approval_change_rejected: "Değişiklik reddedildi",
 };
 
 export const auditActionLabel = (action: string) => AUDIT_ACTIONS[action] ?? action;
