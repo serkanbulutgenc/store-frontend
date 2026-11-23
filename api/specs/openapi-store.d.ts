@@ -225,6 +225,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/banners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Banners
+         * @description The active Banners per slot, in order: published and inside their dates. The
+         *     `category_top` slot is filled only when a Category slug is given, with the Banners
+         *     tied to that Category and those tied to none; a hidden Category is 404.
+         */
+        get: operations["catalog_list_banners"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/store/basket": {
         parameters: {
             query?: never;
@@ -296,6 +318,48 @@ export interface paths {
          * @description Take the Voucher off the basket. Harmless when there is none.
          */
         delete: operations["basket_remove_voucher"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/campaign-pages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Campaign Pages
+         * @description Published Campaign pages that have started and not ended, newest first.
+         */
+        get: operations["catalog_list_campaign_pages"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/campaign-pages/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Campaign Page
+         * @description A published page. `ended` is true past its end date; a linked page lists its
+         *     discounted Products while the Campaign is in force. 404 for draft, pending,
+         *     unpublished and not-yet-started pages.
+         */
+        get: operations["catalog_get_campaign_page"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -402,6 +466,49 @@ export interface paths {
          *     not published or has no visible Product is 404.
          */
         get: operations["catalog_get_collection"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit
+         * @description Send a message. Open to Guests and signed-in Shoppers; the Shopper gets an
+         *     acknowledgement email. An order number that matches an Order links the thread to
+         *     it, otherwise it is kept as typed. 422 for a bad field, 429 on too many tries from
+         *     one address. A filled `website` honeypot answers 201 and stores nothing.
+         */
+        post: operations["contact_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/contact/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Categories
+         * @description The active topics, in the Owner's order.
+         */
+        get: operations["contact_categories"];
         put?: never;
         post?: never;
         delete?: never;
@@ -985,6 +1092,15 @@ export interface components {
             /** Street */
             street: string;
         };
+        /** AnnouncementOut */
+        AnnouncementOut: {
+            /** Id */
+            id: number;
+            /** Link */
+            link: string;
+            /** Message */
+            message: string;
+        };
         /** AttributeBlockOut */
         AttributeBlockOut: {
             /** Name */
@@ -1025,6 +1141,17 @@ export interface components {
             image_url: string;
             /** Link */
             link: string;
+        };
+        /** BannersOut */
+        BannersOut: {
+            /** Announcement */
+            announcement: components["schemas"]["AnnouncementOut"][];
+            /** Category Top */
+            category_top: components["schemas"]["PictureBannerOut"][];
+            /** Home Hero */
+            home_hero: components["schemas"]["PictureBannerOut"][];
+            /** Home Mid */
+            home_mid: components["schemas"]["PictureBannerOut"][];
         };
         /** BasketLineOut */
         BasketLineOut: {
@@ -1109,6 +1236,37 @@ export interface components {
             logo_url: string | null;
             /** Name */
             name: string;
+        };
+        /** CampaignPageOut */
+        CampaignPageOut: {
+            campaign: components["schemas"]["LinkedCampaignOut"] | null;
+            /** Description */
+            description: string;
+            /** Ended */
+            ended: boolean;
+            /** Ends At */
+            ends_at: string | null;
+            image: components["schemas"]["CardImageOut"] | null;
+            /** Items */
+            items: components["schemas"]["ProductCardOut"][];
+            /** Slug */
+            slug: string;
+            /** Starts At */
+            starts_at: string | null;
+            /** Title */
+            title: string;
+        };
+        /** CampaignPageRowOut */
+        CampaignPageRowOut: {
+            /** Ends At */
+            ends_at: string | null;
+            image: components["schemas"]["CardImageOut"] | null;
+            /** Slug */
+            slug: string;
+            /** Starts At */
+            starts_at: string | null;
+            /** Title */
+            title: string;
         };
         /** CardImageOut */
         CardImageOut: {
@@ -1227,6 +1385,35 @@ export interface components {
             /** Name */
             name: string;
         };
+        /** ContactCategoryOut */
+        ContactCategoryOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+        };
+        /** ContactIn */
+        ContactIn: {
+            /** Category Id */
+            category_id: number;
+            /** Email */
+            email: string;
+            /** Message */
+            message: string;
+            /** Name */
+            name: string;
+            /**
+             * Order Number
+             * @default
+             */
+            order_number: string;
+            /**
+             * Website
+             * @description Honeypot: a hidden field that real Shoppers leave empty.
+             * @default
+             */
+            website: string;
+        };
         /** CrumbOut */
         CrumbOut: {
             /** Name */
@@ -1312,6 +1499,15 @@ export interface components {
             title: string;
             /** Version */
             version: number;
+        };
+        /** LinkedCampaignOut */
+        LinkedCampaignOut: {
+            /** Active */
+            active: boolean;
+            /** Ends At */
+            ends_at: string | null;
+            /** Starts At */
+            starts_at: string | null;
         };
         /** MenuNode */
         MenuNode: {
@@ -1497,6 +1693,19 @@ export interface components {
          * @enum {string}
          */
         PaymentMethod: "bank_transfer" | "cod";
+        /** PictureBannerOut */
+        PictureBannerOut: {
+            /** Alt */
+            alt: string;
+            /** Id */
+            id: number;
+            /** Image */
+            image: components["schemas"]["ImageSizeOut"][];
+            /** Link */
+            link: string;
+            /** Mobile Image */
+            mobile_image: components["schemas"]["ImageSizeOut"][] | null;
+        };
         /** PlacedLineOut */
         PlacedLineOut: {
             /** Colour */
@@ -2458,6 +2667,28 @@ export interface operations {
             };
         };
     };
+    catalog_list_banners: {
+        parameters: {
+            query?: {
+                category?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BannersOut"];
+                };
+            };
+        };
+    };
     basket_get: {
         parameters: {
             query?: never;
@@ -2594,6 +2825,48 @@ export interface operations {
             };
         };
     };
+    catalog_list_campaign_pages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignPageRowOut"][];
+                };
+            };
+        };
+    };
+    catalog_get_campaign_page: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignPageOut"];
+                };
+            };
+        };
+    };
     catalog_list_categories: {
         parameters: {
             query?: {
@@ -2704,6 +2977,48 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CollectionPageOut"];
+                };
+            };
+        };
+    };
+    contact_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContactIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    contact_categories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactCategoryOut"][];
                 };
             };
         };
