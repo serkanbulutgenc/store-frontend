@@ -16,6 +16,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as StorefrontIndexRouteImport } from './routes/_storefront/index'
 import { Route as StorefrontCustomerRouteRouteImport } from './routes/_storefront/_customer/route'
 import { Route as StorefrontAraRouteImport } from './routes/_storefront/ara'
+import { Route as StorefrontIletisimRouteImport } from './routes/_storefront/iletisim'
 import { Route as StorefrontOdemeRouteImport } from './routes/_storefront/odeme'
 import { Route as StorefrontSepetRouteImport } from './routes/_storefront/sepet'
 import { Route as StorefrontSiparisOnayiRouteImport } from './routes/_storefront/siparis-onayi'
@@ -115,6 +116,11 @@ const StorefrontCustomerRouteRoute = StorefrontCustomerRouteRouteImport.update({
 const StorefrontAraRoute = StorefrontAraRouteImport.update({
   id: '/ara',
   path: '/ara',
+  getParentRoute: () => StorefrontRouteRoute,
+} as any)
+const StorefrontIletisimRoute = StorefrontIletisimRouteImport.update({
+  id: '/iletisim',
+  path: '/iletisim',
   getParentRoute: () => StorefrontRouteRoute,
 } as any)
 const StorefrontOdemeRoute = StorefrontOdemeRouteImport.update({
@@ -481,6 +487,7 @@ export interface FileRoutesByFullPath {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ara': typeof StorefrontAraRoute
+  '/iletisim': typeof StorefrontIletisimRoute
   '/odeme': typeof StorefrontOdemeRoute
   '/sepet': typeof StorefrontSepetRoute
   '/siparis-onayi': typeof StorefrontSiparisOnayiRoute
@@ -554,6 +561,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/': typeof StorefrontIndexRoute
   '/ara': typeof StorefrontAraRoute
+  '/iletisim': typeof StorefrontIletisimRoute
   '/odeme': typeof StorefrontOdemeRoute
   '/sepet': typeof StorefrontSepetRoute
   '/siparis-onayi': typeof StorefrontSiparisOnayiRoute
@@ -628,6 +636,7 @@ export interface FileRoutesById {
   '/_storefront/_customer': typeof StorefrontCustomerRouteRouteWithChildren
   '/admin/_app': typeof AdminAppRouteRouteWithChildren
   '/_storefront/ara': typeof StorefrontAraRoute
+  '/_storefront/iletisim': typeof StorefrontIletisimRoute
   '/_storefront/odeme': typeof StorefrontOdemeRoute
   '/_storefront/sepet': typeof StorefrontSepetRoute
   '/_storefront/siparis-onayi': typeof StorefrontSiparisOnayiRoute
@@ -704,6 +713,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/ara'
+    | '/iletisim'
     | '/odeme'
     | '/sepet'
     | '/siparis-onayi'
@@ -777,6 +787,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/'
     | '/ara'
+    | '/iletisim'
     | '/odeme'
     | '/sepet'
     | '/siparis-onayi'
@@ -850,6 +861,7 @@ export interface FileRouteTypes {
     | '/_storefront/_customer'
     | '/admin/_app'
     | '/_storefront/ara'
+    | '/_storefront/iletisim'
     | '/_storefront/odeme'
     | '/_storefront/sepet'
     | '/_storefront/siparis-onayi'
@@ -976,6 +988,13 @@ declare module '@tanstack/react-router' {
       path: '/ara'
       fullPath: '/ara'
       preLoaderRoute: typeof StorefrontAraRouteImport
+      parentRoute: typeof StorefrontRouteRoute
+    }
+    '/_storefront/iletisim': {
+      id: '/_storefront/iletisim'
+      path: '/iletisim'
+      fullPath: '/iletisim'
+      preLoaderRoute: typeof StorefrontIletisimRouteImport
       parentRoute: typeof StorefrontRouteRoute
     }
     '/_storefront/odeme': {
@@ -1495,6 +1514,7 @@ const StorefrontCustomerRouteRouteWithChildren =
 interface StorefrontRouteRouteChildren {
   StorefrontCustomerRouteRoute: typeof StorefrontCustomerRouteRouteWithChildren
   StorefrontAraRoute: typeof StorefrontAraRoute
+  StorefrontIletisimRoute: typeof StorefrontIletisimRoute
   StorefrontOdemeRoute: typeof StorefrontOdemeRoute
   StorefrontSepetRoute: typeof StorefrontSepetRoute
   StorefrontSiparisOnayiRoute: typeof StorefrontSiparisOnayiRoute
@@ -1517,6 +1537,7 @@ interface StorefrontRouteRouteChildren {
 const StorefrontRouteRouteChildren: StorefrontRouteRouteChildren = {
   StorefrontCustomerRouteRoute: StorefrontCustomerRouteRouteWithChildren,
   StorefrontAraRoute: StorefrontAraRoute,
+  StorefrontIletisimRoute: StorefrontIletisimRoute,
   StorefrontOdemeRoute: StorefrontOdemeRoute,
   StorefrontSepetRoute: StorefrontSepetRoute,
   StorefrontSiparisOnayiRoute: StorefrontSiparisOnayiRoute,
