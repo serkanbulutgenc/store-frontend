@@ -1,4 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
+import { bannersQuery } from "@/features/banners/queries";
 import {
   browseSearchSchema,
   listKey,
@@ -33,7 +34,11 @@ export const Route = createFileRoute("/_storefront/kategori/$slug")({
     }
     const categories = await context.queryClient.query(categoriesQuery);
     const trail = categoryTrail(categories, params.slug);
-    return { categories, trail, category, title: category.name, seed };
+    const banners = await context.queryClient
+      .query(bannersQuery(params.slug))
+      .then((b) => b.category_top)
+      .catch(() => []);
+    return { categories, trail, category, title: category.name, seed, banners };
   },
   head: ({ loaderData, match, params }) =>
     loaderData
@@ -49,7 +54,7 @@ export const Route = createFileRoute("/_storefront/kategori/$slug")({
         })
       : {},
   component: function CategoryPage() {
-    const { title, categories, category, seed } = Route.useLoaderData();
+    const { title, categories, category, seed, banners } = Route.useLoaderData();
     const { slug } = Route.useParams();
     const search = Route.useSearch();
     const navigate = Route.useNavigate();
@@ -58,6 +63,7 @@ export const Route = createFileRoute("/_storefront/kategori/$slug")({
         title={title}
         intro={{ description: category.description, image: category.image }}
         category={slug}
+        banners={banners}
         search={search}
         categories={categories}
         seed={seed}

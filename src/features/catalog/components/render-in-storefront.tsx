@@ -12,7 +12,10 @@ import { renderToStaticMarkup } from "react-dom/server";
 // Cards render router Links, so a rail needs a router and a query client around it.
 const root = createRootRoute();
 const router = createRouter({
-  routeTree: root.addChildren([createRoute({ getParentRoute: () => root, path: "/urun/$slug" })]),
+  routeTree: root.addChildren([
+    createRoute({ getParentRoute: () => root, path: "/urun/$slug" }),
+    createRoute({ getParentRoute: () => root, path: "/kampanyalar/$slug" }),
+  ]),
   history: createMemoryHistory({ initialEntries: ["/"] }),
 });
 
