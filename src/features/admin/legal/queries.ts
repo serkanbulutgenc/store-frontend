@@ -64,3 +64,24 @@ export const usePublishLegalPage = (page: string) => {
       ]),
   });
 };
+
+/** A new address moves the Storefront URL, so the cached pages and footer links are stale. */
+export const useChangeLegalSlug = (page: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (slug: string) =>
+      (
+        await adminApi.PUT("/api/admin/legal-pages/{page}/slug", {
+          params: { path: { page } },
+          body: { slug },
+        })
+      ).data as LegalRow,
+    onSuccess: () =>
+      Promise.all([
+        qc.invalidateQueries({ queryKey: ROOT }),
+        qc.invalidateQueries({ queryKey: ["store", "legal"] }),
+        qc.invalidateQueries({ queryKey: ["store", "settings"] }),
+        qc.invalidateQueries({ queryKey: ["admin", "menus"] }),
+      ]),
+  });
+};

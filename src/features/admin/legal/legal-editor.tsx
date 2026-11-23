@@ -18,9 +18,10 @@ import {
   usePublishLegalPage,
 } from "./queries";
 import { isUnchanged, legalFormSchema } from "./schemas";
+import { LegalSlugEditor } from "./slug-editor";
 
 /** Edit one Legal page: the text of the newest version, a live preview, and the history. */
-export function LegalEditor({ page }: { page: string }) {
+export function LegalEditor({ page, owner }: { page: string; owner: boolean }) {
   const { data: versions } = useSuspenseQuery(legalVersionsQuery(page));
   const latest = versions[0] as LegalRow;
   const { data: current } = useSuspenseQuery(legalVersionQuery(page, latest.version));
@@ -119,6 +120,13 @@ export function LegalEditor({ page }: { page: string }) {
           </form.Subscribe>
         </section>
       </div>
+
+      <LegalSlugEditor
+        page={page}
+        slug={latest.slug}
+        redirects={latest.redirects ?? []}
+        owner={owner}
+      />
 
       <section aria-label="Sürüm geçmişi" className="space-y-2">
         <h2 className="font-medium">Sürüm geçmişi</h2>

@@ -24,7 +24,7 @@ export function LegalScreen() {
                 {p.title}
               </Link>
               <p className="text-muted-foreground">
-                Sürüm {p.version} · {formatDate(p.created_at)}
+                /yasal/{p.slug} · Sürüm {p.version} · {formatDate(p.created_at)}
                 {p.created_by ? ` · ${p.created_by}` : ""}
               </p>
             </div>

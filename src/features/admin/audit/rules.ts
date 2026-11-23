@@ -26,6 +26,7 @@ export const AUDIT_ACTIONS: Record<string, string> = {
   catalogue_import: "Katalog içe aktarma",
   account_deletion: "Hesap silme",
   legal_page_published: "Yasal sayfa yayını",
+  legal_slug_changed: "Yasal sayfa adresi",
   review_approved: "Yorum onayı",
   review_rejected: "Yorum reddi",
   review_deleted: "Yorum silme",
