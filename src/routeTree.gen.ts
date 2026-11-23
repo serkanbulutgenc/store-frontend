@@ -66,6 +66,8 @@ import { Route as AdminAppCampaignPagesIndexRouteImport } from './routes/admin/_
 import { Route as AdminAppCampaignPagesPageIdRouteImport } from './routes/admin/_app/campaign-pages/$pageId'
 import { Route as AdminAppCollectionsIndexRouteImport } from './routes/admin/_app/collections/index'
 import { Route as AdminAppCollectionsCollectionIdRouteImport } from './routes/admin/_app/collections/$collectionId'
+import { Route as AdminAppContactIndexRouteImport } from './routes/admin/_app/contact/index'
+import { Route as AdminAppContactThreadIdRouteImport } from './routes/admin/_app/contact/$threadId'
 import { Route as AdminAppCustomersIndexRouteImport } from './routes/admin/_app/customers/index'
 import { Route as AdminAppCustomersIdRouteImport } from './routes/admin/_app/customers/$id'
 import { Route as AdminAppLegalPagesIndexRouteImport } from './routes/admin/_app/legal-pages/index'
@@ -380,6 +382,16 @@ const AdminAppCollectionsCollectionIdRoute =
     path: '/collections/$collectionId',
     getParentRoute: () => AdminAppRouteRoute,
   } as any)
+const AdminAppContactIndexRoute = AdminAppContactIndexRouteImport.update({
+  id: '/contact/',
+  path: '/contact/',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
+const AdminAppContactThreadIdRoute = AdminAppContactThreadIdRouteImport.update({
+  id: '/contact/$threadId',
+  path: '/contact/$threadId',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
 const AdminAppCustomersIndexRoute = AdminAppCustomersIndexRouteImport.update({
   id: '/customers/',
   path: '/customers/',
@@ -514,6 +526,7 @@ export interface FileRoutesByFullPath {
   '/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
   '/admin/campaign-pages/$pageId': typeof AdminAppCampaignPagesPageIdRoute
   '/admin/collections/$collectionId': typeof AdminAppCollectionsCollectionIdRoute
+  '/admin/contact/$threadId': typeof AdminAppContactThreadIdRoute
   '/admin/customers/$id': typeof AdminAppCustomersIdRoute
   '/admin/legal-pages/$page': typeof AdminAppLegalPagesPageRoute
   '/admin/orders/$number': typeof AdminAppOrdersNumberRoute
@@ -524,6 +537,7 @@ export interface FileRoutesByFullPath {
   '/hesap/sifre-sifirla/': typeof StorefrontHesapSifreSifirlaIndexRoute
   '/admin/campaign-pages/': typeof AdminAppCampaignPagesIndexRoute
   '/admin/collections/': typeof AdminAppCollectionsIndexRoute
+  '/admin/contact/': typeof AdminAppContactIndexRoute
   '/admin/customers/': typeof AdminAppCustomersIndexRoute
   '/admin/legal-pages/': typeof AdminAppLegalPagesIndexRoute
   '/admin/orders/': typeof AdminAppOrdersIndexRoute
@@ -583,6 +597,7 @@ export interface FileRoutesByTo {
   '/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
   '/admin/campaign-pages/$pageId': typeof AdminAppCampaignPagesPageIdRoute
   '/admin/collections/$collectionId': typeof AdminAppCollectionsCollectionIdRoute
+  '/admin/contact/$threadId': typeof AdminAppContactThreadIdRoute
   '/admin/customers/$id': typeof AdminAppCustomersIdRoute
   '/admin/legal-pages/$page': typeof AdminAppLegalPagesPageRoute
   '/admin/orders/$number': typeof AdminAppOrdersNumberRoute
@@ -593,6 +608,7 @@ export interface FileRoutesByTo {
   '/hesap/sifre-sifirla': typeof StorefrontHesapSifreSifirlaIndexRoute
   '/admin/campaign-pages': typeof AdminAppCampaignPagesIndexRoute
   '/admin/collections': typeof AdminAppCollectionsIndexRoute
+  '/admin/contact': typeof AdminAppContactIndexRoute
   '/admin/customers': typeof AdminAppCustomersIndexRoute
   '/admin/legal-pages': typeof AdminAppLegalPagesIndexRoute
   '/admin/orders': typeof AdminAppOrdersIndexRoute
@@ -658,6 +674,7 @@ export interface FileRoutesById {
   '/_storefront/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
   '/admin/_app/campaign-pages/$pageId': typeof AdminAppCampaignPagesPageIdRoute
   '/admin/_app/collections/$collectionId': typeof AdminAppCollectionsCollectionIdRoute
+  '/admin/_app/contact/$threadId': typeof AdminAppContactThreadIdRoute
   '/admin/_app/customers/$id': typeof AdminAppCustomersIdRoute
   '/admin/_app/legal-pages/$page': typeof AdminAppLegalPagesPageRoute
   '/admin/_app/orders/$number': typeof AdminAppOrdersNumberRoute
@@ -668,6 +685,7 @@ export interface FileRoutesById {
   '/_storefront/hesap/sifre-sifirla/': typeof StorefrontHesapSifreSifirlaIndexRoute
   '/admin/_app/campaign-pages/': typeof AdminAppCampaignPagesIndexRoute
   '/admin/_app/collections/': typeof AdminAppCollectionsIndexRoute
+  '/admin/_app/contact/': typeof AdminAppContactIndexRoute
   '/admin/_app/customers/': typeof AdminAppCustomersIndexRoute
   '/admin/_app/legal-pages/': typeof AdminAppLegalPagesIndexRoute
   '/admin/_app/orders/': typeof AdminAppOrdersIndexRoute
@@ -731,6 +749,7 @@ export interface FileRouteTypes {
     | '/hesap/sifre-sifirla/$key'
     | '/admin/campaign-pages/$pageId'
     | '/admin/collections/$collectionId'
+    | '/admin/contact/$threadId'
     | '/admin/customers/$id'
     | '/admin/legal-pages/$page'
     | '/admin/orders/$number'
@@ -741,6 +760,7 @@ export interface FileRouteTypes {
     | '/hesap/sifre-sifirla/'
     | '/admin/campaign-pages/'
     | '/admin/collections/'
+    | '/admin/contact/'
     | '/admin/customers/'
     | '/admin/legal-pages/'
     | '/admin/orders/'
@@ -800,6 +820,7 @@ export interface FileRouteTypes {
     | '/hesap/sifre-sifirla/$key'
     | '/admin/campaign-pages/$pageId'
     | '/admin/collections/$collectionId'
+    | '/admin/contact/$threadId'
     | '/admin/customers/$id'
     | '/admin/legal-pages/$page'
     | '/admin/orders/$number'
@@ -810,6 +831,7 @@ export interface FileRouteTypes {
     | '/hesap/sifre-sifirla'
     | '/admin/campaign-pages'
     | '/admin/collections'
+    | '/admin/contact'
     | '/admin/customers'
     | '/admin/legal-pages'
     | '/admin/orders'
@@ -874,6 +896,7 @@ export interface FileRouteTypes {
     | '/_storefront/hesap/sifre-sifirla/$key'
     | '/admin/_app/campaign-pages/$pageId'
     | '/admin/_app/collections/$collectionId'
+    | '/admin/_app/contact/$threadId'
     | '/admin/_app/customers/$id'
     | '/admin/_app/legal-pages/$page'
     | '/admin/_app/orders/$number'
@@ -884,6 +907,7 @@ export interface FileRouteTypes {
     | '/_storefront/hesap/sifre-sifirla/'
     | '/admin/_app/campaign-pages/'
     | '/admin/_app/collections/'
+    | '/admin/_app/contact/'
     | '/admin/_app/customers/'
     | '/admin/_app/legal-pages/'
     | '/admin/_app/orders/'
@@ -1304,6 +1328,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAppCollectionsCollectionIdRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
+    '/admin/_app/contact/': {
+      id: '/admin/_app/contact/'
+      path: '/contact'
+      fullPath: '/admin/contact/'
+      preLoaderRoute: typeof AdminAppContactIndexRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/contact/$threadId': {
+      id: '/admin/_app/contact/$threadId'
+      path: '/contact/$threadId'
+      fullPath: '/admin/contact/$threadId'
+      preLoaderRoute: typeof AdminAppContactThreadIdRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
     '/admin/_app/customers/': {
       id: '/admin/_app/customers/'
       path: '/customers'
@@ -1527,6 +1565,7 @@ interface AdminAppRouteRouteChildren {
   AdminAppIndexRoute: typeof AdminAppIndexRoute
   AdminAppCampaignPagesPageIdRoute: typeof AdminAppCampaignPagesPageIdRoute
   AdminAppCollectionsCollectionIdRoute: typeof AdminAppCollectionsCollectionIdRoute
+  AdminAppContactThreadIdRoute: typeof AdminAppContactThreadIdRoute
   AdminAppCustomersIdRoute: typeof AdminAppCustomersIdRoute
   AdminAppLegalPagesPageRoute: typeof AdminAppLegalPagesPageRoute
   AdminAppOrdersNumberRoute: typeof AdminAppOrdersNumberRoute
@@ -1535,6 +1574,7 @@ interface AdminAppRouteRouteChildren {
   AdminAppProductsNewRoute: typeof AdminAppProductsNewRoute
   AdminAppCampaignPagesIndexRoute: typeof AdminAppCampaignPagesIndexRoute
   AdminAppCollectionsIndexRoute: typeof AdminAppCollectionsIndexRoute
+  AdminAppContactIndexRoute: typeof AdminAppContactIndexRoute
   AdminAppCustomersIndexRoute: typeof AdminAppCustomersIndexRoute
   AdminAppLegalPagesIndexRoute: typeof AdminAppLegalPagesIndexRoute
   AdminAppOrdersIndexRoute: typeof AdminAppOrdersIndexRoute
@@ -1569,6 +1609,7 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppIndexRoute: AdminAppIndexRoute,
   AdminAppCampaignPagesPageIdRoute: AdminAppCampaignPagesPageIdRoute,
   AdminAppCollectionsCollectionIdRoute: AdminAppCollectionsCollectionIdRoute,
+  AdminAppContactThreadIdRoute: AdminAppContactThreadIdRoute,
   AdminAppCustomersIdRoute: AdminAppCustomersIdRoute,
   AdminAppLegalPagesPageRoute: AdminAppLegalPagesPageRoute,
   AdminAppOrdersNumberRoute: AdminAppOrdersNumberRoute,
@@ -1577,6 +1618,7 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppProductsNewRoute: AdminAppProductsNewRoute,
   AdminAppCampaignPagesIndexRoute: AdminAppCampaignPagesIndexRoute,
   AdminAppCollectionsIndexRoute: AdminAppCollectionsIndexRoute,
+  AdminAppContactIndexRoute: AdminAppContactIndexRoute,
   AdminAppCustomersIndexRoute: AdminAppCustomersIndexRoute,
   AdminAppLegalPagesIndexRoute: AdminAppLegalPagesIndexRoute,
   AdminAppOrdersIndexRoute: AdminAppOrdersIndexRoute,

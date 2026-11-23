@@ -1160,6 +1160,155 @@ export interface paths {
         patch: operations["contact_categories_update"];
         trace?: never;
     };
+    "/api/admin/contact-replies/{reply_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit Reply
+         * @description Change a draft or a rejected reply (its author, or the Owner).
+         */
+        patch: operations["contact_replies_update"];
+        trace?: never;
+    };
+    "/api/admin/contact-replies/{reply_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve Reply
+         * @description Owner: send the waiting reply as written, or with `body` as the edited text.
+         */
+        post: operations["contact_replies_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/contact-replies/{reply_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reject Reply
+         * @description Owner: send the waiting reply back to Staff with a note they can read.
+         */
+        post: operations["contact_replies_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/contact-replies/{reply_id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Reply
+         * @description Send the author's draft to the Owner for approval.
+         */
+        post: operations["contact_replies_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/contact-threads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Threads
+         * @description Threads, latest activity first, as a page. Filters combine.
+         *
+         *     `q` searches name, email, order number, category and message text (anonymised
+         *     threads never match it). `date_from`/`date_to` (YYYY-MM-DD) bound the last activity,
+         *     both days included. `has_pending_reply` finds threads with a reply waiting for the
+         *     Owner.
+         */
+        get: operations["contact_threads_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/contact-threads/{thread_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Thread
+         * @description The Shopper's message, then drafts, decisions and sent replies in order.
+         */
+        get: operations["contact_threads_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Thread
+         * @description Set the status and/or the assignee. `assignee_id: null` clears the assignee.
+         */
+        patch: operations["contact_threads_update"];
+        trace?: never;
+    };
+    "/api/admin/contact-threads/{thread_id}/replies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Write Reply
+         * @description Staff: a draft (state `draft`). The Owner: sent at once (state `sent`).
+         */
+        post: operations["contact_replies_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/customers": {
         parameters: {
             query?: never;
@@ -1390,7 +1539,8 @@ export interface paths {
         };
         /**
          * Search Menu Targets
-         * @description Categories, Legal pages, Products, Brands, Collections, Campaign pages matching `q` by name.
+         * @description Categories, Legal pages, Products, Brands, Collections and Campaign pages
+         *     matching `q` by name.
          */
         get: operations["menus_search_targets"];
         put?: never;
@@ -4594,6 +4744,17 @@ export interface components {
             /** Total */
             total: number;
         };
+        /** PagedThreadSummary */
+        PagedThreadSummary: {
+            /** Items */
+            items: components["schemas"]["ThreadSummary"][];
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total */
+            total: number;
+        };
         /** PagedVoucherAdminOut */
         PagedVoucherAdminOut: {
             /** Items */
@@ -5092,6 +5253,48 @@ export interface components {
              */
             reason: string;
         };
+        /** ReplyApproveIn */
+        ReplyApproveIn: {
+            /** Body */
+            body?: string | null;
+        };
+        /** ReplyIn */
+        ReplyIn: {
+            /** Body */
+            body: string;
+        };
+        /** ReplyOut */
+        ReplyOut: {
+            author: components["schemas"]["PersonOut"] | null;
+            /** Body */
+            body: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            decided_by: components["schemas"]["PersonOut"] | null;
+            /** Drafted Body */
+            drafted_body: string;
+            /** Id */
+            id: number;
+            /** Kind */
+            kind: string;
+            /** Rejection Note */
+            rejection_note: string;
+            /** Sent At */
+            sent_at: string | null;
+            /** State */
+            state: string;
+        };
+        /** ReplyRejectIn */
+        ReplyRejectIn: {
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+        };
         /** ReturnAdminOut */
         ReturnAdminOut: {
             /** Decided At */
@@ -5557,6 +5760,77 @@ export interface components {
             id: number;
             /** Name */
             name: string;
+        };
+        /** ThreadOut */
+        ThreadOut: {
+            /** Anonymised */
+            anonymised: boolean;
+            assignee: components["schemas"]["PersonOut"] | null;
+            /** Category */
+            category: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Email */
+            email: string;
+            /** Id */
+            id: number;
+            /**
+             * Last Activity At
+             * Format: date-time
+             */
+            last_activity_at: string;
+            /** Messages */
+            messages: components["schemas"]["ReplyOut"][];
+            /** Name */
+            name: string;
+            /** Order Linked */
+            order_linked: boolean;
+            /** Order Number */
+            order_number: string;
+            /** Status */
+            status: string;
+        };
+        /** ThreadPatch */
+        ThreadPatch: {
+            /** Assignee Id */
+            assignee_id?: number | null;
+            /** Status */
+            status?: string | null;
+        };
+        /** ThreadSummary */
+        ThreadSummary: {
+            /** Anonymised */
+            anonymised: boolean;
+            assignee: components["schemas"]["PersonOut"] | null;
+            /** Category */
+            category: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Email */
+            email: string;
+            /** Id */
+            id: number;
+            /**
+             * Last Activity At
+             * Format: date-time
+             */
+            last_activity_at: string;
+            /** Name */
+            name: string;
+            /** Order Number */
+            order_number: string;
+            /** Pending Reply Count */
+            pending_reply_count: number;
+            /** Snippet */
+            snippet: string;
+            /** Status */
+            status: string;
         };
         /** TotalsOut */
         TotalsOut: {
@@ -7865,6 +8139,210 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ContactCategoryRow"];
+                };
+            };
+        };
+    };
+    contact_replies_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reply_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplyIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplyOut"];
+                };
+            };
+        };
+    };
+    contact_replies_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reply_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplyApproveIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplyOut"];
+                };
+            };
+        };
+    };
+    contact_replies_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reply_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplyRejectIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplyOut"];
+                };
+            };
+        };
+    };
+    contact_replies_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reply_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplyOut"];
+                };
+            };
+        };
+    };
+    contact_threads_list: {
+        parameters: {
+            query?: {
+                q?: string | null;
+                status?: string | null;
+                assignee_id?: number | null;
+                category_id?: number | null;
+                date_from?: string | null;
+                date_to?: string | null;
+                has_pending_reply?: boolean | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedThreadSummary"];
+                };
+            };
+        };
+    };
+    contact_threads_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                thread_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThreadOut"];
+                };
+            };
+        };
+    };
+    contact_threads_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                thread_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ThreadPatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThreadOut"];
+                };
+            };
+        };
+    };
+    contact_replies_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                thread_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplyIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplyOut"];
                 };
             };
         };
