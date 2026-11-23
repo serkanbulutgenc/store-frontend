@@ -897,10 +897,31 @@ export interface paths {
         };
         /**
          * List Pages
-         * @description The current version of every page.
+         * @description The current version of every page, with the earlier addresses that redirect.
          */
         get: operations["legal_pages_list"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/legal-pages/{page}/slug": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Change Slug
+         * @description Give a page a new address. The old one keeps redirecting to it; the page's
+         *     versions and the Consent records that point at them do not move.
+         */
+        put: operations["legal_pages_change_slug"];
         post?: never;
         delete?: never;
         options?: never;
@@ -2200,6 +2221,11 @@ export interface components {
             created_by?: string | null;
             /** Page */
             page: string;
+            /**
+             * Redirects
+             * @default []
+             */
+            redirects: string[];
             /** Slug */
             slug: string;
             /** Title */
@@ -2220,6 +2246,11 @@ export interface components {
             created_by?: string | null;
             /** Page */
             page: string;
+            /**
+             * Redirects
+             * @default []
+             */
+            redirects: string[];
             /** Slug */
             slug: string;
             /** Title */
@@ -4710,6 +4741,11 @@ export interface components {
             /** Size */
             size: string;
         };
+        /** SlugIn */
+        SlugIn: {
+            /** Slug */
+            slug: string;
+        };
         /**
          * Sort
          * @description What the Products report ranks by.
@@ -6601,6 +6637,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminLegalRow"][];
+                };
+            };
+        };
+    };
+    legal_pages_change_slug: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                page: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SlugIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminLegalRow"];
                 };
             };
         };

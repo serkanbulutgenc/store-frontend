@@ -3,6 +3,7 @@ import { NotFoundState } from "@/components/route-states";
 import { requirePermission } from "@/features/admin/guard";
 import { LegalEditor } from "@/features/admin/legal/legal-editor";
 import { legalVersionQuery, legalVersionsQuery } from "@/features/admin/legal/queries";
+import { isOwner } from "@/lib/api/me";
 
 export const Route = createFileRoute("/admin/_app/legal-pages/$page")({
   notFoundComponent: () => <NotFoundState home="/admin" />,
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/admin/_app/legal-pages/$page")({
   },
   component: function LegalPageRoute() {
     const { page } = Route.useParams();
-    return <LegalEditor page={page} />;
+    const { me } = Route.useRouteContext();
+    return <LegalEditor page={page} owner={isOwner(me)} />;
   },
 });
