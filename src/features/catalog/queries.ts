@@ -27,6 +27,16 @@ export const categoriesQuery = queryOptions({
       .data as CategoryNode[],
 });
 
+export type HomeCategory = components["schemas"]["HomeCategoryOut"];
+
+/** The Categories the Owner picked for the homepage row, in the Owner's order. */
+export const homeCategoriesQuery = queryOptions({
+  queryKey: [...ROOT, "home-categories"],
+  staleTime: 5 * 60_000,
+  queryFn: async () =>
+    ((await storeApi.GET("/api/store/home-categories")).data ?? []) as HomeCategory[],
+});
+
 export const categoryPageQuery = (slug: string) =>
   queryOptions({
     queryKey: [...ROOT, "category", slug],

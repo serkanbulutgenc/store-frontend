@@ -1,4 +1,5 @@
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { useId, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -13,12 +14,14 @@ import { showsRejection } from "../approvals/rules";
 import { categoriesQuery } from "../catalog/queries";
 import { useCrumbLabel } from "../components/crumb-labels";
 import { ActionDialog } from "../forms/action-dialog";
+import { DeleteBannerButton } from "./delete-banner-button";
 import { type BannerOut, bannerQuery, IMAGE_TYPES, useBannerActions } from "./queries";
 import {
   ALT_MAX,
   availableActions,
   type BannerAction,
   type BannerFields,
+  canDelete,
   changedFields,
   checkFields,
   completeness,
@@ -36,6 +39,7 @@ import {
   statusLabel,
   statusTone,
   toLocalInput,
+  warnings,
 } from "./rules";
 
 const message = (e: unknown) =>
@@ -49,6 +53,7 @@ export function BannerEditor({ bannerId, me }: { bannerId: number; me: Me }) {
   useCrumbLabel(String(bannerId), banner.message || slotLabel(banner.slot));
   const actions = useBannerActions(bannerId);
   const [rejecting, setRejecting] = useState(false);
+  const navigate = useNavigate();
 
   const owner = can(me, "manage_banners");
   const who: Who = { owner, submitter: banner.submitted_by?.id === me.id };
@@ -59,6 +64,7 @@ export function BannerEditor({ bannerId, me }: { bannerId: number; me: Me }) {
   const moves = availableActions(state, who);
   // The storefront hides a Banner that is incomplete, so say so before it goes for approval.
   const missing = completeness(banner);
+  const advice = warnings(banner);
 
   async function onMove(action: BannerAction) {
     if (action === "reject") return setRejecting(true);
@@ -94,6 +100,11 @@ export function BannerEditor({ bannerId, me }: { bannerId: number; me: Me }) {
             Mağazada görünmesi için eksik: {missing.join(" ")}
           </p>
         )}
+        {advice.length > 0 && (
+          <p role="note" className="rounded-md bg-amber-100 p-2 text-sm text-amber-900">
+            {advice.join(" ")}
+          </p>
+        )}
         <div className="flex flex-wrap gap-2">
           {moves.map((m) => (
             <Button
@@ -107,6 +118,13 @@ export function BannerEditor({ bannerId, me }: { bannerId: number; me: Me }) {
                 : m.label}
             </Button>
           ))}
+          {canDelete(state, who) && (
+            <DeleteBannerButton
+              id={banner.id}
+              name={banner.message || slotLabel(banner.slot)}
+              onDeleted={() => void navigate({ to: "/admin/banners" })}
+            />
+          )}
         </div>
       </div>
 
@@ -446,7 +464,6 @@ export function ImagesSection({
   const mobileId = useId();
   const [alt, setAlt] = useState(banner.image?.alt_text ?? "");
   const [error, setError] = useState<string | null>(null);
-  const [altError, setAltError] = useState<string | null>(null);
 
   async function attempt(work: () => Promise<unknown>, success?: string) {
     setError(null);
@@ -460,17 +477,10 @@ export function ImagesSection({
   function onFile(which: "image" | "mobile-image", file: File | undefined) {
     if (!file) return;
     if (!IMAGE_TYPES.includes(file.type))
-      return setError("Yalnızca JPEG, PNG veya WebP yüklenebilir.");
-    if (which === "image" && !alt.trim()) {
-      setAltError("Görsel için alternatif metin gerekli.");
-      return;
-    }
-    setAltError(null);
+      return setError("Yalnızca JPEG, PNG, WebP veya GIF yüklenebilir.");
     void attempt(() => actions.upload({ which, file, altText: alt.trim() }), "Görsel yüklendi.");
   }
   function saveAlt() {
-    if (!alt.trim()) return setAltError("Görsel için alternatif metin gerekli.");
-    setAltError(null);
     void attempt(() => actions.setAlt(alt.trim()), "Metin kaydedildi.");
   }
 
@@ -506,7 +516,6 @@ export function ImagesSection({
               id={altId}
               value={alt}
               maxLength={ALT_MAX}
-              aria-invalid={!!altError}
               onChange={(e) => setAlt(e.target.value)}
             />
             {banner.image && (
@@ -516,13 +525,9 @@ export function ImagesSection({
             )}
           </div>
           <span className="block text-xs text-muted-foreground">
-            Her iki görsel için de kullanılır. Görsel yüklemek için gereklidir.
+            İsteğe bağlı. Her iki görsel için de kullanılır; boş bırakırsanız görsel süs olarak
+            kabul edilir.
           </span>
-          {altError && (
-            <span role="alert" className="block text-red-700">
-              {altError}
-            </span>
-          )}
         </div>
         <div className="space-y-2">
           <p className="font-medium">Ana görsel</p>

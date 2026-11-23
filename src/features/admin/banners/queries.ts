@@ -38,7 +38,7 @@ export const bannerQuery = (id: number) =>
       ).data as BannerOut,
   });
 
-export const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+export const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 /** Uploads (or replaces) the main or the mobile image; processing continues on the server. */
 export async function uploadImage(
@@ -113,4 +113,17 @@ export function useBannerActions(id: number) {
     onSuccess: refresh,
   }).mutateAsync;
   return { move, save, removeImage, removeMobile, setAlt, upload };
+}
+
+/** Deletes one Banner and refreshes the lists. */
+export function useDeleteBanner() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) =>
+      adminApi.DELETE("/api/admin/banners/{banner_id}", { params: { path: { banner_id: id } } }),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: bannerKeys.all });
+      await qc.invalidateQueries({ queryKey: approvalKeys.all });
+    },
+  }).mutateAsync;
 }

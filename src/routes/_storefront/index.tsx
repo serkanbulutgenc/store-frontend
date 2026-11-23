@@ -1,15 +1,16 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { BannerHero } from "@/features/banners/components/banner-hero";
 import { BannerStrip } from "@/features/banners/components/picture-banner";
 import { bannersQuery, NO_BANNERS } from "@/features/banners/queries";
 import { settingsQuery } from "@/features/basket/queries";
+import { CategoryRail } from "@/features/catalog/components/category-rail";
 import { HomeBanner } from "@/features/catalog/components/home-banner";
 import { HomeHero } from "@/features/catalog/components/home-hero";
 import { ProductRail } from "@/features/catalog/components/product-rail";
 import { RecentlyViewed } from "@/features/catalog/components/recently-viewed";
 import {
-  categoriesQuery,
   collectionPageQuery,
+  homeCategoriesQuery,
   productsPageQuery,
 } from "@/features/catalog/queries";
 import { homeHead } from "@/features/catalog/seo";
@@ -21,7 +22,7 @@ export const Route = createFileRoute("/_storefront/")({
       context.queryClient.query(productsPageQuery({}, { page: 1 })),
       context.queryClient.query(productsPageQuery({ sort: "popular" }, { page: 1 })),
       context.queryClient.query(productsPageQuery({ on_sale: true }, { page: 1 })),
-      context.queryClient.query(categoriesQuery),
+      context.queryClient.query(homeCategoriesQuery),
       // The banner is optional: the home page must still render when the settings do not load.
       context.queryClient.query(settingsQuery).catch(() => null),
       // An unpublished, empty or missing Collection is a 404: the slider then shows the newest.
@@ -64,26 +65,7 @@ export const Route = createFileRoute("/_storefront/")({
           <BannerStrip banners={mid.slice(1, 2)} label="Kampanya" />
           <ProductRail title="Çok satanlar" products={popular} seeAll={{ sort: "popular" }} />
           {latest.length === 0 && <p className="text-muted-foreground">Ürünler yakında burada.</p>}
-          {categories.length > 0 && (
-            <section aria-labelledby="cats">
-              <h2 id="cats" className="mb-3 text-xl font-semibold">
-                Kategoriler
-              </h2>
-              <ul className="flex flex-wrap gap-2">
-                {categories.map((c) => (
-                  <li key={c.slug}>
-                    <Link
-                      to="/kategori/$slug"
-                      params={{ slug: c.slug }}
-                      className="block rounded-full border border-border px-4 py-2 hover:bg-accent"
-                    >
-                      {c.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+          <CategoryRail categories={categories} />
         </div>
       </main>
     );

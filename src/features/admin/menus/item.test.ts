@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkItem, type ItemDraft } from "./item";
+import { BUILTIN_PAGES, checkItem, type ItemDraft } from "./item";
 
 const draft = (over: Partial<ItemDraft> = {}): ItemDraft => ({
   target_type: "url",
@@ -75,5 +75,13 @@ describe("checkItem", () => {
       ).toBe("Bir hedef seçin.");
       expect(checkItem(draft({ target_type, url: "", has_target: true })), target_type).toEqual({});
     }
+  });
+});
+
+describe("BUILTIN_PAGES", () => {
+  it("offers the contact page and the all-Campaigns list", () => {
+    const keys = BUILTIN_PAGES.map((p) => p.value);
+    expect(keys).toContain("contact");
+    expect(keys).toContain("campaigns");
   });
 });

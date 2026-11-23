@@ -122,8 +122,8 @@ export function OrderDetailScreen({ number, me }: { number: string; me: Me }) {
                           Kampanya:{" "}
                           {campaign.openId !== null ? (
                             <Link
-                              to="/admin/campaigns"
-                              search={{ edit: campaign.openId }}
+                              to="/admin/campaigns/$campaignId"
+                              params={{ campaignId: String(campaign.openId) }}
                               className="underline"
                             >
                               {campaign.name}

@@ -24,6 +24,8 @@ const c = (id: number, name: string, over: Partial<CategoryOut> = {}): CategoryO
     product_count: 0,
     sort_order: 0,
     is_hidden: false,
+    show_on_home: false,
+    home_order: 0,
     description: "",
     seo_title: "",
     seo_description: "",

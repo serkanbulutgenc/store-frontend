@@ -1,5 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -23,37 +24,42 @@ import { BelowCostWarning } from "./notices";
 import { campaignKeys, campaignQuery } from "./queries";
 import { TargetPicker } from "./target-picker";
 
-/** The dialog body: a new Campaign is a blank form, an existing one loads in full first (the
- * list rows carry no targets or below-cost Products). */
-export function CampaignDialogBody({ id, onClose }: { id?: number; onClose: () => void }) {
+/** The Campaign's own admin page: a new Campaign is a blank form, an existing one loads in full
+ * first (the list rows carry no targets or below-cost Products). Leaving goes back to the list. */
+export function CampaignEditorPage({ id }: { id?: number }) {
+  const navigate = useNavigate();
+  const onClose = () => void navigate({ to: "/admin/campaigns", search: { tab: "campaigns" } });
   const { data: row, isError } = useQuery({ ...campaignQuery(id ?? 0), enabled: id !== undefined });
   if (id !== undefined && isError) {
-    // A stale or mistyped `?edit=` address: say so instead of loading forever.
+    // A stale or mistyped address: say so instead of loading forever.
     return (
-      <div className="space-y-3">
+      <div className="max-w-3xl space-y-3">
         <p role="alert">Kampanya bulunamadı.</p>
-        <div className="flex justify-end">
-          <Button size="sm" onClick={onClose}>
-            Tamam
-          </Button>
-        </div>
+        <Button size="sm" onClick={onClose}>
+          Kampanyalara dön
+        </Button>
       </div>
     );
   }
   if (id !== undefined && !row) return <p className="text-muted-foreground">Yükleniyor…</p>;
-  return <CampaignEditor row={row} onClose={onClose} />;
+  return (
+    <div className="max-w-3xl space-y-3">
+      <h1 className="text-lg font-semibold">{row ? row.name : "Yeni kampanya"}</h1>
+      <CampaignEditor row={row} onClose={onClose} />
+    </div>
+  );
 }
 
 const includes = (name: string, q: string) =>
   name.toLocaleLowerCase("tr").includes(q.trim().toLocaleLowerCase("tr"));
 
 function CampaignEditor({ row: loaded, onClose }: { row?: CampaignRow; onClose: () => void }) {
-  // The Campaign as it was when the dialog opened. The form starts from it and an edit is
-  // worked out against it, so a refetch while the dialog is open cannot make them disagree.
+  // The Campaign as it was when the page opened. The form starts from it and an edit is
+  // worked out against it, so a refetch while the page is open cannot make them disagree.
   const [row] = useState(loaded);
   const qc = useQueryClient();
   // Saving works whatever the Products cost; if some end up below cost the Owner is told here,
-  // with the dialog left open until they have read it.
+  // with the page left open until they have read it.
   const [saved, setSaved] = useState<CampaignRow | null>(null);
   const [productQ, setProductQ] = useState("");
   const [categoryQ, setCategoryQ] = useState("");

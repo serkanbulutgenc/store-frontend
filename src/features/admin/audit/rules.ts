@@ -42,6 +42,7 @@ export const AUDIT_ACTIONS: Record<string, string> = {
   approval_published: "Yayınlandı",
   approval_unpublished: "Yayından kaldırıldı",
   approval_edited: "Düzenlendi",
+  approval_deleted: "Silindi",
   approval_change_submitted: "Değişiklik onaya gönderildi",
   approval_change_approved: "Değişiklik onaylandı",
   approval_change_rejected: "Değişiklik reddedildi",
