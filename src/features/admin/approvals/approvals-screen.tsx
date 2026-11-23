@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { ApiError } from "@/lib/api/errors";
+import { bannerKeys } from "../banners/queries";
 import { pageKeys } from "../campaign-pages/queries";
 import { collectionKeys } from "../collections/queries";
 import { DiffTable, QueueTable } from "./approval-parts";
@@ -42,6 +43,7 @@ function ReviewForm({ item, onClose }: { item: ApprovalItem; onClose: () => void
         qc.invalidateQueries({ queryKey: approvalKeys.all }),
         qc.invalidateQueries({ queryKey: collectionKeys.all }),
         qc.invalidateQueries({ queryKey: pageKeys.all }),
+        qc.invalidateQueries({ queryKey: bannerKeys.all }),
       ]);
       toast.success(decision === "approve" ? "Onaylandı." : "Reddedildi.");
       onClose();

@@ -62,6 +62,8 @@ import { Route as StorefrontCustomerHesapGuvenlikRouteImport } from './routes/_s
 import { Route as StorefrontHesapEpostaDogrulaKeyRouteImport } from './routes/_storefront/hesap/eposta-dogrula.$key'
 import { Route as StorefrontHesapSifreSifirlaIndexRouteImport } from './routes/_storefront/hesap/sifre-sifirla.index'
 import { Route as StorefrontHesapSifreSifirlaKeyRouteImport } from './routes/_storefront/hesap/sifre-sifirla.$key'
+import { Route as AdminAppBannersIndexRouteImport } from './routes/admin/_app/banners/index'
+import { Route as AdminAppBannersBannerIdRouteImport } from './routes/admin/_app/banners/$bannerId'
 import { Route as AdminAppCampaignPagesIndexRouteImport } from './routes/admin/_app/campaign-pages/index'
 import { Route as AdminAppCampaignPagesPageIdRouteImport } from './routes/admin/_app/campaign-pages/$pageId'
 import { Route as AdminAppCollectionsIndexRouteImport } from './routes/admin/_app/collections/index'
@@ -356,6 +358,16 @@ const StorefrontHesapSifreSifirlaKeyRoute =
     path: '/hesap/sifre-sifirla/$key',
     getParentRoute: () => StorefrontRouteRoute,
   } as any)
+const AdminAppBannersIndexRoute = AdminAppBannersIndexRouteImport.update({
+  id: '/banners/',
+  path: '/banners/',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
+const AdminAppBannersBannerIdRoute = AdminAppBannersBannerIdRouteImport.update({
+  id: '/banners/$bannerId',
+  path: '/banners/$bannerId',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
 const AdminAppCampaignPagesIndexRoute =
   AdminAppCampaignPagesIndexRouteImport.update({
     id: '/campaign-pages/',
@@ -512,6 +524,7 @@ export interface FileRoutesByFullPath {
   '/hesap/guvenlik': typeof StorefrontCustomerHesapGuvenlikRoute
   '/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
+  '/admin/banners/$bannerId': typeof AdminAppBannersBannerIdRoute
   '/admin/campaign-pages/$pageId': typeof AdminAppCampaignPagesPageIdRoute
   '/admin/collections/$collectionId': typeof AdminAppCollectionsCollectionIdRoute
   '/admin/customers/$id': typeof AdminAppCustomersIdRoute
@@ -522,6 +535,7 @@ export interface FileRoutesByFullPath {
   '/admin/products/new': typeof AdminAppProductsNewRoute
   '/hesap/': typeof StorefrontCustomerHesapIndexRoute
   '/hesap/sifre-sifirla/': typeof StorefrontHesapSifreSifirlaIndexRoute
+  '/admin/banners/': typeof AdminAppBannersIndexRoute
   '/admin/campaign-pages/': typeof AdminAppCampaignPagesIndexRoute
   '/admin/collections/': typeof AdminAppCollectionsIndexRoute
   '/admin/customers/': typeof AdminAppCustomersIndexRoute
@@ -581,6 +595,7 @@ export interface FileRoutesByTo {
   '/hesap/guvenlik': typeof StorefrontCustomerHesapGuvenlikRoute
   '/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
+  '/admin/banners/$bannerId': typeof AdminAppBannersBannerIdRoute
   '/admin/campaign-pages/$pageId': typeof AdminAppCampaignPagesPageIdRoute
   '/admin/collections/$collectionId': typeof AdminAppCollectionsCollectionIdRoute
   '/admin/customers/$id': typeof AdminAppCustomersIdRoute
@@ -591,6 +606,7 @@ export interface FileRoutesByTo {
   '/admin/products/new': typeof AdminAppProductsNewRoute
   '/hesap': typeof StorefrontCustomerHesapIndexRoute
   '/hesap/sifre-sifirla': typeof StorefrontHesapSifreSifirlaIndexRoute
+  '/admin/banners': typeof AdminAppBannersIndexRoute
   '/admin/campaign-pages': typeof AdminAppCampaignPagesIndexRoute
   '/admin/collections': typeof AdminAppCollectionsIndexRoute
   '/admin/customers': typeof AdminAppCustomersIndexRoute
@@ -656,6 +672,7 @@ export interface FileRoutesById {
   '/_storefront/_customer/hesap/guvenlik': typeof StorefrontCustomerHesapGuvenlikRoute
   '/_storefront/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/_storefront/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
+  '/admin/_app/banners/$bannerId': typeof AdminAppBannersBannerIdRoute
   '/admin/_app/campaign-pages/$pageId': typeof AdminAppCampaignPagesPageIdRoute
   '/admin/_app/collections/$collectionId': typeof AdminAppCollectionsCollectionIdRoute
   '/admin/_app/customers/$id': typeof AdminAppCustomersIdRoute
@@ -666,6 +683,7 @@ export interface FileRoutesById {
   '/admin/_app/products/new': typeof AdminAppProductsNewRoute
   '/_storefront/_customer/hesap/': typeof StorefrontCustomerHesapIndexRoute
   '/_storefront/hesap/sifre-sifirla/': typeof StorefrontHesapSifreSifirlaIndexRoute
+  '/admin/_app/banners/': typeof AdminAppBannersIndexRoute
   '/admin/_app/campaign-pages/': typeof AdminAppCampaignPagesIndexRoute
   '/admin/_app/collections/': typeof AdminAppCollectionsIndexRoute
   '/admin/_app/customers/': typeof AdminAppCustomersIndexRoute
@@ -729,6 +747,7 @@ export interface FileRouteTypes {
     | '/hesap/guvenlik'
     | '/hesap/eposta-dogrula/$key'
     | '/hesap/sifre-sifirla/$key'
+    | '/admin/banners/$bannerId'
     | '/admin/campaign-pages/$pageId'
     | '/admin/collections/$collectionId'
     | '/admin/customers/$id'
@@ -739,6 +758,7 @@ export interface FileRouteTypes {
     | '/admin/products/new'
     | '/hesap/'
     | '/hesap/sifre-sifirla/'
+    | '/admin/banners/'
     | '/admin/campaign-pages/'
     | '/admin/collections/'
     | '/admin/customers/'
@@ -798,6 +818,7 @@ export interface FileRouteTypes {
     | '/hesap/guvenlik'
     | '/hesap/eposta-dogrula/$key'
     | '/hesap/sifre-sifirla/$key'
+    | '/admin/banners/$bannerId'
     | '/admin/campaign-pages/$pageId'
     | '/admin/collections/$collectionId'
     | '/admin/customers/$id'
@@ -808,6 +829,7 @@ export interface FileRouteTypes {
     | '/admin/products/new'
     | '/hesap'
     | '/hesap/sifre-sifirla'
+    | '/admin/banners'
     | '/admin/campaign-pages'
     | '/admin/collections'
     | '/admin/customers'
@@ -872,6 +894,7 @@ export interface FileRouteTypes {
     | '/_storefront/_customer/hesap/guvenlik'
     | '/_storefront/hesap/eposta-dogrula/$key'
     | '/_storefront/hesap/sifre-sifirla/$key'
+    | '/admin/_app/banners/$bannerId'
     | '/admin/_app/campaign-pages/$pageId'
     | '/admin/_app/collections/$collectionId'
     | '/admin/_app/customers/$id'
@@ -882,6 +905,7 @@ export interface FileRouteTypes {
     | '/admin/_app/products/new'
     | '/_storefront/_customer/hesap/'
     | '/_storefront/hesap/sifre-sifirla/'
+    | '/admin/_app/banners/'
     | '/admin/_app/campaign-pages/'
     | '/admin/_app/collections/'
     | '/admin/_app/customers/'
@@ -1276,6 +1300,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StorefrontHesapSifreSifirlaKeyRouteImport
       parentRoute: typeof StorefrontRouteRoute
     }
+    '/admin/_app/banners/': {
+      id: '/admin/_app/banners/'
+      path: '/banners'
+      fullPath: '/admin/banners/'
+      preLoaderRoute: typeof AdminAppBannersIndexRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/banners/$bannerId': {
+      id: '/admin/_app/banners/$bannerId'
+      path: '/banners/$bannerId'
+      fullPath: '/admin/banners/$bannerId'
+      preLoaderRoute: typeof AdminAppBannersBannerIdRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
     '/admin/_app/campaign-pages/': {
       id: '/admin/_app/campaign-pages/'
       path: '/campaign-pages'
@@ -1525,6 +1563,7 @@ interface AdminAppRouteRouteChildren {
   AdminAppSuppliersRoute: typeof AdminAppSuppliersRoute
   AdminAppVouchersRoute: typeof AdminAppVouchersRoute
   AdminAppIndexRoute: typeof AdminAppIndexRoute
+  AdminAppBannersBannerIdRoute: typeof AdminAppBannersBannerIdRoute
   AdminAppCampaignPagesPageIdRoute: typeof AdminAppCampaignPagesPageIdRoute
   AdminAppCollectionsCollectionIdRoute: typeof AdminAppCollectionsCollectionIdRoute
   AdminAppCustomersIdRoute: typeof AdminAppCustomersIdRoute
@@ -1533,6 +1572,7 @@ interface AdminAppRouteRouteChildren {
   AdminAppProductClassesClassIdRoute: typeof AdminAppProductClassesClassIdRoute
   AdminAppProductsProductIdRoute: typeof AdminAppProductsProductIdRoute
   AdminAppProductsNewRoute: typeof AdminAppProductsNewRoute
+  AdminAppBannersIndexRoute: typeof AdminAppBannersIndexRoute
   AdminAppCampaignPagesIndexRoute: typeof AdminAppCampaignPagesIndexRoute
   AdminAppCollectionsIndexRoute: typeof AdminAppCollectionsIndexRoute
   AdminAppCustomersIndexRoute: typeof AdminAppCustomersIndexRoute
@@ -1567,6 +1607,7 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppSuppliersRoute: AdminAppSuppliersRoute,
   AdminAppVouchersRoute: AdminAppVouchersRoute,
   AdminAppIndexRoute: AdminAppIndexRoute,
+  AdminAppBannersBannerIdRoute: AdminAppBannersBannerIdRoute,
   AdminAppCampaignPagesPageIdRoute: AdminAppCampaignPagesPageIdRoute,
   AdminAppCollectionsCollectionIdRoute: AdminAppCollectionsCollectionIdRoute,
   AdminAppCustomersIdRoute: AdminAppCustomersIdRoute,
@@ -1575,6 +1616,7 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppProductClassesClassIdRoute: AdminAppProductClassesClassIdRoute,
   AdminAppProductsProductIdRoute: AdminAppProductsProductIdRoute,
   AdminAppProductsNewRoute: AdminAppProductsNewRoute,
+  AdminAppBannersIndexRoute: AdminAppBannersIndexRoute,
   AdminAppCampaignPagesIndexRoute: AdminAppCampaignPagesIndexRoute,
   AdminAppCollectionsIndexRoute: AdminAppCollectionsIndexRoute,
   AdminAppCustomersIndexRoute: AdminAppCustomersIndexRoute,
