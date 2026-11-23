@@ -1,12 +1,13 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog } from "@/components/ui/dialog";
+import { can, type Me } from "@/lib/api/me";
+import { CampaignPagesTab } from "../campaign-pages/campaign-pages-screen";
 import { useFlip, useStepBackWhenEmpty } from "../components/row-actions";
 import { RowDeleteDialog, StatusFilter } from "../components/row-list";
 import { type Column, columnHelper, DataTable } from "../data-table/data-table";
-import { CampaignDialogBody } from "./campaign-dialog";
 import { type CampaignListRow, campaignsQuery, useCampaignActions } from "./queries";
 import {
   CAMPAIGN_STATUSES,
@@ -20,7 +21,62 @@ import type { CampaignSearch } from "./search";
 
 const helper = columnHelper<CampaignListRow>();
 
+type Tab = "campaigns" | "pages";
+
+/** Discount Campaigns and Campaign pages in one place. Staff may edit pages but not Campaigns, so
+ * they see only the pages tab; creating and editing happen on their own admin pages. */
 export function CampaignsScreen({
+  search,
+  onSearchChange,
+  me,
+}: {
+  search: CampaignSearch;
+  onSearchChange: (patch: Partial<CampaignSearch>) => void;
+  me: Me;
+}) {
+  const tabs: { key: Tab; label: string }[] = [
+    ...(can(me, "manage_campaigns") ? [{ key: "campaigns" as const, label: "Kampanyalar" }] : []),
+    ...(can(me, "edit_campaign_pages")
+      ? [{ key: "pages" as const, label: "Kampanya sayfaları" }]
+      : []),
+  ];
+  const active = tabs.find((t) => t.key === search.tab)?.key ?? tabs[0]?.key;
+  return (
+    <div className="space-y-3">
+      <h1 className="text-lg font-semibold">Kampanyalar</h1>
+      {tabs.length > 1 && (
+        <div role="tablist" aria-label="Kampanya türleri" className="flex gap-1 border-b">
+          {tabs.map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              role="tab"
+              aria-selected={t.key === active}
+              className={`-mb-px border-b-2 px-3 py-2 text-sm font-medium ${
+                t.key === active
+                  ? "border-primary text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+              onClick={() => onSearchChange({ tab: t.key })}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
+      {active === "pages" ? (
+        <CampaignPagesTab
+          status={search.pstatus}
+          onStatusChange={(pstatus) => onSearchChange({ pstatus })}
+        />
+      ) : active === "campaigns" ? (
+        <CampaignsTab search={search} onSearchChange={onSearchChange} />
+      ) : null}
+    </div>
+  );
+}
+
+function CampaignsTab({
   search,
   onSearchChange,
 }: {
@@ -28,13 +84,6 @@ export function CampaignsScreen({
   onSearchChange: (patch: Partial<CampaignSearch>) => void;
 }) {
   const { data, isFetching } = useSuspenseQuery(campaignsQuery(search));
-  // The Campaign being edited, by id: an Order's link opens one through `?edit=`, and closing
-  // the dialog takes the param off the address again.
-  const [editing, setEditing] = useState<number | "new" | null>(search.edit ?? null);
-  const close = () => {
-    setEditing(null);
-    if (search.edit !== undefined) onSearchChange({ edit: undefined });
-  };
   const [deleting, setDeleting] = useState<CampaignListRow | null>(null);
   const { toggle, remove } = useCampaignActions();
   useStepBackWhenEmpty(data, search.page, onSearchChange);
@@ -63,8 +112,14 @@ export function CampaignsScreen({
       header: "",
       cell: ({ row: { original: c } }) => (
         <div className="flex justify-end gap-2">
-          <Button size="sm" variant="outline" onClick={() => setEditing(c.id)}>
-            Düzenle
+          <Button size="sm" variant="outline" asChild>
+            <Link
+              to="/admin/campaigns/$campaignId"
+              params={{ campaignId: String(c.id) }}
+              aria-label={`${c.name} düzenle`}
+            >
+              Düzenle
+            </Link>
           </Button>
           <Button size="sm" variant="outline" onClick={() => void flip(c)}>
             {campaignToggle(c.status).label}
@@ -83,10 +138,9 @@ export function CampaignsScreen({
   ];
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="text-lg font-semibold">Kampanyalar</h1>
-        <Button size="sm" onClick={() => setEditing("new")}>
-          Yeni kampanya
+      <div className="flex justify-end">
+        <Button size="sm" asChild>
+          <Link to="/admin/campaigns/new">Yeni kampanya</Link>
         </Button>
       </div>
       <DataTable
@@ -116,16 +170,6 @@ export function CampaignsScreen({
         remove={remove}
         onClose={() => setDeleting(null)}
       />
-      <Dialog
-        open={editing !== null}
-        onClose={close}
-        size="lg"
-        title={editing === "new" ? "Yeni kampanya" : "Kampanyayı düzenle"}
-      >
-        {editing !== null && (
-          <CampaignDialogBody id={editing === "new" ? undefined : editing} onClose={close} />
-        )}
-      </Dialog>
     </div>
   );
 }

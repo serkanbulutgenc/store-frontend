@@ -537,6 +537,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/home-categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Home Categories
+         * @description The Categories the Owner picked for the homepage row, in the Owner's order.
+         */
+        get: operations["catalog_list_home_categories"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/store/legal-pages": {
         parameters: {
             query?: never;
@@ -1437,6 +1457,17 @@ export interface components {
             price: components["schemas"]["PriceFacet"];
             /** Sizes */
             sizes: components["schemas"]["SizeFacet"][];
+        };
+        /** HomeCategoryOut */
+        HomeCategoryOut: {
+            /** Image Alt */
+            image_alt: string;
+            /** Image Url */
+            image_url: string | null;
+            /** Name */
+            name: string;
+            /** Slug */
+            slug: string;
         };
         /** ImageSizeOut */
         ImageSizeOut: {
@@ -3039,6 +3070,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CsrfOut"];
+                };
+            };
+        };
+    };
+    catalog_list_home_categories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HomeCategoryOut"][];
                 };
             };
         };

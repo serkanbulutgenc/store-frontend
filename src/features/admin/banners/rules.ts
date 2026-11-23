@@ -137,10 +137,19 @@ export function completeness(b: {
   image: { alt_text: string } | null;
 }): string[] {
   if (!isImageSlot(b.slot)) return b.message.trim() ? [] : ["Duyuru mesajı yok."];
-  const missing: string[] = [];
-  if (!b.image) missing.push("Görsel yüklenmemiş.");
-  else if (!b.image.alt_text.trim()) missing.push("Görselin alternatif metni yok.");
-  return missing;
+  return b.image ? [] : ["Görsel yüklenmemiş."];
+}
+
+/** Things worth a look before publishing that do not stop the Banner from showing. */
+export function warnings(b: { slot: string; image: { alt_text: string } | null }): string[] {
+  if (isImageSlot(b.slot) && b.image && !b.image.alt_text.trim())
+    return ["Görselin alternatif metni yok; ekran okuyucular görseli atlar."];
+  return [];
+}
+
+/** Whether the Delete button is offered: the Owner may delete any Banner, Staff only a draft. */
+export function canDelete(state: PageState, who: Viewer): boolean {
+  return who.owner || state.status === "draft";
 }
 
 export const FIELD_LABELS: Record<keyof BannerFields, string> = {

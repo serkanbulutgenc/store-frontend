@@ -11,7 +11,6 @@ import {
   Layers,
   type LucideIcon,
   Mail,
-  Megaphone,
   Menu,
   MessageSquareText,
   Package,
@@ -39,6 +38,10 @@ export type NavItem = {
   to: string;
   icon: LucideIcon;
   permission?: string;
+  /** Shown when the user has any one of these (instead of a single `permission`). */
+  anyPermission?: string[];
+  /** Other top-level paths that belong to this area, for the breadcrumbs. */
+  aliases?: string[];
   /** The Owner role itself, for a screen that is not a grantable permission. */
   ownerOnly?: boolean;
   /** A count shown beside the label; the sidebar looks the number up by this key. */
@@ -63,10 +66,13 @@ export const NAV_GROUPS: NavGroup[] = [
         permission: "manage_vouchers",
       },
       {
+        // Discount Campaigns and Campaign pages in one place, as two tabs. Staff may edit pages
+        // but not Campaigns, so either permission shows it.
         label: "Kampanyalar",
         to: "/admin/campaigns",
         icon: Percent,
-        permission: "manage_campaigns",
+        anyPermission: ["manage_campaigns", "edit_campaign_pages"],
+        aliases: ["/admin/campaign-pages"],
       },
       { label: "Raporlar", to: "/admin/reports", icon: ChartColumn, ownerOnly: true },
     ],
@@ -102,12 +108,6 @@ export const NAV_GROUPS: NavGroup[] = [
         permission: "edit_collections",
         // Only the Owner gets a number: Staff cannot decide on what is waiting.
         badge: "pendingCollections",
-      },
-      {
-        label: "Kampanya sayfaları",
-        to: "/admin/campaign-pages",
-        icon: Megaphone,
-        permission: "edit_campaign_pages",
       },
       {
         label: "Banner'lar",
@@ -191,7 +191,10 @@ export function visibleGroups(me: Me | null): NavGroup[] {
   return NAV_GROUPS.map((g) => ({
     ...g,
     items: g.items.filter(
-      (item) => (!item.permission || can(me, item.permission)) && (!item.ownerOnly || isOwner(me)),
+      (item) =>
+        (!item.permission || can(me, item.permission)) &&
+        (!item.anyPermission || item.anyPermission.some((p) => can(me, p))) &&
+        (!item.ownerOnly || isOwner(me)),
     ),
   })).filter((g) => g.items.length > 0);
 }
@@ -220,7 +223,7 @@ export function breadcrumbs(pathname: string, entityLabels: Record<string, strin
   if (!area) return [{ label: "Satış" }, { label: "Ana sayfa" }];
   const base = `/admin/${area}`;
   for (const group of NAV_GROUPS) {
-    const item = group.items.find((i) => i.to === base);
+    const item = group.items.find((i) => i.to === base || i.aliases?.includes(base));
     if (!item) continue;
     const crumbs: Crumb[] = [{ label: group.label }];
     let path = base;

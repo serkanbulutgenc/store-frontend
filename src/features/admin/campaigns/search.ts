@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PAGE_STATUSES } from "../campaign-pages/rules";
 import { listSearchSchema } from "../data-table/search";
 import { CAMPAIGN_STATUSES } from "./rules";
 
@@ -9,7 +10,11 @@ export const campaignSearchSchema = listSearchSchema.pick({ page: true, size: tr
     .enum(CAMPAIGN_STATUSES as [string, ...string[]])
     .optional()
     .catch(undefined),
-  /** A Campaign to open for editing, as an Order's link asks. Anything else is ignored. */
+  /** Which list the screen shows; absent means the first one the user may see. */
+  tab: z.enum(["campaigns", "pages"]).optional().catch(undefined),
+  /** The Campaign pages tab's status filter. */
+  pstatus: z.enum(PAGE_STATUSES).optional().catch(undefined),
+  /** An old link's Campaign to open; it now redirects to the Campaign's own page. */
   edit: z.coerce.number().int().positive().optional().catch(undefined),
 });
 

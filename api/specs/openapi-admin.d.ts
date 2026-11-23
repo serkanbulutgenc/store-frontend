@@ -275,7 +275,11 @@ export interface paths {
         get: operations["banners_get"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete Banner
+         * @description The Owner deletes any Banner; Staff only a draft.
+         */
+        delete: operations["banners_delete"];
         options?: never;
         head?: never;
         /**
@@ -1477,7 +1481,7 @@ export interface paths {
         };
         /**
          * List Versions
-         * @description Every saved version of one page, newest first.
+         * @description Every saved version of one page, newest first, with its earlier addresses.
          */
         get: operations["legal_pages_versions"];
         put?: never;
@@ -3497,6 +3501,8 @@ export interface components {
             depth: number;
             /** Description */
             description: string;
+            /** Home Order */
+            home_order: number;
             /** Id */
             id: number;
             image: components["schemas"]["CategoryImageOut"] | null;
@@ -3514,6 +3520,8 @@ export interface components {
             seo_description: string;
             /** Seo Title */
             seo_title: string;
+            /** Show On Home */
+            show_on_home: boolean;
             /** Slug */
             slug: string;
             /** Sort Order */
@@ -3523,6 +3531,8 @@ export interface components {
         CategoryPatch: {
             /** Description */
             description?: string | null;
+            /** Home Order */
+            home_order?: number | null;
             /** Image Alt */
             image_alt?: string | null;
             /** Is Hidden */
@@ -3533,6 +3543,8 @@ export interface components {
             seo_description?: string | null;
             /** Seo Title */
             seo_title?: string | null;
+            /** Show On Home */
+            show_on_home?: boolean | null;
         };
         /** CategoryReorderIn */
         CategoryReorderIn: {
@@ -6478,6 +6490,26 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["BannerOut"];
                 };
+            };
+        };
+    };
+    banners_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                banner_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

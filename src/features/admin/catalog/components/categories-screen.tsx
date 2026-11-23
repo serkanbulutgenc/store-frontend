@@ -460,12 +460,21 @@ function EditForm({
   onClose: () => void;
 }) {
   const refresh = useRefresh();
-  const ids = { name: useId(), desc: useId(), seoT: useId(), seoD: useId(), alt: useId() };
+  const ids = {
+    name: useId(),
+    desc: useId(),
+    seoT: useId(),
+    seoD: useId(),
+    alt: useId(),
+    homeOrder: useId(),
+  };
   const [name, setName] = useState(category.name);
   const [description, setDescription] = useState(category.description);
   const [seoTitle, setSeoTitle] = useState(category.seo_title);
   const [seoDescription, setSeoDescription] = useState(category.seo_description);
   const [hidden, setHidden] = useState(category.is_hidden);
+  const [onHome, setOnHome] = useState(category.show_on_home);
+  const [homeOrder, setHomeOrder] = useState(String(category.home_order));
   const [alt, setAlt] = useState(category.image?.alt_text ?? "");
   const [error, setError] = useState<string | null>(null);
   const image = category.image;
@@ -480,6 +489,8 @@ function EditForm({
           seo_title: seoTitle,
           seo_description: seoDescription,
           is_hidden: hidden,
+          show_on_home: onHome,
+          home_order: Math.max(0, Math.trunc(Number(homeOrder) || 0)),
           ...(image ? { image_alt: alt } : {}),
         },
       });
@@ -591,6 +602,41 @@ function EditForm({
             </span>
           </span>
         </label>
+        <div className="space-y-2 text-sm">
+          <label className="flex items-start gap-2">
+            <input
+              type="checkbox"
+              className="mt-1"
+              checked={onHome}
+              onChange={(e) => setOnHome(e.target.checked)}
+            />
+            <span>
+              <span className="font-medium">Ana sayfada göster</span>
+              <span className="block text-xs text-muted-foreground">
+                Ana sayfadaki kategori satırında görünür; görseli yoksa yer tutucu gösterilir.
+              </span>
+            </span>
+          </label>
+          {onHome && (
+            <div className="space-y-1 pl-6">
+              <label htmlFor={ids.homeOrder} className="font-medium">
+                Ana sayfa sırası
+              </label>
+              <Input
+                id={ids.homeOrder}
+                type="number"
+                min={0}
+                max={9999}
+                className="w-28"
+                value={homeOrder}
+                onChange={(e) => setHomeOrder(e.target.value)}
+              />
+              <span className="block text-xs text-muted-foreground">
+                Küçük sayı önce gelir; eşitlerde ada göre sıralanır.
+              </span>
+            </div>
+          )}
+        </div>
         <div className="space-y-2 text-sm">
           <span className="font-medium">Görsel</span>
           {image ? (

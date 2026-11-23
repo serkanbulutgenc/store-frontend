@@ -6,14 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Markdown } from "@/features/legal/markdown";
 import { ApiError } from "@/lib/api/errors";
 import { can, type Me } from "@/lib/api/me";
 import { formatDate } from "@/lib/format";
 import { showsRejection } from "../approvals/rules";
 import { useCrumbLabel } from "../components/crumb-labels";
 import { ActionDialog } from "../forms/action-dialog";
+import { MarkdownField } from "../forms/markdown-field";
 import {
   IMAGE_TYPES,
   linkableCampaignsQuery,
@@ -175,7 +174,7 @@ export function PendingChange({ page }: { page: PageOut }) {
   );
 }
 
-/** Title, address, Markdown text with a live preview, and the dates. Where a save goes
+/** Title, address, Markdown text (with a preview toggle), and the dates. Where a save goes
  * depends on the page's state and who is signed in (see `editTarget`). It starts from the
  * pending change when there is one, so Staff amend it rather than the live version. */
 export function FieldsForm({
@@ -272,39 +271,25 @@ export function FieldsForm({
           <Input id={ids.slug} value={slug} onChange={(e) => setSlug(e.target.value)} />
           <span className="block text-xs text-muted-foreground">/kampanyalar/{slug}</span>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="space-y-1">
-            <label htmlFor={ids.text} className="block font-medium">
-              Metin (Markdown)
-            </label>
-            <Textarea
-              id={ids.text}
-              rows={14}
-              className="font-mono text-xs"
-              maxLength={DESCRIPTION_MAX}
-              aria-invalid={!!errors.description}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            <span className="block text-xs text-muted-foreground">
-              Başlık için #, liste için -, kalın için **metin**, bağlantı için [metin](/adres).
+        <div className="space-y-1">
+          <label htmlFor={ids.text} className="block font-medium">
+            Metin (Markdown)
+          </label>
+          <MarkdownField
+            id={ids.text}
+            maxLength={DESCRIPTION_MAX}
+            invalid={!!errors.description}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <span className="block text-xs text-muted-foreground">
+            Başlık için #, liste için -, kalın için **metin**, bağlantı için [metin](/adres).
+          </span>
+          {errors.description && (
+            <span role="alert" className="block text-red-700">
+              {errors.description}
             </span>
-            {errors.description && (
-              <span role="alert" className="block text-red-700">
-                {errors.description}
-              </span>
-            )}
-          </div>
-          <section aria-label="Önizleme" className="space-y-1">
-            <h2 className="font-medium">Önizleme</h2>
-            <div className="min-h-24 rounded-md border p-3">
-              {description.trim() ? (
-                <Markdown source={description} />
-              ) : (
-                <p className="text-muted-foreground">Metin yazınca burada görünür.</p>
-              )}
-            </div>
-          </section>
+          )}
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-1">
