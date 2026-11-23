@@ -45,6 +45,42 @@ export function Field({
   );
 }
 
+/** A boolean setting as a labelled checkbox; the hint stays visible because it is a warning. */
+export function SwitchField({
+  field,
+  label,
+  hint,
+}: {
+  field: AnyFieldApi;
+  label: string;
+  hint?: string;
+}) {
+  const errors = field.state.meta.errors;
+  return (
+    <div className="space-y-1">
+      <label htmlFor={field.name} className="flex items-center gap-2 font-medium">
+        <input
+          type="checkbox"
+          id={field.name}
+          name={field.name}
+          checked={Boolean(field.state.value)}
+          onChange={(e) => field.handleChange(e.target.checked)}
+          onBlur={field.handleBlur}
+          aria-describedby={hint ? `${field.name}-hint` : undefined}
+          className="size-4 accent-primary"
+        />
+        {label}
+      </label>
+      {hint && (
+        <span id={`${field.name}-hint`} className="block text-muted-foreground">
+          {hint}
+        </span>
+      )}
+      {errors.length > 0 && <span className="block text-red-700">{errorText(errors[0])}</span>}
+    </div>
+  );
+}
+
 /** The form-level message from `apiErrorToFormErrors`, unless a field already shows it. */
 export function FormMessage({ error }: { error: unknown }) {
   const e = error as { form?: string; fields?: Record<string, string> } | string | undefined;

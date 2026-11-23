@@ -13,9 +13,9 @@ export function validateCsvFile(file: Pick<File, "name" | "size">): string | nul
   return null;
 }
 
-/** Number of variants a confirm would change. */
+/** Number of things a confirm would change: variants, and products whose own fields differ. */
 export function changeCount(c: ImportCounts): number {
-  return c.variants_to_create + c.variants_to_update;
+  return c.variants_to_create + c.variants_to_update + c.products_changed;
 }
 
 /** A preview with any row error blocks confirm; so does one that would change nothing. */
@@ -38,6 +38,7 @@ export function describeCounts(c: ImportCounts): string {
   const parts = [
     `${c.products_to_create} yeni ürün`,
     `${c.products_to_update} güncellenen ürün`,
+    `${c.products_changed} değişen ürün`,
     `${c.variants_to_create} yeni varyant`,
     `${c.variants_to_update} güncellenen varyant`,
     `${c.variants_unchanged} değişmeyen varyant`,

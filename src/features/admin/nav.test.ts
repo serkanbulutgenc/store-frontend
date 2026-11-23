@@ -146,3 +146,28 @@ it("shows the Campaigns entry only with the manage_campaigns permission (Owner, 
   expect(owner.map((i) => i.to)).toContain("/admin/campaigns");
   expect(owner.find((i) => i.to === "/admin/campaigns")?.label).toBe("Kampanyalar");
 });
+
+const owner = (over: Partial<Me> = {}): Me => ({
+  ...me(["manage_settings", "view_orders"]),
+  role: "owner",
+  mfa_required: true,
+  mfa_enrolled: true,
+  ...over,
+});
+
+it("shows Raporlar to the Owner only, as it is not a grantable permission", () => {
+  const entry = (m: Me | null) => visibleNav(m).find((i) => i.to === "/admin/reports");
+  expect(entry(owner())?.label).toBe("Raporlar");
+  // Staff get no entry, whatever permissions they hold.
+  expect(entry(me(["view_orders", "manage_settings", "export_accountant_csv"]))).toBeUndefined();
+  expect(entry(null)).toBeUndefined();
+});
+
+it("hides Raporlar from an Owner who has not enrolled 2FA yet (the API refuses them)", () => {
+  const blocked = owner({ mfa_enrolled: false, permissions: [] });
+  expect(visibleNav(blocked).map((i) => i.label)).toEqual(["Ana sayfa", "Güvenlik"]);
+});
+
+it("labels the Raporlar breadcrumb", () => {
+  expect(breadcrumbs("/admin/reports")).toEqual([{ label: "Satış" }, { label: "Raporlar" }]);
+});

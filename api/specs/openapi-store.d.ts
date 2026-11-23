@@ -676,12 +676,80 @@ export interface paths {
         };
         /**
          * Get Public Settings
-         * @description What the storefront needs: fees, banner, seller identity and Legal versions.
+         * @description What the storefront needs: fees, banner, seller identity, Legal versions and
+         *     whether Stock alerts are on.
          *     Bank details, KDV rate, recipients and the stock default stay private.
          */
         get: operations["settings_get_public"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/stock-alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Subscribe
+         * @description Ask to be emailed once when this sold-out Variant is back. A guest gets a
+         *     confirm email (`confirmation_sent`); a signed-in Shopper with a verified email is
+         *     `confirmed` at once. 409 `stock_alerts_unavailable` while the Store setting is
+         *     off, 409 `in_stock` when the Variant is not sold out, 409 `stock_alert_limit` past
+         *     5 active per email, 429 on too many tries from one address.
+         */
+        post: operations["stock_alerts_subscribe"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/stock-alerts/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm
+         * @description The click in the confirm email, which is the consent. 404 for an unknown or
+         *     expired link, 409 `in_stock` if the Variant came back meanwhile. Safe to repeat.
+         */
+        post: operations["stock_alerts_confirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/store/stock-alerts/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reject
+         * @description The reject link in every email. Deletes the waiting row and records the
+         *     rejection; works while the setting is off, and repeats are fine. 404 for a
+         *     tampered link.
+         */
+        post: operations["stock_alerts_reject"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1617,6 +1685,8 @@ export interface components {
              * @example 349.90
              */
             shipping_fee: string;
+            /** Stock Alerts Enabled */
+            stock_alerts_enabled: boolean;
         };
         /** QuantityIn */
         QuantityIn: {
@@ -1853,6 +1923,30 @@ export interface components {
             /** Text */
             text: string;
         };
+        /** SubscribeIn */
+        SubscribeIn: {
+            /**
+             * Consent
+             * @description The unticked consent box. Must be true.
+             */
+            consent: boolean;
+            /**
+             * Email
+             * @description Required for guests; ignored for a signed-in Shopper with a verified email.
+             * @default
+             */
+            email: string;
+            /** Variant Id */
+            variant_id: number;
+        };
+        /** SubscribeOut */
+        SubscribeOut: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "confirmed" | "confirmation_sent";
+        };
         /** SwatchOut */
         SwatchOut: {
             /** Hex Code */
@@ -1861,6 +1955,11 @@ export interface components {
             id: number;
             /** Name */
             name: string;
+        };
+        /** TokenIn */
+        TokenIn: {
+            /** Token */
+            token: string;
         };
         /** TrackingIn */
         TrackingIn: {
@@ -2923,6 +3022,74 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PublicSettingsOut"];
                 };
+            };
+        };
+    };
+    stock_alerts_subscribe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubscribeIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscribeOut"];
+                };
+            };
+        };
+    };
+    stock_alerts_confirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TokenIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    stock_alerts_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TokenIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

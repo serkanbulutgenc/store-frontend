@@ -21,6 +21,7 @@ const valid = {
   seller_phone: "",
   return_carrier: "",
   complaint_contact: "",
+  stock_alerts_enabled: false,
 };
 
 it("splits recipients on lines and commas", () => {
@@ -45,4 +46,12 @@ it("reports a bad seller e-mail in Turkish", () => {
   const r = settingsFormSchema.safeParse({ ...valid, seller_email: "not-an-email" });
   expect(r.success).toBe(false);
   expect(r.error?.issues[0]?.message).toBe("Geçerli bir e-posta girin.");
+});
+
+it("sends the Stock alerts switch as a boolean", () => {
+  expect(toSettingsPatch(settingsFormSchema.parse(valid)).stock_alerts_enabled).toBe(false);
+  expect(
+    toSettingsPatch(settingsFormSchema.parse({ ...valid, stock_alerts_enabled: true }))
+      .stock_alerts_enabled,
+  ).toBe(true);
 });

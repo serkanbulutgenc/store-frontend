@@ -12,6 +12,7 @@ import {
   gridColours,
   gridSizes,
   invalidCells,
+  waitingCaption,
 } from "../variant-tools";
 
 /** Colour rows by size columns; only existing Variants are editable. Saves the changed cells. */
@@ -93,14 +94,21 @@ function Grid({ product, onClose }: { product: ProductOut; onClose: () => void }
                   return (
                     <td key={s} className="p-1">
                       {v ? (
-                        <Input
-                          className="w-16 text-center"
-                          inputMode="numeric"
-                          aria-label={`${c.name} ${s} stok`}
-                          aria-invalid={bad.has(v.id) || undefined}
-                          value={draft[v.id] ?? String(v.stock.on_hand)}
-                          onChange={(e) => setDraft((d) => ({ ...d, [v.id]: e.target.value }))}
-                        />
+                        <>
+                          <Input
+                            className="w-16 text-center"
+                            inputMode="numeric"
+                            aria-label={`${c.name} ${s} stok`}
+                            aria-invalid={bad.has(v.id) || undefined}
+                            value={draft[v.id] ?? String(v.stock.on_hand)}
+                            onChange={(e) => setDraft((d) => ({ ...d, [v.id]: e.target.value }))}
+                          />
+                          {waitingCaption(v.stock.waiting) && (
+                            <span className="mt-0.5 block text-center text-xs text-muted-foreground">
+                              {waitingCaption(v.stock.waiting)}
+                            </span>
+                          )}
+                        </>
                       ) : (
                         <span className="block text-center text-muted-foreground">–</span>
                       )}

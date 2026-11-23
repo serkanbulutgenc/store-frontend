@@ -28,6 +28,8 @@ import { Route as StorefrontCollectionsSlugRouteImport } from './routes/_storefr
 import { Route as StorefrontHesapGirisRouteImport } from './routes/_storefront/hesap/giris'
 import { Route as StorefrontHesapKayitRouteImport } from './routes/_storefront/hesap/kayit'
 import { Route as StorefrontKategoriSlugRouteImport } from './routes/_storefront/kategori/$slug'
+import { Route as StorefrontStokBildirimiOnaylaRouteImport } from './routes/_storefront/stok-bildirimi/onayla'
+import { Route as StorefrontStokBildirimiVazgecRouteImport } from './routes/_storefront/stok-bildirimi/vazgec'
 import { Route as StorefrontUrunSlugRouteImport } from './routes/_storefront/urun/$slug'
 import { Route as StorefrontYasalIndexRouteImport } from './routes/_storefront/yasal/index'
 import { Route as StorefrontYasalSlugRouteImport } from './routes/_storefront/yasal/$slug'
@@ -42,6 +44,7 @@ import { Route as AdminAppColoursRouteImport } from './routes/admin/_app/colours
 import { Route as AdminAppExportRouteImport } from './routes/admin/_app/export'
 import { Route as AdminAppImportRouteImport } from './routes/admin/_app/import'
 import { Route as AdminAppMenusRouteImport } from './routes/admin/_app/menus'
+import { Route as AdminAppReportsRouteImport } from './routes/admin/_app/reports'
 import { Route as AdminAppReturnsRouteImport } from './routes/admin/_app/returns'
 import { Route as AdminAppReviewsRouteImport } from './routes/admin/_app/reviews'
 import { Route as AdminAppSecurityRouteImport } from './routes/admin/_app/security'
@@ -170,6 +173,18 @@ const StorefrontKategoriSlugRoute = StorefrontKategoriSlugRouteImport.update({
   path: '/kategori/$slug',
   getParentRoute: () => StorefrontRouteRoute,
 } as any)
+const StorefrontStokBildirimiOnaylaRoute =
+  StorefrontStokBildirimiOnaylaRouteImport.update({
+    id: '/stok-bildirimi/onayla',
+    path: '/stok-bildirimi/onayla',
+    getParentRoute: () => StorefrontRouteRoute,
+  } as any)
+const StorefrontStokBildirimiVazgecRoute =
+  StorefrontStokBildirimiVazgecRouteImport.update({
+    id: '/stok-bildirimi/vazgec',
+    path: '/stok-bildirimi/vazgec',
+    getParentRoute: () => StorefrontRouteRoute,
+  } as any)
 const StorefrontUrunSlugRoute = StorefrontUrunSlugRouteImport.update({
   id: '/urun/$slug',
   path: '/urun/$slug',
@@ -239,6 +254,11 @@ const AdminAppImportRoute = AdminAppImportRouteImport.update({
 const AdminAppMenusRoute = AdminAppMenusRouteImport.update({
   id: '/menus',
   path: '/menus',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
+const AdminAppReportsRoute = AdminAppReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
   getParentRoute: () => AdminAppRouteRoute,
 } as any)
 const AdminAppReturnsRoute = AdminAppReturnsRouteImport.update({
@@ -440,6 +460,8 @@ export interface FileRoutesByFullPath {
   '/hesap/giris': typeof StorefrontHesapGirisRoute
   '/hesap/kayit': typeof StorefrontHesapKayitRoute
   '/kategori/$slug': typeof StorefrontKategoriSlugRoute
+  '/stok-bildirimi/onayla': typeof StorefrontStokBildirimiOnaylaRoute
+  '/stok-bildirimi/vazgec': typeof StorefrontStokBildirimiVazgecRoute
   '/urun/$slug': typeof StorefrontUrunSlugRoute
   '/yasal/$slug': typeof StorefrontYasalSlugRoute
   '/admin/$': typeof AdminAppSplatRoute
@@ -452,6 +474,7 @@ export interface FileRoutesByFullPath {
   '/admin/export': typeof AdminAppExportRoute
   '/admin/import': typeof AdminAppImportRoute
   '/admin/menus': typeof AdminAppMenusRoute
+  '/admin/reports': typeof AdminAppReportsRoute
   '/admin/returns': typeof AdminAppReturnsRoute
   '/admin/reviews': typeof AdminAppReviewsRoute
   '/admin/security': typeof AdminAppSecurityRoute
@@ -504,6 +527,8 @@ export interface FileRoutesByTo {
   '/hesap/giris': typeof StorefrontHesapGirisRoute
   '/hesap/kayit': typeof StorefrontHesapKayitRoute
   '/kategori/$slug': typeof StorefrontKategoriSlugRoute
+  '/stok-bildirimi/onayla': typeof StorefrontStokBildirimiOnaylaRoute
+  '/stok-bildirimi/vazgec': typeof StorefrontStokBildirimiVazgecRoute
   '/urun/$slug': typeof StorefrontUrunSlugRoute
   '/yasal/$slug': typeof StorefrontYasalSlugRoute
   '/admin/$': typeof AdminAppSplatRoute
@@ -516,6 +541,7 @@ export interface FileRoutesByTo {
   '/admin/export': typeof AdminAppExportRoute
   '/admin/import': typeof AdminAppImportRoute
   '/admin/menus': typeof AdminAppMenusRoute
+  '/admin/reports': typeof AdminAppReportsRoute
   '/admin/returns': typeof AdminAppReturnsRoute
   '/admin/reviews': typeof AdminAppReviewsRoute
   '/admin/security': typeof AdminAppSecurityRoute
@@ -572,6 +598,8 @@ export interface FileRoutesById {
   '/_storefront/hesap/giris': typeof StorefrontHesapGirisRoute
   '/_storefront/hesap/kayit': typeof StorefrontHesapKayitRoute
   '/_storefront/kategori/$slug': typeof StorefrontKategoriSlugRoute
+  '/_storefront/stok-bildirimi/onayla': typeof StorefrontStokBildirimiOnaylaRoute
+  '/_storefront/stok-bildirimi/vazgec': typeof StorefrontStokBildirimiVazgecRoute
   '/_storefront/urun/$slug': typeof StorefrontUrunSlugRoute
   '/_storefront/yasal/$slug': typeof StorefrontYasalSlugRoute
   '/admin/_app/$': typeof AdminAppSplatRoute
@@ -584,6 +612,7 @@ export interface FileRoutesById {
   '/admin/_app/export': typeof AdminAppExportRoute
   '/admin/_app/import': typeof AdminAppImportRoute
   '/admin/_app/menus': typeof AdminAppMenusRoute
+  '/admin/_app/reports': typeof AdminAppReportsRoute
   '/admin/_app/returns': typeof AdminAppReturnsRoute
   '/admin/_app/reviews': typeof AdminAppReviewsRoute
   '/admin/_app/security': typeof AdminAppSecurityRoute
@@ -639,6 +668,8 @@ export interface FileRouteTypes {
     | '/hesap/giris'
     | '/hesap/kayit'
     | '/kategori/$slug'
+    | '/stok-bildirimi/onayla'
+    | '/stok-bildirimi/vazgec'
     | '/urun/$slug'
     | '/yasal/$slug'
     | '/admin/$'
@@ -651,6 +682,7 @@ export interface FileRouteTypes {
     | '/admin/export'
     | '/admin/import'
     | '/admin/menus'
+    | '/admin/reports'
     | '/admin/returns'
     | '/admin/reviews'
     | '/admin/security'
@@ -703,6 +735,8 @@ export interface FileRouteTypes {
     | '/hesap/giris'
     | '/hesap/kayit'
     | '/kategori/$slug'
+    | '/stok-bildirimi/onayla'
+    | '/stok-bildirimi/vazgec'
     | '/urun/$slug'
     | '/yasal/$slug'
     | '/admin/$'
@@ -715,6 +749,7 @@ export interface FileRouteTypes {
     | '/admin/export'
     | '/admin/import'
     | '/admin/menus'
+    | '/admin/reports'
     | '/admin/returns'
     | '/admin/reviews'
     | '/admin/security'
@@ -770,6 +805,8 @@ export interface FileRouteTypes {
     | '/_storefront/hesap/giris'
     | '/_storefront/hesap/kayit'
     | '/_storefront/kategori/$slug'
+    | '/_storefront/stok-bildirimi/onayla'
+    | '/_storefront/stok-bildirimi/vazgec'
     | '/_storefront/urun/$slug'
     | '/_storefront/yasal/$slug'
     | '/admin/_app/$'
@@ -782,6 +819,7 @@ export interface FileRouteTypes {
     | '/admin/_app/export'
     | '/admin/_app/import'
     | '/admin/_app/menus'
+    | '/admin/_app/reports'
     | '/admin/_app/returns'
     | '/admin/_app/reviews'
     | '/admin/_app/security'
@@ -962,6 +1000,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StorefrontKategoriSlugRouteImport
       parentRoute: typeof StorefrontRouteRoute
     }
+    '/_storefront/stok-bildirimi/onayla': {
+      id: '/_storefront/stok-bildirimi/onayla'
+      path: '/stok-bildirimi/onayla'
+      fullPath: '/stok-bildirimi/onayla'
+      preLoaderRoute: typeof StorefrontStokBildirimiOnaylaRouteImport
+      parentRoute: typeof StorefrontRouteRoute
+    }
+    '/_storefront/stok-bildirimi/vazgec': {
+      id: '/_storefront/stok-bildirimi/vazgec'
+      path: '/stok-bildirimi/vazgec'
+      fullPath: '/stok-bildirimi/vazgec'
+      preLoaderRoute: typeof StorefrontStokBildirimiVazgecRouteImport
+      parentRoute: typeof StorefrontRouteRoute
+    }
     '/_storefront/urun/$slug': {
       id: '/_storefront/urun/$slug'
       path: '/urun/$slug'
@@ -1058,6 +1110,13 @@ declare module '@tanstack/react-router' {
       path: '/menus'
       fullPath: '/admin/menus'
       preLoaderRoute: typeof AdminAppMenusRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/reports': {
+      id: '/admin/_app/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminAppReportsRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
     '/admin/_app/returns': {
@@ -1348,6 +1407,8 @@ interface StorefrontRouteRouteChildren {
   StorefrontHesapGirisRoute: typeof StorefrontHesapGirisRoute
   StorefrontHesapKayitRoute: typeof StorefrontHesapKayitRoute
   StorefrontKategoriSlugRoute: typeof StorefrontKategoriSlugRoute
+  StorefrontStokBildirimiOnaylaRoute: typeof StorefrontStokBildirimiOnaylaRoute
+  StorefrontStokBildirimiVazgecRoute: typeof StorefrontStokBildirimiVazgecRoute
   StorefrontUrunSlugRoute: typeof StorefrontUrunSlugRoute
   StorefrontYasalSlugRoute: typeof StorefrontYasalSlugRoute
   StorefrontYasalIndexRoute: typeof StorefrontYasalIndexRoute
@@ -1368,6 +1429,8 @@ const StorefrontRouteRouteChildren: StorefrontRouteRouteChildren = {
   StorefrontHesapGirisRoute: StorefrontHesapGirisRoute,
   StorefrontHesapKayitRoute: StorefrontHesapKayitRoute,
   StorefrontKategoriSlugRoute: StorefrontKategoriSlugRoute,
+  StorefrontStokBildirimiOnaylaRoute: StorefrontStokBildirimiOnaylaRoute,
+  StorefrontStokBildirimiVazgecRoute: StorefrontStokBildirimiVazgecRoute,
   StorefrontUrunSlugRoute: StorefrontUrunSlugRoute,
   StorefrontYasalSlugRoute: StorefrontYasalSlugRoute,
   StorefrontYasalIndexRoute: StorefrontYasalIndexRoute,
@@ -1391,6 +1454,7 @@ interface AdminAppRouteRouteChildren {
   AdminAppExportRoute: typeof AdminAppExportRoute
   AdminAppImportRoute: typeof AdminAppImportRoute
   AdminAppMenusRoute: typeof AdminAppMenusRoute
+  AdminAppReportsRoute: typeof AdminAppReportsRoute
   AdminAppReturnsRoute: typeof AdminAppReturnsRoute
   AdminAppReviewsRoute: typeof AdminAppReviewsRoute
   AdminAppSecurityRoute: typeof AdminAppSecurityRoute
@@ -1429,6 +1493,7 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppExportRoute: AdminAppExportRoute,
   AdminAppImportRoute: AdminAppImportRoute,
   AdminAppMenusRoute: AdminAppMenusRoute,
+  AdminAppReportsRoute: AdminAppReportsRoute,
   AdminAppReturnsRoute: AdminAppReturnsRoute,
   AdminAppReviewsRoute: AdminAppReviewsRoute,
   AdminAppSecurityRoute: AdminAppSecurityRoute,

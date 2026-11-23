@@ -34,6 +34,7 @@ export const settingsFormSchema = z.object({
   seller_phone: z.string().trim(),
   return_carrier: z.string().trim(),
   complaint_contact: z.string().trim(),
+  stock_alerts_enabled: z.boolean(),
 });
 export type SettingsFormValues = z.infer<typeof settingsFormSchema>;
 
