@@ -2,6 +2,7 @@ import {
   Boxes,
   Building2,
   ChartColumn,
+  ClipboardCheck,
   FileSpreadsheet,
   GalleryVerticalEnd,
   History,
@@ -38,7 +39,7 @@ export type NavItem = {
   /** The Owner role itself, for a screen that is not a grantable permission. */
   ownerOnly?: boolean;
   /** A count shown beside the label; the sidebar looks the number up by this key. */
-  badge?: "pendingCollections";
+  badge?: "pendingCollections" | "approvals";
 };
 export type NavGroup = { label: string; icon: LucideIcon; items: NavItem[] };
 
@@ -114,6 +115,14 @@ export const NAV_GROUPS: NavGroup[] = [
     label: "Yönetim",
     icon: Settings,
     items: [
+      // The Owner's one list of what Staff have submitted; the number is how many wait.
+      {
+        label: "Onay bekleyenler",
+        to: "/admin/approvals",
+        icon: ClipboardCheck,
+        ownerOnly: true,
+        badge: "approvals",
+      },
       { label: "Ayarlar", to: "/admin/settings", icon: Settings, permission: "manage_settings" },
       {
         label: "Kargo fiyatları",

@@ -62,6 +62,91 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/approvals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Queue */
+        get: operations["approvals_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/approvals/{kind}/{item_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Item */
+        get: operations["approvals_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/approvals/{kind}/{item_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve */
+        post: operations["approvals_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/approvals/{kind}/{item_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reject */
+        post: operations["approvals_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/approvals/{kind}/{item_id}/unpublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Unpublish */
+        post: operations["approvals_unpublish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/attribute-options/{option_id}": {
         parameters: {
             query?: never;
@@ -2818,6 +2903,11 @@ export interface components {
             /** Url */
             url: string;
         };
+        /** DoneOut */
+        DoneOut: {
+            /** Count */
+            count: number;
+        };
         /** ExpiringRow */
         ExpiringRow: {
             /** Customer */
@@ -2859,6 +2949,17 @@ export interface components {
              * @example 349.90
              */
             shipping: string;
+        };
+        /** FieldDiffOut */
+        FieldDiffOut: {
+            /** Changed */
+            changed: boolean;
+            /** Field */
+            field: string;
+            /** Live */
+            live?: unknown;
+            /** Pending */
+            pending?: unknown;
         };
         /**
          * Group
@@ -4126,6 +4227,47 @@ export interface components {
             /** Title */
             title: string;
         };
+        /** QueueDetailOut */
+        QueueDetailOut: {
+            /** Fields */
+            fields: components["schemas"]["FieldDiffOut"][];
+            /** Id */
+            id: number;
+            /** Is Change */
+            is_change: boolean;
+            /** Label */
+            label: string;
+            /** Submitted At */
+            submitted_at: string | null;
+            submitted_by: components["schemas"]["PersonOut"] | null;
+            /** Title */
+            title: string;
+            /** Type */
+            type: string;
+        };
+        /** QueueItemOut */
+        QueueItemOut: {
+            /** Id */
+            id: number;
+            /** Is Change */
+            is_change: boolean;
+            /** Label */
+            label: string;
+            /** Submitted At */
+            submitted_at: string | null;
+            submitted_by: components["schemas"]["PersonOut"] | null;
+            /** Title */
+            title: string;
+            /** Type */
+            type: string;
+        };
+        /** QueueOut */
+        QueueOut: {
+            /** Count */
+            count: number;
+            /** Items */
+            items: components["schemas"]["QueueItemOut"][];
+        };
         /** RangeParams */
         RangeParams: {
             /** Date From */
@@ -4954,6 +5096,122 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DeletionRequestOut"];
+                };
+            };
+        };
+    };
+    approvals_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueueOut"];
+                };
+            };
+        };
+    };
+    approvals_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: string;
+                item_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueueDetailOut"];
+                };
+            };
+        };
+    };
+    approvals_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: string;
+                item_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DoneOut"];
+                };
+            };
+        };
+    };
+    approvals_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: string;
+                item_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RejectIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DoneOut"];
+                };
+            };
+        };
+    };
+    approvals_unpublish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: string;
+                item_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DoneOut"];
                 };
             };
         };
