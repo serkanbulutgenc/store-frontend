@@ -7,6 +7,7 @@ import {
   GalleryVerticalEnd,
   History,
   Home,
+  Images,
   Layers,
   type LucideIcon,
   Mail,
@@ -107,6 +108,12 @@ export const NAV_GROUPS: NavGroup[] = [
         to: "/admin/campaign-pages",
         icon: Megaphone,
         permission: "edit_campaign_pages",
+      },
+      {
+        label: "Banner'lar",
+        to: "/admin/banners",
+        icon: Images,
+        permission: "edit_banners",
       },
       { label: "Markalar", to: "/admin/brands", icon: Tag, permission: "manage_brands" },
       {
