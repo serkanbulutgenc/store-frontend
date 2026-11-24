@@ -9,19 +9,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { apiErrorToFormErrors } from "../forms/api-errors";
 import { bind, Field, FormMessage, SwitchField } from "../forms/field";
+import { BankAccountsField } from "./bank-accounts-field";
 import { type SettingsOut, settingsQuery, useUpdateSettings } from "./queries";
-import { type SettingsFormValues, settingsFormSchema, toSettingsPatch } from "./schemas";
+import {
+  type BankAccountValue,
+  type SettingsFormValues,
+  settingsFormSchema,
+  toSettingsPatch,
+} from "./schemas";
 import { SETTINGS_TABS, tabsWithErrors } from "./tabs";
 
 function toValues(s: SettingsOut): SettingsFormValues {
-  const out = {} as Record<string, string | boolean>;
+  const out = {} as Record<string, string | boolean | BankAccountValue[]>;
   for (const key of Object.keys(settingsFormSchema.shape)) {
-    if (key === "stock_alerts_enabled") continue;
+    if (key === "stock_alerts_enabled" || key === "bank_accounts") continue;
     const v = (s as Record<string, unknown>)[key];
     out[key] = v == null ? "" : String(v);
   }
   out.notification_emails = s.notification_emails.join("\n");
   out.stock_alerts_enabled = s.stock_alerts_enabled;
+  out.bank_accounts = s.bank_accounts.map((a) => ({ ...a }));
   return out as SettingsFormValues;
 }
 
@@ -116,6 +123,8 @@ export function SettingsScreen() {
                 {(f) =>
                   spec.kind === "switch" ? (
                     <SwitchField field={f} label={spec.label} hint={spec.hint} />
+                  ) : spec.kind === "accounts" ? (
+                    <BankAccountsField field={f} label={spec.label} />
                   ) : (
                     <Field field={f} label={spec.label} hint={spec.hint}>
                       {spec.area ? <Textarea rows={3} {...bind(f)} /> : <Input {...bind(f)} />}

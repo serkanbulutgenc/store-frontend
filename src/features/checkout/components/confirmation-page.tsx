@@ -47,13 +47,24 @@ export function ConfirmationPage() {
           <h2 id="bank" className="text-lg font-semibold">
             Havale / EFT bilgileri
           </h2>
-          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
-            <dt className="text-muted-foreground">Banka</dt>
-            <dd>{order.bank.name}</dd>
-            <dt className="text-muted-foreground">Hesap sahibi</dt>
-            <dd>{order.bank.account_holder}</dd>
-            <dt className="text-muted-foreground">IBAN</dt>
-            <dd className="font-mono">{order.bank.iban}</dd>
+          {order.bank.accounts.length > 1 && (
+            <p className="text-muted-foreground">Aşağıdaki hesaplardan birine gönderebilirsiniz.</p>
+          )}
+          <ul className="space-y-3">
+            {order.bank.accounts.map((account) => (
+              <li key={account.iban}>
+                <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+                  <dt className="text-muted-foreground">Banka</dt>
+                  <dd>{account.name}</dd>
+                  <dt className="text-muted-foreground">Hesap sahibi</dt>
+                  <dd>{account.account_holder}</dd>
+                  <dt className="text-muted-foreground">IBAN</dt>
+                  <dd className="font-mono">{account.iban}</dd>
+                </dl>
+              </li>
+            ))}
+          </ul>
+          <dl className="grid grid-cols-[auto_1fr] gap-x-4">
             <dt className="text-muted-foreground">Açıklama</dt>
             <dd className="font-mono">{order.bank.reference}</dd>
           </dl>

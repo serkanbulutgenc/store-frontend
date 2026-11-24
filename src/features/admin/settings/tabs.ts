@@ -1,13 +1,4 @@
-import {
-  Banknote,
-  Bell,
-  BellRing,
-  FileText,
-  Image,
-  type LucideIcon,
-  Store,
-  Truck,
-} from "lucide-react";
+import { Banknote, Bell, BellRing, FileText, type LucideIcon, Store, Truck } from "lucide-react";
 import type { SettingsFormValues } from "./schemas";
 
 export type FieldName = keyof SettingsFormValues;
@@ -16,7 +7,7 @@ export type FieldSpec = {
   label: string;
   hint?: string;
   area?: boolean;
-  kind?: "switch";
+  kind?: "switch" | "accounts";
 };
 export type SettingsTab = {
   id: string;
@@ -47,11 +38,7 @@ export const SETTINGS_TABS: SettingsTab[] = [
     id: "bank",
     label: "Banka bilgileri",
     icon: Banknote,
-    fields: [
-      { name: "bank_name", label: "Banka" },
-      { name: "bank_account_holder", label: "Hesap sahibi" },
-      { name: "bank_iban", label: "IBAN" },
-    ],
+    fields: [{ name: "bank_accounts", label: "Banka hesapları", kind: "accounts" }],
   },
   {
     id: "notifications",
@@ -64,16 +51,6 @@ export const SETTINGS_TABS: SettingsTab[] = [
         hint: "Her satıra bir e-posta.",
         area: true,
       },
-    ],
-  },
-  {
-    id: "banner",
-    label: "Ana sayfa afişi",
-    icon: Image,
-    fields: [
-      { name: "banner_image_url", label: "Görsel adresi" },
-      { name: "banner_link", label: "Bağlantı" },
-      { name: "banner_alt", label: "Alternatif metin" },
     ],
   },
   {
