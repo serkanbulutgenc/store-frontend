@@ -23,11 +23,10 @@ export const SETTINGS_TABS: SettingsTab[] = [
     label: "Kargo ve ücretler",
     icon: Truck,
     fields: [
-      { name: "shipping_fee", label: "Kargo ücreti (₺)" },
       {
-        name: "free_shipping_threshold",
-        label: "Ücretsiz kargo eşiği (₺)",
-        hint: "Boş bırakırsanız ücretsiz kargo kapalıdır.",
+        name: "shipping_fee",
+        label: "Yedek kargo ücreti (₺)",
+        hint: "Taşıyıcı tarifesi bulunamadığında (il veya ürün boyutu belli değilse) uygulanır. Normalde kargo ücreti Kargo fiyatları sayfasındaki tarifeden hesaplanır.",
       },
       { name: "cod_fee", label: "Kapıda ödeme ücreti (₺)" },
       { name: "fee_kdv_rate", label: "Kargo ve kapıda ödeme KDV oranı (%)" },

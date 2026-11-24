@@ -146,9 +146,7 @@ function FeeSummary({
         </div>
         <div className="flex justify-between">
           <dt>Kargo</dt>
-          <dd className={cn(waiting && "opacity-60")}>
-            {fees.freeShipping ? "Ücretsiz" : formatTry(fees.shipping)}
-          </dd>
+          <dd className={cn(waiting && "opacity-60")}>{formatTry(fees.shipping)}</dd>
         </div>
         {!fees.calculated && !quote.isError && (
           <p className="text-muted-foreground">Kargo ücreti teslimat ilinize göre hesaplanır.</p>

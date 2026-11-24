@@ -10,7 +10,6 @@ import {
 
 const valid = {
   shipping_fee: "49.90",
-  free_shipping_threshold: "",
   cod_fee: "15.00",
   fee_kdv_rate: "20",
   low_stock_default: "3",
@@ -30,9 +29,8 @@ it("splits recipients on lines and commas", () => {
   expect(splitEmails("a@b.com\nc@d.com, e@f.com")).toEqual(["a@b.com", "c@d.com", "e@f.com"]);
 });
 
-it("clears the free-shipping threshold when blank and converts numbers", () => {
+it("converts the numbers and splits the recipients", () => {
   const patch = toSettingsPatch(settingsFormSchema.parse(valid));
-  expect(patch.free_shipping_threshold).toBeNull();
   expect(patch.low_stock_default).toBe(3);
   expect(patch.notification_emails).toHaveLength(3);
 });

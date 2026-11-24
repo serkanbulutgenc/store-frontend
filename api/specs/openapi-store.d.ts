@@ -1911,8 +1911,6 @@ export interface components {
              * @example 349.90
              */
             cod_fee: string;
-            /** Free Shipping Threshold */
-            free_shipping_threshold: string | null;
             /** Legal Versions */
             legal_versions: {
                 [key: string]: string;
@@ -1954,11 +1952,6 @@ export interface components {
              * @example 349.90
              */
             discount: string;
-            /**
-             * Free Shipping
-             * @description True when the items total reached the free-shipping threshold.
-             */
-            free_shipping: boolean;
             /**
              * Items Total
              * @description What the items cost before any Voucher.

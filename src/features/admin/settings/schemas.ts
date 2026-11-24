@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { moneySchema } from "../catalog/schemas";
 
-const optionalMoney = z.union([z.literal(""), moneySchema]);
 const email = z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Geçerli bir e-posta girin.");
 
 /** One bank account as typed. IBANs are checked on the server too, which also drops spaces. */
@@ -37,7 +36,6 @@ const bankAccounts = z
 
 export const settingsFormSchema = z.object({
   shipping_fee: moneySchema,
-  free_shipping_threshold: optionalMoney,
   cod_fee: moneySchema,
   fee_kdv_rate: z.string().regex(/^\d+(\.\d{1,2})?$/, "Geçerli bir oran girin (örn. 20)."),
   low_stock_default: z.string().regex(/^\d+$/, "Tam sayı girin."),
@@ -66,15 +64,9 @@ export function splitEmails(text: string): string[] {
     .filter(Boolean);
 }
 
-/** The PATCH body. A blank threshold clears free shipping (null); every other field is sent as typed. */
+/** The PATCH body: every field is sent as typed, with the numbers converted. */
 export function toSettingsPatch(v: SettingsFormValues) {
-  const {
-    notification_emails,
-    free_shipping_threshold,
-    low_stock_default,
-    bank_accounts,
-    ...rest
-  } = v;
+  const { notification_emails, low_stock_default, bank_accounts, ...rest } = v;
   return {
     ...rest,
     bank_accounts: bank_accounts.map((a) => ({
@@ -82,7 +74,6 @@ export function toSettingsPatch(v: SettingsFormValues) {
       account_holder: a.account_holder.trim(),
       iban: normaliseIban(a.iban),
     })),
-    free_shipping_threshold: free_shipping_threshold === "" ? null : free_shipping_threshold,
     low_stock_default: Number(low_stock_default),
     notification_emails: splitEmails(notification_emails),
   };

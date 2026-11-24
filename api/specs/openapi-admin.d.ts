@@ -5622,8 +5622,6 @@ export interface components {
             complaint_contact: string;
             /** Fee Kdv Rate */
             fee_kdv_rate: string;
-            /** Free Shipping Threshold */
-            free_shipping_threshold: string | null;
             /** Legal Versions */
             legal_versions: {
                 [key: string]: string;
@@ -5665,8 +5663,6 @@ export interface components {
             complaint_contact?: string | null;
             /** Fee Kdv Rate */
             fee_kdv_rate?: string | null;
-            /** Free Shipping Threshold */
-            free_shipping_threshold?: string | null;
             /** Low Stock Default */
             low_stock_default?: number | null;
             /** Notification Emails */
