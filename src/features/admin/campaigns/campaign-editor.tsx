@@ -165,7 +165,12 @@ function CampaignEditor({ row: loaded, onClose }: { row?: CampaignRow; onClose: 
                 type="checkbox"
                 className="mt-1"
                 checked={f.state.value}
-                onChange={(e) => f.handleChange(e.target.checked)}
+                onChange={(e) => {
+                  f.handleChange(e.target.checked);
+                  // A refusal for "no target" no longer applies; the picker it sits on may now
+                  // be hidden, and a stale error there would block saving without a word.
+                  form.setFieldMeta("products", (meta) => ({ ...meta, errors: [], errorMap: {} }));
+                }}
               />
               <span>
                 <span className="font-medium">Tüm mağaza</span>
