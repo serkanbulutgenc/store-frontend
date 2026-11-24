@@ -108,6 +108,18 @@ export function orderVoucherRow(
   };
 }
 
+/** The Basket Campaign line of the totals, from the Order's own frozen record (`null` when it
+ * had none). Free shipping has no amount: the shipping line shows it. */
+export function orderBasketCampaignRow(
+  campaign: { label: string; discount: string; free_shipping: boolean } | null | undefined,
+): { label: string; amount: string } | null {
+  if (!campaign) return null;
+  return {
+    label: `Sepet kampanyası (${campaign.label})`,
+    amount: campaign.free_shipping ? "Ücretsiz kargo" : `−${formatTry(campaign.discount)}`,
+  };
+}
+
 /**
  * What an Order line shows about the Campaign that priced it, frozen when the Shopper bought.
  * `openId` is the Campaign to open on the Campaign screen: only for a user who may manage

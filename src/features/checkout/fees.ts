@@ -16,6 +16,9 @@ export type FeeSettings = {
 
 export type PaymentChoice = "bank_transfer" | "cod";
 
+/** The Basket Campaign a basket gets, as the API sends it. */
+export type AppliedCampaign = { label: string; discount: string; free_shipping: boolean };
+
 const toKurus = (amount: string): number => {
   const [lira = "0", frac = ""] = amount.split(".");
   return Number(lira) * 100 + Number(frac.padEnd(2, "0").slice(0, 2));
@@ -24,19 +27,23 @@ const toKurus = (amount: string): number => {
 const fromKurus = (kurus: number): string =>
   `${Math.floor(kurus / 100)}.${String(kurus % 100).padStart(2, "0")}`;
 
+/** `discount` is the Voucher's, `campaign` the basket's Basket Campaign: it comes off first and
+ * a free-shipping one waives the fee. Both are what the basket already worked out. */
 export function previewFees(
   subtotal: string,
   settings: FeeSettings,
   method: PaymentChoice,
   discount = "0.00",
+  campaign: AppliedCampaign | null = null,
 ) {
   const items = toKurus(subtotal);
-  const shipping = toKurus(settings.shipping_fee);
+  const shipping = campaign?.free_shipping ? 0 : toKurus(settings.shipping_fee);
   const cod = method === "cod" ? toKurus(settings.cod_fee) : 0;
+  const off = campaign ? toKurus(campaign.discount) : 0;
   return {
     shipping: fromKurus(shipping),
     cod: fromKurus(cod),
-    total: fromKurus(items - toKurus(discount) + shipping + cod),
+    total: fromKurus(items - off - toKurus(discount) + shipping + cod),
   };
 }
 
@@ -46,10 +53,12 @@ export function feeSummary(
   method: PaymentChoice,
   quote: CheckoutQuote | undefined,
   basketDiscount = "0.00",
+  basketCampaign: AppliedCampaign | null = null,
 ) {
   if (!quote)
     return {
-      ...previewFees(subtotal, settings, method, basketDiscount),
+      ...previewFees(subtotal, settings, method, basketDiscount, basketCampaign),
+      campaign: basketCampaign,
       discount: basketDiscount,
       voucherCode: null,
       voucherProblem: null,
@@ -59,6 +68,7 @@ export function feeSummary(
     shipping: quote.shipping_fee,
     cod: quote.cod_fee,
     total: quote.total,
+    campaign: quote.campaign ?? null,
     discount: quote.discount,
     voucherCode: quote.voucher_code ?? null,
     voucherProblem: quote.voucher_problem ?? null,

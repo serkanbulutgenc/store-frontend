@@ -5,6 +5,7 @@ import {
   canBulkMarkPaid,
   canBulkShip,
   canDo,
+  orderBasketCampaignRow,
   orderLineCampaign,
   orderVoucherRow,
 } from "./rules";
@@ -107,5 +108,32 @@ describe("orderLineCampaign", () => {
 
   it("shows nothing for a line no Campaign priced", () => {
     expect(orderLineCampaign(campaignOwner, { unit_price: "500.00", campaign: null })).toBeNull();
+  });
+});
+
+describe("orderBasketCampaignRow", () => {
+  it("shows the amount a Basket Campaign took off, from the Order's own record", () => {
+    expect(
+      orderBasketCampaignRow({
+        label: "200 ₺ üzeri 20 ₺ indirim",
+        discount: "20.00",
+        free_shipping: false,
+      }),
+    ).toEqual({ label: "Sepet kampanyası (200 ₺ üzeri 20 ₺ indirim)", amount: "−₺20,00" });
+  });
+
+  it("says free shipping instead of an amount", () => {
+    expect(
+      orderBasketCampaignRow({
+        label: "200 ₺ üzeri ücretsiz kargo",
+        discount: "0.00",
+        free_shipping: true,
+      })?.amount,
+    ).toBe("Ücretsiz kargo");
+  });
+
+  it("is nothing for an Order placed under none", () => {
+    expect(orderBasketCampaignRow(null)).toBeNull();
+    expect(orderBasketCampaignRow(undefined)).toBeNull();
   });
 });

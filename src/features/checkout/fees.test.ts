@@ -27,6 +27,22 @@ describe("previewFees", () => {
   });
 });
 
+describe("previewFees with a Basket Campaign", () => {
+  const off = { label: "200 ₺ üzeri 20 ₺ indirim", discount: "20.00", free_shipping: false };
+  const free = { label: "200 ₺ üzeri ücretsiz kargo", discount: "0.00", free_shipping: true };
+
+  it("takes the campaign off the items before the Voucher and adds the shipping", () => {
+    // 200 - 20 - 18 + 49.90
+    expect(previewFees("200.00", settings, "bank_transfer", "18.00", off).total).toBe("211.90");
+  });
+  it("waives the shipping fee but not the COD fee for free shipping", () => {
+    const r = previewFees("200.00", settings, "cod", "0.00", free);
+    expect(r.shipping).toBe("0.00");
+    expect(r.cod).toBe("19.90");
+    expect(r.total).toBe("219.90");
+  });
+});
+
 describe("feeSummary", () => {
   const quote = {
     items_total: "349.90",
@@ -39,6 +55,7 @@ describe("feeSummary", () => {
   it("shows the flat-fee preview until a quote arrives", () => {
     expect(feeSummary("349.90", settings, "bank_transfer", undefined)).toEqual({
       ...previewFees("349.90", settings, "bank_transfer"),
+      campaign: null,
       discount: "0.00",
       voucherCode: null,
       voucherProblem: null,
@@ -52,11 +69,23 @@ describe("feeSummary", () => {
       calculated: false,
     });
   });
+  it("shows the basket's Basket Campaign in the preview and the quote's once it arrives", () => {
+    const off = { label: "x", discount: "20.00", free_shipping: false };
+    expect(feeSummary("200.00", settings, "bank_transfer", undefined, "0.00", off)).toMatchObject({
+      campaign: off,
+      total: "229.90",
+    });
+    const quoted = { ...quote, campaign: { label: "y", discount: "0.00", free_shipping: true } };
+    expect(feeSummary("200.00", settings, "bank_transfer", quoted).campaign).toEqual(
+      quoted.campaign,
+    );
+  });
   it("uses the computed quote once it has arrived", () => {
     expect(feeSummary("349.90", settings, "bank_transfer", quote)).toEqual({
       shipping: "95.00",
       cod: "0.00",
       total: "444.90",
+      campaign: null,
       discount: "0.00",
       voucherCode: null,
       voucherProblem: null,

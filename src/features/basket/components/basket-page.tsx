@@ -133,6 +133,16 @@ export function BasketPage() {
             <span>Ara toplam (KDV dahil)</span>
             <span>{formatTry(basket.subtotal)}</span>
           </div>
+          {basket.campaign && (
+            <div className="flex justify-between gap-3 text-green-800">
+              <span>{basket.campaign.label}</span>
+              <span className="whitespace-nowrap">
+                {basket.campaign.free_shipping
+                  ? "Ücretsiz kargo"
+                  : `−${formatTry(basket.campaign.discount)}`}
+              </span>
+            </div>
+          )}
           <VoucherField {...voucher} />
           {settings && (
             <p className="text-muted-foreground">

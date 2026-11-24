@@ -5,6 +5,7 @@ export type OrderTotalsProps = {
   order: Pick<
     PlacedOrder,
     | "items_total"
+    | "campaign"
     | "discount"
     | "voucher_code"
     | "shipping_fee"
@@ -23,6 +24,12 @@ export function OrderTotals({ order }: OrderTotalsProps) {
         <dt>Ürünler</dt>
         <dd>{formatTry(order.items_total)}</dd>
       </div>
+      {order.campaign && !order.campaign.free_shipping && (
+        <div className="flex justify-between">
+          <dt>{order.campaign.label}</dt>
+          <dd>{`−${formatTry(order.campaign.discount)}`}</dd>
+        </div>
+      )}
       {hasVoucher && (
         <div className="flex justify-between">
           <dt>{`Kupon (${order.voucher_code})`}</dt>
@@ -31,8 +38,11 @@ export function OrderTotals({ order }: OrderTotalsProps) {
       )}
       <div className="flex justify-between">
         <dt>Kargo</dt>
-        <dd>{formatTry(order.shipping_fee)}</dd>
+        <dd>{order.campaign?.free_shipping ? "Ücretsiz" : formatTry(order.shipping_fee)}</dd>
       </div>
+      {order.campaign?.free_shipping && (
+        <p className="text-muted-foreground">{order.campaign.label}</p>
+      )}
       {order.payment_method === "cod" && (
         <div className="flex justify-between">
           <dt>Kapıda ödeme bedeli</dt>

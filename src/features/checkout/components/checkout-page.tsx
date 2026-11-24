@@ -133,7 +133,14 @@ function FeeSummary({
   const province = useDebounced(il.trim(), 400);
   const quote = useCheckoutQuote(basket, province, method, basket.lines.length > 0);
   const applied = basket.voucher && !basket.voucher.problem ? basket.voucher.discount : "0.00";
-  const fees = feeSummary(basket.subtotal, settings, method, quote.data, applied);
+  const fees = feeSummary(
+    basket.subtotal,
+    settings,
+    method,
+    quote.data,
+    applied,
+    basket.campaign ?? null,
+  );
   const waiting = quote.isFetching || province !== il.trim();
   const voucher = useVoucherField(basket.voucher, placeError);
   return (
@@ -144,10 +151,21 @@ function FeeSummary({
           <dt>Ürünler (KDV dahil)</dt>
           <dd>{formatTry(basket.subtotal)}</dd>
         </div>
+        {fees.campaign && !fees.campaign.free_shipping && (
+          <div className="flex justify-between">
+            <dt>{fees.campaign.label}</dt>
+            <dd>{`−${formatTry(fees.campaign.discount)}`}</dd>
+          </div>
+        )}
         <div className="flex justify-between">
           <dt>Kargo</dt>
-          <dd className={cn(waiting && "opacity-60")}>{formatTry(fees.shipping)}</dd>
+          <dd className={cn(waiting && "opacity-60")}>
+            {fees.campaign?.free_shipping ? "Ücretsiz" : formatTry(fees.shipping)}
+          </dd>
         </div>
+        {fees.campaign?.free_shipping && (
+          <p className="text-muted-foreground">{fees.campaign.label}</p>
+        )}
         {!fees.calculated && !quote.isError && (
           <p className="text-muted-foreground">Kargo ücreti teslimat ilinize göre hesaplanır.</p>
         )}
