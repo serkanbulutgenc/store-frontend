@@ -108,16 +108,15 @@ export function orderVoucherRow(
   };
 }
 
-/** The Basket Campaign line of the totals, from the Order's own frozen record (`null` when it
- * had none). Free shipping has no amount: the shipping line shows it. */
-export function orderBasketCampaignRow(
-  campaign: { label: string; discount: string; free_shipping: boolean } | null | undefined,
-): { label: string; amount: string } | null {
-  if (!campaign) return null;
-  return {
-    label: `Sepet kampanyası (${campaign.label})`,
-    amount: campaign.free_shipping ? "Ücretsiz kargo" : `−${formatTry(campaign.discount)}`,
-  };
+/** The Basket Campaign lines of the totals, from the Order's own frozen records, discount first
+ * (empty when it had none). Free shipping has no amount: its line says so. */
+export function orderBasketCampaignRows(
+  campaigns: readonly { label: string; discount: string; free_shipping: boolean }[] | undefined,
+): { label: string; amount: string }[] {
+  return (campaigns ?? []).map((c) => ({
+    label: `Sepet kampanyası (${c.label})`,
+    amount: c.free_shipping ? "Ücretsiz kargo" : `−${formatTry(c.discount)}`,
+  }));
 }
 
 /**

@@ -5,7 +5,7 @@ import {
   canBulkMarkPaid,
   canBulkShip,
   canDo,
-  orderBasketCampaignRow,
+  orderBasketCampaignRows,
   orderLineCampaign,
   orderVoucherRow,
 } from "./rules";
@@ -111,29 +111,19 @@ describe("orderLineCampaign", () => {
   });
 });
 
-describe("orderBasketCampaignRow", () => {
-  it("shows the amount a Basket Campaign took off, from the Order's own record", () => {
-    expect(
-      orderBasketCampaignRow({
-        label: "200 ₺ üzeri 20 ₺ indirim",
-        discount: "20.00",
-        free_shipping: false,
-      }),
-    ).toEqual({ label: "Sepet kampanyası (200 ₺ üzeri 20 ₺ indirim)", amount: "−₺20,00" });
-  });
+describe("orderBasketCampaignRows", () => {
+  const off = { label: "100 ₺ üzeri 50 ₺ indirim", discount: "50.00", free_shipping: false };
+  const free = { label: "100 ₺ üzeri ücretsiz kargo", discount: "0.00", free_shipping: true };
 
-  it("says free shipping instead of an amount", () => {
-    expect(
-      orderBasketCampaignRow({
-        label: "200 ₺ üzeri ücretsiz kargo",
-        discount: "0.00",
-        free_shipping: true,
-      })?.amount,
-    ).toBe("Ücretsiz kargo");
+  it("shows each Basket Campaign's amount, from the Order's own records, in order", () => {
+    expect(orderBasketCampaignRows([off, free])).toEqual([
+      { label: "Sepet kampanyası (100 ₺ üzeri 50 ₺ indirim)", amount: "−₺50,00" },
+      { label: "Sepet kampanyası (100 ₺ üzeri ücretsiz kargo)", amount: "Ücretsiz kargo" },
+    ]);
   });
 
   it("is nothing for an Order placed under none", () => {
-    expect(orderBasketCampaignRow(null)).toBeNull();
-    expect(orderBasketCampaignRow(undefined)).toBeNull();
+    expect(orderBasketCampaignRows([])).toEqual([]);
+    expect(orderBasketCampaignRows(undefined)).toEqual([]);
   });
 });

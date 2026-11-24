@@ -33,10 +33,18 @@ describe("previewFees with a Basket Campaign", () => {
 
   it("takes the campaign off the items before the Voucher and adds the shipping", () => {
     // 200 - 20 - 18 + 49.90
-    expect(previewFees("200.00", settings, "bank_transfer", "18.00", off).total).toBe("211.90");
+    expect(previewFees("200.00", settings, "bank_transfer", "18.00", [off]).total).toBe("211.90");
+  });
+  it("takes the discount off and waives the shipping when both apply", () => {
+    // 200 - 20, no shipping
+    expect(previewFees("200.00", settings, "bank_transfer", "0.00", [off, free])).toEqual({
+      shipping: "0.00",
+      cod: "0.00",
+      total: "180.00",
+    });
   });
   it("waives the shipping fee but not the COD fee for free shipping", () => {
-    const r = previewFees("200.00", settings, "cod", "0.00", free);
+    const r = previewFees("200.00", settings, "cod", "0.00", [free]);
     expect(r.shipping).toBe("0.00");
     expect(r.cod).toBe("19.90");
     expect(r.total).toBe("219.90");
@@ -46,6 +54,7 @@ describe("previewFees with a Basket Campaign", () => {
 describe("feeSummary", () => {
   const quote = {
     items_total: "349.90",
+    campaigns: [],
     discount: "0.00",
     shipping_fee: "95.00",
     cod_fee: "0.00",
@@ -55,7 +64,7 @@ describe("feeSummary", () => {
   it("shows the flat-fee preview until a quote arrives", () => {
     expect(feeSummary("349.90", settings, "bank_transfer", undefined)).toEqual({
       ...previewFees("349.90", settings, "bank_transfer"),
-      campaign: null,
+      campaigns: [],
       discount: "0.00",
       voucherCode: null,
       voucherProblem: null,
@@ -71,13 +80,15 @@ describe("feeSummary", () => {
   });
   it("shows the basket's Basket Campaign in the preview and the quote's once it arrives", () => {
     const off = { label: "x", discount: "20.00", free_shipping: false };
-    expect(feeSummary("200.00", settings, "bank_transfer", undefined, "0.00", off)).toMatchObject({
-      campaign: off,
-      total: "229.90",
-    });
-    const quoted = { ...quote, campaign: { label: "y", discount: "0.00", free_shipping: true } };
-    expect(feeSummary("200.00", settings, "bank_transfer", quoted).campaign).toEqual(
-      quoted.campaign,
+    expect(feeSummary("200.00", settings, "bank_transfer", undefined, "0.00", [off])).toMatchObject(
+      {
+        campaigns: [off],
+        total: "229.90",
+      },
+    );
+    const quoted = { ...quote, campaigns: [{ label: "y", discount: "0.00", free_shipping: true }] };
+    expect(feeSummary("200.00", settings, "bank_transfer", quoted).campaigns).toEqual(
+      quoted.campaigns,
     );
   });
   it("uses the computed quote once it has arrived", () => {
@@ -85,7 +96,7 @@ describe("feeSummary", () => {
       shipping: "95.00",
       cod: "0.00",
       total: "444.90",
-      campaign: null,
+      campaigns: [],
       discount: "0.00",
       voucherCode: null,
       voucherProblem: null,

@@ -1,11 +1,12 @@
 import { formatTry } from "@/lib/format";
+import { discountCampaigns, freeShippingCampaign } from "../campaigns";
 import type { PlacedOrder } from "../queries";
 
 export type OrderTotalsProps = {
   order: Pick<
     PlacedOrder,
     | "items_total"
-    | "campaign"
+    | "campaigns"
     | "discount"
     | "voucher_code"
     | "shipping_fee"
@@ -18,18 +19,19 @@ export type OrderTotalsProps = {
 /** The figures under a placed Order's lines: items, Voucher, shipping, COD fee and total. */
 export function OrderTotals({ order }: OrderTotalsProps) {
   const hasVoucher = order.voucher_code && Number(order.discount) > 0;
+  const freeShipping = freeShippingCampaign(order.campaigns);
   return (
     <dl className="mt-2 space-y-1 border-t border-border pt-2">
       <div className="flex justify-between">
         <dt>Ürünler</dt>
         <dd>{formatTry(order.items_total)}</dd>
       </div>
-      {order.campaign && !order.campaign.free_shipping && (
-        <div className="flex justify-between">
-          <dt>{order.campaign.label}</dt>
-          <dd>{`−${formatTry(order.campaign.discount)}`}</dd>
+      {discountCampaigns(order.campaigns).map((c) => (
+        <div key={c.label} className="flex justify-between">
+          <dt>{c.label}</dt>
+          <dd>{`−${formatTry(c.discount)}`}</dd>
         </div>
-      )}
+      ))}
       {hasVoucher && (
         <div className="flex justify-between">
           <dt>{`Kupon (${order.voucher_code})`}</dt>
@@ -38,11 +40,9 @@ export function OrderTotals({ order }: OrderTotalsProps) {
       )}
       <div className="flex justify-between">
         <dt>Kargo</dt>
-        <dd>{order.campaign?.free_shipping ? "Ücretsiz" : formatTry(order.shipping_fee)}</dd>
+        <dd>{freeShipping ? "Ücretsiz" : formatTry(order.shipping_fee)}</dd>
       </div>
-      {order.campaign?.free_shipping && (
-        <p className="text-muted-foreground">{order.campaign.label}</p>
-      )}
+      {freeShipping && <p className="text-muted-foreground">{freeShipping.label}</p>}
       {order.payment_method === "cod" && (
         <div className="flex justify-between">
           <dt>Kapıda ödeme bedeli</dt>

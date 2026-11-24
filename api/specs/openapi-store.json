@@ -3,16 +3,13 @@
     "schemas": {
       "AccountOrderOut": {
         "properties": {
-          "campaign": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/AppliedCampaignOut"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The Basket Campaign this Order was placed under, if any."
+          "campaigns": {
+            "description": "The Basket Campaigns this Order was placed under, discount first.",
+            "items": {
+              "$ref": "#/components/schemas/AppliedCampaignOut"
+            },
+            "title": "Campaigns",
+            "type": "array"
           },
           "can_cancel": {
             "description": "The Shopper may still cancel the Order.",
@@ -161,6 +158,7 @@
           "payment_method",
           "lines",
           "items_total",
+          "campaigns",
           "discount",
           "shipping_fee",
           "cod_fee",
@@ -668,16 +666,13 @@
       },
       "BasketOut": {
         "properties": {
-          "campaign": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/AppliedCampaignOut"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The Basket Campaign this basket gets, if any (shipping unknown: a free-shipping one is judged on the flat fee)."
+          "campaigns": {
+            "description": "The Basket Campaigns this basket gets, discount first (shipping unknown here: free shipping is judged on the flat fee).",
+            "items": {
+              "$ref": "#/components/schemas/AppliedCampaignOut"
+            },
+            "title": "Campaigns",
+            "type": "array"
           },
           "has_problems": {
             "title": "Has Problems",
@@ -718,7 +713,8 @@
           "lines",
           "item_count",
           "subtotal",
-          "has_problems"
+          "has_problems",
+          "campaigns"
         ],
         "title": "BasketOut",
         "type": "object"
@@ -1817,16 +1813,13 @@
               }
             ]
           },
-          "campaign": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/AppliedCampaignOut"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The Basket Campaign this Order was placed under, if any."
+          "campaigns": {
+            "description": "The Basket Campaigns this Order was placed under, discount first.",
+            "items": {
+              "$ref": "#/components/schemas/AppliedCampaignOut"
+            },
+            "title": "Campaigns",
+            "type": "array"
           },
           "cod_fee": {
             "examples": [
@@ -1930,6 +1923,7 @@
           "email",
           "lines",
           "items_total",
+          "campaigns",
           "discount",
           "shipping_fee",
           "cod_fee",
@@ -2771,16 +2765,13 @@
       },
       "QuoteOut": {
         "properties": {
-          "campaign": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/AppliedCampaignOut"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The Basket Campaign this basket gets, if any."
+          "campaigns": {
+            "description": "The Basket Campaigns this basket gets: a discount and/or free shipping, discount first.",
+            "items": {
+              "$ref": "#/components/schemas/AppliedCampaignOut"
+            },
+            "title": "Campaigns",
+            "type": "array"
           },
           "cod_fee": {
             "examples": [
@@ -2851,6 +2842,7 @@
         },
         "required": [
           "items_total",
+          "campaigns",
           "discount",
           "shipping_fee",
           "cod_fee",
@@ -3445,16 +3437,13 @@
       "TrackingOut": {
         "description": "What a Shopper may see: no phone, address or email.",
         "properties": {
-          "campaign": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/AppliedCampaignOut"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The Basket Campaign this Order was placed under, if any."
+          "campaigns": {
+            "description": "The Basket Campaigns this Order was placed under, discount first.",
+            "items": {
+              "$ref": "#/components/schemas/AppliedCampaignOut"
+            },
+            "title": "Campaigns",
+            "type": "array"
           },
           "can_cancel": {
             "description": "The Shopper may still cancel the Order.",
@@ -3593,6 +3582,7 @@
           "payment_method",
           "lines",
           "items_total",
+          "campaigns",
           "discount",
           "shipping_fee",
           "cod_fee",

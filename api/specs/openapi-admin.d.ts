@@ -4649,7 +4649,8 @@ export interface components {
             actions: string[];
             /** Audit */
             audit: components["schemas"]["OrderAuditOut"][];
-            basket_campaign: components["schemas"]["OrderBasketCampaignOut"] | null;
+            /** Basket Campaigns */
+            basket_campaigns: components["schemas"]["OrderBasketCampaignOut"][];
             /** Buyer Tax Number */
             buyer_tax_number: string;
             /** Cancel Reason */

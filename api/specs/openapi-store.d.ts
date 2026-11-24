@@ -974,8 +974,11 @@ export interface components {
     schemas: {
         /** AccountOrderOut */
         AccountOrderOut: {
-            /** @description The Basket Campaign this Order was placed under, if any. */
-            campaign?: components["schemas"]["AppliedCampaignOut"] | null;
+            /**
+             * Campaigns
+             * @description The Basket Campaigns this Order was placed under, discount first.
+             */
+            campaigns: components["schemas"]["AppliedCampaignOut"][];
             /**
              * Can Cancel
              * @description The Shopper may still cancel the Order.
@@ -1243,8 +1246,11 @@ export interface components {
         };
         /** BasketOut */
         BasketOut: {
-            /** @description The Basket Campaign this basket gets, if any (shipping unknown: a free-shipping one is judged on the flat fee). */
-            campaign?: components["schemas"]["AppliedCampaignOut"] | null;
+            /**
+             * Campaigns
+             * @description The Basket Campaigns this basket gets, discount first (shipping unknown here: free shipping is judged on the flat fee).
+             */
+            campaigns: components["schemas"]["AppliedCampaignOut"][];
             /** Has Problems */
             has_problems: boolean;
             /** Item Count */
@@ -1632,8 +1638,11 @@ export interface components {
         /** OrderPlacedOut */
         OrderPlacedOut: {
             bank: components["schemas"]["BankOut"] | null;
-            /** @description The Basket Campaign this Order was placed under, if any. */
-            campaign?: components["schemas"]["AppliedCampaignOut"] | null;
+            /**
+             * Campaigns
+             * @description The Basket Campaigns this Order was placed under, discount first.
+             */
+            campaigns: components["schemas"]["AppliedCampaignOut"][];
             /**
              * Cod Fee
              * @example 349.90
@@ -1966,8 +1975,11 @@ export interface components {
         };
         /** QuoteOut */
         QuoteOut: {
-            /** @description The Basket Campaign this basket gets, if any. */
-            campaign?: components["schemas"]["AppliedCampaignOut"] | null;
+            /**
+             * Campaigns
+             * @description The Basket Campaigns this basket gets: a discount and/or free shipping, discount first.
+             */
+            campaigns: components["schemas"]["AppliedCampaignOut"][];
             /**
              * Cod Fee
              * @example 349.90
@@ -2265,8 +2277,11 @@ export interface components {
          * @description What a Shopper may see: no phone, address or email.
          */
         TrackingOut: {
-            /** @description The Basket Campaign this Order was placed under, if any. */
-            campaign?: components["schemas"]["AppliedCampaignOut"] | null;
+            /**
+             * Campaigns
+             * @description The Basket Campaigns this Order was placed under, discount first.
+             */
+            campaigns: components["schemas"]["AppliedCampaignOut"][];
             /**
              * Can Cancel
              * @description The Shopper may still cancel the Order.
