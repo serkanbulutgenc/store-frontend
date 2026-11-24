@@ -2859,6 +2859,13 @@ export interface components {
              */
             updated_at: string;
         };
+        /** ApprovalsWaiting */
+        ApprovalsWaiting: {
+            /** Count */
+            count: number;
+            /** Rows */
+            rows: components["schemas"]["QueueItemOut"][];
+        };
         /** AttributeIn */
         AttributeIn: {
             /**
@@ -3917,6 +3924,7 @@ export interface components {
          *     may add. Each Widget's list is present only while it is turned on.
          */
         HomeOut: {
+            approvals?: components["schemas"]["ApprovalsWaiting"] | null;
             /** Available */
             available: string[];
             invoice_attention?: components["schemas"]["InvoiceFlags"] | null;

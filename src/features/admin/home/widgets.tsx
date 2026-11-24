@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Me } from "@/lib/api/me";
 import type { HomeData } from "../returns/queries";
+import { ApprovalsWidget } from "./approvals-widget";
 import { LowStockWidget } from "./low-stock-widget";
 import { NewOrdersWidget, UnpaidTransfersWidget } from "./order-widgets";
 import { ReturnsWidget } from "./returns-widget";
@@ -14,6 +15,10 @@ type Def = {
 /** Widget key -> how it looks. The keys are the backend's (`services/home_layout.py`); a key the
  * backend sends that is not here is skipped, so a newer API never breaks an older page. */
 export const WIDGETS: Record<string, Def> = {
+  approvals: {
+    label: "Onay bekleyenler",
+    render: (data) => (data.approvals ? <ApprovalsWidget data={data.approvals} /> : null),
+  },
   new_orders: {
     label: "Yeni siparişler",
     render: (data) => (data.new_orders ? <NewOrdersWidget data={data.new_orders} /> : null),
