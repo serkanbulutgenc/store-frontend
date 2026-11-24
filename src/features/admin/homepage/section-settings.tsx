@@ -1,9 +1,11 @@
+import type { AnyFieldApi } from "@tanstack/react-form";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { type BannerRow, bannersQuery } from "../banners/queries";
 import { TargetPicker } from "../campaigns/target-picker";
+import { DescriptionEditor } from "../catalog/components/description-editor";
 import { categoriesQuery, productQuery, productsQuery } from "../catalog/queries";
 import { collectionsQuery } from "../collections/queries";
 import {
@@ -36,6 +38,9 @@ export function SectionSettings({
   section: Section;
   onChange: (patch: Patch) => void;
 }) {
+  if (section.type === "rich_text") {
+    return <RichTextField id={section.id} body={section.settings.body ?? ""} onChange={onChange} />;
+  }
   if (section.type === "slider") {
     return <SliderFields id={section.id} settings={section.settings} onChange={onChange} />;
   }
@@ -382,6 +387,29 @@ function BannerFields({
           </option>
         ))}
       </Select>
+    </div>
+  );
+}
+
+/** The Description editor, bound to the section's `body` instead of a form field. */
+function RichTextField({
+  id,
+  body,
+  onChange,
+}: {
+  id: string;
+  body: string;
+  onChange: (patch: Patch) => void;
+}) {
+  const field = {
+    name: `section-${id}-body`,
+    state: { value: body, meta: { errors: [] } },
+    handleChange: (value: string) => onChange({ body: value }),
+    handleBlur: () => {},
+  } as unknown as AnyFieldApi;
+  return (
+    <div className="sm:col-span-2">
+      <DescriptionEditor field={field} canUpload label="Metin" />
     </div>
   );
 }
