@@ -27,3 +27,25 @@ it("does not move a Widget past either end or when it is off", () => {
 it("lists Widgets that are on first, in order, then the rest", () => {
   expect(editOrder(["c", "a"], ["a", "b", "c"])).toEqual(["c", "a", "b"]);
 });
+
+import { dropWidget, setFolded } from "./layout";
+
+it("drops a Widget onto another's place, either way", () => {
+  expect(dropWidget(["a", "b", "c"], "a", "c")).toEqual(["b", "c", "a"]);
+  expect(dropWidget(["a", "b", "c"], "c", "a")).toEqual(["c", "a", "b"]);
+});
+
+it("leaves the layout alone when a drop names itself or an unknown Widget", () => {
+  const layout = ["a", "b"];
+  expect(dropWidget(layout, "a", "a")).toBe(layout);
+  expect(dropWidget(layout, "a", "z")).toBe(layout);
+  expect(dropWidget(layout, "z", "a")).toBe(layout);
+});
+
+it("folds and opens a Widget without duplicating", () => {
+  expect(setFolded([], "a", true)).toEqual(["a"]);
+  expect(setFolded(["a", "b"], "a", false)).toEqual(["b"]);
+  const folded = ["a"];
+  expect(setFolded(folded, "a", true)).toBe(folded);
+  expect(setFolded(folded, "z", false)).toBe(folded);
+});
