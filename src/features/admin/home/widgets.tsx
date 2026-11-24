@@ -5,6 +5,7 @@ import { ApprovalsWidget } from "./approvals-widget";
 import { ContactRepliesWidget } from "./contact-replies-widget";
 import { LowStockWidget } from "./low-stock-widget";
 import { NewOrdersWidget, UnpaidTransfersWidget } from "./order-widgets";
+import { ReportSummaryWidget } from "./report-summary-widget";
 import { ReturnsWidget } from "./returns-widget";
 
 type Def = {
@@ -24,6 +25,11 @@ export const WIDGETS: Record<string, Def> = {
     label: "Onay bekleyen yanıtlar",
     render: (data) =>
       data.contact_replies ? <ContactRepliesWidget data={data.contact_replies} /> : null,
+  },
+  report_summary: {
+    label: "Satış özeti",
+    render: (data) =>
+      data.report_summary ? <ReportSummaryWidget data={data.report_summary} /> : null,
   },
   new_orders: {
     label: "Yeni siparişler",

@@ -3963,6 +3963,7 @@ export interface components {
             new_orders?: components["schemas"]["NewOrders"] | null;
             open_returns?: components["schemas"]["OpenReturns"] | null;
             products_without_photos?: components["schemas"]["ProductsWithoutPhotos"] | null;
+            report_summary?: components["schemas"]["ReportSummary"] | null;
             shipped_without_invoice?: components["schemas"]["NewOrders"] | null;
             unpaid_transfers_near_expiry?: components["schemas"]["ExpiringTransfers"] | null;
         };
@@ -5380,6 +5381,26 @@ export interface components {
              * @default
              */
             note: string;
+        };
+        /** ReportPeriodRow */
+        ReportPeriodRow: {
+            /** Orders */
+            orders: number;
+            /**
+             * Preset
+             * @enum {string}
+             */
+            preset: "today" | "7d" | "30d";
+            /**
+             * Revenue
+             * @example 349.90
+             */
+            revenue: string;
+        };
+        /** ReportSummary */
+        ReportSummary: {
+            /** Periods */
+            periods: components["schemas"]["ReportPeriodRow"][];
         };
         /** ReturnAdminOut */
         ReturnAdminOut: {
