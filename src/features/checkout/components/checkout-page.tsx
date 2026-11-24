@@ -20,6 +20,7 @@ import { ApiError } from "@/lib/api/errors";
 import { formatTry } from "@/lib/format";
 import { useDebounced } from "@/lib/use-debounced";
 import { cn } from "@/lib/utils";
+import { discountCampaigns, freeShippingCampaign } from "../campaigns";
 import { suggestEmail } from "../email-hint";
 import { feeSummary, type PaymentChoice } from "../fees";
 import { useCheckoutQuote, usePlaceOrder } from "../queries";
@@ -133,7 +134,14 @@ function FeeSummary({
   const province = useDebounced(il.trim(), 400);
   const quote = useCheckoutQuote(basket, province, method, basket.lines.length > 0);
   const applied = basket.voucher && !basket.voucher.problem ? basket.voucher.discount : "0.00";
-  const fees = feeSummary(basket.subtotal, settings, method, quote.data, applied);
+  const fees = feeSummary(
+    basket.subtotal,
+    settings,
+    method,
+    quote.data,
+    applied,
+    basket.campaigns ?? [],
+  );
   const waiting = quote.isFetching || province !== il.trim();
   const voucher = useVoucherField(basket.voucher, placeError);
   return (
@@ -144,10 +152,21 @@ function FeeSummary({
           <dt>Ürünler (KDV dahil)</dt>
           <dd>{formatTry(basket.subtotal)}</dd>
         </div>
+        {discountCampaigns(fees.campaigns).map((c) => (
+          <div key={c.label} className="flex justify-between">
+            <dt>{c.label}</dt>
+            <dd>{`−${formatTry(c.discount)}`}</dd>
+          </div>
+        ))}
         <div className="flex justify-between">
           <dt>Kargo</dt>
-          <dd className={cn(waiting && "opacity-60")}>{formatTry(fees.shipping)}</dd>
+          <dd className={cn(waiting && "opacity-60")}>
+            {freeShippingCampaign(fees.campaigns) ? "Ücretsiz" : formatTry(fees.shipping)}
+          </dd>
         </div>
+        {freeShippingCampaign(fees.campaigns) && (
+          <p className="text-muted-foreground">{freeShippingCampaign(fees.campaigns)?.label}</p>
+        )}
         {!fees.calculated && !quote.isError && (
           <p className="text-muted-foreground">Kargo ücreti teslimat ilinize göre hesaplanır.</p>
         )}

@@ -17,6 +17,7 @@ const valid: CampaignForm = {
   ends_at: "",
   is_active: true,
   include_subcategories: false,
+  whole_store: false,
   products: [target(1)],
   categories: [],
   collections: [],
@@ -50,6 +51,11 @@ describe("campaignFormSchema", () => {
     expect(issues({ products: [] }).products).toBeTruthy();
     expect(issues({ products: [], categories: [target(2)] })).toEqual({});
     expect(issues({ products: [], collections: [target(3)] })).toEqual({});
+  });
+
+  it("needs no target when it covers the whole store", () => {
+    expect(issues({ products: [], whole_store: true })).toEqual({});
+    expect(issues({ products: [], whole_store: false }).products).toBeTruthy();
   });
 
   it("wants the end after the start, and leaves either open", () => {
@@ -86,6 +92,7 @@ describe("createBody", () => {
       ends_at: null,
       is_active: false,
       include_subcategories: true,
+      whole_store: false,
       product_ids: [4, 5],
       category_ids: [7],
       collection_ids: [],
@@ -102,6 +109,7 @@ const row: CampaignRow = {
   is_active: true,
   status: "active",
   include_subcategories: false,
+  whole_store: false,
   products: [target(1)],
   categories: [],
   collections: [],
@@ -118,6 +126,7 @@ describe("editing", () => {
       ends_at: "",
       is_active: true,
       include_subcategories: false,
+      whole_store: false,
       products: [target(1)],
       categories: [],
       collections: [],
@@ -160,5 +169,22 @@ describe("activationChange", () => {
   it("closes a Campaign whose switch was turned off, and opens one turned on", () => {
     expect(activationChange(values(false), row)).toBe("deactivate");
     expect(activationChange(values(true), { ...row, is_active: false })).toBe("activate");
+  });
+});
+
+describe("the whole-store switch", () => {
+  it("is sent when it is turned on or off, and the listed targets stay as they were", () => {
+    const on = campaignFormSchema.parse({ ...campaignDefaults(row), whole_store: true });
+    expect(editBody(on, row)).toEqual({ whole_store: true });
+    const wholeStore = { ...row, whole_store: true };
+    const off = campaignFormSchema.parse({ ...campaignDefaults(wholeStore), whole_store: false });
+    expect(editBody(off, wholeStore)).toEqual({ whole_store: false });
+  });
+
+  it("creates a store-wide Campaign with no targets", () => {
+    const body = createBody(
+      campaignFormSchema.parse({ ...valid, products: [], whole_store: true }),
+    );
+    expect(body).toMatchObject({ whole_store: true, product_ids: [], category_ids: [] });
   });
 });

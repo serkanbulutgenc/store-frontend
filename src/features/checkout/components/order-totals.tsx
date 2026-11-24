@@ -1,10 +1,12 @@
 import { formatTry } from "@/lib/format";
+import { discountCampaigns, freeShippingCampaign } from "../campaigns";
 import type { PlacedOrder } from "../queries";
 
 export type OrderTotalsProps = {
   order: Pick<
     PlacedOrder,
     | "items_total"
+    | "campaigns"
     | "discount"
     | "voucher_code"
     | "shipping_fee"
@@ -17,12 +19,19 @@ export type OrderTotalsProps = {
 /** The figures under a placed Order's lines: items, Voucher, shipping, COD fee and total. */
 export function OrderTotals({ order }: OrderTotalsProps) {
   const hasVoucher = order.voucher_code && Number(order.discount) > 0;
+  const freeShipping = freeShippingCampaign(order.campaigns);
   return (
     <dl className="mt-2 space-y-1 border-t border-border pt-2">
       <div className="flex justify-between">
         <dt>Ürünler</dt>
         <dd>{formatTry(order.items_total)}</dd>
       </div>
+      {discountCampaigns(order.campaigns).map((c) => (
+        <div key={c.label} className="flex justify-between">
+          <dt>{c.label}</dt>
+          <dd>{`−${formatTry(c.discount)}`}</dd>
+        </div>
+      ))}
       {hasVoucher && (
         <div className="flex justify-between">
           <dt>{`Kupon (${order.voucher_code})`}</dt>
@@ -31,8 +40,9 @@ export function OrderTotals({ order }: OrderTotalsProps) {
       )}
       <div className="flex justify-between">
         <dt>Kargo</dt>
-        <dd>{formatTry(order.shipping_fee)}</dd>
+        <dd>{freeShipping ? "Ücretsiz" : formatTry(order.shipping_fee)}</dd>
       </div>
+      {freeShipping && <p className="text-muted-foreground">{freeShipping.label}</p>}
       {order.payment_method === "cod" && (
         <div className="flex justify-between">
           <dt>Kapıda ödeme bedeli</dt>

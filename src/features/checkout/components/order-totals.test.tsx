@@ -6,6 +6,7 @@ import { OrderTotals } from "./order-totals";
 const order: Pick<
   PlacedOrder,
   | "items_total"
+  | "campaigns"
   | "discount"
   | "voucher_code"
   | "shipping_fee"
@@ -14,6 +15,7 @@ const order: Pick<
   | "payment_method"
 > = {
   items_total: "200.00",
+  campaigns: [],
   discount: "0.00",
   voucher_code: null,
   shipping_fee: "30.00",
@@ -39,5 +41,46 @@ describe("OrderTotals", () => {
     expect(out).not.toContain("Kupon");
     expect(out).not.toContain("−");
     expect(out).toContain("₺230,00");
+  });
+
+  it("shows a Basket Campaign's discount before the Voucher and the shipping", () => {
+    const out = html({
+      campaigns: [{ label: "200 ₺ üzeri 20 ₺ indirim", discount: "20.00", free_shipping: false }],
+      discount: "18.00",
+      voucher_code: "YAZ10",
+      total: "192.00",
+    });
+    expect(out).toContain("200 ₺ üzeri 20 ₺ indirim");
+    expect(out).toContain("−₺20,00");
+    expect(out.indexOf("Ürünler")).toBeLessThan(out.indexOf("200 ₺ üzeri 20 ₺ indirim"));
+    expect(out.indexOf("200 ₺ üzeri 20 ₺ indirim")).toBeLessThan(out.indexOf("Kupon (YAZ10)"));
+    expect(out.indexOf("Kupon (YAZ10)")).toBeLessThan(out.indexOf("Kargo"));
+  });
+
+  it("says shipping is free, and why, for a free-shipping Basket Campaign", () => {
+    const out = html({
+      campaigns: [{ label: "200 ₺ üzeri ücretsiz kargo", discount: "0.00", free_shipping: true }],
+      shipping_fee: "0.00",
+      total: "200.00",
+    });
+    expect(out).toContain("Ücretsiz");
+    expect(out).toContain("200 ₺ üzeri ücretsiz kargo");
+    expect(out).not.toContain("−");
+  });
+
+  it("lists a discount and free shipping together, the discount first", () => {
+    const out = html({
+      campaigns: [
+        { label: "100 ₺ üzeri 50 ₺ indirim", discount: "50.00", free_shipping: false },
+        { label: "100 ₺ üzeri ücretsiz kargo", discount: "0.00", free_shipping: true },
+      ],
+      shipping_fee: "0.00",
+      total: "150.00",
+    });
+    expect(out).toContain("100 ₺ üzeri 50 ₺ indirim");
+    expect(out).toContain("−₺50,00");
+    expect(out).toContain("100 ₺ üzeri ücretsiz kargo");
+    expect(out).toContain("Ücretsiz");
+    expect(out.indexOf("100 ₺ üzeri 50 ₺ indirim")).toBeLessThan(out.indexOf("Kargo"));
   });
 });

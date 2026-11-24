@@ -23,7 +23,7 @@ const moment = (raw: string): number | null => {
 const target = z.object({ id: z.number(), name: z.string() });
 
 /** The form's rules, the same the API enforces: a name, 1 to 99 percent, an end after the
- * start, and at least one Product, Category or Collection. */
+ * start, and at least one Product, Category or Collection unless it covers the whole store. */
 export const campaignFormSchema = z
   .object({
     name: z.string(),
@@ -32,6 +32,7 @@ export const campaignFormSchema = z
     ends_at: z.string(),
     is_active: z.boolean(),
     include_subcategories: z.boolean(),
+    whole_store: z.boolean(),
     products: z.array(target),
     categories: z.array(target),
     collections: z.array(target),
@@ -46,7 +47,7 @@ export const campaignFormSchema = z
     const percentage = amount(v.percentage);
     const n = percentage === null ? Number.NaN : Number(percentage);
     if (!(n >= 1 && n <= 99)) refuse("percentage", "İndirim yüzdesi 1 ile 99 arasında olmalı.");
-    if (v.products.length + v.categories.length + v.collections.length === 0) {
+    if (!v.whole_store && v.products.length + v.categories.length + v.collections.length === 0) {
       refuse("products", "En az bir ürün, kategori veya koleksiyon seçin.");
     }
     const start = v.starts_at.trim() === "" ? null : moment(v.starts_at);
@@ -77,6 +78,7 @@ export function createBody(v: CampaignValues): CampaignIn {
     ends_at: shopTimeToIso(v.ends_at),
     is_active: v.is_active,
     include_subcategories: v.include_subcategories,
+    whole_store: v.whole_store,
     product_ids: ids(v.products),
     category_ids: ids(v.categories),
     collection_ids: ids(v.collections),
@@ -93,6 +95,7 @@ export function campaignDefaults(row?: CampaignRow): CampaignForm {
       ends_at: "",
       is_active: true,
       include_subcategories: false,
+      whole_store: false,
       products: [],
       categories: [],
       collections: [],
@@ -105,6 +108,7 @@ export function campaignDefaults(row?: CampaignRow): CampaignForm {
     ends_at: row.ends_at === null ? "" : isoToShopTime(row.ends_at),
     is_active: row.is_active,
     include_subcategories: row.include_subcategories,
+    whole_store: row.whole_store,
     products: row.products,
     categories: row.categories,
     collections: row.collections,
@@ -126,6 +130,7 @@ export function editBody(v: CampaignValues, row: CampaignRow): CampaignPatch {
   if (v.include_subcategories !== was.include_subcategories) {
     body.include_subcategories = v.include_subcategories;
   }
+  if (v.whole_store !== was.whole_store) body.whole_store = v.whole_store;
   if (!sameIds(v.products, was.products)) body.product_ids = ids(v.products);
   if (!sameIds(v.categories, was.categories)) body.category_ids = ids(v.categories);
   if (!sameIds(v.collections, was.collections)) body.collection_ids = ids(v.collections);

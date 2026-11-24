@@ -15,6 +15,7 @@ import { formatDate, formatTry } from "@/lib/format";
 import { OrderReturns } from "../../returns/components/order-returns";
 import { orderQuery } from "../queries";
 import {
+  orderBasketCampaignRows,
   orderLineCampaign,
   orderStatusLabel,
   orderStatusTone,
@@ -41,6 +42,7 @@ export function OrderDetailScreen({ number, me }: { number: string; me: Me }) {
   const payment = o.payment_status as PaymentStatus;
   const addr = o.shipping_address;
   const voucher = orderVoucherRow(o.voucher);
+  const basketCampaigns = orderBasketCampaignRows(o.basket_campaigns);
 
   return (
     <div className="space-y-6">
@@ -147,6 +149,11 @@ export function OrderDetailScreen({ number, me }: { number: string; me: Me }) {
         </div>
         <dl className="ml-auto w-64 space-y-1">
           <Row label="Ürünler">{formatTry(o.items_total)}</Row>
+          {basketCampaigns.map((c) => (
+            <Row key={c.label} label={c.label}>
+              {c.amount}
+            </Row>
+          ))}
           {voucher && <Row label={voucher.label}>{voucher.amount}</Row>}
           <Row label="Kargo">{formatTry(o.shipping_fee)}</Row>
           <Row label="Kapıda ödeme">{formatTry(o.cod_fee)}</Row>

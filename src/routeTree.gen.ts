@@ -66,6 +66,8 @@ import { Route as StorefrontHesapSifreSifirlaIndexRouteImport } from './routes/_
 import { Route as StorefrontHesapSifreSifirlaKeyRouteImport } from './routes/_storefront/hesap/sifre-sifirla.$key'
 import { Route as AdminAppBannersIndexRouteImport } from './routes/admin/_app/banners/index'
 import { Route as AdminAppBannersBannerIdRouteImport } from './routes/admin/_app/banners/$bannerId'
+import { Route as AdminAppBasketCampaignsCampaignIdRouteImport } from './routes/admin/_app/basket-campaigns/$campaignId'
+import { Route as AdminAppBasketCampaignsNewRouteImport } from './routes/admin/_app/basket-campaigns/new'
 import { Route as AdminAppCampaignPagesIndexRouteImport } from './routes/admin/_app/campaign-pages/index'
 import { Route as AdminAppCampaignPagesPageIdRouteImport } from './routes/admin/_app/campaign-pages/$pageId'
 import { Route as AdminAppCampaignPagesNewRouteImport } from './routes/admin/_app/campaign-pages/new'
@@ -388,6 +390,18 @@ const AdminAppBannersBannerIdRoute = AdminAppBannersBannerIdRouteImport.update({
   path: '/banners/$bannerId',
   getParentRoute: () => AdminAppRouteRoute,
 } as any)
+const AdminAppBasketCampaignsCampaignIdRoute =
+  AdminAppBasketCampaignsCampaignIdRouteImport.update({
+    id: '/basket-campaigns/$campaignId',
+    path: '/basket-campaigns/$campaignId',
+    getParentRoute: () => AdminAppRouteRoute,
+  } as any)
+const AdminAppBasketCampaignsNewRoute =
+  AdminAppBasketCampaignsNewRouteImport.update({
+    id: '/basket-campaigns/new',
+    path: '/basket-campaigns/new',
+    getParentRoute: () => AdminAppRouteRoute,
+  } as any)
 const AdminAppCampaignPagesIndexRoute =
   AdminAppCampaignPagesIndexRouteImport.update({
     id: '/campaign-pages/',
@@ -579,6 +593,8 @@ export interface FileRoutesByFullPath {
   '/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
   '/admin/banners/$bannerId': typeof AdminAppBannersBannerIdRoute
+  '/admin/basket-campaigns/$campaignId': typeof AdminAppBasketCampaignsCampaignIdRoute
+  '/admin/basket-campaigns/new': typeof AdminAppBasketCampaignsNewRoute
   '/admin/campaign-pages/$pageId': typeof AdminAppCampaignPagesPageIdRoute
   '/admin/campaign-pages/new': typeof AdminAppCampaignPagesNewRoute
   '/admin/campaigns/$campaignId': typeof AdminAppCampaignsCampaignIdRoute
@@ -658,6 +674,8 @@ export interface FileRoutesByTo {
   '/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
   '/admin/banners/$bannerId': typeof AdminAppBannersBannerIdRoute
+  '/admin/basket-campaigns/$campaignId': typeof AdminAppBasketCampaignsCampaignIdRoute
+  '/admin/basket-campaigns/new': typeof AdminAppBasketCampaignsNewRoute
   '/admin/campaign-pages/$pageId': typeof AdminAppCampaignPagesPageIdRoute
   '/admin/campaign-pages/new': typeof AdminAppCampaignPagesNewRoute
   '/admin/campaigns/$campaignId': typeof AdminAppCampaignsCampaignIdRoute
@@ -743,6 +761,8 @@ export interface FileRoutesById {
   '/_storefront/hesap/eposta-dogrula/$key': typeof StorefrontHesapEpostaDogrulaKeyRoute
   '/_storefront/hesap/sifre-sifirla/$key': typeof StorefrontHesapSifreSifirlaKeyRoute
   '/admin/_app/banners/$bannerId': typeof AdminAppBannersBannerIdRoute
+  '/admin/_app/basket-campaigns/$campaignId': typeof AdminAppBasketCampaignsCampaignIdRoute
+  '/admin/_app/basket-campaigns/new': typeof AdminAppBasketCampaignsNewRoute
   '/admin/_app/campaign-pages/$pageId': typeof AdminAppCampaignPagesPageIdRoute
   '/admin/_app/campaign-pages/new': typeof AdminAppCampaignPagesNewRoute
   '/admin/_app/campaigns/$campaignId': typeof AdminAppCampaignsCampaignIdRoute
@@ -826,6 +846,8 @@ export interface FileRouteTypes {
     | '/hesap/eposta-dogrula/$key'
     | '/hesap/sifre-sifirla/$key'
     | '/admin/banners/$bannerId'
+    | '/admin/basket-campaigns/$campaignId'
+    | '/admin/basket-campaigns/new'
     | '/admin/campaign-pages/$pageId'
     | '/admin/campaign-pages/new'
     | '/admin/campaigns/$campaignId'
@@ -905,6 +927,8 @@ export interface FileRouteTypes {
     | '/hesap/eposta-dogrula/$key'
     | '/hesap/sifre-sifirla/$key'
     | '/admin/banners/$bannerId'
+    | '/admin/basket-campaigns/$campaignId'
+    | '/admin/basket-campaigns/new'
     | '/admin/campaign-pages/$pageId'
     | '/admin/campaign-pages/new'
     | '/admin/campaigns/$campaignId'
@@ -989,6 +1013,8 @@ export interface FileRouteTypes {
     | '/_storefront/hesap/eposta-dogrula/$key'
     | '/_storefront/hesap/sifre-sifirla/$key'
     | '/admin/_app/banners/$bannerId'
+    | '/admin/_app/basket-campaigns/$campaignId'
+    | '/admin/_app/basket-campaigns/new'
     | '/admin/_app/campaign-pages/$pageId'
     | '/admin/_app/campaign-pages/new'
     | '/admin/_app/campaigns/$campaignId'
@@ -1428,6 +1454,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAppBannersBannerIdRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
+    '/admin/_app/basket-campaigns/$campaignId': {
+      id: '/admin/_app/basket-campaigns/$campaignId'
+      path: '/basket-campaigns/$campaignId'
+      fullPath: '/admin/basket-campaigns/$campaignId'
+      preLoaderRoute: typeof AdminAppBasketCampaignsCampaignIdRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/basket-campaigns/new': {
+      id: '/admin/_app/basket-campaigns/new'
+      path: '/basket-campaigns/new'
+      fullPath: '/admin/basket-campaigns/new'
+      preLoaderRoute: typeof AdminAppBasketCampaignsNewRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
     '/admin/_app/campaign-pages/': {
       id: '/admin/_app/campaign-pages/'
       path: '/campaign-pages'
@@ -1725,6 +1765,8 @@ interface AdminAppRouteRouteChildren {
   AdminAppVouchersRoute: typeof AdminAppVouchersRoute
   AdminAppIndexRoute: typeof AdminAppIndexRoute
   AdminAppBannersBannerIdRoute: typeof AdminAppBannersBannerIdRoute
+  AdminAppBasketCampaignsCampaignIdRoute: typeof AdminAppBasketCampaignsCampaignIdRoute
+  AdminAppBasketCampaignsNewRoute: typeof AdminAppBasketCampaignsNewRoute
   AdminAppCampaignPagesPageIdRoute: typeof AdminAppCampaignPagesPageIdRoute
   AdminAppCampaignPagesNewRoute: typeof AdminAppCampaignPagesNewRoute
   AdminAppCampaignsCampaignIdRoute: typeof AdminAppCampaignsCampaignIdRoute
@@ -1774,6 +1816,9 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppVouchersRoute: AdminAppVouchersRoute,
   AdminAppIndexRoute: AdminAppIndexRoute,
   AdminAppBannersBannerIdRoute: AdminAppBannersBannerIdRoute,
+  AdminAppBasketCampaignsCampaignIdRoute:
+    AdminAppBasketCampaignsCampaignIdRoute,
+  AdminAppBasketCampaignsNewRoute: AdminAppBasketCampaignsNewRoute,
   AdminAppCampaignPagesPageIdRoute: AdminAppCampaignPagesPageIdRoute,
   AdminAppCampaignPagesNewRoute: AdminAppCampaignPagesNewRoute,
   AdminAppCampaignsCampaignIdRoute: AdminAppCampaignsCampaignIdRoute,
