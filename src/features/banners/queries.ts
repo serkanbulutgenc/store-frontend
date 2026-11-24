@@ -6,13 +6,6 @@ export type Banners = components["schemas"]["BannersOut"];
 export type PictureBanner = components["schemas"]["PictureBannerOut"];
 export type Announcement = components["schemas"]["AnnouncementOut"];
 
-export const NO_BANNERS: Banners = {
-  announcement: [],
-  home_hero: [],
-  home_mid: [],
-  category_top: [],
-};
-
 /** Active Banners per slot. `category_top` is only filled when a Category slug is given. */
 export const bannersQuery = (category?: string) =>
   queryOptions({
