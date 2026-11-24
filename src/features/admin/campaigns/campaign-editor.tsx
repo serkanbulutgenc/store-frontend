@@ -158,74 +158,105 @@ function CampaignEditor({ row: loaded, onClose }: { row?: CampaignRow; onClose: 
 
       <fieldset className="space-y-3 rounded-md border border-border p-3">
         <legend className="px-1 font-medium">Hedefler</legend>
-        <form.Field name="products">
+        <form.Field name="whole_store">
           {(f) => (
-            <>
-              <TargetPicker
-                label="Ürünler"
-                placeholder="Ürün adı veya kodu (en az 2 harf)"
-                chosen={f.state.value}
-                onChange={f.handleChange}
-                matches={(products.data?.items ?? []).map((p) => ({ id: p.id, name: p.title }))}
-                onSearch={setProductQ}
-                minChars={2}
+            <label className="flex items-start gap-2">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={f.state.value}
+                onChange={(e) => f.handleChange(e.target.checked)}
               />
-              {f.state.meta.errors.length > 0 && (
-                <span className="block text-red-700">{errorText(f.state.meta.errors[0])}</span>
-              )}
-            </>
+              <span>
+                <span className="font-medium">Tüm mağaza</span>
+                <span className="block text-muted-foreground">
+                  Tüm ürünler, sonradan eklenenler de dahil, bu kampanyadan yararlanır. Açıkken
+                  aşağıdaki seçimler uygulanmaz; kapatırsanız geri gelir.
+                </span>
+              </span>
+            </label>
           )}
         </form.Field>
-        <form.Field name="categories">
-          {(f) => (
-            <TargetPicker
-              label="Kategoriler"
-              placeholder="Kategori ara"
-              chosen={f.state.value}
-              onChange={f.handleChange}
-              matches={(categories.data ?? [])
-                .filter((c) => includes(c.name, categoryQ))
-                .map((c) => ({ id: c.id, name: c.name }))}
-              onSearch={setCategoryQ}
-              footer={
-                f.state.value.length > 0 && (
-                  <form.Field name="include_subcategories">
-                    {(sub) => (
-                      <label className="flex items-start gap-2 pt-1">
-                        <input
-                          type="checkbox"
-                          className="mt-1"
-                          checked={sub.state.value}
-                          onChange={(e) => sub.handleChange(e.target.checked)}
-                        />
-                        <span>
-                          <span className="font-medium">Alt kategorileri de kapsa</span>
-                          <span className="block text-muted-foreground">
-                            Seçilen kategorilerin altındaki kategorilerdeki ürünler de dahil olur.
-                          </span>
-                        </span>
-                      </label>
+        <form.Subscribe selector={(s) => s.values.whole_store}>
+          {(wholeStore) => (
+            <div className={wholeStore ? "hidden" : "space-y-3"}>
+              <form.Field name="products">
+                {(f) => (
+                  <>
+                    <TargetPicker
+                      label="Ürünler"
+                      placeholder="Ürün adı veya kodu (en az 2 harf)"
+                      chosen={f.state.value}
+                      onChange={f.handleChange}
+                      matches={(products.data?.items ?? []).map((p) => ({
+                        id: p.id,
+                        name: p.title,
+                      }))}
+                      onSearch={setProductQ}
+                      minChars={2}
+                    />
+                    {f.state.meta.errors.length > 0 && (
+                      <span className="block text-red-700">
+                        {errorText(f.state.meta.errors[0])}
+                      </span>
                     )}
-                  </form.Field>
-                )
-              }
-            />
+                  </>
+                )}
+              </form.Field>
+              <form.Field name="categories">
+                {(f) => (
+                  <TargetPicker
+                    label="Kategoriler"
+                    placeholder="Kategori ara"
+                    chosen={f.state.value}
+                    onChange={f.handleChange}
+                    matches={(categories.data ?? [])
+                      .filter((c) => includes(c.name, categoryQ))
+                      .map((c) => ({ id: c.id, name: c.name }))}
+                    onSearch={setCategoryQ}
+                    footer={
+                      f.state.value.length > 0 && (
+                        <form.Field name="include_subcategories">
+                          {(sub) => (
+                            <label className="flex items-start gap-2 pt-1">
+                              <input
+                                type="checkbox"
+                                className="mt-1"
+                                checked={sub.state.value}
+                                onChange={(e) => sub.handleChange(e.target.checked)}
+                              />
+                              <span>
+                                <span className="font-medium">Alt kategorileri de kapsa</span>
+                                <span className="block text-muted-foreground">
+                                  Seçilen kategorilerin altındaki kategorilerdeki ürünler de dahil
+                                  olur.
+                                </span>
+                              </span>
+                            </label>
+                          )}
+                        </form.Field>
+                      )
+                    }
+                  />
+                )}
+              </form.Field>
+              <form.Field name="collections">
+                {(f) => (
+                  <TargetPicker
+                    label="Koleksiyonlar"
+                    placeholder="Koleksiyon ara"
+                    chosen={f.state.value}
+                    onChange={f.handleChange}
+                    matches={(collections.data ?? [])
+                      .filter((c) => includes(c.name, collectionQ))
+                      .map((c): Target => ({ id: c.id, name: c.name }))}
+                    onSearch={setCollectionQ}
+                  />
+                )}
+              </form.Field>
+            </div>
           )}
-        </form.Field>
-        <form.Field name="collections">
-          {(f) => (
-            <TargetPicker
-              label="Koleksiyonlar"
-              placeholder="Koleksiyon ara"
-              chosen={f.state.value}
-              onChange={f.handleChange}
-              matches={(collections.data ?? [])
-                .filter((c) => includes(c.name, collectionQ))
-                .map((c): Target => ({ id: c.id, name: c.name }))}
-              onSearch={setCollectionQ}
-            />
-          )}
-        </form.Field>
+        </form.Subscribe>
       </fieldset>
 
       <div className="grid grid-cols-2 gap-3">

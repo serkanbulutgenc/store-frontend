@@ -89,7 +89,16 @@ function CampaignsTab({
   useStepBackWhenEmpty(data, search.page, onSearchChange);
   const flip = useFlip<CampaignListRow>(toggle, campaignToggle);
   const columns: Column<CampaignListRow>[] = [
-    helper.accessor("name", { header: "Kampanya", enableSorting: false }),
+    helper.display({
+      id: "name",
+      header: "Kampanya",
+      cell: ({ row: { original: c } }) => (
+        <span className="flex flex-wrap items-center gap-1">
+          {c.name}
+          {c.whole_store && <Badge tone="good">Tüm mağaza</Badge>}
+        </span>
+      ),
+    }),
     helper.display({
       id: "percentage",
       header: "İndirim",

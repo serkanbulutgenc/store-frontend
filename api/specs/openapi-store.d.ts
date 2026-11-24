@@ -974,6 +974,8 @@ export interface components {
     schemas: {
         /** AccountOrderOut */
         AccountOrderOut: {
+            /** @description The Basket Campaign this Order was placed under, if any. */
+            campaign?: components["schemas"]["AppliedCampaignOut"] | null;
             /**
              * Can Cancel
              * @description The Shopper may still cancel the Order.
@@ -994,7 +996,7 @@ export interface components {
             discount: string;
             /**
              * Items Total
-             * @description What the items cost before any Voucher.
+             * @description What the items cost before any discount.
              * @example 349.90
              */
             items_total: string;
@@ -1121,6 +1123,25 @@ export interface components {
             /** Message */
             message: string;
         };
+        /** AppliedCampaignOut */
+        AppliedCampaignOut: {
+            /**
+             * Discount
+             * @description What it took off the items; 0 when it waives the shipping fee.
+             * @example 349.90
+             */
+            discount: string;
+            /**
+             * Free Shipping
+             * @description True when it waives the shipping fee.
+             */
+            free_shipping: boolean;
+            /**
+             * Label
+             * @description Built from the rule: "500 ₺ üzeri 50 ₺ indirim".
+             */
+            label: string;
+        };
         /** AttributeBlockOut */
         AttributeBlockOut: {
             /** Name */
@@ -1222,6 +1243,8 @@ export interface components {
         };
         /** BasketOut */
         BasketOut: {
+            /** @description The Basket Campaign this basket gets, if any (shipping unknown: a free-shipping one is judged on the flat fee). */
+            campaign?: components["schemas"]["AppliedCampaignOut"] | null;
             /** Has Problems */
             has_problems: boolean;
             /** Item Count */
@@ -1609,6 +1632,8 @@ export interface components {
         /** OrderPlacedOut */
         OrderPlacedOut: {
             bank: components["schemas"]["BankOut"] | null;
+            /** @description The Basket Campaign this Order was placed under, if any. */
+            campaign?: components["schemas"]["AppliedCampaignOut"] | null;
             /**
              * Cod Fee
              * @example 349.90
@@ -1624,7 +1649,7 @@ export interface components {
             email: string;
             /**
              * Items Total
-             * @description What the items cost before any Voucher.
+             * @description What the items cost before any discount.
              * @example 349.90
              */
             items_total: string;
@@ -1941,6 +1966,8 @@ export interface components {
         };
         /** QuoteOut */
         QuoteOut: {
+            /** @description The Basket Campaign this basket gets, if any. */
+            campaign?: components["schemas"]["AppliedCampaignOut"] | null;
             /**
              * Cod Fee
              * @example 349.90
@@ -1954,7 +1981,7 @@ export interface components {
             discount: string;
             /**
              * Items Total
-             * @description What the items cost before any Voucher.
+             * @description What the items cost before any discount.
              * @example 349.90
              */
             items_total: string;
@@ -2238,6 +2265,8 @@ export interface components {
          * @description What a Shopper may see: no phone, address or email.
          */
         TrackingOut: {
+            /** @description The Basket Campaign this Order was placed under, if any. */
+            campaign?: components["schemas"]["AppliedCampaignOut"] | null;
             /**
              * Can Cancel
              * @description The Shopper may still cancel the Order.
@@ -2258,7 +2287,7 @@ export interface components {
             discount: string;
             /**
              * Items Total
-             * @description What the items cost before any Voucher.
+             * @description What the items cost before any discount.
              * @example 349.90
              */
             items_total: string;

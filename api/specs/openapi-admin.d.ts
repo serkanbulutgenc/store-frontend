@@ -415,6 +415,77 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/basket-campaigns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Basket Campaigns */
+        get: operations["basket_campaigns_list"];
+        put?: never;
+        /** Create Basket Campaign */
+        post: operations["basket_campaigns_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/basket-campaigns/{campaign_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Basket Campaign */
+        get: operations["basket_campaigns_get"];
+        put?: never;
+        post?: never;
+        /** Delete Basket Campaign */
+        delete: operations["basket_campaigns_delete"];
+        options?: never;
+        head?: never;
+        /** Edit Basket Campaign */
+        patch: operations["basket_campaigns_edit"];
+        trace?: never;
+    };
+    "/api/admin/basket-campaigns/{campaign_id}/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Activate Basket Campaign */
+        post: operations["basket_campaigns_activate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/basket-campaigns/{campaign_id}/deactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Deactivate Basket Campaign */
+        post: operations["basket_campaigns_deactivate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/brands": {
         parameters: {
             query?: never;
@@ -3196,6 +3267,81 @@ export interface components {
              */
             updated_at: string;
         };
+        /** BasketCampaignIn */
+        BasketCampaignIn: {
+            /**
+             * Benefit
+             * @enum {string}
+             */
+            benefit: "fixed" | "percentage" | "free_shipping";
+            /** Ends At */
+            ends_at?: string | null;
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
+            /** Minimum Amount */
+            minimum_amount: number | string;
+            /** Name */
+            name: string;
+            /** Starts At */
+            starts_at?: string | null;
+            /** Value */
+            value?: number | string | null;
+        };
+        /** BasketCampaignOut */
+        BasketCampaignOut: {
+            /**
+             * Benefit
+             * @enum {string}
+             */
+            benefit: "fixed" | "percentage" | "free_shipping";
+            /** Ends At */
+            ends_at: string | null;
+            /** Id */
+            id: number;
+            /** Is Active */
+            is_active: boolean;
+            /** Label */
+            label: string;
+            /**
+             * Minimum Amount
+             * @example 349.90
+             */
+            minimum_amount: string;
+            /** Name */
+            name: string;
+            /** Orders */
+            orders: number;
+            /** Starts At */
+            starts_at: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "active" | "inactive" | "scheduled" | "ended";
+            /** Value */
+            value: string | null;
+        };
+        /**
+         * BasketCampaignPatch
+         * @description What the Owner changes; anything left out stays as it is.
+         */
+        BasketCampaignPatch: {
+            /** Benefit */
+            benefit?: ("fixed" | "percentage" | "free_shipping") | null;
+            /** Ends At */
+            ends_at?: string | null;
+            /** Minimum Amount */
+            minimum_amount?: number | string | null;
+            /** Name */
+            name?: string | null;
+            /** Starts At */
+            starts_at?: string | null;
+            /** Value */
+            value?: number | string | null;
+        };
         /** BelowCostOut */
         BelowCostOut: {
             /**
@@ -3263,6 +3409,11 @@ export interface components {
             product_ids: number[];
             /** Starts At */
             starts_at?: string | null;
+            /**
+             * Whole Store
+             * @default false
+             */
+            whole_store: boolean;
         };
         /** CampaignLinkIn */
         CampaignLinkIn: {
@@ -3303,6 +3454,8 @@ export interface components {
              * @enum {string}
              */
             status: "active" | "inactive" | "scheduled" | "ended";
+            /** Whole Store */
+            whole_store: boolean;
         };
         /** CampaignPageChangeOut */
         CampaignPageChangeOut: {
@@ -3454,6 +3607,8 @@ export interface components {
             product_ids?: number[] | null;
             /** Starts At */
             starts_at?: string | null;
+            /** Whole Store */
+            whole_store?: boolean | null;
         };
         /** CampaignReportRowOut */
         CampaignReportRowOut: {
@@ -3496,6 +3651,8 @@ export interface components {
              * @enum {string}
              */
             status: "active" | "inactive" | "scheduled" | "ended";
+            /** Whole Store */
+            whole_store: boolean;
         };
         /** CampaignsVouchersReportOut */
         CampaignsVouchersReportOut: {
@@ -4462,6 +4619,25 @@ export interface components {
             /** Summary */
             summary: string;
         };
+        /**
+         * OrderBasketCampaignOut
+         * @description The Basket Campaign the Order was placed under, as it was then.
+         */
+        OrderBasketCampaignOut: {
+            /** Campaign Id */
+            campaign_id: number | null;
+            /**
+             * Discount
+             * @example 349.90
+             */
+            discount: string;
+            /** Free Shipping */
+            free_shipping: boolean;
+            /** Label */
+            label: string;
+            /** Name */
+            name: string;
+        };
         /** OrderCancelIn */
         OrderCancelIn: {
             /** Reason */
@@ -4473,6 +4649,7 @@ export interface components {
             actions: string[];
             /** Audit */
             audit: components["schemas"]["OrderAuditOut"][];
+            basket_campaign: components["schemas"]["OrderBasketCampaignOut"] | null;
             /** Buyer Tax Number */
             buyer_tax_number: string;
             /** Cancel Reason */
@@ -4760,6 +4937,17 @@ export interface components {
         PagedAuditEntryOut: {
             /** Items */
             items: components["schemas"]["AuditEntryOut"][];
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total */
+            total: number;
+        };
+        /** PagedBasketCampaignOut */
+        PagedBasketCampaignOut: {
+            /** Items */
+            items: components["schemas"]["BasketCampaignOut"][];
             /** Page */
             page: number;
             /** Page Size */
@@ -6854,6 +7042,166 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BannerOut"];
+                };
+            };
+        };
+    };
+    basket_campaigns_list: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedBasketCampaignOut"];
+                };
+            };
+        };
+    };
+    basket_campaigns_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BasketCampaignIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BasketCampaignOut"];
+                };
+            };
+        };
+    };
+    basket_campaigns_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                campaign_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BasketCampaignOut"];
+                };
+            };
+        };
+    };
+    basket_campaigns_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                campaign_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    basket_campaigns_edit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                campaign_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BasketCampaignPatch"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BasketCampaignOut"];
+                };
+            };
+        };
+    };
+    basket_campaigns_activate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                campaign_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BasketCampaignOut"];
+                };
+            };
+        };
+    };
+    basket_campaigns_deactivate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                campaign_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BasketCampaignOut"];
                 };
             };
         };
