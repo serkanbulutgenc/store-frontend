@@ -3,7 +3,7 @@ import { z } from "zod";
 import { homeHead } from "@/features/catalog/seo";
 import { HomepageSections } from "@/features/homepage/components/homepage-sections";
 import { PreviewBanner } from "@/features/homepage/components/preview-banner";
-import { homepagePreviewQuery, homepageQuery } from "@/features/homepage/queries";
+import { fetchHomepagePreview, homepageQuery } from "@/features/homepage/queries";
 
 export const Route = createFileRoute("/_storefront/")({
   validateSearch: z.object({ preview: z.literal("layout").optional().catch(undefined) }),
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_storefront/")({
   // preview call is refused, gets the live page with no banner.
   loader: async ({ context, deps }) => {
     if (deps.preview) {
-      const sections = await context.queryClient.query(homepagePreviewQuery).catch(() => null);
+      const sections = await fetchHomepagePreview();
       if (sections) return { sections, preview: true };
     }
     return { sections: await context.queryClient.query(homepageQuery), preview: false };

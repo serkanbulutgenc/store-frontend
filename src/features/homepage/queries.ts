@@ -13,10 +13,14 @@ export const homepageQuery = queryOptions({
 });
 
 /** Preview mode: the layout as the Storefront would draw it, for a signed-in Dashboard user.
- * The public endpoint has no preview; this one answers 401/403 to everyone else. */
-export const homepagePreviewQuery = queryOptions({
-  queryKey: ["admin", "homepage", "preview"],
-  staleTime: 0,
-  queryFn: async () =>
-    ((await adminApi.GET("/api/admin/homepage/preview")).data?.sections ?? []) as HomepageSection[],
-});
+ * The public endpoint has no preview; this one answers 401/403 to everyone else, so it resolves
+ * to null then. It deliberately skips the query cache: the cache's global 401 handler would
+ * clear it and re-run the route guards, which breaks a Shopper's server render. */
+export async function fetchHomepagePreview(): Promise<HomepageSection[] | null> {
+  try {
+    const { data } = await adminApi.GET("/api/admin/homepage/preview");
+    return (data?.sections ?? []) as HomepageSection[];
+  } catch {
+    return null;
+  }
+}
