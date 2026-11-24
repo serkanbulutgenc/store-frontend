@@ -164,7 +164,7 @@ export const NAV_GROUPS: NavGroup[] = [
         label: "Vitrin",
         to: "/admin/homepage",
         icon: LayoutTemplate,
-        permission: "manage_homepage",
+        permission: "edit_homepage",
       },
       { label: "Menüler", to: "/admin/menus", icon: Menu, permission: "manage_menus" },
       { label: "Personel", to: "/admin/staff", icon: UserCog, permission: "manage_staff_users" },

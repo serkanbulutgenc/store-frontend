@@ -37,15 +37,39 @@ const FIELD_LABELS: Record<string, string> = {
   description: "Açıklama",
   body: "Metin",
   product_ids: "Ürünler",
+  sections: "Bölümler",
 };
 
 /** A readable name for a field; one we do not know shows as the API names it. */
 export const fieldLabel = (field: string) => FIELD_LABELS[field] ?? field;
 
+type SectionLike = {
+  id: string;
+  type: string;
+  title?: string;
+  visible?: boolean;
+  settings?: unknown;
+};
+
+const isSection = (v: unknown): v is SectionLike =>
+  typeof v === "object" && v !== null && "id" in v && "type" in v;
+
+/** A Homepage layout as one line per section, in order: "1. products · Yeni gelenler (gizli)". */
+function sectionLines(sections: SectionLike[]): string {
+  if (sections.length === 0) return "—";
+  return sections
+    .map(
+      (s, i) =>
+        `${i + 1}. ${s.type} · ${s.title || s.id}${s.visible === false ? " (gizli)" : ""}${s.settings ? ` ${JSON.stringify(s.settings)}` : ""}`,
+    )
+    .join("\n");
+}
+
 /** A field value as text for the side-by-side view. */
 export function formatValue(value: unknown): string {
   if (value === null || value === undefined || value === "") return "—";
   if (typeof value === "boolean") return value ? "Evet" : "Hayır";
+  if (Array.isArray(value) && value.every(isSection)) return sectionLines(value);
   if (Array.isArray(value)) return value.length === 0 ? "—" : value.map(String).join(", ");
   if (typeof value === "object") return JSON.stringify(value);
   return String(value);

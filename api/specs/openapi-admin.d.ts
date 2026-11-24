@@ -1523,8 +1523,9 @@ export interface paths {
         get: operations["homepage_get_for_editing"];
         /**
          * Save Homepage
-         * @description Replace the whole layout atomically. Live at once; written to the Audit log.
-         *     Section ids must be unique and there are at most 20 sections.
+         * @description Replace the whole layout atomically. The Owner's save is live at once; a Staff
+         *     save is held as a pending change. Every step is written to the Audit log. Section
+         *     ids must be unique and there are at most 20 sections.
          */
         put: operations["homepage_save"];
         post?: never;
@@ -4348,8 +4349,18 @@ export interface components {
             /** Sections */
             sections: (components["schemas"]["SliderSection"] | components["schemas"]["ProductsSection"] | components["schemas"]["CategoriesSection"] | components["schemas"]["BannerSection"] | components["schemas"]["RichTextSection"])[];
         };
-        /** HomepageLayoutOut */
+        /**
+         * HomepageLayoutOut
+         * @description `sections` is the live layout. `pending` is the Staff change waiting for the
+         *     Owner; `rejection_reason` says why the last one was turned down.
+         */
         HomepageLayoutOut: {
+            pending?: components["schemas"]["PendingLayoutOut"] | null;
+            /**
+             * Rejection Reason
+             * @default
+             */
+            rejection_reason: string;
             /** Sections */
             sections: (components["schemas"]["SliderSection"] | components["schemas"]["ProductsSection"] | components["schemas"]["CategoriesSection"] | components["schemas"]["BannerSection"] | components["schemas"]["RichTextSection"])[];
         };
@@ -5332,6 +5343,18 @@ export interface components {
              * Format: date-time
              */
             updated_at: string;
+        };
+        /** PendingLayoutOut */
+        PendingLayoutOut: {
+            /** Sections */
+            sections: (components["schemas"]["SliderSection"] | components["schemas"]["ProductsSection"] | components["schemas"]["CategoriesSection"] | components["schemas"]["BannerSection"] | components["schemas"]["RichTextSection"])[];
+            /**
+             * Submitted At
+             * Format: date-time
+             */
+            submitted_at: string;
+            /** Submitted By */
+            submitted_by: string | null;
         };
         /** PendingOut */
         PendingOut: {

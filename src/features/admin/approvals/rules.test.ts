@@ -95,3 +95,17 @@ describe("showsRejection", () => {
     expect(showsRejection({ ...item, status: "unpublished" })).toBe(false);
   });
 });
+
+describe("a Homepage layout in the side-by-side view", () => {
+  it("lists the sections in order, marks hidden ones and shows their settings", () => {
+    const text = formatValue([
+      { id: "hero", type: "slider", visible: true },
+      { id: "latest", type: "products", title: "Yeni", visible: false, settings: { count: 8 } },
+    ]);
+    expect(text).toBe('1. slider · hero\n2. products · Yeni (gizli) {"count":8}');
+  });
+
+  it("is labelled Bölümler", () => {
+    expect(fieldLabel("sections")).toBe("Bölümler");
+  });
+});
