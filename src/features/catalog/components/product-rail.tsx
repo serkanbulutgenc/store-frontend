@@ -67,6 +67,7 @@ export function ProductRail({
   seeAll,
   showDiscount,
   action,
+  max = 12,
 }: {
   title: string;
   products: Card[];
@@ -74,6 +75,8 @@ export function ProductRail({
   showDiscount?: boolean;
   /** Replaces the "see all" link, e.g. a "Temizle" button. */
   action?: ReactNode;
+  /** How many cards the row shows at most. */
+  max?: number;
 }) {
   const [ref, api] = useEmblaCarousel({
     align: "start",
@@ -99,7 +102,7 @@ export function ProductRail({
       <div className="relative">
         <div ref={ref} className="overflow-hidden">
           <ul className="-ml-3 flex touch-pan-y">
-            {products.slice(0, 12).map((p) => (
+            {products.slice(0, max).map((p) => (
               <ProductCard
                 key={p.id}
                 product={p}
