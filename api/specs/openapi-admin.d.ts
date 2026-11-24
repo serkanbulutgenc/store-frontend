@@ -1413,6 +1413,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/home/layout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Save Layout
+         * @description Choose which Widgets are on, and their order. Unavailable ones are refused.
+         */
+        put: operations["home_layout_save"];
+        post?: never;
+        /**
+         * Reset Layout
+         * @description Go back to the default for the user's role.
+         */
+        delete: operations["home_layout_reset"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/images/{image_id}": {
         parameters: {
             query?: never;
@@ -3865,6 +3889,11 @@ export interface components {
          * @enum {string}
          */
         Group: "day" | "week" | "month";
+        /** HomeLayoutIn */
+        HomeLayoutIn: {
+            /** Widgets */
+            widgets: string[];
+        };
         /** HomeOrderRow */
         HomeOrderRow: {
             /** Customer */
@@ -3882,15 +3911,25 @@ export interface components {
              */
             total: string;
         };
-        /** HomeOut */
+        /**
+         * HomeOut
+         * @description `layout` is the Widgets turned on, in order; `available` is what the user
+         *     may add. Each Widget's list is present only while it is turned on.
+         */
         HomeOut: {
-            invoice_attention: components["schemas"]["InvoiceFlags"];
-            low_stock: components["schemas"]["LowStock"];
-            new_orders: components["schemas"]["NewOrders"];
-            open_returns: components["schemas"]["OpenReturns"];
-            products_without_photos: components["schemas"]["ProductsWithoutPhotos"];
-            shipped_without_invoice: components["schemas"]["NewOrders"];
-            unpaid_transfers_near_expiry: components["schemas"]["ExpiringTransfers"];
+            /** Available */
+            available: string[];
+            invoice_attention?: components["schemas"]["InvoiceFlags"] | null;
+            /** Is Default */
+            is_default: boolean;
+            /** Layout */
+            layout: string[];
+            low_stock?: components["schemas"]["LowStock"] | null;
+            new_orders?: components["schemas"]["NewOrders"] | null;
+            open_returns?: components["schemas"]["OpenReturns"] | null;
+            products_without_photos?: components["schemas"]["ProductsWithoutPhotos"] | null;
+            shipped_without_invoice?: components["schemas"]["NewOrders"] | null;
+            unpaid_transfers_near_expiry?: components["schemas"]["ExpiringTransfers"] | null;
         };
         /** HomeReturnRow */
         HomeReturnRow: {
@@ -8479,6 +8518,50 @@ export interface operations {
         };
     };
     home_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HomeOut"];
+                };
+            };
+        };
+    };
+    home_layout_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HomeLayoutIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HomeOut"];
+                };
+            };
+        };
+    };
+    home_layout_reset: {
         parameters: {
             query?: never;
             header?: never;
