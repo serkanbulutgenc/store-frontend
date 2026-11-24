@@ -1,13 +1,4 @@
-import {
-  Banknote,
-  Bell,
-  BellRing,
-  FileText,
-  Image,
-  type LucideIcon,
-  Store,
-  Truck,
-} from "lucide-react";
+import { Banknote, Bell, BellRing, FileText, type LucideIcon, Store, Truck } from "lucide-react";
 import type { SettingsFormValues } from "./schemas";
 
 export type FieldName = keyof SettingsFormValues;
@@ -16,7 +7,7 @@ export type FieldSpec = {
   label: string;
   hint?: string;
   area?: boolean;
-  kind?: "switch";
+  kind?: "switch" | "accounts";
 };
 export type SettingsTab = {
   id: string;
@@ -32,11 +23,10 @@ export const SETTINGS_TABS: SettingsTab[] = [
     label: "Kargo ve ücretler",
     icon: Truck,
     fields: [
-      { name: "shipping_fee", label: "Kargo ücreti (₺)" },
       {
-        name: "free_shipping_threshold",
-        label: "Ücretsiz kargo eşiği (₺)",
-        hint: "Boş bırakırsanız ücretsiz kargo kapalıdır.",
+        name: "shipping_fee",
+        label: "Yedek kargo ücreti (₺)",
+        hint: "Taşıyıcı tarifesi bulunamadığında (il veya ürün boyutu belli değilse) uygulanır. Normalde kargo ücreti Kargo fiyatları sayfasındaki tarifeden hesaplanır.",
       },
       { name: "cod_fee", label: "Kapıda ödeme ücreti (₺)" },
       { name: "fee_kdv_rate", label: "Kargo ve kapıda ödeme KDV oranı (%)" },
@@ -47,11 +37,7 @@ export const SETTINGS_TABS: SettingsTab[] = [
     id: "bank",
     label: "Banka bilgileri",
     icon: Banknote,
-    fields: [
-      { name: "bank_name", label: "Banka" },
-      { name: "bank_account_holder", label: "Hesap sahibi" },
-      { name: "bank_iban", label: "IBAN" },
-    ],
+    fields: [{ name: "bank_accounts", label: "Banka hesapları", kind: "accounts" }],
   },
   {
     id: "notifications",
@@ -64,16 +50,6 @@ export const SETTINGS_TABS: SettingsTab[] = [
         hint: "Her satıra bir e-posta.",
         area: true,
       },
-    ],
-  },
-  {
-    id: "banner",
-    label: "Ana sayfa afişi",
-    icon: Image,
-    fields: [
-      { name: "banner_image_url", label: "Görsel adresi" },
-      { name: "banner_link", label: "Bağlantı" },
-      { name: "banner_alt", label: "Alternatif metin" },
     ],
   },
   {
