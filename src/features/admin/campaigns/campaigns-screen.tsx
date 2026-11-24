@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { can, type Me } from "@/lib/api/me";
+import { BasketCampaignsTab } from "../basket-campaigns/basket-campaigns-tab";
 import { CampaignPagesTab } from "../campaign-pages/campaign-pages-screen";
 import { useFlip, useStepBackWhenEmpty } from "../components/row-actions";
 import { RowDeleteDialog, StatusFilter } from "../components/row-list";
@@ -21,9 +22,9 @@ import type { CampaignSearch } from "./search";
 
 const helper = columnHelper<CampaignListRow>();
 
-type Tab = "campaigns" | "pages";
+type Tab = "campaigns" | "pages" | "basket";
 
-/** Discount Campaigns and Campaign pages in one place. Staff may edit pages but not Campaigns, so
+/** Discount Campaigns, Basket Campaigns and Campaign pages in one place. Staff may edit pages but not Campaigns, so
  * they see only the pages tab; creating and editing happen on their own admin pages. */
 export function CampaignsScreen({
   search,
@@ -36,6 +37,9 @@ export function CampaignsScreen({
 }) {
   const tabs: { key: Tab; label: string }[] = [
     ...(can(me, "manage_campaigns") ? [{ key: "campaigns" as const, label: "Kampanyalar" }] : []),
+    ...(can(me, "manage_campaigns")
+      ? [{ key: "basket" as const, label: "Sepet kampanyaları" }]
+      : []),
     ...(can(me, "edit_campaign_pages")
       ? [{ key: "pages" as const, label: "Kampanya sayfaları" }]
       : []),
@@ -69,6 +73,8 @@ export function CampaignsScreen({
           status={search.pstatus}
           onStatusChange={(pstatus) => onSearchChange({ pstatus })}
         />
+      ) : active === "basket" ? (
+        <BasketCampaignsTab search={search} onSearchChange={onSearchChange} />
       ) : active === "campaigns" ? (
         <CampaignsTab search={search} onSearchChange={onSearchChange} />
       ) : null}

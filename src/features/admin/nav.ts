@@ -72,7 +72,7 @@ export const NAV_GROUPS: NavGroup[] = [
         to: "/admin/campaigns",
         icon: Percent,
         anyPermission: ["manage_campaigns", "edit_campaign_pages"],
-        aliases: ["/admin/campaign-pages"],
+        aliases: ["/admin/campaign-pages", "/admin/basket-campaigns"],
       },
       { label: "Raporlar", to: "/admin/reports", icon: ChartColumn, ownerOnly: true },
     ],
