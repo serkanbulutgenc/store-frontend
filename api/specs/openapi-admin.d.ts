@@ -1509,6 +1509,31 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/homepage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Homepage
+         * @description Every section of the layout, hidden ones included, with its settings.
+         */
+        get: operations["homepage_get_for_editing"];
+        /**
+         * Save Homepage
+         * @description Replace the whole layout atomically. Live at once; written to the Audit log.
+         *     Section ids must be unique and there are at most 20 sections.
+         */
+        put: operations["homepage_save"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/images/{image_id}": {
         parameters: {
             query?: never;
@@ -3267,6 +3292,58 @@ export interface components {
              */
             updated_at: string;
         };
+        /** BannerSection */
+        BannerSection: {
+            /**
+             * Display
+             * @default carousel
+             * @enum {string}
+             */
+            display: "grid" | "carousel" | "list";
+            /** Id */
+            id: string;
+            /**
+             * Link
+             * @default
+             */
+            link: string;
+            /**
+             * @default {
+             *       "index": 0,
+             *       "slot": "home_mid"
+             *     }
+             */
+            settings: components["schemas"]["BannerSettings"];
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "banner";
+            /**
+             * Visible
+             * @default true
+             */
+            visible: boolean;
+        };
+        /** BannerSettings */
+        BannerSettings: {
+            /**
+             * Index
+             * @default 0
+             */
+            index: number;
+            /**
+             * Slot
+             * @default home_mid
+             * @constant
+             */
+            slot: "home_mid";
+        };
         /** BasketCampaignIn */
         BasketCampaignIn: {
             /**
@@ -3670,6 +3747,58 @@ export interface components {
             id: number;
             /** Name */
             name: string;
+        };
+        /** CategoriesSection */
+        CategoriesSection: {
+            /**
+             * Display
+             * @default carousel
+             * @enum {string}
+             */
+            display: "grid" | "carousel" | "list";
+            /** Id */
+            id: string;
+            /**
+             * Link
+             * @default
+             */
+            link: string;
+            /**
+             * @default {
+             *       "count": 12,
+             *       "source": "home"
+             *     }
+             */
+            settings: components["schemas"]["CategoriesSettings"];
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "categories";
+            /**
+             * Visible
+             * @default true
+             */
+            visible: boolean;
+        };
+        /** CategoriesSettings */
+        CategoriesSettings: {
+            /**
+             * Count
+             * @default 12
+             */
+            count: number;
+            /**
+             * Source
+             * @default home
+             * @constant
+             */
+            source: "home";
         };
         /** CategoryImageOut */
         CategoryImageOut: {
@@ -4165,6 +4294,19 @@ export interface components {
             reason: components["schemas"]["ReturnReason"];
             /** Return Id */
             return_id: number;
+        };
+        /**
+         * HomepageLayoutIn
+         * @description The sections in page order. Hidden ones are kept, with their settings.
+         */
+        HomepageLayoutIn: {
+            /** Sections */
+            sections: (components["schemas"]["SliderSection"] | components["schemas"]["ProductsSection"] | components["schemas"]["CategoriesSection"] | components["schemas"]["BannerSection"] | components["schemas"]["RichTextSection"])[];
+        };
+        /** HomepageLayoutOut */
+        HomepageLayoutOut: {
+            /** Sections */
+            sections: (components["schemas"]["SliderSection"] | components["schemas"]["ProductsSection"] | components["schemas"]["CategoriesSection"] | components["schemas"]["BannerSection"] | components["schemas"]["RichTextSection"])[];
         };
         /** ImageAltIn */
         ImageAltIn: {
@@ -5402,6 +5544,58 @@ export interface components {
             rows: components["schemas"]["ProductRowOut"][];
             sort: components["schemas"]["Sort"];
         };
+        /** ProductsSection */
+        ProductsSection: {
+            /**
+             * Display
+             * @default carousel
+             * @enum {string}
+             */
+            display: "grid" | "carousel" | "list";
+            /** Id */
+            id: string;
+            /**
+             * Link
+             * @default
+             */
+            link: string;
+            /**
+             * @default {
+             *       "count": 12,
+             *       "source": "latest"
+             *     }
+             */
+            settings: components["schemas"]["ProductsSettings"];
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "products";
+            /**
+             * Visible
+             * @default true
+             */
+            visible: boolean;
+        };
+        /** ProductsSettings */
+        ProductsSettings: {
+            /**
+             * Count
+             * @default 12
+             */
+            count: number;
+            /**
+             * Source
+             * @default latest
+             * @enum {string}
+             */
+            source: "latest" | "best_selling" | "on_sale" | "recently_viewed";
+        };
         /** ProductsWithoutPhotos */
         ProductsWithoutPhotos: {
             /** Count */
@@ -5751,6 +5945,51 @@ export interface components {
             previous: components["schemas"]["SpanOut"];
             range: components["schemas"]["SpanOut"];
         };
+        /** RichTextSection */
+        RichTextSection: {
+            /**
+             * Display
+             * @default carousel
+             * @enum {string}
+             */
+            display: "grid" | "carousel" | "list";
+            /** Id */
+            id: string;
+            /**
+             * Link
+             * @default
+             */
+            link: string;
+            /**
+             * @default {
+             *       "body": ""
+             *     }
+             */
+            settings: components["schemas"]["RichTextSettings"];
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "rich_text";
+            /**
+             * Visible
+             * @default true
+             */
+            visible: boolean;
+        };
+        /** RichTextSettings */
+        RichTextSettings: {
+            /**
+             * Body
+             * @default
+             */
+            body: string;
+        };
         /** SalesParams */
         SalesParams: {
             /** Date From */
@@ -5950,6 +6189,58 @@ export interface components {
             colour: components["schemas"]["ColourOut"];
             /** Size */
             size: string;
+        };
+        /** SliderSection */
+        SliderSection: {
+            /**
+             * Display
+             * @default carousel
+             * @enum {string}
+             */
+            display: "grid" | "carousel" | "list";
+            /** Id */
+            id: string;
+            /**
+             * Link
+             * @default
+             */
+            link: string;
+            /**
+             * @default {
+             *       "count": 5,
+             *       "source": "home"
+             *     }
+             */
+            settings: components["schemas"]["SliderSettings"];
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "slider";
+            /**
+             * Visible
+             * @default true
+             */
+            visible: boolean;
+        };
+        /** SliderSettings */
+        SliderSettings: {
+            /**
+             * Count
+             * @default 5
+             */
+            count: number;
+            /**
+             * Source
+             * @default home
+             * @constant
+             */
+            source: "home";
         };
         /** SlugIn */
         SlugIn: {
@@ -8982,6 +9273,50 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HomeOut"];
+                };
+            };
+        };
+    };
+    homepage_get_for_editing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HomepageLayoutOut"];
+                };
+            };
+        };
+    };
+    homepage_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HomepageLayoutIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HomepageLayoutOut"];
                 };
             };
         };
