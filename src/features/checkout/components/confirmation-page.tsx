@@ -39,41 +39,7 @@ export function ConfirmationPage() {
         </p>
       </div>
 
-      {order.bank && (
-        <section
-          aria-labelledby="bank"
-          className="space-y-2 rounded-md border border-border bg-card p-4"
-        >
-          <h2 id="bank" className="text-lg font-semibold">
-            Havale / EFT bilgileri
-          </h2>
-          {order.bank.accounts.length > 1 && (
-            <p className="text-muted-foreground">Aşağıdaki hesaplardan birine gönderebilirsiniz.</p>
-          )}
-          <ul className="space-y-3">
-            {order.bank.accounts.map((account) => (
-              <li key={account.iban}>
-                <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
-                  <dt className="text-muted-foreground">Banka</dt>
-                  <dd>{account.name}</dd>
-                  <dt className="text-muted-foreground">Hesap sahibi</dt>
-                  <dd>{account.account_holder}</dd>
-                  <dt className="text-muted-foreground">IBAN</dt>
-                  <dd className="font-mono">{account.iban}</dd>
-                </dl>
-              </li>
-            ))}
-          </ul>
-          <dl className="grid grid-cols-[auto_1fr] gap-x-4">
-            <dt className="text-muted-foreground">Açıklama</dt>
-            <dd className="font-mono">{order.bank.reference}</dd>
-          </dl>
-          <p className="text-muted-foreground">
-            {formatTry(order.total)} tutarını 48 saat içinde gönderin ve açıklamaya sipariş
-            numaranızı yazın. Aksi halde siparişiniz iptal edilir.
-          </p>
-        </section>
-      )}
+      {order.bank && <BankDetails bank={order.bank} total={order.total} />}
       {!order.bank && <p>Ödemeyi kapıda, teslimat sırasında yapacaksınız.</p>}
 
       <section aria-labelledby="items">
@@ -113,5 +79,47 @@ export function ConfirmationPage() {
         Alışverişe devam et
       </Link>
     </main>
+  );
+}
+
+type Bank = NonNullable<PlacedOrder["bank"]>;
+
+/** Where to send a Bank transfer: every account the Owner listed, in their order (any one will
+ * do), then the Order number to write in the transfer. */
+export function BankDetails({ bank, total }: { bank: Bank; total: string }) {
+  return (
+    <section
+      aria-labelledby="bank"
+      className="space-y-2 rounded-md border border-border bg-card p-4"
+    >
+      <h2 id="bank" className="text-lg font-semibold">
+        Havale / EFT bilgileri
+      </h2>
+      {bank.accounts.length > 1 && (
+        <p className="text-muted-foreground">Aşağıdaki hesaplardan birine gönderebilirsiniz.</p>
+      )}
+      <ul className="space-y-3">
+        {bank.accounts.map((account) => (
+          <li key={account.iban}>
+            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+              <dt className="text-muted-foreground">Banka</dt>
+              <dd>{account.name}</dd>
+              <dt className="text-muted-foreground">Hesap sahibi</dt>
+              <dd>{account.account_holder}</dd>
+              <dt className="text-muted-foreground">IBAN</dt>
+              <dd className="font-mono">{account.iban}</dd>
+            </dl>
+          </li>
+        ))}
+      </ul>
+      <dl className="grid grid-cols-[auto_1fr] gap-x-4">
+        <dt className="text-muted-foreground">Açıklama</dt>
+        <dd className="font-mono">{bank.reference}</dd>
+      </dl>
+      <p className="text-muted-foreground">
+        {formatTry(total)} tutarını 48 saat içinde gönderin ve açıklamaya sipariş numaranızı yazın.
+        Aksi halde siparişiniz iptal edilir.
+      </p>
+    </section>
   );
 }
