@@ -3027,6 +3027,24 @@ export interface components {
              */
             date_to?: string | null;
         };
+        /** BankAccountIn */
+        BankAccountIn: {
+            /** Account Holder */
+            account_holder: string;
+            /** Iban */
+            iban: string;
+            /** Name */
+            name: string;
+        };
+        /** BankAccountOut */
+        BankAccountOut: {
+            /** Account Holder */
+            account_holder: string;
+            /** Iban */
+            iban: string;
+            /** Name */
+            name: string;
+        };
         /** BannerCategoryOut */
         BannerCategoryOut: {
             /** Id */
@@ -5593,18 +5611,8 @@ export interface components {
         };
         /** SettingsOut */
         SettingsOut: {
-            /** Bank Account Holder */
-            bank_account_holder: string;
-            /** Bank Iban */
-            bank_iban: string;
-            /** Bank Name */
-            bank_name: string;
-            /** Banner Alt */
-            banner_alt: string;
-            /** Banner Image Url */
-            banner_image_url: string;
-            /** Banner Link */
-            banner_link: string;
+            /** Bank Accounts */
+            bank_accounts: components["schemas"]["BankAccountOut"][];
             /**
              * Cod Fee
              * @example 349.90
@@ -5614,8 +5622,6 @@ export interface components {
             complaint_contact: string;
             /** Fee Kdv Rate */
             fee_kdv_rate: string;
-            /** Free Shipping Threshold */
-            free_shipping_threshold: string | null;
             /** Legal Versions */
             legal_versions: {
                 [key: string]: string;
@@ -5649,26 +5655,14 @@ export interface components {
          * @description Every field optional; only the ones sent change. Money arrives as strings.
          */
         SettingsPatch: {
-            /** Bank Account Holder */
-            bank_account_holder?: string | null;
-            /** Bank Iban */
-            bank_iban?: string | null;
-            /** Bank Name */
-            bank_name?: string | null;
-            /** Banner Alt */
-            banner_alt?: string | null;
-            /** Banner Image Url */
-            banner_image_url?: string | null;
-            /** Banner Link */
-            banner_link?: string | null;
+            /** Bank Accounts */
+            bank_accounts?: components["schemas"]["BankAccountIn"][] | null;
             /** Cod Fee */
             cod_fee?: string | null;
             /** Complaint Contact */
             complaint_contact?: string | null;
             /** Fee Kdv Rate */
             fee_kdv_rate?: string | null;
-            /** Free Shipping Threshold */
-            free_shipping_threshold?: string | null;
             /** Low Stock Default */
             low_stock_default?: number | null;
             /** Notification Emails */

@@ -1,32 +1,50 @@
 import { z } from "zod";
 import { moneySchema } from "../catalog/schemas";
 
-const optionalMoney = z.union([z.literal(""), moneySchema]);
 const email = z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Geçerli bir e-posta girin.");
+
+/** One bank account as typed. IBANs are checked on the server too, which also drops spaces. */
+export type BankAccountValue = { name: string; account_holder: string; iban: string };
+
+export const MAX_BANK_ACCOUNTS = 10;
+const IBAN = /^TR\d{24}$/;
+
+/** An IBAN as the API stores it: no spaces, upper case. */
+export const normaliseIban = (iban: string): string => iban.replace(/\s+/g, "").toUpperCase();
+
+/** The first thing wrong with a list of accounts, named by its row, or null. */
+export function bankAccountsError(accounts: BankAccountValue[]): string | null {
+  if (accounts.length > MAX_BANK_ACCOUNTS)
+    return `En fazla ${MAX_BANK_ACCOUNTS} hesap girilebilir.`;
+  for (const [i, a] of accounts.entries()) {
+    const row = `${i + 1}. hesap: `;
+    if (!a.name.trim()) return `${row}Banka adı gerekli.`;
+    if (!a.account_holder.trim()) return `${row}Hesap sahibi gerekli.`;
+    if (!IBAN.test(normaliseIban(a.iban)))
+      return `${row}Geçerli bir IBAN girin (TR ile başlayan 26 karakter).`;
+  }
+  const ibans = accounts.map((a) => normaliseIban(a.iban));
+  return new Set(ibans).size === ibans.length ? null : "Aynı IBAN birden fazla kez girilemez.";
+}
+
+const bankAccounts = z
+  .array(z.object({ name: z.string(), account_holder: z.string(), iban: z.string() }))
+  .superRefine((accounts, ctx) => {
+    const message = bankAccountsError(accounts);
+    if (message) ctx.addIssue({ code: "custom", message });
+  });
 
 export const settingsFormSchema = z.object({
   shipping_fee: moneySchema,
-  free_shipping_threshold: optionalMoney,
   cod_fee: moneySchema,
   fee_kdv_rate: z.string().regex(/^\d+(\.\d{1,2})?$/, "Geçerli bir oran girin (örn. 20)."),
   low_stock_default: z.string().regex(/^\d+$/, "Tam sayı girin."),
-  bank_name: z.string().trim(),
-  bank_account_holder: z.string().trim(),
-  bank_iban: z.string().trim(),
+  bank_accounts: bankAccounts,
   notification_emails: z
     .string()
     .refine((v) => splitEmails(v).every((e) => email.safeParse(e).success), {
       message: "Her satırda geçerli bir e-posta olmalı.",
     }),
-  banner_image_url: z.string().trim(),
-  banner_link: z
-    .string()
-    .trim()
-    .refine(
-      (v) => v === "" || v.startsWith("/") || /^https?:\/\//.test(v),
-      "Bağlantı / veya http(s):// ile başlamalı.",
-    ),
-  banner_alt: z.string().trim(),
   seller_name: z.string().trim(),
   seller_tax_number: z.string().trim(),
   seller_address: z.string().trim(),
@@ -46,12 +64,16 @@ export function splitEmails(text: string): string[] {
     .filter(Boolean);
 }
 
-/** The PATCH body. A blank threshold clears free shipping (null); every other field is sent as typed. */
+/** The PATCH body: every field is sent as typed, with the numbers converted. */
 export function toSettingsPatch(v: SettingsFormValues) {
-  const { notification_emails, free_shipping_threshold, low_stock_default, ...rest } = v;
+  const { notification_emails, low_stock_default, bank_accounts, ...rest } = v;
   return {
     ...rest,
-    free_shipping_threshold: free_shipping_threshold === "" ? null : free_shipping_threshold,
+    bank_accounts: bank_accounts.map((a) => ({
+      name: a.name.trim(),
+      account_holder: a.account_holder.trim(),
+      iban: normaliseIban(a.iban),
+    })),
     low_stock_default: Number(low_stock_default),
     notification_emails: splitEmails(notification_emails),
   };

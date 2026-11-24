@@ -2,9 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { BannerHero } from "@/features/banners/components/banner-hero";
 import { BannerStrip } from "@/features/banners/components/picture-banner";
 import { bannersQuery, NO_BANNERS } from "@/features/banners/queries";
-import { settingsQuery } from "@/features/basket/queries";
 import { CategoryRail } from "@/features/catalog/components/category-rail";
-import { HomeBanner } from "@/features/catalog/components/home-banner";
 import { HomeHero } from "@/features/catalog/components/home-hero";
 import { ProductRail } from "@/features/catalog/components/product-rail";
 import { RecentlyViewed } from "@/features/catalog/components/recently-viewed";
@@ -18,13 +16,11 @@ import { HOME_SLIDER_SLUG, sliderProducts } from "@/features/catalog/slider";
 
 export const Route = createFileRoute("/_storefront/")({
   loader: async ({ context }) => {
-    const [latest, popular, onSale, categories, settings, featured, banners] = await Promise.all([
+    const [latest, popular, onSale, categories, featured, banners] = await Promise.all([
       context.queryClient.query(productsPageQuery({}, { page: 1 })),
       context.queryClient.query(productsPageQuery({ sort: "popular" }, { page: 1 })),
       context.queryClient.query(productsPageQuery({ on_sale: true }, { page: 1 })),
       context.queryClient.query(homeCategoriesQuery),
-      // The banner is optional: the home page must still render when the settings do not load.
-      context.queryClient.query(settingsQuery).catch(() => null),
       // An unpublished, empty or missing Collection is a 404: the slider then shows the newest.
       context.queryClient
         .query(collectionPageQuery(HOME_SLIDER_SLUG))
@@ -37,7 +33,6 @@ export const Route = createFileRoute("/_storefront/")({
       popular: popular.items,
       onSale: onSale.items,
       categories,
-      banner: settings?.banner,
       hero: banners.home_hero,
       mid: banners.home_mid,
       slider: sliderProducts(featured, latest.items),
@@ -45,12 +40,10 @@ export const Route = createFileRoute("/_storefront/")({
   },
   head: ({ match }) => homeHead(match.context.siteOrigin),
   component: function Home() {
-    const { latest, popular, onSale, categories, banner, slider, hero, mid } =
-      Route.useLoaderData();
+    const { latest, popular, onSale, categories, slider, hero, mid } = Route.useLoaderData();
     return (
       <main>
         <h1 className="sr-only">Aura Tekstil</h1>
-        <HomeBanner banner={banner} />
         {hero.length > 0 ? <BannerHero banners={hero} /> : <HomeHero products={slider} />}
         <div className="mx-auto max-w-6xl space-y-12 px-4 py-10">
           <RecentlyViewed />

@@ -803,7 +803,7 @@ export interface paths {
         };
         /**
          * Get Public Settings
-         * @description What the storefront needs: fees, banner, seller identity, Legal versions and
+         * @description What the storefront needs: fees, seller identity, Legal versions and
          *     whether Stock alerts are on.
          *     Bank details, KDV rate, recipients and the stock default stay private.
          */
@@ -1139,28 +1139,27 @@ export interface components {
             /** Product Class */
             product_class: string;
         };
-        /** BankOut */
-        BankOut: {
+        /** BankAccountOut */
+        BankAccountOut: {
             /** Account Holder */
             account_holder: string;
             /** Iban */
             iban: string;
             /** Name */
             name: string;
+        };
+        /** BankOut */
+        BankOut: {
+            /**
+             * Accounts
+             * @description Any one of these will do, in the order the Owner set.
+             */
+            accounts: components["schemas"]["BankAccountOut"][];
             /**
              * Reference
              * @description Write this Order number in the transfer.
              */
             reference: string;
-        };
-        /** BannerOut */
-        BannerOut: {
-            /** Alt */
-            alt: string;
-            /** Image Url */
-            image_url: string;
-            /** Link */
-            link: string;
         };
         /** BannersOut */
         BannersOut: {
@@ -1907,14 +1906,11 @@ export interface components {
         };
         /** PublicSettingsOut */
         PublicSettingsOut: {
-            banner: components["schemas"]["BannerOut"] | null;
             /**
              * Cod Fee
              * @example 349.90
              */
             cod_fee: string;
-            /** Free Shipping Threshold */
-            free_shipping_threshold: string | null;
             /** Legal Versions */
             legal_versions: {
                 [key: string]: string;
@@ -1956,11 +1952,6 @@ export interface components {
              * @example 349.90
              */
             discount: string;
-            /**
-             * Free Shipping
-             * @description True when the items total reached the free-shipping threshold.
-             */
-            free_shipping: boolean;
             /**
              * Items Total
              * @description What the items cost before any Voucher.

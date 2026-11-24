@@ -1,7 +1,7 @@
 /**
  * Preview of the fees checkout will charge, so the summary can show them before the Order
- * exists. Same rule as the backend: shipping is free once the items reach the threshold.
- * Amounts are decimal strings; the sum runs on whole kuruş so there is no float drift. The
+ * exists: the flat Settings shipping fee, which is what the backend charges until it knows the
+ * destination. Amounts are decimal strings; the sum runs on whole kuruş so there is no float drift. The
  * placed Order's own totals are what the confirmation page shows.
  *
  * `feeSummary` prefers the backend's quote, which knows the destination province and the
@@ -11,7 +11,6 @@ import type { CheckoutQuote } from "./queries";
 
 export type FeeSettings = {
   shipping_fee: string;
-  free_shipping_threshold: string | null;
   cod_fee: string;
 };
 
@@ -32,15 +31,12 @@ export function previewFees(
   discount = "0.00",
 ) {
   const items = toKurus(subtotal);
-  const threshold = settings.free_shipping_threshold;
-  const free = threshold !== null && items >= toKurus(threshold);
-  const shipping = free ? 0 : toKurus(settings.shipping_fee);
+  const shipping = toKurus(settings.shipping_fee);
   const cod = method === "cod" ? toKurus(settings.cod_fee) : 0;
   return {
     shipping: fromKurus(shipping),
     cod: fromKurus(cod),
     total: fromKurus(items - toKurus(discount) + shipping + cod),
-    freeShipping: free,
   };
 }
 
@@ -63,7 +59,6 @@ export function feeSummary(
     shipping: quote.shipping_fee,
     cod: quote.cod_fee,
     total: quote.total,
-    freeShipping: quote.free_shipping,
     discount: quote.discount,
     voucherCode: quote.voucher_code ?? null,
     voucherProblem: quote.voucher_problem ?? null,
