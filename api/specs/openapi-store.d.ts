@@ -557,6 +557,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/homepage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Homepage
+         * @description The home page: the Owner's visible sections in order, each already resolved.
+         *     A section with nothing to show is left out.
+         */
+        get: operations["catalog_get_homepage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/store/legal-pages": {
         parameters: {
             query?: never;
@@ -1496,6 +1517,49 @@ export interface components {
             name: string;
             /** Slug */
             slug: string;
+        };
+        /** HomepageOut */
+        HomepageOut: {
+            /** Sections */
+            sections: components["schemas"]["HomepageSectionOut"][];
+        };
+        /** HomepageSectionOut */
+        HomepageSectionOut: {
+            /** Banners */
+            banners?: components["schemas"]["PictureBannerOut"][] | null;
+            /** Body */
+            body?: string | null;
+            /** Categories */
+            categories?: components["schemas"]["HomeCategoryOut"][] | null;
+            /**
+             * Client Resolved
+             * @description Recently viewed: the Shopper's browser fills it in.
+             * @default false
+             */
+            client_resolved: boolean;
+            /**
+             * Display
+             * @enum {string}
+             */
+            display: "grid" | "carousel" | "list";
+            /** Id */
+            id: string;
+            /** Link */
+            link: string;
+            /** Products */
+            products?: components["schemas"]["ProductCardOut"][] | null;
+            /**
+             * Source
+             * @description Where a section takes its items from (Products: latest, best_selling, on_sale, recently_viewed).
+             */
+            source?: string | null;
+            /** Title */
+            title: string;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "slider" | "products" | "categories" | "banner" | "rich_text";
         };
         /** ImageSizeOut */
         ImageSizeOut: {
@@ -3125,6 +3189,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HomeCategoryOut"][];
+                };
+            };
+        };
+    };
+    catalog_get_homepage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HomepageOut"];
                 };
             };
         };

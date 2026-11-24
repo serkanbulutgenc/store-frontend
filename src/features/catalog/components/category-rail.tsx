@@ -9,7 +9,16 @@ import { NavButton, useCarouselNav } from "./product-rail";
  * row that drags and has arrow buttons, like the product rows. A Category without an image
  * shows a placeholder tile. Renders nothing when none is picked.
  */
-export function CategoryRail({ categories }: { categories: HomeCategory[] }) {
+export function CategoryRail({
+  categories,
+  title = "Kategoriler",
+  action,
+}: {
+  categories: HomeCategory[];
+  title?: string;
+  /** Beside the title, e.g. a "see all" link. */
+  action?: React.ReactNode;
+}) {
   const [ref, api] = useEmblaCarousel({
     align: "start",
     containScroll: "trimSnaps",
@@ -19,9 +28,12 @@ export function CategoryRail({ categories }: { categories: HomeCategory[] }) {
   if (categories.length === 0) return null;
   return (
     <section aria-labelledby="home-categories">
-      <h2 id="home-categories" className="mb-4 text-xl font-semibold">
-        Kategoriler
-      </h2>
+      <div className="mb-4 flex items-baseline justify-between">
+        <h2 id="home-categories" className="text-xl font-semibold">
+          {title}
+        </h2>
+        {action}
+      </div>
       <div className="relative">
         <div ref={ref} className="overflow-hidden">
           <ul className="-ml-3 flex touch-pan-y">
