@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { Me } from "@/lib/api/me";
 import type { HomeData } from "../returns/queries";
 import { ApprovalsWidget } from "./approvals-widget";
+import { ContactRepliesWidget } from "./contact-replies-widget";
 import { LowStockWidget } from "./low-stock-widget";
 import { NewOrdersWidget, UnpaidTransfersWidget } from "./order-widgets";
 import { ReturnsWidget } from "./returns-widget";
@@ -18,6 +19,11 @@ export const WIDGETS: Record<string, Def> = {
   approvals: {
     label: "Onay bekleyenler",
     render: (data) => (data.approvals ? <ApprovalsWidget data={data.approvals} /> : null),
+  },
+  contact_replies: {
+    label: "Onay bekleyen yanıtlar",
+    render: (data) =>
+      data.contact_replies ? <ContactRepliesWidget data={data.contact_replies} /> : null,
   },
   new_orders: {
     label: "Yeni siparişler",

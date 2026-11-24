@@ -3745,6 +3745,32 @@ export interface components {
              */
             thread_count: number;
         };
+        /** ContactRepliesWaiting */
+        ContactRepliesWaiting: {
+            /** Count */
+            count: number;
+            /** Rows */
+            rows: components["schemas"]["ContactReplyRow"][];
+        };
+        /** ContactReplyRow */
+        ContactReplyRow: {
+            author: components["schemas"]["PersonOut"] | null;
+            /** Category */
+            category: string;
+            /** Excerpt */
+            excerpt: string;
+            /** Reply Id */
+            reply_id: number;
+            /** Shopper */
+            shopper: string;
+            /** Thread Id */
+            thread_id: number;
+            /**
+             * Written At
+             * Format: date-time
+             */
+            written_at: string;
+        };
         /**
          * CoverImageOut
          * @description The cover image: `processing` until its derivatives exist.
@@ -3927,6 +3953,7 @@ export interface components {
             approvals?: components["schemas"]["ApprovalsWaiting"] | null;
             /** Available */
             available: string[];
+            contact_replies?: components["schemas"]["ContactRepliesWaiting"] | null;
             invoice_attention?: components["schemas"]["InvoiceFlags"] | null;
             /** Is Default */
             is_default: boolean;
