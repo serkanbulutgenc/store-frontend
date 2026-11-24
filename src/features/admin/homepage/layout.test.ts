@@ -157,3 +157,26 @@ describe("pickMissing", () => {
     expect(pickMissing(products({ source: "latest", count: 12, window: 30 }))).toBeNull();
   });
 });
+
+describe("slider and banner settings", () => {
+  const slider = (settings: object) => ({ ...addSection([], "slider")[0], settings }) as Section;
+
+  it("asks for the banners or collection a slider source needs", () => {
+    expect(pickMissing(slider({ source: "banners", count: 5, banner_ids: [] }))).toMatch(/afiş/);
+    expect(pickMissing(slider({ source: "collection", count: 5 }))).toMatch(/koleksiyon/);
+    expect(pickMissing(slider({ source: "banners", count: 5, banner_ids: [3] }))).toBeNull();
+    expect(pickMissing(slider({ source: "home", count: 5 }))).toBeNull();
+  });
+
+  it("edits a slider's and a banner's own settings", () => {
+    const l = addSection(addSection([], "slider"), "banner");
+    expect(
+      updateSettings(l, "slider-1", { source: "collection", collection_id: 2 })[0],
+    ).toMatchObject({
+      settings: { source: "collection", collection_id: 2, count: 5 },
+    });
+    expect(updateSettings(l, "banner-1", { banner_id: 9 })[1]).toMatchObject({
+      settings: { banner_id: 9, index: 0 },
+    });
+  });
+});

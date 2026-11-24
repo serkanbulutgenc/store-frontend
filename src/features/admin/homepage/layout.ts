@@ -13,6 +13,14 @@ export const MAX_ITEMS = 24;
 
 export type ProductsSettings = Extract<Section, { type: "products" }>["settings"];
 export type CategoriesSettings = Extract<Section, { type: "categories" }>["settings"];
+export type SliderSettings = Extract<Section, { type: "slider" }>["settings"];
+export type BannerSettings = Extract<Section, { type: "banner" }>["settings"];
+export type SliderSource = SliderSettings["source"];
+export type SettingsPatch =
+  | Partial<ProductsSettings>
+  | Partial<CategoriesSettings>
+  | Partial<SliderSettings>
+  | Partial<BannerSettings>;
 export type ProductSource = ProductsSettings["source"];
 export type CategorySource = CategoriesSettings["source"];
 export type Window = ProductsSettings["window"];
@@ -31,6 +39,12 @@ export const CATEGORY_SOURCE_LABELS: Record<CategorySource, string> = {
   picked: "Elle seçilenler",
 };
 
+export const SLIDER_SOURCE_LABELS: Record<SliderSource, string> = {
+  home: "Ana sayfa slaytı ve yedekleri",
+  banners: "Seçtiğim afişler",
+  collection: "Bir koleksiyon",
+};
+
 export const WINDOWS: Window[] = [7, 30, 90];
 
 /** A count the shop accepts: a whole number from MIN_ITEMS to MAX_ITEMS; anything else is clamped. */
@@ -40,13 +54,9 @@ export function clampCount(n: number): number {
 }
 
 /** Edit one Products or Categories section's own settings. Other sections are left alone. */
-export function updateSettings(
-  list: Section[],
-  id: string,
-  patch: Partial<ProductsSettings> | Partial<CategoriesSettings>,
-): Section[] {
+export function updateSettings(list: Section[], id: string, patch: SettingsPatch): Section[] {
   return list.map((s) =>
-    s.id === id && (s.type === "products" || s.type === "categories")
+    s.id === id && s.type !== "rich_text"
       ? ({ ...s, settings: { ...s.settings, ...patch } } as Section)
       : s,
   );
@@ -54,6 +64,12 @@ export function updateSettings(
 
 /** Whether a section's settings are complete enough to save: a source that needs a pick has one. */
 export function pickMissing(s: Section): string | null {
+  if (s.type === "slider") {
+    if (s.settings.source === "banners" && !(s.settings.banner_ids ?? []).length)
+      return "En az bir afiş seçin.";
+    if (s.settings.source === "collection" && s.settings.collection_id == null)
+      return "Bir koleksiyon seçin.";
+  }
   if (s.type === "products") {
     if (s.settings.source === "category" && s.settings.category_id == null)
       return "Bir kategori seçin.";

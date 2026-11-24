@@ -3330,6 +3330,7 @@ export interface components {
             link: string;
             /**
              * @default {
+             *       "banner_id": null,
              *       "index": 0,
              *       "slot": "home_mid"
              *     }
@@ -3353,6 +3354,8 @@ export interface components {
         };
         /** BannerSettings */
         BannerSettings: {
+            /** Banner Id */
+            banner_id?: number | null;
             /**
              * Index
              * @default 0
@@ -6354,6 +6357,8 @@ export interface components {
             link: string;
             /**
              * @default {
+             *       "banner_ids": [],
+             *       "collection_id": null,
              *       "count": 5,
              *       "source": "home"
              *     }
@@ -6377,6 +6382,10 @@ export interface components {
         };
         /** SliderSettings */
         SliderSettings: {
+            /** Banner Ids */
+            banner_ids?: number[];
+            /** Collection Id */
+            collection_id?: number | null;
             /**
              * Count
              * @default 5
@@ -6385,9 +6394,9 @@ export interface components {
             /**
              * Source
              * @default home
-             * @constant
+             * @enum {string}
              */
-            source: "home";
+            source: "home" | "banners" | "collection";
         };
         /** SlugIn */
         SlugIn: {
