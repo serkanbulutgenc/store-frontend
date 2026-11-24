@@ -34,12 +34,15 @@ import {
   isDirty,
   MAX_SECTIONS,
   moveSection,
+  pickMissing,
   removeSection,
   type Section,
   TYPE_LABELS,
   updateSection,
+  updateSettings,
 } from "./layout";
 import { homepageLayoutQuery, useSaveHomepage } from "./queries";
+import { SectionSettings } from "./section-settings";
 
 const nameOf = (s: Section) => s.title || TYPE_LABELS[s.type];
 
@@ -53,6 +56,7 @@ export function HomepageScreen() {
   const [saving, setSaving] = useState(false);
   const [adding, setAdding] = useState("");
   const dirty = isDirty(saved, draft);
+  const incomplete = draft.find((s) => pickMissing(s) !== null);
   useDirtyGuard(dirty && !saving);
 
   const sensors = useSensors(
@@ -125,6 +129,7 @@ export function HomepageScreen() {
                   editing={open === s.id}
                   onEdit={() => setOpen(open === s.id ? null : s.id)}
                   onChange={(patch) => setDraft(updateSection(draft, s.id, patch))}
+                  onSettings={(patch) => setDraft(updateSettings(draft, s.id, patch))}
                   onMove={(by) => setDraft(moveSection(draft, s.id, by))}
                   onRemove={() => setDraft(removeSection(draft, s.id))}
                 />
@@ -171,7 +176,16 @@ export function HomepageScreen() {
           >
             Değişiklikleri at
           </Button>
-          <Button size="sm" disabled={!dirty || saving} onClick={() => void submit()}>
+          {incomplete && (
+            <span role="alert" className="text-red-700">
+              {nameOf(incomplete)}: {pickMissing(incomplete)}
+            </span>
+          )}
+          <Button
+            size="sm"
+            disabled={!dirty || saving || incomplete !== undefined}
+            onClick={() => void submit()}
+          >
             Kaydet
           </Button>
         </div>
@@ -187,6 +201,7 @@ function SectionRow({
   editing,
   onEdit,
   onChange,
+  onSettings,
   onMove,
   onRemove,
 }: {
@@ -196,6 +211,7 @@ function SectionRow({
   editing: boolean;
   onEdit: () => void;
   onChange: (patch: Partial<Pick<Section, "title" | "link" | "visible" | "display">>) => void;
+  onSettings: (patch: Parameters<typeof updateSettings>[2]) => void;
   onMove: (by: -1 | 1) => void;
   onRemove: () => void;
 }) {
@@ -326,6 +342,7 @@ function SectionRow({
               </Select>
             </div>
           )}
+          <SectionSettings section={section} onChange={onSettings} />
         </div>
       )}
     </li>

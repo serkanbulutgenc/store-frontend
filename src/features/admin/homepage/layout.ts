@@ -8,6 +8,63 @@ export type SectionType = Section["type"];
 export type Display = Section["display"];
 
 export const MAX_SECTIONS = 20;
+export const MIN_ITEMS = 4;
+export const MAX_ITEMS = 24;
+
+export type ProductsSettings = Extract<Section, { type: "products" }>["settings"];
+export type CategoriesSettings = Extract<Section, { type: "categories" }>["settings"];
+export type ProductSource = ProductsSettings["source"];
+export type CategorySource = CategoriesSettings["source"];
+export type Window = ProductsSettings["window"];
+
+export const PRODUCT_SOURCE_LABELS: Record<ProductSource, string> = {
+  latest: "Yeni gelenler",
+  best_selling: "Çok satanlar",
+  on_sale: "İndirimdekiler",
+  category: "Bir kategori",
+  hand_picked: "Elle seçilenler",
+  recently_viewed: "Son baktıkları",
+};
+
+export const CATEGORY_SOURCE_LABELS: Record<CategorySource, string> = {
+  home: "Kategori ayarında işaretlenenler",
+  picked: "Elle seçilenler",
+};
+
+export const WINDOWS: Window[] = [7, 30, 90];
+
+/** A count the shop accepts: a whole number from MIN_ITEMS to MAX_ITEMS; anything else is clamped. */
+export function clampCount(n: number): number {
+  if (!Number.isFinite(n)) return MIN_ITEMS;
+  return Math.min(MAX_ITEMS, Math.max(MIN_ITEMS, Math.trunc(n)));
+}
+
+/** Edit one Products or Categories section's own settings. Other sections are left alone. */
+export function updateSettings(
+  list: Section[],
+  id: string,
+  patch: Partial<ProductsSettings> | Partial<CategoriesSettings>,
+): Section[] {
+  return list.map((s) =>
+    s.id === id && (s.type === "products" || s.type === "categories")
+      ? ({ ...s, settings: { ...s.settings, ...patch } } as Section)
+      : s,
+  );
+}
+
+/** Whether a section's settings are complete enough to save: a source that needs a pick has one. */
+export function pickMissing(s: Section): string | null {
+  if (s.type === "products") {
+    if (s.settings.source === "category" && s.settings.category_id == null)
+      return "Bir kategori seçin.";
+    if (s.settings.source === "hand_picked" && !(s.settings.product_ids ?? []).length)
+      return "En az bir ürün seçin.";
+  }
+  if (s.type === "categories" && s.settings.source === "picked") {
+    if (!(s.settings.category_ids ?? []).length) return "En az bir kategori seçin.";
+  }
+  return null;
+}
 
 export const TYPE_LABELS: Record<SectionType, string> = {
   slider: "Slayt",
@@ -81,7 +138,7 @@ const NEW: Record<SectionType, (id: string) => Section> = {
     link: "/ara?sort=newest",
     visible: true,
     display: "carousel",
-    settings: { source: "latest", count: 12 },
+    settings: { source: "latest", count: 12, window: 30 },
   }),
   categories: (id) => ({
     id,
