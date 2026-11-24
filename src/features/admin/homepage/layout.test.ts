@@ -126,8 +126,8 @@ describe("updateSettings", () => {
   });
 
   it("leaves other section types alone", () => {
-    const l = addSection([], "banner");
-    expect(updateSettings(l, "banner-1", { count: 5 })).toEqual(l);
+    const l = addSection([], "rich_text");
+    expect(updateSettings(l, "rich_text-1", { count: 5 })).toEqual(l);
   });
 });
 
