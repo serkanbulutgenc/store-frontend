@@ -1423,7 +1423,8 @@ export interface paths {
         get?: never;
         /**
          * Save Layout
-         * @description Choose which Widgets are on, and their order. Unavailable ones are refused.
+         * @description Choose which Widgets are on, their order and which are folded. Unavailable
+         *     ones are refused.
          */
         put: operations["home_layout_save"];
         post?: never;
@@ -3924,6 +3925,8 @@ export interface components {
         Group: "day" | "week" | "month";
         /** HomeLayoutIn */
         HomeLayoutIn: {
+            /** Collapsed */
+            collapsed?: string[] | null;
             /** Widgets */
             widgets: string[];
         };
@@ -3946,13 +3949,16 @@ export interface components {
         };
         /**
          * HomeOut
-         * @description `layout` is the Widgets turned on, in order; `available` is what the user
-         *     may add. Each Widget's list is present only while it is turned on.
+         * @description `layout` is the Widgets turned on, in order and `collapsed` the ones folded to
+         *     their header; `available` is what the user may add. Each Widget's list is present
+         *     only while it is turned on.
          */
         HomeOut: {
             approvals?: components["schemas"]["ApprovalsWaiting"] | null;
             /** Available */
             available: string[];
+            /** Collapsed */
+            collapsed: string[];
             contact_replies?: components["schemas"]["ContactRepliesWaiting"] | null;
             invoice_attention?: components["schemas"]["InvoiceFlags"] | null;
             /** Is Default */

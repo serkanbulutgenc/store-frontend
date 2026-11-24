@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { formatTry } from "@/lib/format";
 import type { HomeData } from "../returns/queries";
+import { WidgetCard } from "./widget-card";
 
 type Summary = NonNullable<HomeData["report_summary"]>;
 
@@ -14,13 +15,19 @@ const LABELS: Record<Summary["periods"][number]["preset"], string> = {
  * Read-only, so no Quick action; Raporlar has the detail. */
 export function ReportSummaryWidget({ data }: { data: Summary }) {
   return (
-    <section
-      aria-labelledby="widget-report-summary"
-      className="space-y-2 rounded-md border border-border bg-card p-4"
+    <WidgetCard
+      id="widget-report-summary"
+      title="Satış özeti"
+      seeAll={
+        <Link
+          to="/admin/reports"
+          search={{ report: "sales", preset: "30d", kdv: "incl", group: "day", sort: "revenue" }}
+          className="text-primary underline"
+        >
+          Raporlar
+        </Link>
+      }
     >
-      <h2 id="widget-report-summary" className="font-semibold">
-        Satış özeti
-      </h2>
       <dl className="grid grid-cols-3 gap-2">
         {data.periods.map((p) => (
           <div key={p.preset}>
@@ -30,13 +37,6 @@ export function ReportSummaryWidget({ data }: { data: Summary }) {
           </div>
         ))}
       </dl>
-      <Link
-        to="/admin/reports"
-        search={{ report: "sales", preset: "30d", kdv: "incl", group: "day", sort: "revenue" }}
-        className="text-primary underline"
-      >
-        Raporlar
-      </Link>
-    </section>
+    </WidgetCard>
   );
 }
