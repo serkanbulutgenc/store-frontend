@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { basketCampaignsQuery } from "@/features/admin/basket-campaigns/queries";
 import { pagesQuery } from "@/features/admin/campaign-pages/queries";
 import { CampaignsScreen } from "@/features/admin/campaigns/campaigns-screen";
 import { campaignsQuery } from "@/features/admin/campaigns/queries";
@@ -23,9 +24,13 @@ export const Route = createFileRoute("/admin/_app/campaigns/")({
     const pages =
       deps.tab === "pages" ||
       (!can(context.me, "manage_campaigns") && can(context.me, "edit_campaign_pages"));
-    return pages
-      ? context.queryClient.query(pagesQuery(deps.pstatus))
-      : context.queryClient.query(campaignsQuery(deps));
+    if (pages) return context.queryClient.query(pagesQuery(deps.pstatus));
+    if (deps.tab === "basket") {
+      return context.queryClient.query(
+        basketCampaignsQuery({ status: deps.bstatus, page: deps.page, size: deps.size }),
+      );
+    }
+    return context.queryClient.query(campaignsQuery(deps));
   },
   component: function CampaignsPage() {
     const search = Route.useSearch();

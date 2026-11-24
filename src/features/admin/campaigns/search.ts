@@ -11,7 +11,12 @@ export const campaignSearchSchema = listSearchSchema.pick({ page: true, size: tr
     .optional()
     .catch(undefined),
   /** Which list the screen shows; absent means the first one the user may see. */
-  tab: z.enum(["campaigns", "pages"]).optional().catch(undefined),
+  tab: z.enum(["campaigns", "pages", "basket"]).optional().catch(undefined),
+  /** The Sepet kampanyaları tab's status filter. */
+  bstatus: z
+    .enum(CAMPAIGN_STATUSES as [string, ...string[]])
+    .optional()
+    .catch(undefined),
   /** The Campaign pages tab's status filter. */
   pstatus: z.enum(PAGE_STATUSES).optional().catch(undefined),
   /** An old link's Campaign to open; it now redirects to the Campaign's own page. */

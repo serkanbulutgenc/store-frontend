@@ -13,6 +13,7 @@ import {
   useRemoveLine,
   useSetQuantity,
 } from "../queries";
+import { afterDiscounts, hasDiscounts } from "../totals";
 import { useVoucherField } from "../use-voucher-field";
 import { PriceChangeNotice } from "./price-change-notice";
 import { VoucherField } from "./voucher-field";
@@ -133,7 +134,21 @@ export function BasketPage() {
             <span>Ara toplam (KDV dahil)</span>
             <span>{formatTry(basket.subtotal)}</span>
           </div>
+          {basket.campaigns.map((c) => (
+            <div key={c.label} className="flex justify-between gap-3 text-green-800">
+              <span>{c.label}</span>
+              <span className="whitespace-nowrap">
+                {c.free_shipping ? "Ücretsiz kargo" : `−${formatTry(c.discount)}`}
+              </span>
+            </div>
+          ))}
           <VoucherField {...voucher} />
+          {hasDiscounts(basket) && (
+            <div className="flex justify-between border-t border-border pt-2 font-semibold">
+              <span>İndirimli ara toplam</span>
+              <span>{formatTry(afterDiscounts(basket))}</span>
+            </div>
+          )}
           {settings && (
             <p className="text-muted-foreground">
               Kargo ücreti teslimat ilinize ve ürünlerin boyutuna göre ödeme adımında hesaplanır;

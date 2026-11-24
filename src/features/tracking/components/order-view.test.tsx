@@ -23,6 +23,7 @@ const order: TrackedOrder = {
     },
   ],
   items_total: "200.00",
+  campaigns: [],
   discount: "0.00",
   voucher_code: null,
   shipping_fee: "30.00",
