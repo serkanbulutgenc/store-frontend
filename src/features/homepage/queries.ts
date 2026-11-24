@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { storeApi } from "@/lib/api/clients";
+import { adminApi, storeApi } from "@/lib/api/clients";
 import type { components } from "../../../api/specs/openapi-store";
 
 export type HomepageSection = components["schemas"]["HomepageSectionOut"];
@@ -10,4 +10,13 @@ export const homepageQuery = queryOptions({
   staleTime: 60_000,
   queryFn: async () =>
     ((await storeApi.GET("/api/store/homepage")).data?.sections ?? []) as HomepageSection[],
+});
+
+/** Preview mode: the layout as the Storefront would draw it, for a signed-in Dashboard user.
+ * The public endpoint has no preview; this one answers 401/403 to everyone else. */
+export const homepagePreviewQuery = queryOptions({
+  queryKey: ["admin", "homepage", "preview"],
+  staleTime: 0,
+  queryFn: async () =>
+    ((await adminApi.GET("/api/admin/homepage/preview")).data?.sections ?? []) as HomepageSection[],
 });

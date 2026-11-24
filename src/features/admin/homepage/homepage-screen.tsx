@@ -171,6 +171,11 @@ export function HomepageScreen() {
           >
             Değişiklikleri at
           </Button>
+          <Button size="sm" variant="outline" asChild>
+            <a href="/?preview=layout" target="_blank" rel="noopener">
+              Önizle
+            </a>
+          </Button>
           <Button size="sm" disabled={!dirty || saving} onClick={() => void submit()}>
             Kaydet
           </Button>
