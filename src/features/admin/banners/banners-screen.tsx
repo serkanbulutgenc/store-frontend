@@ -16,7 +16,9 @@ import {
 } from "@/components/ui/table";
 import { adminApi } from "@/lib/api/clients";
 import { ApiError } from "@/lib/api/errors";
+import type { Me } from "@/lib/api/me";
 import { formatDate } from "@/lib/format";
+import { VitrinTabs } from "../homepage/vitrin-tabs";
 import { DeleteBannerButton } from "./delete-banner-button";
 import { bannerKeys, bannersQuery } from "./queries";
 import {
@@ -38,10 +40,12 @@ const range = (start: string | null, end: string | null) =>
   start || end ? `${start ? formatDate(start) : "…"} – ${end ? formatDate(end) : "…"}` : "—";
 
 export function BannersScreen({
+  me,
   search,
   onSearchChange,
   owner,
 }: {
+  me: Me;
   owner: boolean;
   search: BannerSearch;
   onSearchChange: (patch: Partial<BannerSearch>) => void;
@@ -50,22 +54,12 @@ export function BannersScreen({
   const [creating, setCreating] = useState(false);
   return (
     <div className="space-y-3">
+      <VitrinTabs me={me} active={search.slot ?? null} />
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-lg font-semibold">Banner'lar</h1>
+        <div className="space-y-2">
+          <h1 className="text-lg font-semibold">{search.slot ? "Vitrin" : "Banner'lar"}</h1>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Select
-            aria-label="Alana göre filtrele"
-            className="w-52"
-            value={search.slot ?? ""}
-            onChange={(e) => onSearchChange({ slot: (e.target.value || undefined) as Slot })}
-          >
-            <option value="">Tüm alanlar</option>
-            {SLOT_KEYS.map((s) => (
-              <option key={s} value={s}>
-                {slotLabel(s)}
-              </option>
-            ))}
-          </Select>
           <Select
             aria-label="Duruma göre filtrele"
             className="w-48"
@@ -153,7 +147,12 @@ export function BannersScreen({
         </Table>
       </div>
       <Dialog open={creating} onClose={() => setCreating(false)} title="Yeni banner">
-        {creating && <CreateForm onClose={() => setCreating(false)} />}
+        {creating && (
+          <CreateForm
+            initialSlot={search.slot ?? "category_top"}
+            onClose={() => setCreating(false)}
+          />
+        )}
       </Dialog>
     </div>
   );
@@ -161,10 +160,10 @@ export function BannersScreen({
 
 /** A slot (and, for the announcement bar, its message) is all a draft needs; the rest is
  * set on its own page. */
-function CreateForm({ onClose }: { onClose: () => void }) {
+function CreateForm({ initialSlot, onClose }: { initialSlot: Slot; onClose: () => void }) {
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const [slot, setSlot] = useState<Slot>("home_hero");
+  const [slot, setSlot] = useState<Slot>(initialSlot);
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
   const textual = !isImageSlot(slot);

@@ -49,6 +49,13 @@ it("shows the Menus entry only with the manage_menus permission (Owner, not Staf
   expect(owner).toContain("/admin/menus");
 });
 
+it("shows the Vitrin entry with the edit_homepage permission (Owner and Staff)", () => {
+  const other = visibleNav(me(["view_products", "manage_products"])).map((i) => i.to);
+  expect(other).not.toContain("/admin/homepage");
+  const staff = visibleNav(me(["edit_homepage"])).map((i) => i.to);
+  expect(staff).toContain("/admin/homepage");
+});
+
 it("groups the sidebar as Satış, Katalog, Yönetim and drops groups left empty", () => {
   const all = visibleGroups(me(["view_orders", "view_products", "manage_settings"]));
   expect(all.map((g) => g.label)).toEqual(["Satış", "Katalog", "Yönetim"]);
@@ -196,4 +203,16 @@ it("shows Onay bekleyenler, with the approvals badge, to the Owner only", () => 
 it("hides Onay bekleyenler from an Owner who has not enrolled two-factor yet", () => {
   const unenrolled: Me = { ...me([]), role: "owner", mfa_required: true, mfa_enrolled: false };
   expect(visibleNav(unenrolled).map((i) => i.to)).not.toContain("/admin/approvals");
+});
+
+it("has no Banner'lar entry: the announcement bar and Category page top live under Vitrin", () => {
+  const all = visibleNav(me(["edit_banners", "edit_homepage", "manage_banners"]));
+  expect(all.map((i) => i.label)).not.toContain("Banner'lar");
+  expect(all.map((i) => i.label)).toContain("Vitrin");
+  // The banner pages still sit under Vitrin in the breadcrumbs.
+  expect(breadcrumbs("/admin/banners/5", { "5": "Kargo bedava" }).map((c) => c.label)).toEqual([
+    "Yönetim",
+    "Vitrin",
+    "Kargo bedava",
+  ]);
 });

@@ -28,12 +28,10 @@ export {
   toLocalInput,
 };
 
-export type Slot = "announcement" | "home_hero" | "home_mid" | "category_top";
+export type Slot = "announcement" | "category_top";
 
 const SLOTS: Record<Slot, string> = {
   announcement: "Duyuru çubuğu",
-  home_hero: "Ana sayfa vitrini",
-  home_mid: "Ana sayfa ortası",
   category_top: "Kategori sayfası üstü",
 };
 

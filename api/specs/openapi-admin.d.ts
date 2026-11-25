@@ -1509,6 +1509,181 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/homepage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Homepage
+         * @description Every section of the layout, hidden ones included, with its settings.
+         */
+        get: operations["homepage_get_for_editing"];
+        /**
+         * Save Homepage
+         * @description Replace the whole layout atomically. The Owner's save is live at once; a Staff
+         *     save is held as a pending change. Every step is written to the Audit log. Section
+         *     ids must be unique and there are at most 20 sections.
+         */
+        put: operations["homepage_save"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/homepage/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Images
+         * @description The section images among `ids` (at most 50), in the order given.
+         */
+        get: operations["homepage_images"];
+        put?: never;
+        /**
+         * Upload Image
+         * @description A new section image (JPEG, PNG, WebP or GIF). It shows on the Storefront only
+         *     once an approved layout uses it; Staff can upload too.
+         */
+        post: operations["homepage_upload_image"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/homepage/images/{image_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit Image
+         * @description Change the alt text (it covers both pictures) or the link.
+         */
+        patch: operations["homepage_edit_image"];
+        trace?: never;
+    };
+    "/api/admin/homepage/images/{image_id}/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Replace Image
+         * @description Replace the main picture of a section image.
+         */
+        post: operations["homepage_replace_image"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/homepage/images/{image_id}/mobile-image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Mobile Image
+         * @description The picture phones get instead of the main one.
+         */
+        post: operations["homepage_upload_mobile_image"];
+        /** Delete Mobile Image */
+        delete: operations["homepage_delete_mobile_image"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/homepage/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Preview Homepage
+         * @description The layout resolved the way the Storefront draws it, for the Dashboard's
+         *     preview mode: the pending change if one waits for the Owner, else the live
+         *     layout. Signed-in Dashboard users only; the public endpoint has no preview.
+         */
+        get: operations["homepage_preview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/homepage/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Homepage Versions
+         * @description Every approved version of the layout, newest first. Staff can read it.
+         */
+        get: operations["homepage_versions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/homepage/versions/{version}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Restore Homepage
+         * @description Owner only: put an earlier version back live. It becomes a new version and the
+         *     history stays as it was. Refused while a Staff change is waiting.
+         */
+        post: operations["homepage_restore"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/images/{image_id}": {
         parameters: {
             query?: never;
@@ -3267,6 +3442,48 @@ export interface components {
              */
             updated_at: string;
         };
+        /** BannerSection */
+        BannerSection: {
+            /**
+             * Display
+             * @default carousel
+             * @enum {string}
+             */
+            display: "grid" | "carousel" | "list";
+            /** Id */
+            id: string;
+            /**
+             * Link
+             * @default
+             */
+            link: string;
+            /**
+             * @default {
+             *       "banner_id": null
+             *     }
+             */
+            settings: components["schemas"]["BannerSettings"];
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "banner";
+            /**
+             * Visible
+             * @default true
+             */
+            visible: boolean;
+        };
+        /** BannerSettings */
+        BannerSettings: {
+            /** Banner Id */
+            banner_id?: number | null;
+        };
         /** BasketCampaignIn */
         BasketCampaignIn: {
             /**
@@ -3664,12 +3881,74 @@ export interface components {
             /** Vouchers */
             vouchers: components["schemas"]["VoucherReportRowOut"][];
         };
+        /** CardImageOut */
+        CardImageOut: {
+            /** Alt */
+            alt: string;
+            /** Sizes */
+            sizes: components["schemas"]["ImageSizeOut"][];
+        };
         /** CarrierOut */
         CarrierOut: {
             /** Id */
             id: number;
             /** Name */
             name: string;
+        };
+        /** CategoriesSection */
+        CategoriesSection: {
+            /**
+             * Display
+             * @default carousel
+             * @enum {string}
+             */
+            display: "grid" | "carousel" | "list";
+            /** Id */
+            id: string;
+            /**
+             * Link
+             * @default
+             */
+            link: string;
+            /**
+             * @default {
+             *       "category_ids": [],
+             *       "count": 12,
+             *       "source": "home"
+             *     }
+             */
+            settings: components["schemas"]["CategoriesSettings"];
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "categories";
+            /**
+             * Visible
+             * @default true
+             */
+            visible: boolean;
+        };
+        /** CategoriesSettings */
+        CategoriesSettings: {
+            /** Category Ids */
+            category_ids?: number[];
+            /**
+             * Count
+             * @default 12
+             */
+            count: number;
+            /**
+             * Source
+             * @default home
+             * @enum {string}
+             */
+            source: "home" | "picked";
         };
         /** CategoryImageOut */
         CategoryImageOut: {
@@ -4098,6 +4377,17 @@ export interface components {
          * @enum {string}
          */
         Group: "day" | "week" | "month";
+        /** HomeCategoryOut */
+        HomeCategoryOut: {
+            /** Image Alt */
+            image_alt: string;
+            /** Image Url */
+            image_url: string | null;
+            /** Name */
+            name: string;
+            /** Slug */
+            slug: string;
+        };
         /** HomeLayoutIn */
         HomeLayoutIn: {
             /** Collapsed */
@@ -4166,6 +4456,79 @@ export interface components {
             /** Return Id */
             return_id: number;
         };
+        /**
+         * HomepageLayoutIn
+         * @description The sections in page order. Hidden ones are kept, with their settings.
+         */
+        HomepageLayoutIn: {
+            /** Sections */
+            sections: (components["schemas"]["SliderSection"] | components["schemas"]["ProductsSection"] | components["schemas"]["CategoriesSection"] | components["schemas"]["BannerSection"] | components["schemas"]["RichTextSection"])[];
+        };
+        /**
+         * HomepageLayoutOut
+         * @description `sections` is the live layout. `pending` is the Staff change waiting for the
+         *     Owner; `rejection_reason` says why the last one was turned down.
+         */
+        HomepageLayoutOut: {
+            pending?: components["schemas"]["PendingLayoutOut"] | null;
+            /**
+             * Rejection Reason
+             * @default
+             */
+            rejection_reason: string;
+            /** Sections */
+            sections: (components["schemas"]["SliderSection"] | components["schemas"]["ProductsSection"] | components["schemas"]["CategoriesSection"] | components["schemas"]["BannerSection"] | components["schemas"]["RichTextSection"])[];
+            /**
+             * Warnings
+             * @default {}
+             */
+            warnings: {
+                [key: string]: string;
+            };
+        };
+        /** HomepageOut */
+        HomepageOut: {
+            /** Sections */
+            sections: components["schemas"]["HomepageSectionOut"][];
+        };
+        /** HomepageSectionOut */
+        HomepageSectionOut: {
+            /** Banners */
+            banners?: components["schemas"]["PictureBannerOut"][] | null;
+            /** Body */
+            body?: string | null;
+            /** Categories */
+            categories?: components["schemas"]["HomeCategoryOut"][] | null;
+            /**
+             * Client Resolved
+             * @description Recently viewed: the Shopper's browser fills it in.
+             * @default false
+             */
+            client_resolved: boolean;
+            /**
+             * Display
+             * @enum {string}
+             */
+            display: "grid" | "carousel" | "list";
+            /** Id */
+            id: string;
+            /** Link */
+            link: string;
+            /** Products */
+            products?: components["schemas"]["ProductCardOut"][] | null;
+            /**
+             * Source
+             * @description Where a section takes its items from (Products: latest, best_selling, on_sale, recently_viewed).
+             */
+            source?: string | null;
+            /** Title */
+            title: string;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "slider" | "products" | "categories" | "banner" | "rich_text";
+        };
         /** ImageAltIn */
         ImageAltIn: {
             /** Alt Text */
@@ -4182,6 +4545,13 @@ export interface components {
         ImageOrderIn: {
             /** Ids */
             ids: number[];
+        };
+        /** ImageSizeOut */
+        ImageSizeOut: {
+            /** Url */
+            url: string;
+            /** Width */
+            width: number;
         };
         /** ImageUploadIn */
         ImageUploadIn: {
@@ -4389,6 +4759,41 @@ export interface components {
             /** @default incl */
             kdv: "incl" | "excl";
             preset?: components["schemas"]["Preset"] | null;
+        };
+        /** LayoutImageIn */
+        LayoutImageIn: {
+            /** Alt Text */
+            alt_text?: string | null;
+            /** Link */
+            link?: string | null;
+        };
+        /**
+         * LayoutImageOut
+         * @description One image of a section: `processing` until its pictures exist.
+         */
+        LayoutImageOut: {
+            /** Alt Text */
+            alt_text: string;
+            /** Id */
+            id: number;
+            image: components["schemas"]["CoverImageOut"] | null;
+            /** Link */
+            link: string;
+            mobile_image: components["schemas"]["CoverImageOut"] | null;
+        };
+        /** LayoutVersionOut */
+        LayoutVersionOut: {
+            /**
+             * Approved At
+             * Format: date-time
+             */
+            approved_at: string;
+            /** Approved By */
+            approved_by: string | null;
+            /** Section Count */
+            section_count: number;
+            /** Version */
+            version: number;
         };
         /** LowStock */
         LowStock: {
@@ -5096,6 +5501,25 @@ export interface components {
              */
             updated_at: string;
         };
+        /** PendingLayoutOut */
+        PendingLayoutOut: {
+            /** Sections */
+            sections: (components["schemas"]["SliderSection"] | components["schemas"]["ProductsSection"] | components["schemas"]["CategoriesSection"] | components["schemas"]["BannerSection"] | components["schemas"]["RichTextSection"])[];
+            /**
+             * Submitted At
+             * Format: date-time
+             */
+            submitted_at: string;
+            /** Submitted By */
+            submitted_by: string | null;
+            /**
+             * Warnings
+             * @default {}
+             */
+            warnings: {
+                [key: string]: string;
+            };
+        };
         /** PendingOut */
         PendingOut: {
             /** Orders */
@@ -5113,11 +5537,53 @@ export interface components {
             /** Name */
             name: string;
         };
+        /** PictureBannerOut */
+        PictureBannerOut: {
+            /** Alt */
+            alt: string;
+            /** Id */
+            id: number;
+            /** Image */
+            image: components["schemas"]["ImageSizeOut"][];
+            /** Link */
+            link: string;
+            /** Mobile Image */
+            mobile_image: components["schemas"]["ImageSizeOut"][] | null;
+        };
         /**
          * Preset
          * @enum {string}
          */
         Preset: "today" | "7d" | "30d" | "this_month" | "last_month";
+        /** ProductCardOut */
+        ProductCardOut: {
+            /** Campaign Percentage */
+            campaign_percentage: string | null;
+            /** Colours */
+            colours: components["schemas"]["SwatchOut"][];
+            /** Id */
+            id: number;
+            image: components["schemas"]["CardImageOut"] | null;
+            /** Old Price */
+            old_price: string | null;
+            /**
+             * Price
+             * @example 349.90
+             */
+            price: string;
+            /** Rating Average */
+            rating_average: number | null;
+            /** Rating Count */
+            rating_count: number;
+            /** Shelf Price */
+            shelf_price: string | null;
+            /** Slug */
+            slug: string;
+            /** Sold Out */
+            sold_out: boolean;
+            /** Title */
+            title: string;
+        };
         /** ProductClassIn */
         ProductClassIn: {
             /**
@@ -5401,6 +5867,71 @@ export interface components {
             /** Rows */
             rows: components["schemas"]["ProductRowOut"][];
             sort: components["schemas"]["Sort"];
+        };
+        /** ProductsSection */
+        ProductsSection: {
+            /**
+             * Display
+             * @default carousel
+             * @enum {string}
+             */
+            display: "grid" | "carousel" | "list";
+            /** Id */
+            id: string;
+            /**
+             * Link
+             * @default
+             */
+            link: string;
+            /**
+             * @default {
+             *       "category_id": null,
+             *       "count": 12,
+             *       "product_ids": [],
+             *       "source": "latest",
+             *       "window": 30
+             *     }
+             */
+            settings: components["schemas"]["ProductsSettings"];
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "products";
+            /**
+             * Visible
+             * @default true
+             */
+            visible: boolean;
+        };
+        /** ProductsSettings */
+        ProductsSettings: {
+            /** Category Id */
+            category_id?: number | null;
+            /**
+             * Count
+             * @default 12
+             */
+            count: number;
+            /** Product Ids */
+            product_ids?: number[];
+            /**
+             * Source
+             * @default latest
+             * @enum {string}
+             */
+            source: "latest" | "best_selling" | "on_sale" | "category" | "hand_picked" | "recently_viewed";
+            /**
+             * Window
+             * @default 30
+             * @enum {integer}
+             */
+            window: 7 | 30 | 90;
         };
         /** ProductsWithoutPhotos */
         ProductsWithoutPhotos: {
@@ -5751,6 +6282,51 @@ export interface components {
             previous: components["schemas"]["SpanOut"];
             range: components["schemas"]["SpanOut"];
         };
+        /** RichTextSection */
+        RichTextSection: {
+            /**
+             * Display
+             * @default carousel
+             * @enum {string}
+             */
+            display: "grid" | "carousel" | "list";
+            /** Id */
+            id: string;
+            /**
+             * Link
+             * @default
+             */
+            link: string;
+            /**
+             * @default {
+             *       "body": ""
+             *     }
+             */
+            settings: components["schemas"]["RichTextSettings"];
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "rich_text";
+            /**
+             * Visible
+             * @default true
+             */
+            visible: boolean;
+        };
+        /** RichTextSettings */
+        RichTextSettings: {
+            /**
+             * Body
+             * @default
+             */
+            body: string;
+        };
         /** SalesParams */
         SalesParams: {
             /** Date From */
@@ -5951,6 +6527,64 @@ export interface components {
             /** Size */
             size: string;
         };
+        /** SliderSection */
+        SliderSection: {
+            /**
+             * Display
+             * @default carousel
+             * @enum {string}
+             */
+            display: "grid" | "carousel" | "list";
+            /** Id */
+            id: string;
+            /**
+             * Link
+             * @default
+             */
+            link: string;
+            /**
+             * @default {
+             *       "banner_ids": [],
+             *       "collection_id": null,
+             *       "count": 5,
+             *       "source": "home"
+             *     }
+             */
+            settings: components["schemas"]["SliderSettings"];
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "slider";
+            /**
+             * Visible
+             * @default true
+             */
+            visible: boolean;
+        };
+        /** SliderSettings */
+        SliderSettings: {
+            /** Banner Ids */
+            banner_ids?: number[];
+            /** Collection Id */
+            collection_id?: number | null;
+            /**
+             * Count
+             * @default 5
+             */
+            count: number;
+            /**
+             * Source
+             * @default home
+             * @enum {string}
+             */
+            source: "home" | "collection" | "own";
+        };
         /** SlugIn */
         SlugIn: {
             /** Slug */
@@ -6049,6 +6683,15 @@ export interface components {
             code?: string | null;
             /** Name */
             name?: string | null;
+        };
+        /** SwatchOut */
+        SwatchOut: {
+            /** Hex Code */
+            hex_code: string;
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
         };
         /** TargetOut */
         TargetOut: {
@@ -8982,6 +9625,284 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HomeOut"];
+                };
+            };
+        };
+    };
+    homepage_get_for_editing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HomepageLayoutOut"];
+                };
+            };
+        };
+    };
+    homepage_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HomepageLayoutIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HomepageLayoutOut"];
+                };
+            };
+        };
+    };
+    homepage_images: {
+        parameters: {
+            query: {
+                ids: number[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutImageOut"][];
+                };
+            };
+        };
+    };
+    homepage_upload_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Alt Text */
+                    alt_text?: string | null;
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                    /** Link */
+                    link?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutImageOut"];
+                };
+            };
+        };
+    };
+    homepage_edit_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                image_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LayoutImageIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutImageOut"];
+                };
+            };
+        };
+    };
+    homepage_replace_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                image_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Alt Text */
+                    alt_text?: string | null;
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                    /** Link */
+                    link?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutImageOut"];
+                };
+            };
+        };
+    };
+    homepage_upload_mobile_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                image_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutImageOut"];
+                };
+            };
+        };
+    };
+    homepage_delete_mobile_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                image_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutImageOut"];
+                };
+            };
+        };
+    };
+    homepage_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HomepageOut"];
+                };
+            };
+        };
+    };
+    homepage_versions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutVersionOut"][];
+                };
+            };
+        };
+    };
+    homepage_restore: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HomepageLayoutOut"];
                 };
             };
         };

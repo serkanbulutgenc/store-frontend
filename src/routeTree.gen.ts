@@ -45,6 +45,7 @@ import { Route as AdminAppBrandsRouteImport } from './routes/admin/_app/brands'
 import { Route as AdminAppCategoriesRouteImport } from './routes/admin/_app/categories'
 import { Route as AdminAppColoursRouteImport } from './routes/admin/_app/colours'
 import { Route as AdminAppExportRouteImport } from './routes/admin/_app/export'
+import { Route as AdminAppHomepageRouteImport } from './routes/admin/_app/homepage'
 import { Route as AdminAppImportRouteImport } from './routes/admin/_app/import'
 import { Route as AdminAppMenusRouteImport } from './routes/admin/_app/menus'
 import { Route as AdminAppReportsRouteImport } from './routes/admin/_app/reports'
@@ -276,6 +277,11 @@ const AdminAppColoursRoute = AdminAppColoursRouteImport.update({
 const AdminAppExportRoute = AdminAppExportRouteImport.update({
   id: '/export',
   path: '/export',
+  getParentRoute: () => AdminAppRouteRoute,
+} as any)
+const AdminAppHomepageRoute = AdminAppHomepageRouteImport.update({
+  id: '/homepage',
+  path: '/homepage',
   getParentRoute: () => AdminAppRouteRoute,
 } as any)
 const AdminAppImportRoute = AdminAppImportRouteImport.update({
@@ -572,6 +578,7 @@ export interface FileRoutesByFullPath {
   '/admin/categories': typeof AdminAppCategoriesRoute
   '/admin/colours': typeof AdminAppColoursRoute
   '/admin/export': typeof AdminAppExportRoute
+  '/admin/homepage': typeof AdminAppHomepageRoute
   '/admin/import': typeof AdminAppImportRoute
   '/admin/menus': typeof AdminAppMenusRoute
   '/admin/reports': typeof AdminAppReportsRoute
@@ -654,6 +661,7 @@ export interface FileRoutesByTo {
   '/admin/categories': typeof AdminAppCategoriesRoute
   '/admin/colours': typeof AdminAppColoursRoute
   '/admin/export': typeof AdminAppExportRoute
+  '/admin/homepage': typeof AdminAppHomepageRoute
   '/admin/import': typeof AdminAppImportRoute
   '/admin/menus': typeof AdminAppMenusRoute
   '/admin/reports': typeof AdminAppReportsRoute
@@ -740,6 +748,7 @@ export interface FileRoutesById {
   '/admin/_app/categories': typeof AdminAppCategoriesRoute
   '/admin/_app/colours': typeof AdminAppColoursRoute
   '/admin/_app/export': typeof AdminAppExportRoute
+  '/admin/_app/homepage': typeof AdminAppHomepageRoute
   '/admin/_app/import': typeof AdminAppImportRoute
   '/admin/_app/menus': typeof AdminAppMenusRoute
   '/admin/_app/reports': typeof AdminAppReportsRoute
@@ -825,6 +834,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/colours'
     | '/admin/export'
+    | '/admin/homepage'
     | '/admin/import'
     | '/admin/menus'
     | '/admin/reports'
@@ -907,6 +917,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/colours'
     | '/admin/export'
+    | '/admin/homepage'
     | '/admin/import'
     | '/admin/menus'
     | '/admin/reports'
@@ -992,6 +1003,7 @@ export interface FileRouteTypes {
     | '/admin/_app/categories'
     | '/admin/_app/colours'
     | '/admin/_app/export'
+    | '/admin/_app/homepage'
     | '/admin/_app/import'
     | '/admin/_app/menus'
     | '/admin/_app/reports'
@@ -1305,6 +1317,13 @@ declare module '@tanstack/react-router' {
       path: '/export'
       fullPath: '/admin/export'
       preLoaderRoute: typeof AdminAppExportRouteImport
+      parentRoute: typeof AdminAppRouteRoute
+    }
+    '/admin/_app/homepage': {
+      id: '/admin/_app/homepage'
+      path: '/homepage'
+      fullPath: '/admin/homepage'
+      preLoaderRoute: typeof AdminAppHomepageRouteImport
       parentRoute: typeof AdminAppRouteRoute
     }
     '/admin/_app/import': {
@@ -1751,6 +1770,7 @@ interface AdminAppRouteRouteChildren {
   AdminAppCategoriesRoute: typeof AdminAppCategoriesRoute
   AdminAppColoursRoute: typeof AdminAppColoursRoute
   AdminAppExportRoute: typeof AdminAppExportRoute
+  AdminAppHomepageRoute: typeof AdminAppHomepageRoute
   AdminAppImportRoute: typeof AdminAppImportRoute
   AdminAppMenusRoute: typeof AdminAppMenusRoute
   AdminAppReportsRoute: typeof AdminAppReportsRoute
@@ -1802,6 +1822,7 @@ const AdminAppRouteRouteChildren: AdminAppRouteRouteChildren = {
   AdminAppCategoriesRoute: AdminAppCategoriesRoute,
   AdminAppColoursRoute: AdminAppColoursRoute,
   AdminAppExportRoute: AdminAppExportRoute,
+  AdminAppHomepageRoute: AdminAppHomepageRoute,
   AdminAppImportRoute: AdminAppImportRoute,
   AdminAppMenusRoute: AdminAppMenusRoute,
   AdminAppReportsRoute: AdminAppReportsRoute,

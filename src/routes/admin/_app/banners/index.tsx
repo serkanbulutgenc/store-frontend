@@ -14,8 +14,10 @@ export const Route = createFileRoute("/admin/_app/banners/")({
     const search = Route.useSearch();
     const navigate = Route.useNavigate();
     const { me } = Route.useRouteContext();
+    if (!me) return null;
     return (
       <BannersScreen
+        me={me}
         owner={can(me, "manage_banners")}
         search={search}
         onSearchChange={(patch) => navigate({ search: { ...search, ...patch } })}

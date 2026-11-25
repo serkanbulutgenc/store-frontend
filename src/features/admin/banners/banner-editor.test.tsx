@@ -6,7 +6,7 @@ import type { BannerOut } from "./queries";
 
 const banner = (over: Partial<BannerOut> = {}): BannerOut => ({
   id: 1,
-  slot: "home_hero",
+  slot: "category_top",
   message: "",
   link: "/kampanyalar/yaz",
   position: 2,
@@ -42,7 +42,8 @@ describe("FieldsForm", () => {
     expect(out).toContain('value="/kampanyalar/yaz"');
     expect(out).toContain('value="2"');
     expect(out).not.toContain("Mesaj");
-    expect(out).not.toContain("Tüm kategoriler");
+    // The Category Slot also asks which Category page it sits on.
+    expect(out).toContain("Tüm kategoriler");
     expect(out).toContain(">Kaydet<");
   });
 
