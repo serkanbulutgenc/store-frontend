@@ -4405,6 +4405,13 @@ export interface components {
             rejection_reason: string;
             /** Sections */
             sections: (components["schemas"]["SliderSection"] | components["schemas"]["ProductsSection"] | components["schemas"]["CategoriesSection"] | components["schemas"]["BannerSection"] | components["schemas"]["RichTextSection"])[];
+            /**
+             * Warnings
+             * @default {}
+             */
+            warnings: {
+                [key: string]: string;
+            };
         };
         /** HomepageOut */
         HomepageOut: {
@@ -5411,6 +5418,13 @@ export interface components {
             submitted_at: string;
             /** Submitted By */
             submitted_by: string | null;
+            /**
+             * Warnings
+             * @default {}
+             */
+            warnings: {
+                [key: string]: string;
+            };
         };
         /** PendingOut */
         PendingOut: {

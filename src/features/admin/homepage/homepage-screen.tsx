@@ -16,7 +16,16 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ArrowDown, ArrowUp, Eye, EyeOff, GripVertical, Pencil, Trash2 } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  Eye,
+  EyeOff,
+  GripVertical,
+  Pencil,
+  Trash2,
+  TriangleAlert,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -43,6 +52,7 @@ import {
   TYPE_LABELS,
   updateSection,
   updateSettings,
+  warningFor,
 } from "./layout";
 import { LayoutHistory } from "./layout-history";
 import { homepageLayoutQuery, useSaveHomepage } from "./queries";
@@ -61,6 +71,7 @@ export function HomepageScreen({ me }: { me: Me }) {
   const saved = owner ? layout.sections : (pending?.sections ?? layout.sections);
   // While a change waits the Owner decides on it in the queue first; saving is refused.
   const locked = owner && pending !== null;
+  const warnings = owner ? layout.warnings : (pending?.warnings ?? layout.warnings);
   const [draft, setDraft] = useState<Section[]>(saved);
   const [open, setOpen] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -162,6 +173,7 @@ export function HomepageScreen({ me }: { me: Me }) {
                   <SectionRow
                     key={s.id}
                     section={s}
+                    warning={warningFor(saved, s, warnings)}
                     first={i === 0}
                     last={i === draft.length - 1}
                     editing={open === s.id}
@@ -253,6 +265,7 @@ export function HomepageScreen({ me }: { me: Me }) {
 
 function SectionRow({
   section,
+  warning,
   first,
   last,
   editing,
@@ -263,6 +276,7 @@ function SectionRow({
   onRemove,
 }: {
   section: Section;
+  warning: string | null;
   first: boolean;
   last: boolean;
   editing: boolean;
@@ -311,6 +325,12 @@ function SectionRow({
             {TYPE_LABELS[section.type]}
             {!section.visible && " · gizli"}
           </div>
+          {warning && (
+            <div className="mt-0.5 flex items-start gap-1 text-amber-800">
+              <TriangleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
+              <span>Ana sayfada gösterilmiyor: {warning}</span>
+            </div>
+          )}
         </div>
         <Button
           variant="ghost"

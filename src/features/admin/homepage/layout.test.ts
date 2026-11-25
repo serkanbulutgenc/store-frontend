@@ -13,6 +13,7 @@ import {
   type Section,
   updateSection,
   updateSettings,
+  warningFor,
 } from "./layout";
 
 const base = (id: string) => ({ ...addSection([], "banner")[0], id }) as Section;
@@ -105,6 +106,22 @@ describe("isDirty", () => {
     expect(isDirty(saved, [...saved])).toBe(false);
     expect(isDirty(saved, updateSection(saved, "a", { visible: false }))).toBe(true);
     expect(isDirty(saved, moveSection(saved, "a", 1))).toBe(true);
+  });
+});
+
+describe("warningFor", () => {
+  const saved = list("a", "b");
+  const warnings = { a: "Boş." };
+
+  it("gives the reason for an unchanged section that has one", () => {
+    expect(warningFor(saved, saved[0] as Section, warnings)).toBe("Boş.");
+    expect(warningFor(saved, saved[1] as Section, warnings)).toBeNull();
+  });
+
+  it("stays quiet once the section was edited, or is not saved yet", () => {
+    const edited = updateSection(saved, "a", { title: "Yeni" })[0] as Section;
+    expect(warningFor(saved, edited, warnings)).toBeNull();
+    expect(warningFor(saved, { ...(saved[0] as Section), id: "new" }, { new: "x" })).toBeNull();
   });
 });
 
