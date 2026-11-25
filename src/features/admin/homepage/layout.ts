@@ -42,8 +42,7 @@ export const CATEGORY_SOURCE_LABELS: Record<CategorySource, string> = {
 };
 
 export const SLIDER_SOURCE_LABELS: Record<SliderSource, string> = {
-  home: "Ana sayfa slaytı ve yedekleri",
-  banners: "Seçtiğim afişler",
+  home: "Öne çıkan ürünler (ana sayfa koleksiyonu ya da yeni ürünler)",
   collection: "Bir koleksiyon",
   own: "Kendi görsellerim",
 };
@@ -66,8 +65,6 @@ export function updateSettings(list: Section[], id: string, patch: SettingsPatch
 /** Whether a section's settings are complete enough to save: a source that needs a pick has one. */
 export function pickMissing(s: Section): string | null {
   if (s.type === "slider") {
-    if (s.settings.source === "banners" && !(s.settings.banner_ids ?? []).length)
-      return "En az bir afiş seçin.";
     if (s.settings.source === "own" && !(s.settings.banner_ids ?? []).length)
       return "En az bir slayt yükleyin.";
     if (s.settings.source === "collection" && s.settings.collection_id == null)
@@ -175,7 +172,7 @@ const NEW: Record<SectionType, (id: string) => Section> = {
     link: "",
     visible: true,
     display: "carousel",
-    settings: { slot: "home_mid", index: 0 },
+    settings: {},
   }),
   rich_text: (id) => ({
     id,

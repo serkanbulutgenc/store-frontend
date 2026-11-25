@@ -1212,10 +1212,6 @@ export interface components {
             announcement: components["schemas"]["AnnouncementOut"][];
             /** Category Top */
             category_top: components["schemas"]["PictureBannerOut"][];
-            /** Home Hero */
-            home_hero: components["schemas"]["PictureBannerOut"][];
-            /** Home Mid */
-            home_mid: components["schemas"]["PictureBannerOut"][];
         };
         /** BasketLineOut */
         BasketLineOut: {

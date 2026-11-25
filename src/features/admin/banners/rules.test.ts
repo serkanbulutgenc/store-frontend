@@ -21,7 +21,7 @@ const s = (status: BannerState["status"], hasPendingChange = false): BannerState
 });
 
 const valid = {
-  slot: "home_hero",
+  slot: "category_top",
   message: "",
   link: "",
   position: "0",
@@ -41,9 +41,9 @@ describe("availableActions", () => {
 describe("slots", () => {
   it("treats every slot but the announcement bar as image-led", () => {
     expect(isImageSlot("announcement")).toBe(false);
-    expect(isImageSlot("home_hero")).toBe(true);
     expect(isImageSlot("category_top")).toBe(true);
-    expect(slotLabel("home_mid")).toBe("Ana sayfa ortası");
+    expect(isImageSlot("category_top")).toBe(true);
+    expect(slotLabel("announcement")).toBe("Duyuru çubuğu");
   });
 });
 
@@ -93,11 +93,13 @@ describe("checkFields", () => {
 
 describe("completeness", () => {
   it("flags a missing image on image slots, but not a missing alt text", () => {
-    expect(completeness({ slot: "home_hero", message: "", image: null })).toEqual([
+    expect(completeness({ slot: "category_top", message: "", image: null })).toEqual([
       "Görsel yüklenmemiş.",
     ]);
-    expect(completeness({ slot: "home_hero", message: "", image: { alt_text: " " } })).toEqual([]);
-    expect(completeness({ slot: "home_hero", message: "", image: { alt_text: "Yaz" } })).toEqual(
+    expect(completeness({ slot: "category_top", message: "", image: { alt_text: " " } })).toEqual(
+      [],
+    );
+    expect(completeness({ slot: "category_top", message: "", image: { alt_text: "Yaz" } })).toEqual(
       [],
     );
   });
@@ -110,9 +112,9 @@ describe("completeness", () => {
 
 describe("warnings and deleting", () => {
   it("warns, without blocking, about a missing alt text", () => {
-    expect(warnings({ slot: "home_hero", image: { alt_text: " " } })).toHaveLength(1);
-    expect(warnings({ slot: "home_hero", image: { alt_text: "Yaz" } })).toEqual([]);
-    expect(warnings({ slot: "home_hero", image: null })).toEqual([]);
+    expect(warnings({ slot: "category_top", image: { alt_text: " " } })).toHaveLength(1);
+    expect(warnings({ slot: "category_top", image: { alt_text: "Yaz" } })).toEqual([]);
+    expect(warnings({ slot: "category_top", image: null })).toEqual([]);
   });
 
   it("lets the Owner delete any Banner and Staff only a draft", () => {
@@ -139,7 +141,7 @@ describe("edit rules", () => {
 describe("changedFields", () => {
   it("lists only what differs", () => {
     const live = {
-      slot: "home_hero",
+      slot: "category_top",
       message: "",
       link: "/a",
       position: 0,

@@ -164,7 +164,7 @@ export function BannersScreen({
 function CreateForm({ onClose }: { onClose: () => void }) {
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const [slot, setSlot] = useState<Slot>("home_hero");
+  const [slot, setSlot] = useState<Slot>("category_top");
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
   const textual = !isImageSlot(slot);

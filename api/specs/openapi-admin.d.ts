@@ -3459,9 +3459,7 @@ export interface components {
             link: string;
             /**
              * @default {
-             *       "banner_id": null,
-             *       "index": 0,
-             *       "slot": "home_mid"
+             *       "banner_id": null
              *     }
              */
             settings: components["schemas"]["BannerSettings"];
@@ -3485,17 +3483,6 @@ export interface components {
         BannerSettings: {
             /** Banner Id */
             banner_id?: number | null;
-            /**
-             * Index
-             * @default 0
-             */
-            index: number;
-            /**
-             * Slot
-             * @default home_mid
-             * @constant
-             */
-            slot: "home_mid";
         };
         /** BasketCampaignIn */
         BasketCampaignIn: {
@@ -6596,7 +6583,7 @@ export interface components {
              * @default home
              * @enum {string}
              */
-            source: "home" | "banners" | "collection" | "own";
+            source: "home" | "collection" | "own";
         };
         /** SlugIn */
         SlugIn: {
