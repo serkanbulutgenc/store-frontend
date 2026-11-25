@@ -2,14 +2,17 @@ import { describe, expect, it } from "vitest";
 import {
   ADDABLE,
   addSection,
+  clampCount,
   displaysFor,
   dropSection,
   isDirty,
   MAX_SECTIONS,
   moveSection,
+  pickMissing,
   removeSection,
   type Section,
   updateSection,
+  updateSettings,
 } from "./layout";
 
 const base = (id: string) => ({ ...addSection([], "banner")[0], id }) as Section;
@@ -52,7 +55,7 @@ describe("removeSection and updateSection", () => {
     const l = addSection([], "products");
     const [first] = updateSection(l, "products-1", { visible: false, title: "Seçki" });
     expect(first).toMatchObject({ visible: false, title: "Seçki" });
-    expect(first?.settings).toEqual({ source: "latest", count: 12 });
+    expect(first?.settings).toEqual({ source: "latest", count: 12, window: 30 });
   });
 
   it("leaves other sections as they were", () => {
@@ -66,7 +69,7 @@ describe("addSection", () => {
     const once = addSection([], "products");
     const twice = addSection(once, "products");
     expect(ids(twice)).toEqual(["products-1", "products-2"]);
-    expect(twice[1]?.settings).toEqual({ source: "latest", count: 12 });
+    expect(twice[1]?.settings).toEqual({ source: "latest", count: 12, window: 30 });
   });
 
   it("reuses a gap in the ids instead of colliding", () => {
@@ -102,5 +105,55 @@ describe("isDirty", () => {
     expect(isDirty(saved, [...saved])).toBe(false);
     expect(isDirty(saved, updateSection(saved, "a", { visible: false }))).toBe(true);
     expect(isDirty(saved, moveSection(saved, "a", 1))).toBe(true);
+  });
+});
+
+describe("clampCount", () => {
+  it("keeps a count between 4 and 24", () => {
+    expect(clampCount(1)).toBe(4);
+    expect(clampCount(10)).toBe(10);
+    expect(clampCount(99)).toBe(24);
+    expect(clampCount(Number.NaN)).toBe(4);
+  });
+});
+
+describe("updateSettings", () => {
+  it("changes only the settings of the named Products or Categories section", () => {
+    const l = addSection(addSection([], "products"), "categories");
+    const next = updateSettings(l, "products-1", { source: "best_selling", window: 7 });
+    expect(next[0]).toMatchObject({ settings: { source: "best_selling", window: 7, count: 12 } });
+    expect(next[1]).toBe(l[1]);
+  });
+
+  it("leaves other section types alone", () => {
+    const l = addSection([], "banner");
+    expect(updateSettings(l, "banner-1", { count: 5 })).toEqual(l);
+  });
+});
+
+describe("pickMissing", () => {
+  const products = (settings: object) =>
+    ({ ...addSection([], "products")[0], settings }) as Section;
+
+  it("asks for the pick a source needs", () => {
+    expect(pickMissing(products({ source: "category", count: 12, window: 30 }))).toMatch(
+      /kategori/,
+    );
+    expect(
+      pickMissing(products({ source: "hand_picked", count: 12, window: 30, product_ids: [] })),
+    ).toMatch(/ürün/);
+    expect(
+      pickMissing({
+        ...addSection([], "categories")[0],
+        settings: { source: "picked", count: 12, category_ids: [] },
+      } as Section),
+    ).toMatch(/kategori/);
+  });
+
+  it("is satisfied once something is picked or the source needs none", () => {
+    expect(
+      pickMissing(products({ source: "category", count: 12, window: 30, category_id: 3 })),
+    ).toBeNull();
+    expect(pickMissing(products({ source: "latest", count: 12, window: 30 }))).toBeNull();
   });
 });

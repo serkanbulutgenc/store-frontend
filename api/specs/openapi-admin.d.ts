@@ -3793,6 +3793,7 @@ export interface components {
             link: string;
             /**
              * @default {
+             *       "category_ids": [],
              *       "count": 12,
              *       "source": "home"
              *     }
@@ -3816,6 +3817,8 @@ export interface components {
         };
         /** CategoriesSettings */
         CategoriesSettings: {
+            /** Category Ids */
+            category_ids?: number[];
             /**
              * Count
              * @default 12
@@ -3824,9 +3827,9 @@ export interface components {
             /**
              * Source
              * @default home
-             * @constant
+             * @enum {string}
              */
-            source: "home";
+            source: "home" | "picked";
         };
         /** CategoryImageOut */
         CategoryImageOut: {
@@ -5692,8 +5695,11 @@ export interface components {
             link: string;
             /**
              * @default {
+             *       "category_id": null,
              *       "count": 12,
-             *       "source": "latest"
+             *       "product_ids": [],
+             *       "source": "latest",
+             *       "window": 30
              *     }
              */
             settings: components["schemas"]["ProductsSettings"];
@@ -5715,17 +5721,27 @@ export interface components {
         };
         /** ProductsSettings */
         ProductsSettings: {
+            /** Category Id */
+            category_id?: number | null;
             /**
              * Count
              * @default 12
              */
             count: number;
+            /** Product Ids */
+            product_ids?: number[];
             /**
              * Source
              * @default latest
              * @enum {string}
              */
-            source: "latest" | "best_selling" | "on_sale" | "recently_viewed";
+            source: "latest" | "best_selling" | "on_sale" | "category" | "hand_picked" | "recently_viewed";
+            /**
+             * Window
+             * @default 30
+             * @enum {integer}
+             */
+            window: 7 | 30 | 90;
         };
         /** ProductsWithoutPhotos */
         ProductsWithoutPhotos: {
