@@ -193,3 +193,15 @@ export function addSection(list: Section[], type: SectionType): Section[] {
 
 export const isDirty = (saved: Section[], draft: Section[]) =>
   JSON.stringify(saved) !== JSON.stringify(draft);
+
+/** Why the Storefront skips this section, or null. The reason was worked out for the saved
+ * section, so it is shown only while the section in the editor is still that one. */
+export function warningFor(
+  saved: Section[],
+  section: Section,
+  warnings: Record<string, string>,
+): string | null {
+  const was = saved.find((s) => s.id === section.id);
+  if (!was || JSON.stringify(was) !== JSON.stringify(section)) return null;
+  return warnings[section.id] ?? null;
+}

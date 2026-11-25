@@ -8,7 +8,14 @@ export const homepageKeys = { all: ["admin", "homepage"] as const };
  * Owner, if any, and why the last one was rejected. */
 export type HomepageEditing = {
   sections: Section[];
-  pending: { sections: Section[]; submitted_by: string | null; submitted_at: string } | null;
+  /** Section id -> why the Storefront skips that visible section (nothing to show). */
+  warnings: Record<string, string>;
+  pending: {
+    sections: Section[];
+    warnings: Record<string, string>;
+    submitted_by: string | null;
+    submitted_at: string;
+  } | null;
   rejection_reason: string;
 };
 
