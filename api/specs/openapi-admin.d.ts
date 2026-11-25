@@ -1534,6 +1534,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/homepage/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Preview Homepage
+         * @description The layout resolved the way the Storefront draws it, for the Dashboard's
+         *     preview mode. Signed-in Dashboard users only; the public endpoint has no preview.
+         */
+        get: operations["homepage_preview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/images/{image_id}": {
         parameters: {
             query?: never;
@@ -3741,6 +3762,13 @@ export interface components {
             /** Vouchers */
             vouchers: components["schemas"]["VoucherReportRowOut"][];
         };
+        /** CardImageOut */
+        CardImageOut: {
+            /** Alt */
+            alt: string;
+            /** Sizes */
+            sizes: components["schemas"]["ImageSizeOut"][];
+        };
         /** CarrierOut */
         CarrierOut: {
             /** Id */
@@ -4227,6 +4255,17 @@ export interface components {
          * @enum {string}
          */
         Group: "day" | "week" | "month";
+        /** HomeCategoryOut */
+        HomeCategoryOut: {
+            /** Image Alt */
+            image_alt: string;
+            /** Image Url */
+            image_url: string | null;
+            /** Name */
+            name: string;
+            /** Slug */
+            slug: string;
+        };
         /** HomeLayoutIn */
         HomeLayoutIn: {
             /** Collapsed */
@@ -4308,6 +4347,49 @@ export interface components {
             /** Sections */
             sections: (components["schemas"]["SliderSection"] | components["schemas"]["ProductsSection"] | components["schemas"]["CategoriesSection"] | components["schemas"]["BannerSection"] | components["schemas"]["RichTextSection"])[];
         };
+        /** HomepageOut */
+        HomepageOut: {
+            /** Sections */
+            sections: components["schemas"]["HomepageSectionOut"][];
+        };
+        /** HomepageSectionOut */
+        HomepageSectionOut: {
+            /** Banners */
+            banners?: components["schemas"]["PictureBannerOut"][] | null;
+            /** Body */
+            body?: string | null;
+            /** Categories */
+            categories?: components["schemas"]["HomeCategoryOut"][] | null;
+            /**
+             * Client Resolved
+             * @description Recently viewed: the Shopper's browser fills it in.
+             * @default false
+             */
+            client_resolved: boolean;
+            /**
+             * Display
+             * @enum {string}
+             */
+            display: "grid" | "carousel" | "list";
+            /** Id */
+            id: string;
+            /** Link */
+            link: string;
+            /** Products */
+            products?: components["schemas"]["ProductCardOut"][] | null;
+            /**
+             * Source
+             * @description Where a section takes its items from (Products: latest, best_selling, on_sale, recently_viewed).
+             */
+            source?: string | null;
+            /** Title */
+            title: string;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "slider" | "products" | "categories" | "banner" | "rich_text";
+        };
         /** ImageAltIn */
         ImageAltIn: {
             /** Alt Text */
@@ -4324,6 +4406,13 @@ export interface components {
         ImageOrderIn: {
             /** Ids */
             ids: number[];
+        };
+        /** ImageSizeOut */
+        ImageSizeOut: {
+            /** Url */
+            url: string;
+            /** Width */
+            width: number;
         };
         /** ImageUploadIn */
         ImageUploadIn: {
@@ -5255,11 +5344,53 @@ export interface components {
             /** Name */
             name: string;
         };
+        /** PictureBannerOut */
+        PictureBannerOut: {
+            /** Alt */
+            alt: string;
+            /** Id */
+            id: number;
+            /** Image */
+            image: components["schemas"]["ImageSizeOut"][];
+            /** Link */
+            link: string;
+            /** Mobile Image */
+            mobile_image: components["schemas"]["ImageSizeOut"][] | null;
+        };
         /**
          * Preset
          * @enum {string}
          */
         Preset: "today" | "7d" | "30d" | "this_month" | "last_month";
+        /** ProductCardOut */
+        ProductCardOut: {
+            /** Campaign Percentage */
+            campaign_percentage: string | null;
+            /** Colours */
+            colours: components["schemas"]["SwatchOut"][];
+            /** Id */
+            id: number;
+            image: components["schemas"]["CardImageOut"] | null;
+            /** Old Price */
+            old_price: string | null;
+            /**
+             * Price
+             * @example 349.90
+             */
+            price: string;
+            /** Rating Average */
+            rating_average: number | null;
+            /** Rating Count */
+            rating_count: number;
+            /** Shelf Price */
+            shelf_price: string | null;
+            /** Slug */
+            slug: string;
+            /** Sold Out */
+            sold_out: boolean;
+            /** Title */
+            title: string;
+        };
         /** ProductClassIn */
         ProductClassIn: {
             /**
@@ -6340,6 +6471,15 @@ export interface components {
             code?: string | null;
             /** Name */
             name?: string | null;
+        };
+        /** SwatchOut */
+        SwatchOut: {
+            /** Hex Code */
+            hex_code: string;
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
         };
         /** TargetOut */
         TargetOut: {
@@ -9317,6 +9457,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HomepageLayoutOut"];
+                };
+            };
+        };
+    };
+    homepage_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HomepageOut"];
                 };
             };
         };
