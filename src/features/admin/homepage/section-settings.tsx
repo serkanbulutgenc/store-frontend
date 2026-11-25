@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { type BannerRow, bannersQuery } from "../banners/queries";
 import { TargetPicker } from "../campaigns/target-picker";
 import { DescriptionEditor } from "../catalog/components/description-editor";
 import { categoriesQuery, productQuery, productsQuery } from "../catalog/queries";
@@ -262,17 +261,6 @@ function CategoriesFields({
   );
 }
 
-const SLOT_LABELS: Record<string, string> = { home_hero: "Ana slayt", home_mid: "Orta afiş" };
-
-const bannerName = (b: BannerRow) =>
-  `#${b.id} · ${SLOT_LABELS[b.slot] ?? b.slot}${b.link ? ` · ${b.link}` : ""}`;
-
-/** Published Banners that can sit on the home page: the hero and mid-page Slots. */
-function useHomeBanners() {
-  const banners = useQuery(bannersQuery("published"));
-  return (banners.data ?? []).filter((b) => b.slot in SLOT_LABELS);
-}
-
 function SliderFields({
   id,
   settings,
@@ -283,15 +271,9 @@ function SliderFields({
   onChange: (patch: Patch) => void;
 }) {
   const field = (suffix: string) => `section-${id}-${suffix}`;
-  const available = useHomeBanners();
   const collections = useQuery(collectionsQuery("published"));
-  const [q, setQ] = useState("");
   const picked = settings.banner_ids ?? [];
   const slides = useSectionImages(settings.source === "own" ? picked : []);
-  const chosen = picked.map((bid) => {
-    const b = available.find((x) => x.id === bid);
-    return { id: bid, name: b ? bannerName(b) : `Afiş #${bid} (yayında değil)` };
-  });
   return (
     <>
       <div className="space-y-1">
@@ -394,25 +376,6 @@ function SliderFields({
           )}
         </div>
       )}
-      {settings.source === "banners" && (
-        <div className="sm:col-span-2">
-          <TargetPicker
-            label="Afişler"
-            placeholder="Afiş ara"
-            chosen={chosen}
-            onChange={(next) => onChange({ banner_ids: next.map((t) => t.id) })}
-            matches={available
-              .map((b) => ({ id: b.id, name: bannerName(b) }))
-              .filter((t) =>
-                t.name.toLocaleLowerCase("tr").includes(q.trim().toLocaleLowerCase("tr")),
-              )}
-            onSearch={setQ}
-          />
-          <p className="text-muted-foreground">
-            Tarihi geçmiş veya yayından kalkmış afişler ana sayfada gösterilmez.
-          </p>
-        </div>
-      )}
     </>
   );
 }
@@ -442,12 +405,11 @@ function BannerFields({
   if (loading) return <p className="text-muted-foreground sm:col-span-2">Yükleniyor…</p>;
   return (
     <div className="space-y-2 sm:col-span-2">
-      <p className="text-muted-foreground">
-        {bannerId === null
-          ? "Şu an sıradaki orta afiş gösteriliyor."
-          : `Şu an Afişler ekranındaki #${bannerId} numaralı afiş gösteriliyor.`}{" "}
-        Kendi görselinizi yükleyerek değiştirebilirsiniz.
-      </p>
+      {bannerId !== null && (
+        <p role="alert" className="text-red-700">
+          Bu görsel bulunamadı (#{bannerId}). Yeni bir görsel yükleyin.
+        </p>
+      )}
       <NewSectionImage
         idPrefix={`section-${id}`}
         label="Afiş"
