@@ -204,3 +204,15 @@ it("hides Onay bekleyenler from an Owner who has not enrolled two-factor yet", (
   const unenrolled: Me = { ...me([]), role: "owner", mfa_required: true, mfa_enrolled: false };
   expect(visibleNav(unenrolled).map((i) => i.to)).not.toContain("/admin/approvals");
 });
+
+it("has no Banner'lar entry: the announcement bar and Category page top live under Vitrin", () => {
+  const all = visibleNav(me(["edit_banners", "edit_homepage", "manage_banners"]));
+  expect(all.map((i) => i.label)).not.toContain("Banner'lar");
+  expect(all.map((i) => i.label)).toContain("Vitrin");
+  // The banner pages still sit under Vitrin in the breadcrumbs.
+  expect(breadcrumbs("/admin/banners/5", { "5": "Kargo bedava" }).map((c) => c.label)).toEqual([
+    "Yönetim",
+    "Vitrin",
+    "Kargo bedava",
+  ]);
+});
