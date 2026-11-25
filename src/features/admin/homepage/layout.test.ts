@@ -109,6 +109,23 @@ describe("isDirty", () => {
   });
 });
 
+describe("pickMissing for own slides", () => {
+  const slider = (banner_ids: number[]): Section => ({
+    id: "s",
+    type: "slider",
+    title: "",
+    link: "",
+    visible: true,
+    display: "carousel",
+    settings: { source: "own", count: 5, banner_ids },
+  });
+
+  it("asks for at least one uploaded slide", () => {
+    expect(pickMissing(slider([]))).toBe("En az bir slayt yükleyin.");
+    expect(pickMissing(slider([4]))).toBeNull();
+  });
+});
+
 describe("warningFor", () => {
   const saved = list("a", "b");
   const warnings = { a: "Boş." };

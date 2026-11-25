@@ -1,6 +1,7 @@
 import type { AnyFieldApi } from "@tanstack/react-form";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { type BannerRow, bannersQuery } from "../banners/queries";
@@ -27,6 +28,7 @@ import {
   WINDOWS,
   type Window,
 } from "./layout";
+import { NewSectionImage, SectionImage, useSectionImages } from "./section-image";
 
 type Patch = SettingsPatch;
 
@@ -285,6 +287,7 @@ function SliderFields({
   const collections = useQuery(collectionsQuery("published"));
   const [q, setQ] = useState("");
   const picked = settings.banner_ids ?? [];
+  const slides = useSectionImages(settings.source === "own" ? picked : []);
   const chosen = picked.map((bid) => {
     const b = available.find((x) => x.id === bid);
     return { id: bid, name: b ? bannerName(b) : `Afiş #${bid} (yayında değil)` };
@@ -328,6 +331,69 @@ function SliderFields({
           </Select>
         </div>
       )}
+      {settings.source === "own" && (
+        <div className="space-y-3 sm:col-span-2">
+          {picked.map((bid, i) => {
+            const image = slides.byId.get(bid);
+            const name = `Slayt ${i + 1}`;
+            const move = (by: -1 | 1) => {
+              const next = [...picked];
+              const [item] = next.splice(i, 1);
+              if (item !== undefined) next.splice(i + by, 0, item);
+              onChange({ banner_ids: next });
+            };
+            return (
+              <div key={bid} className="space-y-1">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-medium">{name}</span>
+                  <div className="flex gap-1">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={i === 0}
+                      aria-label={`${name}: yukarı taşı`}
+                      onClick={() => move(-1)}
+                    >
+                      Yukarı
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={i === picked.length - 1}
+                      aria-label={`${name}: aşağı taşı`}
+                      onClick={() => move(1)}
+                    >
+                      Aşağı
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      aria-label={`${name}: kaldır`}
+                      onClick={() => onChange({ banner_ids: picked.filter((x) => x !== bid) })}
+                    >
+                      Kaldır
+                    </Button>
+                  </div>
+                </div>
+                {image ? (
+                  <SectionImage image={image} idPrefix={field("slide")} label={name} />
+                ) : (
+                  !slides.loading && (
+                    <p className="text-muted-foreground">Görsel bulunamadı (#{bid}).</p>
+                  )
+                )}
+              </div>
+            );
+          })}
+          {picked.length < MAX_ITEMS && (
+            <NewSectionImage
+              idPrefix={field("slide")}
+              label="Yeni slayt"
+              onCreated={(newId) => onChange({ banner_ids: [...picked, newId] })}
+            />
+          )}
+        </div>
+      )}
       {settings.source === "banners" && (
         <div className="sm:col-span-2">
           <TargetPicker
@@ -360,33 +426,33 @@ function BannerFields({
   settings: BannerSettings;
   onChange: (patch: Patch) => void;
 }) {
-  const field = (suffix: string) => `section-${id}-${suffix}`;
-  const available = useHomeBanners();
-  const missing = settings.banner_id != null && !available.some((b) => b.id === settings.banner_id);
+  const bannerId = settings.banner_id ?? null;
+  const { byId, loading } = useSectionImages(bannerId === null ? [] : [bannerId]);
+  const own = bannerId === null ? undefined : byId.get(bannerId);
+  if (own) {
+    return (
+      <div className="space-y-2 sm:col-span-2">
+        <SectionImage image={own} idPrefix={`section-${id}`} label="Afiş" />
+        <Button size="sm" variant="outline" onClick={() => onChange({ banner_id: null })}>
+          Görseli bölümden çıkar
+        </Button>
+      </div>
+    );
+  }
+  if (loading) return <p className="text-muted-foreground sm:col-span-2">Yükleniyor…</p>;
   return (
-    <div className="space-y-1">
-      <label htmlFor={field("banner")} className="block font-medium">
-        Afiş
-      </label>
-      <Select
-        id={field("banner")}
-        value={settings.banner_id ?? ""}
-        onChange={(e) =>
-          onChange({ banner_id: e.target.value === "" ? null : Number(e.target.value) })
-        }
-      >
-        <option value="">Sıradaki orta afiş</option>
-        {missing && (
-          <option value={settings.banner_id ?? ""}>
-            Afiş #{settings.banner_id} (yayında değil)
-          </option>
-        )}
-        {available.map((b) => (
-          <option key={b.id} value={b.id}>
-            {bannerName(b)}
-          </option>
-        ))}
-      </Select>
+    <div className="space-y-2 sm:col-span-2">
+      <p className="text-muted-foreground">
+        {bannerId === null
+          ? "Şu an sıradaki orta afiş gösteriliyor."
+          : `Şu an Afişler ekranındaki #${bannerId} numaralı afiş gösteriliyor.`}{" "}
+        Kendi görselinizi yükleyerek değiştirebilirsiniz.
+      </p>
+      <NewSectionImage
+        idPrefix={`section-${id}`}
+        label="Afiş"
+        onCreated={(newId) => onChange({ banner_id: newId })}
+      />
     </div>
   );
 }

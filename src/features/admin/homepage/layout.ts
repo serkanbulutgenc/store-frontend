@@ -45,6 +45,7 @@ export const SLIDER_SOURCE_LABELS: Record<SliderSource, string> = {
   home: "Ana sayfa slaytı ve yedekleri",
   banners: "Seçtiğim afişler",
   collection: "Bir koleksiyon",
+  own: "Kendi görsellerim",
 };
 
 export const WINDOWS: Window[] = [7, 30, 90];
@@ -67,6 +68,8 @@ export function pickMissing(s: Section): string | null {
   if (s.type === "slider") {
     if (s.settings.source === "banners" && !(s.settings.banner_ids ?? []).length)
       return "En az bir afiş seçin.";
+    if (s.settings.source === "own" && !(s.settings.banner_ids ?? []).length)
+      return "En az bir slayt yükleyin.";
     if (s.settings.source === "collection" && s.settings.collection_id == null)
       return "Bir koleksiyon seçin.";
   }

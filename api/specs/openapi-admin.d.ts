@@ -1535,6 +1535,92 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/homepage/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Images
+         * @description The section images among `ids` (at most 50), in the order given.
+         */
+        get: operations["homepage_images"];
+        put?: never;
+        /**
+         * Upload Image
+         * @description A new section image (JPEG, PNG, WebP or GIF). It shows on the Storefront only
+         *     once an approved layout uses it; Staff can upload too.
+         */
+        post: operations["homepage_upload_image"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/homepage/images/{image_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit Image
+         * @description Change the alt text (it covers both pictures) or the link.
+         */
+        patch: operations["homepage_edit_image"];
+        trace?: never;
+    };
+    "/api/admin/homepage/images/{image_id}/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Replace Image
+         * @description Replace the main picture of a section image.
+         */
+        post: operations["homepage_replace_image"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/homepage/images/{image_id}/mobile-image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Mobile Image
+         * @description The picture phones get instead of the main one.
+         */
+        post: operations["homepage_upload_mobile_image"];
+        /** Delete Mobile Image */
+        delete: operations["homepage_delete_mobile_image"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/homepage/preview": {
         parameters: {
             query?: never;
@@ -4687,6 +4773,27 @@ export interface components {
             kdv: "incl" | "excl";
             preset?: components["schemas"]["Preset"] | null;
         };
+        /** LayoutImageIn */
+        LayoutImageIn: {
+            /** Alt Text */
+            alt_text?: string | null;
+            /** Link */
+            link?: string | null;
+        };
+        /**
+         * LayoutImageOut
+         * @description One image of a section: `processing` until its pictures exist.
+         */
+        LayoutImageOut: {
+            /** Alt Text */
+            alt_text: string;
+            /** Id */
+            id: number;
+            image: components["schemas"]["CoverImageOut"] | null;
+            /** Link */
+            link: string;
+            mobile_image: components["schemas"]["CoverImageOut"] | null;
+        };
         /** LayoutVersionOut */
         LayoutVersionOut: {
             /**
@@ -6489,7 +6596,7 @@ export interface components {
              * @default home
              * @enum {string}
              */
-            source: "home" | "banners" | "collection";
+            source: "home" | "banners" | "collection" | "own";
         };
         /** SlugIn */
         SlugIn: {
@@ -9575,6 +9682,178 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HomepageLayoutOut"];
+                };
+            };
+        };
+    };
+    homepage_images: {
+        parameters: {
+            query: {
+                ids: number[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutImageOut"][];
+                };
+            };
+        };
+    };
+    homepage_upload_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Alt Text */
+                    alt_text?: string | null;
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                    /** Link */
+                    link?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutImageOut"];
+                };
+            };
+        };
+    };
+    homepage_edit_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                image_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LayoutImageIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutImageOut"];
+                };
+            };
+        };
+    };
+    homepage_replace_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                image_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Alt Text */
+                    alt_text?: string | null;
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                    /** Link */
+                    link?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutImageOut"];
+                };
+            };
+        };
+    };
+    homepage_upload_mobile_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                image_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutImageOut"];
+                };
+            };
+        };
+    };
+    homepage_delete_mobile_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                image_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutImageOut"];
                 };
             };
         };
