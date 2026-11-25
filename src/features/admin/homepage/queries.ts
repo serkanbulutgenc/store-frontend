@@ -30,3 +30,35 @@ export function useSaveHomepage() {
     },
   }).mutateAsync;
 }
+
+/** One approved version of the layout, as listed in its history. */
+export type LayoutVersion = {
+  version: number;
+  approved_at: string;
+  approved_by: string | null;
+  section_count: number;
+};
+
+export const homepageVersionsQuery = queryOptions({
+  queryKey: [...homepageKeys.all, "versions"] as const,
+  queryFn: async () => (await adminApi.GET("/api/admin/homepage/versions")).data as LayoutVersion[],
+});
+
+/** Put an earlier version back live (Owner only). It becomes a new version; the answer is the
+ * layout as now stored. */
+export function useRestoreHomepage() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (version: number) =>
+      (
+        await adminApi.POST("/api/admin/homepage/versions/{version}/restore", {
+          params: { path: { version } },
+        })
+      ).data as HomepageEditing,
+    onSuccess: (restored) => {
+      qc.setQueryData(homepageLayoutQuery.queryKey, restored);
+      void qc.invalidateQueries({ queryKey: homepageVersionsQuery.queryKey });
+      void qc.invalidateQueries({ queryKey: ["store", "homepage"] });
+    },
+  }).mutateAsync;
+}
