@@ -86,9 +86,9 @@ describe("addSection", () => {
     expect(l).toHaveLength(MAX_SECTIONS);
   });
 
-  it("offers every type but Rich text", () => {
-    expect(ADDABLE).not.toContain("rich_text");
-    expect(ADDABLE).toHaveLength(4);
+  it("offers every type, Rich text included", () => {
+    expect(ADDABLE).toContain("rich_text");
+    expect(ADDABLE).toHaveLength(5);
   });
 });
 
@@ -125,9 +125,11 @@ describe("updateSettings", () => {
     expect(next[1]).toBe(l[1]);
   });
 
-  it("leaves other section types alone", () => {
-    const l = addSection([], "rich_text");
-    expect(updateSettings(l, "rich_text-1", { count: 5 })).toEqual(l);
+  it("leaves other sections alone, and edits a rich text body", () => {
+    const l = addSection(addSection([], "banner"), "rich_text");
+    const next = updateSettings(l, "rich_text-1", { body: "Merhaba" });
+    expect(next[0]).toBe(l[0]);
+    expect(next[1]).toMatchObject({ settings: { body: "Merhaba" } });
   });
 });
 

@@ -13,6 +13,7 @@ export const MAX_ITEMS = 24;
 
 export type ProductsSettings = Extract<Section, { type: "products" }>["settings"];
 export type CategoriesSettings = Extract<Section, { type: "categories" }>["settings"];
+export type RichTextSettings = Extract<Section, { type: "rich_text" }>["settings"];
 export type SliderSettings = Extract<Section, { type: "slider" }>["settings"];
 export type BannerSettings = Extract<Section, { type: "banner" }>["settings"];
 export type SliderSource = SliderSettings["source"];
@@ -20,7 +21,8 @@ export type SettingsPatch =
   | Partial<ProductsSettings>
   | Partial<CategoriesSettings>
   | Partial<SliderSettings>
-  | Partial<BannerSettings>;
+  | Partial<BannerSettings>
+  | Partial<RichTextSettings>;
 export type ProductSource = ProductsSettings["source"];
 export type CategorySource = CategoriesSettings["source"];
 export type Window = ProductsSettings["window"];
@@ -53,12 +55,10 @@ export function clampCount(n: number): number {
   return Math.min(MAX_ITEMS, Math.max(MIN_ITEMS, Math.trunc(n)));
 }
 
-/** Edit one Products or Categories section's own settings. Other sections are left alone. */
+/** Edit one section's own settings. Other sections are left alone. */
 export function updateSettings(list: Section[], id: string, patch: SettingsPatch): Section[] {
   return list.map((s) =>
-    s.id === id && s.type !== "rich_text"
-      ? ({ ...s, settings: { ...s.settings, ...patch } } as Section)
-      : s,
+    s.id === id ? ({ ...s, settings: { ...s.settings, ...patch } } as Section) : s,
   );
 }
 
@@ -90,8 +90,8 @@ export const TYPE_LABELS: Record<SectionType, string> = {
   rich_text: "Yazı",
 };
 
-/** What the Owner can add today. Rich text waits for its own editor. */
-export const ADDABLE: SectionType[] = ["slider", "products", "categories", "banner"];
+/** What the Owner can add. */
+export const ADDABLE: SectionType[] = ["slider", "products", "categories", "banner", "rich_text"];
 
 export const DISPLAY_LABELS: Record<Display, string> = {
   carousel: "Kaydırmalı",

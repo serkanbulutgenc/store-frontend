@@ -4,6 +4,7 @@ import { bannerLink } from "@/features/catalog/banner";
 import { CategoryRail } from "@/features/catalog/components/category-rail";
 import { HomeHero } from "@/features/catalog/components/home-hero";
 import { ProductCard } from "@/features/catalog/components/product-card";
+import { ProductDescription } from "@/features/catalog/components/product-description";
 import { ProductRail } from "@/features/catalog/components/product-rail";
 import { RecentlyViewed } from "@/features/catalog/components/recently-viewed";
 import { cn } from "@/lib/utils";
@@ -87,11 +88,11 @@ function SectionBlock({ section }: { section: HomepageSection }) {
     case "banner":
       return <BannerStrip banners={section.banners ?? []} label="Kampanya" />;
     case "rich_text":
-      // Plain text until the Rich text section gets its sanitised renderer (#159).
+      // Markdown through the Description renderer: no raw HTML, only allowed elements and links.
       return (
         <section>
           {section.title && <h2 className="mb-4 text-xl font-semibold">{section.title}</h2>}
-          <p className="whitespace-pre-wrap">{section.body}</p>
+          <ProductDescription source={section.body ?? ""} />
         </section>
       );
     default:

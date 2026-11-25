@@ -140,13 +140,34 @@ describe("HomepageSections", () => {
     expect(out).toContain('href="/kategori/elbise"');
   });
 
-  it("renders a rich text section as plain text, never as markup", () => {
+  it("renders a rich text section's headings, lists and links", () => {
     const out = html([
-      section({ id: "t", type: "rich_text", title: "Duyuru", body: "<script>x</script>Merhaba" }),
+      section({
+        id: "t",
+        type: "rich_text",
+        title: "Duyuru",
+        body: "### Başlık\n\n- bir\n- iki\n\n[Ara](/ara) ve [site](https://example.com)",
+      }),
     ]);
 
-    expect(out).toContain("Merhaba");
-    expect(out).not.toContain("<script>");
+    expect(out).toContain("<h3");
+    expect(out).toContain("<li>bir</li>");
+    expect(out).toContain('href="/ara"');
+    expect(out).toContain('href="https://example.com"');
+  });
+
+  it("strips scripts, inline handlers and unsafe links from rich text", () => {
+    const out = html([
+      section({
+        id: "t",
+        type: "rich_text",
+        body: '<script>alert(1)</script><img src=x onerror="alert(2)">[tıkla](javascript:alert(3))',
+      }),
+    ]);
+
+    expect(out).not.toContain("<script");
+    expect(out).not.toContain("onerror");
+    expect(out).not.toContain("javascript:");
   });
 
   it("skips a section type it does not know instead of breaking the page", () => {
