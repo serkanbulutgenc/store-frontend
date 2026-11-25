@@ -181,6 +181,11 @@ export function HomepageScreen() {
               {nameOf(incomplete)}: {pickMissing(incomplete)}
             </span>
           )}
+          <Button size="sm" variant="outline" asChild>
+            <a href="/?preview=layout" target="_blank" rel="noopener">
+              Önizle
+            </a>
+          </Button>
           <Button
             size="sm"
             disabled={!dirty || saving || incomplete !== undefined}
