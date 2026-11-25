@@ -49,11 +49,11 @@ it("shows the Menus entry only with the manage_menus permission (Owner, not Staf
   expect(owner).toContain("/admin/menus");
 });
 
-it("shows the Vitrin entry only with the manage_homepage permission (Owner, not Staff)", () => {
-  const staff = visibleNav(me(["view_products", "manage_products"])).map((i) => i.to);
-  expect(staff).not.toContain("/admin/homepage");
-  const owner = visibleNav(me(["manage_homepage"])).map((i) => i.to);
-  expect(owner).toContain("/admin/homepage");
+it("shows the Vitrin entry with the edit_homepage permission (Owner and Staff)", () => {
+  const other = visibleNav(me(["view_products", "manage_products"])).map((i) => i.to);
+  expect(other).not.toContain("/admin/homepage");
+  const staff = visibleNav(me(["edit_homepage"])).map((i) => i.to);
+  expect(staff).toContain("/admin/homepage");
 });
 
 it("groups the sidebar as Satış, Katalog, Yönetim and drops groups left empty", () => {
