@@ -2,9 +2,12 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { type BannerRow, bannersQuery } from "../banners/queries";
 import { TargetPicker } from "../campaigns/target-picker";
 import { categoriesQuery, productQuery, productsQuery } from "../catalog/queries";
+import { collectionsQuery } from "../collections/queries";
 import {
+  type BannerSettings,
   CATEGORY_SOURCE_LABELS,
   type CategoriesSettings,
   type CategorySource,
@@ -15,11 +18,15 @@ import {
   type ProductSource,
   type ProductsSettings,
   type Section,
+  type SettingsPatch,
+  SLIDER_SOURCE_LABELS,
+  type SliderSettings,
+  type SliderSource,
   WINDOWS,
   type Window,
 } from "./layout";
 
-type Patch = Partial<ProductsSettings> | Partial<CategoriesSettings>;
+type Patch = SettingsPatch;
 
 /** The settings only a Products or Categories section has: where its items come from. */
 export function SectionSettings({
@@ -29,6 +36,12 @@ export function SectionSettings({
   section: Section;
   onChange: (patch: Patch) => void;
 }) {
+  if (section.type === "slider") {
+    return <SliderFields id={section.id} settings={section.settings} onChange={onChange} />;
+  }
+  if (section.type === "banner") {
+    return <BannerFields id={section.id} settings={section.settings} onChange={onChange} />;
+  }
   if (section.type === "products") {
     return <ProductsFields id={section.id} settings={section.settings} onChange={onChange} />;
   }
@@ -239,5 +252,136 @@ function CategoriesFields({
         </div>
       )}
     </>
+  );
+}
+
+const SLOT_LABELS: Record<string, string> = { home_hero: "Ana slayt", home_mid: "Orta afiş" };
+
+const bannerName = (b: BannerRow) =>
+  `#${b.id} · ${SLOT_LABELS[b.slot] ?? b.slot}${b.link ? ` · ${b.link}` : ""}`;
+
+/** Published Banners that can sit on the home page: the hero and mid-page Slots. */
+function useHomeBanners() {
+  const banners = useQuery(bannersQuery("published"));
+  return (banners.data ?? []).filter((b) => b.slot in SLOT_LABELS);
+}
+
+function SliderFields({
+  id,
+  settings,
+  onChange,
+}: {
+  id: string;
+  settings: SliderSettings;
+  onChange: (patch: Patch) => void;
+}) {
+  const field = (suffix: string) => `section-${id}-${suffix}`;
+  const available = useHomeBanners();
+  const collections = useQuery(collectionsQuery("published"));
+  const [q, setQ] = useState("");
+  const picked = settings.banner_ids ?? [];
+  const chosen = picked.map((bid) => {
+    const b = available.find((x) => x.id === bid);
+    return { id: bid, name: b ? bannerName(b) : `Afiş #${bid} (yayında değil)` };
+  });
+  return (
+    <>
+      <div className="space-y-1">
+        <label htmlFor={field("source")} className="block font-medium">
+          Slayt nereden gelsin?
+        </label>
+        <Select
+          id={field("source")}
+          value={settings.source}
+          onChange={(e) => onChange({ source: e.target.value as SliderSource })}
+        >
+          {(Object.keys(SLIDER_SOURCE_LABELS) as SliderSource[]).map((k) => (
+            <option key={k} value={k}>
+              {SLIDER_SOURCE_LABELS[k]}
+            </option>
+          ))}
+        </Select>
+      </div>
+      {settings.source === "collection" && (
+        <div className="space-y-1">
+          <label htmlFor={field("collection")} className="block font-medium">
+            Koleksiyon
+          </label>
+          <Select
+            id={field("collection")}
+            value={settings.collection_id ?? ""}
+            onChange={(e) =>
+              onChange({ collection_id: e.target.value === "" ? null : Number(e.target.value) })
+            }
+          >
+            <option value="">Seçin…</option>
+            {(collections.data ?? []).map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </Select>
+        </div>
+      )}
+      {settings.source === "banners" && (
+        <div className="sm:col-span-2">
+          <TargetPicker
+            label="Afişler"
+            placeholder="Afiş ara"
+            chosen={chosen}
+            onChange={(next) => onChange({ banner_ids: next.map((t) => t.id) })}
+            matches={available
+              .map((b) => ({ id: b.id, name: bannerName(b) }))
+              .filter((t) =>
+                t.name.toLocaleLowerCase("tr").includes(q.trim().toLocaleLowerCase("tr")),
+              )}
+            onSearch={setQ}
+          />
+          <p className="text-muted-foreground">
+            Tarihi geçmiş veya yayından kalkmış afişler ana sayfada gösterilmez.
+          </p>
+        </div>
+      )}
+    </>
+  );
+}
+
+function BannerFields({
+  id,
+  settings,
+  onChange,
+}: {
+  id: string;
+  settings: BannerSettings;
+  onChange: (patch: Patch) => void;
+}) {
+  const field = (suffix: string) => `section-${id}-${suffix}`;
+  const available = useHomeBanners();
+  const missing = settings.banner_id != null && !available.some((b) => b.id === settings.banner_id);
+  return (
+    <div className="space-y-1">
+      <label htmlFor={field("banner")} className="block font-medium">
+        Afiş
+      </label>
+      <Select
+        id={field("banner")}
+        value={settings.banner_id ?? ""}
+        onChange={(e) =>
+          onChange({ banner_id: e.target.value === "" ? null : Number(e.target.value) })
+        }
+      >
+        <option value="">Sıradaki orta afiş</option>
+        {missing && (
+          <option value={settings.banner_id ?? ""}>
+            Afiş #{settings.banner_id} (yayında değil)
+          </option>
+        )}
+        {available.map((b) => (
+          <option key={b.id} value={b.id}>
+            {bannerName(b)}
+          </option>
+        ))}
+      </Select>
+    </div>
   );
 }
