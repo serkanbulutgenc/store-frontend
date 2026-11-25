@@ -7,7 +7,6 @@ import {
   GalleryVerticalEnd,
   History,
   Home,
-  Images,
   Layers,
   LayoutTemplate,
   type LucideIcon,
@@ -110,12 +109,6 @@ export const NAV_GROUPS: NavGroup[] = [
         // Only the Owner gets a number: Staff cannot decide on what is waiting.
         badge: "pendingCollections",
       },
-      {
-        label: "Banner'lar",
-        to: "/admin/banners",
-        icon: Images,
-        permission: "edit_banners",
-      },
       { label: "Markalar", to: "/admin/brands", icon: Tag, permission: "manage_brands" },
       {
         label: "Tedarikçiler",
@@ -161,10 +154,12 @@ export const NAV_GROUPS: NavGroup[] = [
         badge: "contactReplies",
       },
       {
+        // The page layout plus the announcement bar and the Category page pictures (tabs).
         label: "Vitrin",
         to: "/admin/homepage",
         icon: LayoutTemplate,
         permission: "edit_homepage",
+        aliases: ["/admin/banners"],
       },
       { label: "Menüler", to: "/admin/menus", icon: Menu, permission: "manage_menus" },
       { label: "Personel", to: "/admin/staff", icon: UserCog, permission: "manage_staff_users" },

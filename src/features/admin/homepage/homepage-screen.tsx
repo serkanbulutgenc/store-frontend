@@ -57,6 +57,7 @@ import {
 import { LayoutHistory } from "./layout-history";
 import { homepageLayoutQuery, useSaveHomepage } from "./queries";
 import { SectionSettings } from "./section-settings";
+import { VitrinTabs } from "./vitrin-tabs";
 
 const nameOf = (s: Section) => s.title || TYPE_LABELS[s.type];
 
@@ -114,6 +115,7 @@ export function HomepageScreen({ me }: { me: Me }) {
     <div className="space-y-3">
       <div>
         <h1 className="text-lg font-semibold">Vitrin</h1>
+        <VitrinTabs me={me} active="layout" />
         <p className="text-muted-foreground">
           Mağazanın ana sayfasında gösterilen bölümler, yukarıdan aşağıya.{" "}
           {owner

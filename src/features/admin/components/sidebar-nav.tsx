@@ -19,8 +19,9 @@ import { usePendingCollectionCount } from "../collections/queries";
 import { waitingRepliesQuery } from "../contact/queries";
 import { visibleGroups } from "../nav";
 
-function isActive(pathname: string, to: string): boolean {
-  return to === "/admin" ? pathname === "/admin" : pathname === to || pathname.startsWith(`${to}/`);
+function isActive(pathname: string, to: string, aliases: string[] = []): boolean {
+  if (to === "/admin") return pathname === "/admin";
+  return [to, ...aliases].some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
 /** Grouped navigation. Groups collapse; the whole sidebar folds to an icon rail. */
@@ -55,7 +56,7 @@ export function SidebarNav({ me }: { me: Me }) {
                       <SidebarMenuItem key={item.to}>
                         <SidebarMenuButton
                           asChild
-                          isActive={isActive(pathname, item.to)}
+                          isActive={isActive(pathname, item.to, item.aliases)}
                           tooltip={item.label}
                         >
                           <Link to={item.to as "/admin"} onClick={() => setOpenMobile(false)}>
