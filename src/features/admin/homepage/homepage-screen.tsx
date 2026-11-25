@@ -44,6 +44,7 @@ import {
   updateSection,
   updateSettings,
 } from "./layout";
+import { LayoutHistory } from "./layout-history";
 import { homepageLayoutQuery, useSaveHomepage } from "./queries";
 import { SectionSettings } from "./section-settings";
 
@@ -235,6 +236,17 @@ export function HomepageScreen({ me }: { me: Me }) {
           </div>
         </div>
       </fieldset>
+      <LayoutHistory
+        owner={owner}
+        blocked={
+          locked
+            ? "Bekleyen bir değişiklik var; önce onaylayın veya reddedin."
+            : dirty
+              ? "Kaydedilmemiş değişiklikleriniz var; önce kaydedin veya atın."
+              : null
+        }
+        onRestored={setDraft}
+      />
     </div>
   );
 }

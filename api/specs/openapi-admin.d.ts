@@ -1545,11 +1545,53 @@ export interface paths {
         /**
          * Preview Homepage
          * @description The layout resolved the way the Storefront draws it, for the Dashboard's
-         *     preview mode. Signed-in Dashboard users only; the public endpoint has no preview.
+         *     preview mode: the pending change if one waits for the Owner, else the live
+         *     layout. Signed-in Dashboard users only; the public endpoint has no preview.
          */
         get: operations["homepage_preview"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/homepage/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Homepage Versions
+         * @description Every approved version of the layout, newest first. Staff can read it.
+         */
+        get: operations["homepage_versions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/homepage/versions/{version}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Restore Homepage
+         * @description Owner only: put an earlier version back live. It becomes a new version and the
+         *     history stays as it was. Refused while a Staff change is waiting.
+         */
+        post: operations["homepage_restore"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4637,6 +4679,20 @@ export interface components {
             /** @default incl */
             kdv: "incl" | "excl";
             preset?: components["schemas"]["Preset"] | null;
+        };
+        /** LayoutVersionOut */
+        LayoutVersionOut: {
+            /**
+             * Approved At
+             * Format: date-time
+             */
+            approved_at: string;
+            /** Approved By */
+            approved_by: string | null;
+            /** Section Count */
+            section_count: number;
+            /** Version */
+            version: number;
         };
         /** LowStock */
         LowStock: {
@@ -9525,6 +9581,48 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HomepageOut"];
+                };
+            };
+        };
+    };
+    homepage_versions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutVersionOut"][];
+                };
+            };
+        };
+    };
+    homepage_restore: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HomepageLayoutOut"];
                 };
             };
         };
