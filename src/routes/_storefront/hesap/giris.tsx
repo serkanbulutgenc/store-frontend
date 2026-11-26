@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_storefront/hesap/giris")({
     if (await fetchMe()) throw redirect({ href: "/admin" });
   },
   head: () => ({
-    meta: [{ title: "Giriş | Aura Tekstil" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "Giriş | Auraa Giyim" }, { name: "robots", content: "noindex" }],
   }),
   component: function LoginRoute() {
     const { redirect: to } = Route.useSearch();

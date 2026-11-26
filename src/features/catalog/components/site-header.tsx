@@ -86,7 +86,7 @@ export function SiteHeader({ items }: { items: MenuNode[] }) {
             to="/"
             className="font-[family-name:var(--font-display)] text-2xl font-medium text-primary"
           >
-            Aura Tekstil
+            Auraa Giyim
           </Link>
         </div>
         <SearchBox />

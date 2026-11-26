@@ -3,7 +3,7 @@ import { BasketPage } from "@/features/basket/components/basket-page";
 
 export const Route = createFileRoute("/_storefront/sepet")({
   head: () => ({
-    meta: [{ title: "Sepetim | Aura Tekstil" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "Sepetim | Auraa Giyim" }, { name: "robots", content: "noindex" }],
   }),
   component: BasketPage,
 });

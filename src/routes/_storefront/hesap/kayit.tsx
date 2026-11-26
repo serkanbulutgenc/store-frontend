@@ -4,7 +4,7 @@ import { SignUpForm } from "@/features/account/components/auth-forms";
 
 export const Route = createFileRoute("/_storefront/hesap/kayit")({
   head: () => ({
-    meta: [{ title: "Hesap oluştur | Aura Tekstil" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "Hesap oluştur | Auraa Giyim" }, { name: "robots", content: "noindex" }],
   }),
   component: () => (
     <AuthCard title="Hesap oluştur">

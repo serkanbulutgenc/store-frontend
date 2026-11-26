@@ -5,7 +5,7 @@ import { VerifyEmail } from "@/features/account/components/verify-email";
 export const Route = createFileRoute("/_storefront/hesap/eposta-dogrula/$key")({
   head: () => ({
     meta: [
-      { title: "E-posta doğrulama | Aura Tekstil" },
+      { title: "E-posta doğrulama | Auraa Giyim" },
       { name: "robots", content: "noindex" },
       { name: "referrer", content: "no-referrer" },
     ],
