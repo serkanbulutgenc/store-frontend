@@ -3,7 +3,7 @@ import type { MenuNode } from "@/features/menus/menu-link";
 
 export function SiteFooter({ items }: { items: MenuNode[] }) {
   return (
-    <footer className="mt-16 border-t border-border bg-card">
+    <footer className="mt-16 border-t border-border bg-muted">
       <nav aria-label="Yasal bilgiler" className="mx-auto max-w-6xl px-4 py-6">
         <FooterMenu items={items} />
         <div className="mt-4 flex items-center gap-3 text-muted-foreground">
