@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { FileText, ListChecks, MessageSquare } from "lucide-react";
+import { FileText, ListChecks, MessageSquare, Minus, Plus } from "lucide-react";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,6 +19,9 @@ import { useQuickPick } from "./quick-view/use-quick-pick";
 import { RecentlyViewed } from "./recently-viewed";
 import { SimilarProducts } from "./similar-products";
 import { SizePickerExtras } from "./size-guide";
+
+/** The most one add-to-basket can ask for; the basket itself enforces real stock. */
+const MAX_QTY = 10;
 
 function ProductTabs({ product }: { product: ProductDetail }) {
   // Page 1 is the same query the reviews tab renders, so this costs no extra request.
@@ -189,6 +192,37 @@ export function ProductPage({
             <p aria-live="polite" className="min-h-6 font-medium text-primary">
               {pick.label}
             </p>
+            <div className="flex items-center gap-3">
+              <span id="qty-label" className="font-medium">
+                Adet
+              </span>
+              <fieldset
+                aria-labelledby="qty-label"
+                className="m-0 inline-flex items-center rounded-md border border-border bg-card p-0"
+              >
+                <button
+                  type="button"
+                  aria-label="Adedi azalt"
+                  disabled={pick.quantity <= 1}
+                  onClick={() => pick.setQuantity(pick.quantity - 1)}
+                  className="grid size-11 place-items-center focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-40"
+                >
+                  <Minus className="size-4" aria-hidden="true" />
+                </button>
+                <output aria-live="polite" className="min-w-10 text-center font-medium">
+                  {pick.quantity}
+                </output>
+                <button
+                  type="button"
+                  aria-label="Adedi artır"
+                  disabled={pick.quantity >= MAX_QTY}
+                  onClick={() => pick.setQuantity(pick.quantity + 1)}
+                  className="grid size-11 place-items-center focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-40"
+                >
+                  <Plus className="size-4" aria-hidden="true" />
+                </button>
+              </fieldset>
+            </div>
             <Button
               size="lg"
               className="w-full"
