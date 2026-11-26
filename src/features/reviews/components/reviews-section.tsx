@@ -181,8 +181,8 @@ export function ReviewsSection({ slug, productId }: { slug: string; productId: n
   const pages = data ? Math.max(1, Math.ceil(data.count / data.page_size)) : 1;
   return (
     <section className="max-w-3xl space-y-4" aria-labelledby="reviews">
-      <h2 id="reviews" className="sr-only">
-        Değerlendirmeler
+      <h2 id="reviews" className="text-2xl font-medium md:text-3xl">
+        Yorumlar{data ? ` (${data.count})` : ""}
       </h2>
       {data && <RatingSummary average={data.average} count={data.count} />}
       {data && data.count === 0 && (

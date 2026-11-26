@@ -9,7 +9,7 @@ describe("SizePickerExtras", () => {
   it("shows the Beden tablosu link when a guide applies", () => {
     const out = html({ has_size_guide: true, fit_note: "" });
 
-    expect(out).toMatch(/<button[^>]*>[^<]*Beden tablosu/);
+    expect(out).toMatch(/<button[^>]*>(<svg.*<\/svg>)?[^<]*Beden tablosu/);
   });
 
   it("hides the link for a One-size Product or when no guide applies", () => {
