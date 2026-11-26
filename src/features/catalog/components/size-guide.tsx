@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { X } from "lucide-react";
+import { Ruler, X } from "lucide-react";
 import { Dialog } from "radix-ui";
 import { useState } from "react";
 import { type ProductDetail, sizeGuideQuery } from "../queries";
@@ -23,8 +23,9 @@ export function SizePickerExtras({ product }: { product: Extras }) {
             type="button"
             aria-haspopup="dialog"
             onClick={() => setOpen(true)}
-            className="underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            className="inline-flex items-center gap-1.5 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
+            <Ruler className="size-4" aria-hidden="true" />
             Beden tablosu
           </button>
           <SizeGuideDialog slug={product.slug} open={open} onOpenChange={setOpen} />

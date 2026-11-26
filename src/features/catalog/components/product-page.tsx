@@ -1,14 +1,21 @@
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { FileText, ListChecks, MessageSquare, Minus, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+  ChevronRight,
+  FileText,
+  ListChecks,
+  Minus,
+  Plus,
+  ShieldAlert,
+  ShoppingBag,
+  Truck,
+} from "lucide-react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HeartButton } from "@/features/favorites/components/heart-button";
 import { ReviewsSection } from "@/features/reviews/components/reviews-section";
 import { StarsInline } from "@/features/reviews/components/stars";
 import { formatAverage } from "@/features/reviews/format";
-import { reviewsQuery } from "@/features/reviews/queries";
 import { NotifyMe } from "@/features/stock-alerts/components/notify-me";
 import { cn } from "@/lib/utils";
 import type { ProductCard, ProductDetail } from "../queries";
@@ -25,27 +32,13 @@ import { SizePickerExtras } from "./size-guide";
 /** The most one add-to-basket can ask for; the basket itself enforces real stock. */
 const MAX_QTY = 10;
 
-function ProductTabs({
-  product,
-  tab,
-  onTabChange,
-}: {
-  product: ProductDetail;
-  tab: string;
-  onTabChange: (tab: string) => void;
-}) {
-  // Page 1 is the same query the reviews tab renders, so this costs no extra request.
-  const { data } = useQuery(reviewsQuery(product.slug, 1));
+function ProductTabs({ product }: { product: ProductDetail }) {
   return (
-    <Tabs id="yorumlar-sekmesi" value={tab} onValueChange={onTabChange} className="mt-12">
+    <Tabs defaultValue="attributes" className="mt-12">
       <TabsList variant="line" className="h-auto flex-wrap">
         <TabsTrigger value="attributes">
           <ListChecks className="size-4" aria-hidden="true" />
           Ürün özellikleri
-        </TabsTrigger>
-        <TabsTrigger value="reviews">
-          <MessageSquare className="size-4" aria-hidden="true" />
-          Yorumlar{data ? ` (${data.count})` : ""}
         </TabsTrigger>
         <TabsTrigger value="description">
           <FileText className="size-4" aria-hidden="true" />
@@ -66,10 +59,6 @@ function ProductTabs({
           <p className="text-muted-foreground">Ürün özelliği yok.</p>
         )}
       </TabsContent>
-      {/* Kept mounted so a half-written review survives a tab switch. */}
-      <TabsContent value="reviews" forceMount className="pt-4 data-[state=inactive]:hidden">
-        <ReviewsSection key={product.slug} slug={product.slug} productId={product.id} />
-      </TabsContent>
       <TabsContent value="description" className="pt-4">
         {product.description ? (
           <ProductDescription source={product.description} />
@@ -89,7 +78,6 @@ export function ProductPage({
   similar: ProductCard[];
 }) {
   const pick = useQuickPick(product);
-  const [tab, setTab] = useState("attributes");
   useEffect(() => recordViewed(product.slug), [product.slug]);
   const { colourId, sizes, size: activeSize, variant, needsSize } = pick;
   const colour = product.colours.find((c) => c.id === colourId);
@@ -106,7 +94,7 @@ export function ProductPage({
             </li>
             {product.breadcrumbs.map((c) => (
               <li key={c.slug} className="flex gap-1">
-                <span aria-hidden="true">/</span>
+                <ChevronRight className="size-4 self-center" aria-hidden="true" />
                 <Link to="/kategori/$slug" params={{ slug: c.slug }} className="hover:underline">
                   {c.name}
                 </Link>
@@ -134,12 +122,9 @@ export function ProductPage({
               <h1 className="text-2xl font-semibold">{product.title}</h1>
               <button
                 type="button"
-                onClick={() => {
-                  setTab("reviews");
-                  document
-                    .getElementById("yorumlar-sekmesi")
-                    ?.scrollIntoView({ behavior: "smooth" });
-                }}
+                onClick={() =>
+                  document.getElementById("yorumlar")?.scrollIntoView({ behavior: "smooth" })
+                }
                 className="mt-1 inline-flex items-center gap-2 text-sm hover:underline focus-visible:outline-2 focus-visible:outline-ring"
               >
                 {product.rating_average !== null && product.rating_count > 0 ? (
@@ -155,7 +140,6 @@ export function ProductPage({
                 )}
               </button>
             </div>
-            <HeartButton productId={product.id} className="shrink-0 border border-border" />
           </div>
           <div className="text-xl">
             <Price
@@ -256,30 +240,46 @@ export function ProductPage({
                 </button>
               </fieldset>
             </div>
-            <Button
-              size="lg"
-              className="w-full"
-              disabled={!pick.canAdd || pick.pending}
-              onClick={() => variant && pick.addVariant(variant.id)}
-            >
-              {variant && !variant.in_stock ? "Tükendi" : needsSize ? "Beden seçin" : "Sepete ekle"}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                size="lg"
+                className="flex-1"
+                disabled={!pick.canAdd || pick.pending}
+                onClick={() => variant && pick.addVariant(variant.id)}
+              >
+                <ShoppingBag className="size-5" aria-hidden="true" />
+                {variant && !variant.in_stock
+                  ? "Tükendi"
+                  : needsSize
+                    ? "Beden seçin"
+                    : "Sepete ekle"}
+              </Button>
+              <HeartButton
+                productId={product.id}
+                className="size-12 shrink-0 border border-border"
+              />
+            </div>
             {variant && !variant.in_stock && (
               <NotifyMe productSlug={product.slug} variantId={variant.id} />
             )}
           </div>
 
-          <p className="rounded-md bg-rose-soft px-3 py-2 text-sm">
+          <p className="flex items-start gap-2 rounded-md bg-rose-soft px-3 py-2 text-sm">
+            <Truck className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
             Kapıda ödeme veya havale ile ödeyebilirsiniz. Kargo ücreti sepette gösterilir.
           </p>
           {product.is_hygiene && (
-            <p className="rounded-md border border-border px-3 py-2 text-sm">
+            <p className="flex items-start gap-2 rounded-md border border-border px-3 py-2 text-sm">
+              <ShieldAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
               Hijyen nedeniyle bu ürün, ambalajı açıldıktan sonra iade edilemez.
             </p>
           )}
         </div>
       </div>
-      <ProductTabs product={product} tab={tab} onTabChange={setTab} />
+      <ProductTabs product={product} />
+      <div id="yorumlar" className="mt-12 scroll-mt-6">
+        <ReviewsSection key={product.slug} slug={product.slug} productId={product.id} />
+      </div>
       <div className="mt-12 empty:hidden">
         <SimilarProducts products={similar} />
       </div>
