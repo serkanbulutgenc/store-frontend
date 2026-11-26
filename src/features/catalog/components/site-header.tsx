@@ -55,7 +55,7 @@ function BasketLink() {
     >
       <ShoppingBag className="size-5" aria-hidden="true" />
       {count > 0 && (
-        <span className="absolute right-0 top-0 grid min-w-5 place-items-center rounded-full bg-primary px-1 text-xs text-primary-foreground">
+        <span className="absolute right-0 top-0 grid min-w-5 place-items-center rounded-sm bg-primary px-1 text-xs text-primary-foreground">
           {count}
         </span>
       )}
@@ -82,7 +82,10 @@ export function SiteHeader({ items }: { items: MenuNode[] }) {
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
         <div className="flex items-center gap-1">
           <MobileHeaderMenu items={items} />
-          <Link to="/" className="text-xl font-semibold text-primary">
+          <Link
+            to="/"
+            className="font-[family-name:var(--font-display)] text-2xl font-medium text-primary"
+          >
             Aura Tekstil
           </Link>
         </div>

@@ -135,9 +135,7 @@ export function AddressesPage() {
                 <address className="not-italic">
                   <strong>{a.full_name}</strong>
                   {a.is_default && (
-                    <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs">
-                      Varsayılan
-                    </span>
+                    <span className="ml-2 rounded-sm bg-muted px-2 py-0.5 text-xs">Varsayılan</span>
                   )}
                   <br />
                   {a.street}, {a.mahalle}

@@ -44,7 +44,7 @@ export function NavButton({
       disabled={disabled}
       aria-label={side === "prev" ? "Önceki" : "Sonraki"}
       className={cn(
-        "absolute top-1/2 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-background/90 shadow-md transition-opacity hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-0",
+        "absolute top-1/2 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-md border border-border bg-background/90 shadow-md transition-opacity hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-0",
         side === "prev" ? "left-1" : "right-1",
         className,
       )}
