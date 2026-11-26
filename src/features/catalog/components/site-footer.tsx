@@ -6,7 +6,10 @@ export function SiteFooter({ items }: { items: MenuNode[] }) {
     <footer className="mt-16 border-t border-border bg-card">
       <nav aria-label="Yasal bilgiler" className="mx-auto max-w-6xl px-4 py-6">
         <FooterMenu items={items} />
-        <p className="mt-4 text-muted-foreground">© Auraa Giyim</p>
+        <div className="mt-4 flex items-center gap-3 text-muted-foreground">
+          <img src="/auraa-logo.svg" alt="" width={64} height={34} className="h-9 w-auto" />
+          <p>© Auraa Giyim</p>
+        </div>
       </nav>
     </footer>
   );
