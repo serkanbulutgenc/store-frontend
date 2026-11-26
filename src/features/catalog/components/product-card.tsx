@@ -42,7 +42,7 @@ export function Price({
         </s>
       )}
       {onCampaign && campaignPercentage && (
-        <span className="rounded-md bg-red-600 px-1.5 py-0.5 text-xs font-semibold text-white">
+        <span className="rounded-sm bg-sale px-1.5 py-0.5 text-xs font-semibold text-white">
           <span className="sr-only">İndirim </span>
           {badge(campaignPercentage)}
         </span>

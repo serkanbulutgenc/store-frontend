@@ -28,8 +28,8 @@ export function CategoryRail({
   if (categories.length === 0) return null;
   return (
     <section aria-labelledby="home-categories">
-      <div className="mb-4 flex items-baseline justify-between">
-        <h2 id="home-categories" className="text-xl font-semibold">
+      <div className="mb-6 flex items-baseline justify-between">
+        <h2 id="home-categories" className="text-2xl font-medium md:text-3xl">
           {title}
         </h2>
         {action}
@@ -48,7 +48,7 @@ export function CategoryRail({
                   draggable={false}
                   className="group block text-center"
                 >
-                  <div className="aspect-square overflow-hidden rounded-lg border border-border bg-muted">
+                  <div className="aspect-square overflow-hidden rounded-md border border-border bg-muted">
                     {c.image_url ? (
                       <img
                         src={c.image_url}
@@ -66,7 +66,9 @@ export function CategoryRail({
                       </div>
                     )}
                   </div>
-                  <span className="mt-2 block text-sm font-medium">{c.name}</span>
+                  <span className="mt-3 block text-sm font-medium group-hover:text-primary">
+                    {c.name}
+                  </span>
                 </Link>
               </li>
             ))}
