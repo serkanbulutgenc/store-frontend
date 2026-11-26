@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_storefront/yasal/")({
       context.queryClient.query(legalPagesQuery),
       context.queryClient.query(legalSearchQuery(deps.q)),
     ]),
-  head: () => ({ meta: [{ title: "Yasal bilgiler | Aura Tekstil" }] }),
+  head: () => ({ meta: [{ title: "Yasal bilgiler | Auraa Giyim" }] }),
   component: function LegalIndex() {
     const { q = "" } = Route.useSearch();
     const navigate = Route.useNavigate();

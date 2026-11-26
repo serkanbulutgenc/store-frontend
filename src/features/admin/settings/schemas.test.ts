@@ -60,7 +60,7 @@ const IBAN_A = "TR330006100519786457841326";
 const IBAN_B = "TR320010009999901234567890";
 const account = (over: Partial<{ name: string; account_holder: string; iban: string }> = {}) => ({
   name: "Ziraat",
-  account_holder: "Aura Tekstil",
+  account_holder: "Auraa Giyim",
   iban: IBAN_A,
   ...over,
 });
@@ -112,7 +112,7 @@ it("sends the accounts trimmed and with clean IBANs, in order", () => {
     }),
   );
   expect(patch.bank_accounts).toEqual([
-    { name: "Ziraat", account_holder: "Aura Tekstil", iban: IBAN_A },
-    { name: "İş Bankası", account_holder: "Aura Tekstil", iban: IBAN_B },
+    { name: "Ziraat", account_holder: "Auraa Giyim", iban: IBAN_A },
+    { name: "İş Bankası", account_holder: "Auraa Giyim", iban: IBAN_B },
   ]);
 });

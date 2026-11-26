@@ -3,8 +3,8 @@ import { cn } from "@/lib/utils";
 
 const tones = {
   neutral: "bg-muted text-muted-foreground",
-  good: "bg-green-100 text-green-800",
-  warn: "bg-amber-100 text-amber-900",
+  good: "bg-success-soft text-success",
+  warn: "bg-rose-soft text-rose-foreground",
 } as const;
 
 export function Badge({

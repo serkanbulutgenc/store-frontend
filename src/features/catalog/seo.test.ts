@@ -110,9 +110,9 @@ describe("breadcrumbs", () => {
 
 describe("organizationJsonLd", () => {
   it("uses the store name and origin", () => {
-    expect(organizationJsonLd("Aura Tekstil", ORIGIN)).toMatchObject({
+    expect(organizationJsonLd("Auraa Giyim", ORIGIN)).toMatchObject({
       "@type": "Organization",
-      name: "Aura Tekstil",
+      name: "Auraa Giyim",
       url: ORIGIN,
     });
   });
@@ -228,7 +228,7 @@ describe("collectionHead", () => {
     expect(head.links).toEqual([
       { rel: "canonical", href: "https://aura.example/collections/editorun-secimi" },
     ]);
-    expect(head.meta).toContainEqual({ title: "Editörün seçimi | Aura Tekstil" });
+    expect(head.meta).toContainEqual({ title: "Editörün seçimi | Auraa Giyim" });
     expect(head.meta).toContainEqual({ name: "description", content: "Yeni sezon" });
     expect(head.meta.some((m) => m.name === "robots")).toBe(false);
   });

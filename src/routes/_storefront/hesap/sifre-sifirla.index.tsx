@@ -4,7 +4,7 @@ import { ResetRequestForm } from "@/features/account/components/auth-forms";
 
 export const Route = createFileRoute("/_storefront/hesap/sifre-sifirla/")({
   head: () => ({
-    meta: [{ title: "Şifre sıfırlama | Aura Tekstil" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "Şifre sıfırlama | Auraa Giyim" }, { name: "robots", content: "noindex" }],
   }),
   component: () => (
     <AuthCard title="Şifremi unuttum">

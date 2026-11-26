@@ -5,7 +5,7 @@ import { ResetForm } from "@/features/account/components/auth-forms";
 export const Route = createFileRoute("/_storefront/hesap/sifre-sifirla/$key")({
   head: () => ({
     meta: [
-      { title: "Yeni parola | Aura Tekstil" },
+      { title: "Yeni parola | Auraa Giyim" },
       { name: "robots", content: "noindex" },
       { name: "referrer", content: "no-referrer" },
     ],

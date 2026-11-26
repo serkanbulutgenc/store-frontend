@@ -2,7 +2,7 @@ import type { BrowseSearch } from "./browse-search";
 import { descriptionExcerpt } from "./description-excerpt";
 import type { CategoryNode, ProductDetail } from "./queries";
 
-export const STORE_NAME = "Aura Tekstil";
+export const STORE_NAME = "Auraa Giyim";
 const DESCRIPTION_LENGTH = 155;
 
 export const absoluteUrl = (origin: string, path: string) => `${origin}${path}`;

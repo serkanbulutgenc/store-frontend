@@ -4,12 +4,12 @@ import { BankDetails } from "./confirmation-page";
 
 const ziraat = {
   name: "Ziraat",
-  account_holder: "Aura Tekstil",
+  account_holder: "Auraa Giyim",
   iban: "TR330006100519786457841326",
 };
 const isbank = {
   name: "İş Bankası",
-  account_holder: "Aura Tekstil",
+  account_holder: "Auraa Giyim",
   iban: "TR320010009999901234567890",
 };
 
