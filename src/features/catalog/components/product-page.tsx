@@ -209,24 +209,19 @@ export function ProductPage({
             <p aria-live="polite" className="min-h-6 font-medium text-primary">
               {pick.label}
             </p>
-            <div className="flex items-center gap-3">
-              <span id="qty-label" className="font-medium">
-                Adet
-              </span>
-              <fieldset
-                aria-labelledby="qty-label"
-                className="m-0 inline-flex items-center rounded-md border border-border bg-card p-0"
-              >
+            <div className="flex items-stretch gap-2">
+              <fieldset className="m-0 inline-flex h-12 shrink-0 items-center rounded-md border border-border bg-card p-0">
+                <legend className="sr-only">Adet</legend>
                 <button
                   type="button"
                   aria-label="Adedi azalt"
                   disabled={pick.quantity <= 1}
                   onClick={() => pick.setQuantity(pick.quantity - 1)}
-                  className="grid size-11 place-items-center focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-40"
+                  className="grid h-full w-11 place-items-center rounded-l-md hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-40"
                 >
                   <Minus className="size-4" aria-hidden="true" />
                 </button>
-                <output aria-live="polite" className="min-w-10 text-center font-medium">
+                <output aria-live="polite" className="min-w-8 text-center font-medium">
                   {pick.quantity}
                 </output>
                 <button
@@ -234,16 +229,14 @@ export function ProductPage({
                   aria-label="Adedi artır"
                   disabled={pick.quantity >= MAX_QTY}
                   onClick={() => pick.setQuantity(pick.quantity + 1)}
-                  className="grid size-11 place-items-center focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-40"
+                  className="grid h-full w-11 place-items-center rounded-r-md hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-40"
                 >
                   <Plus className="size-4" aria-hidden="true" />
                 </button>
               </fieldset>
-            </div>
-            <div className="flex gap-2">
               <Button
                 size="lg"
-                className="flex-1"
+                className="h-12 min-w-0 flex-1"
                 disabled={!pick.canAdd || pick.pending}
                 onClick={() => variant && pick.addVariant(variant.id)}
               >
@@ -256,7 +249,7 @@ export function ProductPage({
               </Button>
               <HeartButton
                 productId={product.id}
-                className="size-12 shrink-0 border border-border"
+                className="size-12 shrink-0 border border-border bg-card shadow-none hover:bg-accent"
               />
             </div>
             {variant && !variant.in_stock && (
