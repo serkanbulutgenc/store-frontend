@@ -82,11 +82,14 @@ export function SiteHeader({ items }: { items: MenuNode[] }) {
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
         <div className="flex items-center gap-1">
           <MobileHeaderMenu items={items} />
-          <Link
-            to="/"
-            className="font-[family-name:var(--font-display)] text-2xl font-medium text-primary"
-          >
-            Auraa Giyim
+          <Link to="/" className="inline-flex items-center">
+            <img
+              src="/auraa-logo.svg"
+              alt="Auraa Giyim"
+              width={128}
+              height={68}
+              className="h-14 w-auto"
+            />
           </Link>
         </div>
         <SearchBox />
