@@ -15,6 +15,7 @@ import type { ProductDetail } from "../../queries";
 export function useQuickPick(product: ProductDetail) {
   const [colourId, setColourId] = useState(() => defaultColourId(product.variants));
   const [size, setSize] = useState<string | null>(null);
+  const [quantity, setQuantity] = useState(1);
   const add = useAddToBasket();
   const navigate = useNavigate();
 
@@ -27,7 +28,7 @@ export function useQuickPick(product: ProductDetail) {
 
   function addVariant(variantId: number, onAdded?: () => void) {
     add.mutate(
-      { variantId },
+      { variantId, quantity },
       {
         onSuccess: () => {
           toast.success("Ürün sepete eklendi.", {
@@ -51,6 +52,8 @@ export function useQuickPick(product: ProductDetail) {
     label: stockLabel(variant),
     canAdd: canAddToBasket(variant),
     photos: photosForColour(product.photos, colourId),
+    quantity,
+    setQuantity,
     pending: add.isPending,
     addVariant,
   };
