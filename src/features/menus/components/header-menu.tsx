@@ -36,7 +36,7 @@ function Thumbnail({ node, className }: { node: MenuNode; className: string }) {
 }
 
 const linkClass =
-  "block whitespace-nowrap px-4 py-3 text-sm font-medium uppercase tracking-wide hover:text-primary focus-visible:outline-2 focus-visible:outline-ring";
+  "block whitespace-nowrap px-4 py-3 text-sm font-medium lowercase hover:text-primary focus-visible:outline-2 focus-visible:outline-ring";
 
 /** Wraps a link in Radix's navigation link so it closes the panel; a heading is not a link. */
 function PanelAnchor({
