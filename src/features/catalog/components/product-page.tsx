@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { FileText, ListChecks, MessageSquare, Minus, Plus } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HeartButton } from "@/features/favorites/components/heart-button";
 import { ReviewsSection } from "@/features/reviews/components/reviews-section";
+import { StarsInline } from "@/features/reviews/components/stars";
+import { formatAverage } from "@/features/reviews/format";
 import { reviewsQuery } from "@/features/reviews/queries";
 import { NotifyMe } from "@/features/stock-alerts/components/notify-me";
 import { cn } from "@/lib/utils";
@@ -23,11 +25,19 @@ import { SizePickerExtras } from "./size-guide";
 /** The most one add-to-basket can ask for; the basket itself enforces real stock. */
 const MAX_QTY = 10;
 
-function ProductTabs({ product }: { product: ProductDetail }) {
+function ProductTabs({
+  product,
+  tab,
+  onTabChange,
+}: {
+  product: ProductDetail;
+  tab: string;
+  onTabChange: (tab: string) => void;
+}) {
   // Page 1 is the same query the reviews tab renders, so this costs no extra request.
   const { data } = useQuery(reviewsQuery(product.slug, 1));
   return (
-    <Tabs defaultValue="attributes" className="mt-12">
+    <Tabs id="yorumlar-sekmesi" value={tab} onValueChange={onTabChange} className="mt-12">
       <TabsList variant="line" className="h-auto flex-wrap">
         <TabsTrigger value="attributes">
           <ListChecks className="size-4" aria-hidden="true" />
@@ -79,6 +89,7 @@ export function ProductPage({
   similar: ProductCard[];
 }) {
   const pick = useQuickPick(product);
+  const [tab, setTab] = useState("attributes");
   useEffect(() => recordViewed(product.slug), [product.slug]);
   const { colourId, sizes, size: activeSize, variant, needsSize } = pick;
   const colour = product.colours.find((c) => c.id === colourId);
@@ -121,6 +132,28 @@ export function ProductPage({
                 </p>
               )}
               <h1 className="text-2xl font-semibold">{product.title}</h1>
+              <button
+                type="button"
+                onClick={() => {
+                  setTab("reviews");
+                  document
+                    .getElementById("yorumlar-sekmesi")
+                    ?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="mt-1 inline-flex items-center gap-2 text-sm hover:underline focus-visible:outline-2 focus-visible:outline-ring"
+              >
+                {product.rating_average !== null && product.rating_count > 0 ? (
+                  <>
+                    <StarsInline stars={Math.round(product.rating_average)} />
+                    <span className="font-medium">{formatAverage(product.rating_average)}</span>
+                    <span className="text-muted-foreground">
+                      · {product.rating_count} değerlendirme
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-muted-foreground">Henüz değerlendirme yok</span>
+                )}
+              </button>
             </div>
             <HeartButton productId={product.id} className="shrink-0 border border-border" />
           </div>
@@ -246,7 +279,7 @@ export function ProductPage({
           )}
         </div>
       </div>
-      <ProductTabs product={product} />
+      <ProductTabs product={product} tab={tab} onTabChange={setTab} />
       <div className="mt-12 empty:hidden">
         <SimilarProducts products={similar} />
       </div>
