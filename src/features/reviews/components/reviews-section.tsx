@@ -40,7 +40,7 @@ function StarPicker({ value, onChange }: { value: number; onChange: (n: number) 
           <span className="sr-only">{n} yıldız</span>
           <Star
             aria-hidden="true"
-            className={cn("size-7", n <= value ? "fill-amber-400 text-amber-400" : "text-border")}
+            className={cn("size-7", n <= value ? "fill-primary text-primary" : "text-border")}
           />
         </label>
       ))}

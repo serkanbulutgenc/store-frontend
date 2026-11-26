@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { FileText, ListChecks, MessageSquare } from "lucide-react";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,9 +26,18 @@ function ProductTabs({ product }: { product: ProductDetail }) {
   return (
     <Tabs defaultValue="attributes" className="mt-12">
       <TabsList variant="line" className="h-auto flex-wrap">
-        <TabsTrigger value="attributes">Ürün özellikleri</TabsTrigger>
-        <TabsTrigger value="reviews">Yorumlar{data ? ` (${data.count})` : ""}</TabsTrigger>
-        <TabsTrigger value="description">Açıklama</TabsTrigger>
+        <TabsTrigger value="attributes">
+          <ListChecks className="size-4" aria-hidden="true" />
+          Ürün özellikleri
+        </TabsTrigger>
+        <TabsTrigger value="reviews">
+          <MessageSquare className="size-4" aria-hidden="true" />
+          Yorumlar{data ? ` (${data.count})` : ""}
+        </TabsTrigger>
+        <TabsTrigger value="description">
+          <FileText className="size-4" aria-hidden="true" />
+          Açıklama
+        </TabsTrigger>
       </TabsList>
       <TabsContent value="attributes" className="pt-4">
         {product.attributes.length > 0 ? (
@@ -192,7 +202,7 @@ export function ProductPage({
             )}
           </div>
 
-          <p className="rounded-md bg-muted px-3 py-2 text-sm">
+          <p className="rounded-md bg-rose-soft px-3 py-2 text-sm">
             Kapıda ödeme veya havale ile ödeyebilirsiniz. Kargo ücreti sepette gösterilir.
           </p>
           {product.is_hygiene && (
