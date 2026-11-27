@@ -113,7 +113,7 @@ export function ProductRail({
                 className="min-w-0 shrink-0 basis-1/2 pl-3 sm:basis-1/3 lg:basis-1/4"
                 badge={
                   showDiscount && discount(p) > 0 ? (
-                    <span className="absolute left-5 top-2 rounded-md bg-sale px-2 py-0.5 text-xs font-semibold text-white">
+                    <span className="absolute left-2 top-2 rounded-md bg-sale px-2 py-0.5 text-xs font-semibold text-white">
                       %{discount(p)}
                     </span>
                   ) : null
