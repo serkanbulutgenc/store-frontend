@@ -11,22 +11,12 @@ import {
 } from "../../product-options";
 import type { ProductDetail } from "../../queries";
 
-/** Colour and size selection for one product, plus adding the picked variant to the basket. */
-export function useQuickPick(product: ProductDetail) {
-  const [colourId, setColourId] = useState(() => defaultColourId(product.variants));
-  const [size, setSize] = useState<string | null>(null);
-  const [quantity, setQuantity] = useState(1);
+/** Add to the basket and say so, or say why it failed. */
+export function useAddWithToast() {
   const add = useAddToBasket();
   const navigate = useNavigate();
 
-  const {
-    sizes,
-    size: activeSize,
-    variant,
-    needsSize,
-  } = resolveSelection(product.variants, colourId, size);
-
-  function addVariant(variantId: number, onAdded?: () => void) {
+  function addVariant(variantId: number, quantity: number, onAdded?: () => void) {
     add.mutate(
       { variantId, quantity },
       {
@@ -41,6 +31,23 @@ export function useQuickPick(product: ProductDetail) {
     );
   }
 
+  return { pending: add.isPending, addVariant };
+}
+
+/** Colour, size and quantity selection for one product, plus adding the picked variant. */
+export function useVariantPick(product: ProductDetail) {
+  const [colourId, setColourId] = useState(() => defaultColourId(product.variants));
+  const [size, setSize] = useState<string | null>(null);
+  const [quantity, setQuantity] = useState(1);
+  const add = useAddWithToast();
+
+  const {
+    sizes,
+    size: activeSize,
+    variant,
+    needsSize,
+  } = resolveSelection(product.variants, colourId, size);
+
   return {
     colourId,
     setColourId,
@@ -54,9 +61,8 @@ export function useQuickPick(product: ProductDetail) {
     photos: photosForColour(product.photos, colourId),
     quantity,
     setQuantity,
-    pending: add.isPending,
-    addVariant,
+    pending: add.pending,
+    addVariant: (variantId: number, onAdded?: () => void) =>
+      add.addVariant(variantId, quantity, onAdded),
   };
 }
-
-export type QuickPick = ReturnType<typeof useQuickPick>;
