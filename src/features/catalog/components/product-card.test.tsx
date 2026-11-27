@@ -1,6 +1,8 @@
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { Price } from "./product-card";
+import type { ProductCard as Card } from "../queries";
+import { Price, ProductCard } from "./product-card";
+import { renderInStorefront } from "./render-in-storefront";
 
 type Props = Parameters<typeof Price>[0];
 const plain: Props = {
@@ -62,5 +64,53 @@ describe("Price", () => {
   it("writes a fractional percentage without trailing zeros", () => {
     const out = html({ price: "87.50", shelfPrice: "100.00", campaignPercentage: "12.50" });
     expect(out).toContain("-12,5%");
+  });
+});
+
+describe("ProductCard Colour dots", () => {
+  const card = (colours: number, soldOut = false): Card => ({
+    id: 1,
+    slug: "elbise",
+    title: "Keten Elbise",
+    price: "100.00",
+    old_price: null,
+    shelf_price: null,
+    campaign_percentage: null,
+    rating_average: null,
+    rating_count: 0,
+    sold_out: soldOut,
+    image: null,
+    colours: Array.from({ length: colours }, (_, i) => ({
+      id: i + 1,
+      name: `Renk ${i + 1}`,
+      hex_code: "#000000",
+    })),
+  });
+  const render = (colours: number, soldOut?: boolean) =>
+    renderInStorefront(<ProductCard product={card(colours, soldOut)} />);
+  const dots = (out: string) => out.match(/title="Renk \d+"/g)?.length ?? 0;
+
+  it("shows a dot per Colour, up to four, with no count badge", () => {
+    for (const n of [2, 4]) {
+      const out = render(n);
+      expect(dots(out)).toBe(n);
+      expect(out).not.toContain("renk daha");
+    }
+  });
+
+  it("shows four dots and counts the rest in a badge", () => {
+    const out = render(7);
+
+    expect(dots(out)).toBe(4);
+    expect(out).toContain("+3");
+    expect(out).toContain("3 renk daha");
+  });
+
+  it("shows nothing when there is no choice of Colour", () => {
+    expect(render(1)).not.toContain('aria-label="Renkler"');
+  });
+
+  it("shows nothing on a sold-out card", () => {
+    expect(render(3, true)).not.toContain('aria-label="Renkler"');
   });
 });
