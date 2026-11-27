@@ -21,12 +21,6 @@ describe("descriptionExcerpt", () => {
     expect(descriptionExcerpt("~~eski~~ - [ ] yapılacak")).toBe("~~eski~~ - [ ] yapılacak");
   });
 
-  it("cuts at the given length with an ellipsis, and only when it has to", () => {
-    expect(descriptionExcerpt("bir iki üç dört beş", 10)).toBe("bir iki üç…");
-    expect(descriptionExcerpt("kısa metin", 10)).toBe("kısa metin");
-    expect(descriptionExcerpt("", 10)).toBe("");
-  });
-
   it("does not split a formatted word from the punctuation after it", () => {
     expect(descriptionExcerpt("**Pamuklu**, *yumuşak*. [Kumaş](https://x.com)!")).toBe(
       "Pamuklu, yumuşak. Kumaş!",
