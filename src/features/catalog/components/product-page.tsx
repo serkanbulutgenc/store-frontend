@@ -1,14 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {
-  ChevronRight,
-  FileText,
-  ListChecks,
-  Minus,
-  Plus,
-  ShieldAlert,
-  ShoppingBag,
-  Truck,
-} from "lucide-react";
+import { ChevronRight, FileText, ListChecks, ShoppingBag, Truck } from "lucide-react";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,20 +8,18 @@ import { ReviewsSection } from "@/features/reviews/components/reviews-section";
 import { StarsInline } from "@/features/reviews/components/stars";
 import { formatAverage } from "@/features/reviews/format";
 import { NotifyMe } from "@/features/stock-alerts/components/notify-me";
-import { cn } from "@/lib/utils";
+import { addLabel } from "../product-options";
 import type { ProductCard, ProductDetail } from "../queries";
 import { recordViewed } from "../recently-viewed";
 import { BrandLogo } from "./brand-logo";
 import { Price } from "./product-card";
 import { ProductDescription } from "./product-description";
 import { ProductGallery } from "./product-gallery";
-import { useQuickPick } from "./quick-view/use-quick-pick";
 import { RecentlyViewed } from "./recently-viewed";
 import { SimilarProducts } from "./similar-products";
 import { SizePickerExtras } from "./size-guide";
-
-/** The most one add-to-basket can ask for; the basket itself enforces real stock. */
-const MAX_QTY = 10;
+import { ColourChips, HygieneNotice, QuantityStepper, SizeChips } from "./variant-picker/options";
+import { useVariantPick } from "./variant-picker/use-variant-pick";
 
 function ProductTabs({ product }: { product: ProductDetail }) {
   return (
@@ -77,10 +66,9 @@ export function ProductPage({
   product: ProductDetail;
   similar: ProductCard[];
 }) {
-  const pick = useQuickPick(product);
+  const pick = useVariantPick(product);
   useEffect(() => recordViewed(product.slug), [product.slug]);
   const { colourId, sizes, size: activeSize, variant, needsSize } = pick;
-  const colour = product.colours.find((c) => c.id === colourId);
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-6">
@@ -156,53 +144,8 @@ export function ProductPage({
             </p>
           )}
 
-          <fieldset className="border-0 p-0">
-            <legend className="mb-2 font-medium">Renk{colour ? `: ${colour.name}` : ""}</legend>
-            <div className="flex flex-wrap gap-2">
-              {product.colours.map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  title={c.name}
-                  aria-label={c.name}
-                  aria-pressed={c.id === colourId}
-                  onClick={() => pick.setColourId(c.id)}
-                  className={cn(
-                    "size-9 rounded-full border-2 outline-offset-2 focus-visible:outline-2 focus-visible:outline-ring",
-                    c.id === colourId ? "border-primary ring-2 ring-primary/30" : "border-border",
-                  )}
-                  style={{ backgroundColor: c.hex_code }}
-                />
-              ))}
-            </div>
-          </fieldset>
-
-          {/* A one-size colour has nothing to choose. */}
-          {sizes.length > 1 && (
-            <fieldset className="border-0 p-0">
-              <legend className="mb-2 font-medium">Beden</legend>
-              <div className="flex flex-wrap gap-2">
-                {sizes.map((s) => (
-                  <button
-                    key={s.variantId}
-                    type="button"
-                    aria-pressed={s.size === activeSize}
-                    onClick={() => pick.setSize(s.size)}
-                    className={cn(
-                      "min-w-11 rounded-md border px-3 py-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                      s.size === activeSize
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-card",
-                      !s.inStock && "text-muted-foreground line-through",
-                    )}
-                  >
-                    {s.size}
-                    {!s.inStock && <span className="sr-only"> (tükendi)</span>}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-          )}
+          <ColourChips colours={product.colours} colourId={colourId} onSelect={pick.setColourId} />
+          <SizeChips sizes={sizes} size={activeSize} onSelect={pick.setSize} />
           <SizePickerExtras product={product} />
 
           <div className="space-y-2">
@@ -210,30 +153,7 @@ export function ProductPage({
               {pick.label}
             </p>
             <div className="flex items-stretch gap-2">
-              <fieldset className="m-0 inline-flex h-12 shrink-0 items-center rounded-md border border-border bg-card p-0">
-                <legend className="sr-only">Adet</legend>
-                <button
-                  type="button"
-                  aria-label="Adedi azalt"
-                  disabled={pick.quantity <= 1}
-                  onClick={() => pick.setQuantity(pick.quantity - 1)}
-                  className="grid h-full w-11 place-items-center rounded-l-md hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-40"
-                >
-                  <Minus className="size-4" aria-hidden="true" />
-                </button>
-                <output aria-live="polite" className="min-w-8 text-center font-medium">
-                  {pick.quantity}
-                </output>
-                <button
-                  type="button"
-                  aria-label="Adedi artır"
-                  disabled={pick.quantity >= MAX_QTY}
-                  onClick={() => pick.setQuantity(pick.quantity + 1)}
-                  className="grid h-full w-11 place-items-center rounded-r-md hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-40"
-                >
-                  <Plus className="size-4" aria-hidden="true" />
-                </button>
-              </fieldset>
+              <QuantityStepper quantity={pick.quantity} onChange={pick.setQuantity} />
               <Button
                 size="lg"
                 className="h-12 min-w-0 flex-1"
@@ -241,11 +161,7 @@ export function ProductPage({
                 onClick={() => variant && pick.addVariant(variant.id)}
               >
                 <ShoppingBag className="size-5" aria-hidden="true" />
-                {variant && !variant.in_stock
-                  ? "Tükendi"
-                  : needsSize
-                    ? "Beden seçin"
-                    : "Sepete ekle"}
+                {addLabel(variant, needsSize)}
               </Button>
               <HeartButton
                 productId={product.id}
@@ -261,12 +177,7 @@ export function ProductPage({
             <Truck className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
             Kapıda ödeme veya havale ile ödeyebilirsiniz. Kargo ücreti sepette gösterilir.
           </p>
-          {product.is_hygiene && (
-            <p className="flex items-start gap-2 rounded-md border border-border px-3 py-2 text-sm">
-              <ShieldAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-              Hijyen nedeniyle bu ürün, ambalajı açıldıktan sonra iade edilemez.
-            </p>
-          )}
+          {product.is_hygiene && <HygieneNotice />}
         </div>
       </div>
       <ProductTabs product={product} />

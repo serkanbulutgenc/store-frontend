@@ -7,13 +7,13 @@ import { formatPercent, formatTry } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { ProductCard as Card } from "../queries";
 import { ProductImage } from "./product-image";
-import { QuickActions } from "./quick-view/quick-actions";
+import { CardAddButton } from "./variant-picker/card-add-button";
 
 /** "-20%" from the API's "20.00": whole numbers plain, fractions with a Turkish comma. */
 const badge = (percentage: string) => `-${formatPercent(percentage)}%`;
 
 /**
- * The price block of every surface (card, quick view, detail). A running Campaign shows the
+ * The price block of every surface (card, Variant picker, detail). A running Campaign shows the
  * Campaign price, the Shelf price struck through and a badge, and hides the Old price; without
  * one it is the price and, if set, the Old price struck through. The Campaign's own name is
  * never shown.
@@ -109,7 +109,7 @@ export function ProductCard({
       </Link>
       {badge}
       <HeartButton productId={product.id} className="absolute right-2 top-2" />
-      <QuickActions product={product} />
+      <CardAddButton product={product} />
     </li>
   );
 }

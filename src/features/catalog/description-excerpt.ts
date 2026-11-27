@@ -28,11 +28,8 @@ function words(node: Nodes): string {
 }
 
 /**
- * Plain text for places that cannot show a Description's formatting: quick view and
- * SEO. Cut to `maxLength` characters with an ellipsis when it is longer.
+ * Plain text for places that cannot show a Description's formatting: SEO.
  */
-export function descriptionExcerpt(markdown: string, maxLength?: number): string {
-  const text = words(parser.parse(markdown)).replace(/\s+/g, " ").trim();
-  if (maxLength === undefined || text.length <= maxLength) return text;
-  return `${text.slice(0, maxLength).trimEnd()}…`;
+export function descriptionExcerpt(markdown: string): string {
+  return words(parser.parse(markdown)).replace(/\s+/g, " ").trim();
 }

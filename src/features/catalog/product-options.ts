@@ -78,3 +78,14 @@ export function stockLabel(variant: OptVariant | undefined): string | null {
   if (!variant.in_stock) return "Tükendi";
   return variant.remaining !== null ? `Son ${variant.remaining} adet` : null;
 }
+
+/** The Variant of a Single-Variant Product, which leaves the customer nothing to choose. */
+export function singleVariant<T extends OptVariant>(variants: T[]): T | undefined {
+  return variants.length === 1 ? variants[0] : undefined;
+}
+
+/** What the add-to-basket button says for the current selection. */
+export function addLabel(variant: OptVariant | undefined, needsSize: boolean): string {
+  if (variant && !variant.in_stock) return "Tükendi";
+  return needsSize ? "Beden seçin" : "Sepete ekle";
+}
