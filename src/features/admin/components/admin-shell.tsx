@@ -52,7 +52,7 @@ export function AdminShell({ me }: { me: Me }) {
         <Sidebar collapsible="icon">
           <SidebarHeader className="h-12 justify-center border-b border-sidebar-border">
             <span className="truncate px-2 font-semibold group-data-[collapsible=icon]:hidden">
-              Aura Tekstil
+              Auraa Giyim
             </span>
           </SidebarHeader>
           <SidebarNav me={me} />

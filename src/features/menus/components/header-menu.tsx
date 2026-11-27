@@ -36,7 +36,7 @@ function Thumbnail({ node, className }: { node: MenuNode; className: string }) {
 }
 
 const linkClass =
-  "block whitespace-nowrap px-3 py-3 hover:text-primary focus-visible:outline-2 focus-visible:outline-ring";
+  "block whitespace-nowrap px-4 py-3 text-sm font-medium lowercase hover:text-primary focus-visible:outline-2 focus-visible:outline-ring";
 
 /** Wraps a link in Radix's navigation link so it closes the panel; a heading is not a link. */
 function PanelAnchor({
@@ -74,7 +74,7 @@ export function DesktopHeaderMenu({ items }: { items: MenuNode[] }) {
       skipDelayDuration={300}
       className="relative hidden border-t border-border lg:block"
     >
-      <NavigationMenu.List className="mx-auto flex max-w-6xl flex-wrap gap-1 px-4">
+      <NavigationMenu.List className="mx-auto flex max-w-6xl flex-wrap justify-center gap-1 px-4">
         {items.map((item, i) => (
           // The same target may appear twice, so labels and URLs are not unique keys.
           // biome-ignore lint/suspicious/noArrayIndexKey: Menu items have no id and are never reordered client-side

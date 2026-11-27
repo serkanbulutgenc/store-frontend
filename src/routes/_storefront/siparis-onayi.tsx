@@ -3,7 +3,7 @@ import { ConfirmationPage } from "@/features/checkout/components/confirmation-pa
 
 export const Route = createFileRoute("/_storefront/siparis-onayi")({
   head: () => ({
-    meta: [{ title: "Siparişiniz alındı | Aura Tekstil" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "Siparişiniz alındı | Auraa Giyim" }, { name: "robots", content: "noindex" }],
   }),
   component: ConfirmationPage,
 });

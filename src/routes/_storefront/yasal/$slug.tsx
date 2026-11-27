@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_storefront/yasal/$slug")({
     return page;
   },
   head: ({ loaderData }) => ({
-    meta: [{ title: `${loaderData?.title ?? "Yasal"} | Aura Tekstil` }],
+    meta: [{ title: `${loaderData?.title ?? "Yasal"} | Auraa Giyim` }],
   }),
   component: function LegalRoute() {
     const page = Route.useLoaderData();

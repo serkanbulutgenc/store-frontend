@@ -44,7 +44,7 @@ export function NavButton({
       disabled={disabled}
       aria-label={side === "prev" ? "Önceki" : "Sonraki"}
       className={cn(
-        "absolute top-1/2 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-background/90 shadow-md transition-opacity hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-0",
+        "absolute top-1/2 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-md border border-border bg-background/90 shadow-md transition-opacity hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-0",
         side === "prev" ? "left-1" : "right-1",
         className,
       )}
@@ -88,13 +88,17 @@ export function ProductRail({
   const id = `rail-${title.replace(/\s+/g, "-").toLowerCase()}`;
   return (
     <section aria-labelledby={id}>
-      <div className="mb-4 flex items-baseline justify-between">
-        <h2 id={id} className="text-xl font-semibold">
+      <div className="mb-6 flex items-baseline justify-between">
+        <h2 id={id} className="text-2xl font-medium md:text-3xl">
           {title}
         </h2>
         {action}
         {seeAll && (
-          <Link to="/ara" search={seeAll} className="text-sm underline underline-offset-4">
+          <Link
+            to="/ara"
+            search={seeAll}
+            className="text-sm font-medium text-primary hover:underline"
+          >
             Tümünü gör
           </Link>
         )}
@@ -109,7 +113,7 @@ export function ProductRail({
                 className="min-w-0 shrink-0 basis-1/2 pl-3 sm:basis-1/3 lg:basis-1/4"
                 badge={
                   showDiscount && discount(p) > 0 ? (
-                    <span className="absolute left-5 top-2 rounded-md bg-red-600 px-2 py-0.5 text-xs font-semibold text-white">
+                    <span className="absolute left-5 top-2 rounded-md bg-sale px-2 py-0.5 text-xs font-semibold text-white">
                       %{discount(p)}
                     </span>
                   ) : null

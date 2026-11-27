@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  addLabel,
   canAddToBasket,
   defaultColourId,
   findVariant,
@@ -7,6 +8,7 @@ import {
   type OptVariant,
   photosForColour,
   resolveSelection,
+  singleVariant,
   sizesForColour,
   soleVariant,
   stockLabel,
@@ -135,5 +137,32 @@ describe("stockLabel", () => {
     expect(stockLabel(v(1, 10, "M", 2, 2))).toBe("Son 2 adet");
     expect(stockLabel(v(1, 10, "M", 9))).toBeNull();
     expect(stockLabel(undefined)).toBeNull();
+  });
+});
+
+describe("singleVariant", () => {
+  it("is the Variant of a Single-Variant Product", () => {
+    expect(singleVariant([v(1, 10, "STD", 3)])?.id).toBe(1);
+  });
+  it("is nothing when a Colour has several Sizes", () => {
+    expect(singleVariant([v(1, 10, "S", 3), v(2, 10, "M", 3)])).toBeUndefined();
+  });
+  it("is nothing for a One-size Product with several Colours", () => {
+    expect(singleVariant([v(1, 10, "STD", 3), v(2, 20, "STD", 3)])).toBeUndefined();
+  });
+  it("is nothing without Variants", () => {
+    expect(singleVariant([])).toBeUndefined();
+  });
+});
+
+describe("addLabel", () => {
+  it("asks for a size while one is needed", () => {
+    expect(addLabel(undefined, true)).toBe("Beden seçin");
+  });
+  it("says Tükendi for a sold-out Variant", () => {
+    expect(addLabel(v(1, 10, "S", 0), false)).toBe("Tükendi");
+  });
+  it("offers to add an in-stock Variant", () => {
+    expect(addLabel(v(1, 10, "S", 3), false)).toBe("Sepete ekle");
   });
 });

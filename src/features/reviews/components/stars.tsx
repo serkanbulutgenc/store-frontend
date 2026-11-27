@@ -21,7 +21,7 @@ export function RatingSummary({
             key={n}
             className={cn(
               "size-4",
-              n <= Math.round(average) ? "fill-amber-400 text-amber-400" : "text-border",
+              n <= Math.round(average) ? "fill-primary text-primary" : "text-border",
             )}
           />
         ))}
@@ -41,7 +41,7 @@ export function StarsInline({ stars }: { stars: number }) {
         <Star
           key={n}
           aria-hidden="true"
-          className={cn("size-4", n <= stars ? "fill-amber-400 text-amber-400" : "text-border")}
+          className={cn("size-4", n <= stars ? "fill-primary text-primary" : "text-border")}
         />
       ))}
     </span>

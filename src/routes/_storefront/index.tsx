@@ -30,7 +30,7 @@ export const Route = createFileRoute("/_storefront/")({
       <>
         {preview && <PreviewBanner />}
         <main>
-          <h1 className="sr-only">Aura Tekstil</h1>
+          <h1 className="sr-only">Auraa Giyim</h1>
           <HomepageSections sections={sections} />
         </main>
       </>

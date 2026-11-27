@@ -33,7 +33,7 @@ export function HeartButton({ productId, className }: { productId: number; class
       onClick={toggle}
       disabled={!ready || set.isPending}
       className={cn(
-        "grid size-10 place-items-center rounded-full bg-background/90 text-foreground shadow-sm hover:bg-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        "grid size-10 place-items-center rounded-md bg-background/90 text-foreground shadow-sm hover:bg-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         className,
       )}
     >

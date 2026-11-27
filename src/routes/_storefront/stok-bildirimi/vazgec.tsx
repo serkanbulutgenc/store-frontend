@@ -6,7 +6,7 @@ export const Route = createFileRoute("/_storefront/stok-bildirimi/vazgec")({
   validateSearch: z.object({ token: z.string().optional().catch(undefined) }),
   head: () => ({
     meta: [
-      { title: "Stok bildirimi | Aura Tekstil" },
+      { title: "Stok bildirimi | Auraa Giyim" },
       { name: "robots", content: "noindex" },
       // The token in the address must not travel to other sites.
       { name: "referrer", content: "no-referrer" },

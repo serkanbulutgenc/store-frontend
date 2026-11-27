@@ -1,3 +1,4 @@
+import { ArrowRight } from "lucide-react";
 import { BannerHero } from "@/features/banners/components/banner-hero";
 import { BannerStrip } from "@/features/banners/components/picture-banner";
 import { bannerLink } from "@/features/catalog/banner";
@@ -18,9 +19,10 @@ function SeeAll({ link }: { link: string }) {
     <a
       href={target.href}
       {...(target.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      className="text-sm underline underline-offset-4"
+      className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
     >
       Tümünü gör
+      <ArrowRight className="size-4" aria-hidden="true" />
     </a>
   );
 }
@@ -32,8 +34,8 @@ function ProductGrid({ section }: { section: HomepageSection }) {
   return (
     <section aria-labelledby={section.title ? id : undefined}>
       {(section.title || section.link) && (
-        <div className="mb-4 flex items-baseline justify-between">
-          <h2 id={id} className="text-xl font-semibold">
+        <div className="mb-6 flex items-baseline justify-between">
+          <h2 id={id} className="text-2xl font-medium md:text-3xl">
             {section.title}
           </h2>
           <SeeAll link={section.link} />
@@ -91,7 +93,9 @@ function SectionBlock({ section }: { section: HomepageSection }) {
       // Markdown through the Description renderer: no raw HTML, only allowed elements and links.
       return (
         <section>
-          {section.title && <h2 className="mb-4 text-xl font-semibold">{section.title}</h2>}
+          {section.title && (
+            <h2 className="mb-4 text-2xl font-medium md:text-3xl">{section.title}</h2>
+          )}
           <ProductDescription source={section.body ?? ""} />
         </section>
       );
@@ -102,7 +106,7 @@ function SectionBlock({ section }: { section: HomepageSection }) {
 }
 
 /** The home page body: the Owner's sections in order. The slider spans the full width; the
- * rest sit in the centred column. */
+ * rest sit in the centred column. Best-selling rows sit on a soft rose band. */
 export function HomepageSections({ sections }: { sections: HomepageSection[] }) {
   const first = sections[0]?.type === "slider" ? sections[0] : null;
   const rest = first ? sections.slice(1) : sections;
@@ -110,12 +114,21 @@ export function HomepageSections({ sections }: { sections: HomepageSection[] }) 
   return (
     <>
       {first && <SectionBlock section={first} />}
-      <div className="mx-auto max-w-6xl space-y-12 px-4 py-10">
-        {rest.map((s) => (
-          <SectionBlock key={s.id} section={s} />
-        ))}
-        {empty && <p className="text-muted-foreground">Ürünler yakında burada.</p>}
-      </div>
+      {rest.map((s) => {
+        const band = s.type === "products" && s.source === "best_selling";
+        return (
+          <div key={s.id} className={band ? "my-6 bg-rose-soft" : undefined}>
+            <div className={cn("mx-auto max-w-6xl px-4", band ? "py-12" : "py-6")}>
+              <SectionBlock section={s} />
+            </div>
+          </div>
+        );
+      })}
+      {empty && (
+        <p className="mx-auto max-w-6xl px-4 py-10 text-muted-foreground">
+          Ürünler yakında burada.
+        </p>
+      )}
     </>
   );
 }

@@ -1,33 +1,38 @@
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { ChevronRight, FileText, ListChecks, ShoppingBag, Truck } from "lucide-react";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HeartButton } from "@/features/favorites/components/heart-button";
 import { ReviewsSection } from "@/features/reviews/components/reviews-section";
-import { reviewsQuery } from "@/features/reviews/queries";
+import { StarsInline } from "@/features/reviews/components/stars";
+import { formatAverage } from "@/features/reviews/format";
 import { NotifyMe } from "@/features/stock-alerts/components/notify-me";
-import { cn } from "@/lib/utils";
+import { addLabel } from "../product-options";
 import type { ProductCard, ProductDetail } from "../queries";
 import { recordViewed } from "../recently-viewed";
 import { BrandLogo } from "./brand-logo";
 import { Price } from "./product-card";
 import { ProductDescription } from "./product-description";
 import { ProductGallery } from "./product-gallery";
-import { useQuickPick } from "./quick-view/use-quick-pick";
 import { RecentlyViewed } from "./recently-viewed";
 import { SimilarProducts } from "./similar-products";
 import { SizePickerExtras } from "./size-guide";
+import { ColourChips, HygieneNotice, QuantityStepper, SizeChips } from "./variant-picker/options";
+import { useVariantPick } from "./variant-picker/use-variant-pick";
 
 function ProductTabs({ product }: { product: ProductDetail }) {
-  // Page 1 is the same query the reviews tab renders, so this costs no extra request.
-  const { data } = useQuery(reviewsQuery(product.slug, 1));
   return (
     <Tabs defaultValue="attributes" className="mt-12">
       <TabsList variant="line" className="h-auto flex-wrap">
-        <TabsTrigger value="attributes">Ürün özellikleri</TabsTrigger>
-        <TabsTrigger value="reviews">Yorumlar{data ? ` (${data.count})` : ""}</TabsTrigger>
-        <TabsTrigger value="description">Açıklama</TabsTrigger>
+        <TabsTrigger value="attributes">
+          <ListChecks className="size-4" aria-hidden="true" />
+          Ürün özellikleri
+        </TabsTrigger>
+        <TabsTrigger value="description">
+          <FileText className="size-4" aria-hidden="true" />
+          Açıklama
+        </TabsTrigger>
       </TabsList>
       <TabsContent value="attributes" className="pt-4">
         {product.attributes.length > 0 ? (
@@ -42,10 +47,6 @@ function ProductTabs({ product }: { product: ProductDetail }) {
         ) : (
           <p className="text-muted-foreground">Ürün özelliği yok.</p>
         )}
-      </TabsContent>
-      {/* Kept mounted so a half-written review survives a tab switch. */}
-      <TabsContent value="reviews" forceMount className="pt-4 data-[state=inactive]:hidden">
-        <ReviewsSection key={product.slug} slug={product.slug} productId={product.id} />
       </TabsContent>
       <TabsContent value="description" className="pt-4">
         {product.description ? (
@@ -65,10 +66,9 @@ export function ProductPage({
   product: ProductDetail;
   similar: ProductCard[];
 }) {
-  const pick = useQuickPick(product);
+  const pick = useVariantPick(product);
   useEffect(() => recordViewed(product.slug), [product.slug]);
   const { colourId, sizes, size: activeSize, variant, needsSize } = pick;
-  const colour = product.colours.find((c) => c.id === colourId);
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-6">
@@ -82,7 +82,7 @@ export function ProductPage({
             </li>
             {product.breadcrumbs.map((c) => (
               <li key={c.slug} className="flex gap-1">
-                <span aria-hidden="true">/</span>
+                <ChevronRight className="size-4 self-center" aria-hidden="true" />
                 <Link to="/kategori/$slug" params={{ slug: c.slug }} className="hover:underline">
                   {c.name}
                 </Link>
@@ -108,8 +108,26 @@ export function ProductPage({
                 </p>
               )}
               <h1 className="text-2xl font-semibold">{product.title}</h1>
+              <button
+                type="button"
+                onClick={() =>
+                  document.getElementById("yorumlar")?.scrollIntoView({ behavior: "smooth" })
+                }
+                className="mt-1 inline-flex items-center gap-2 text-sm hover:underline focus-visible:outline-2 focus-visible:outline-ring"
+              >
+                {product.rating_average !== null && product.rating_count > 0 ? (
+                  <>
+                    <StarsInline stars={Math.round(product.rating_average)} />
+                    <span className="font-medium">{formatAverage(product.rating_average)}</span>
+                    <span className="text-muted-foreground">
+                      · {product.rating_count} değerlendirme
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-muted-foreground">Henüz değerlendirme yok</span>
+                )}
+              </button>
             </div>
-            <HeartButton productId={product.id} className="shrink-0 border border-border" />
           </div>
           <div className="text-xl">
             <Price
@@ -126,83 +144,46 @@ export function ProductPage({
             </p>
           )}
 
-          <fieldset className="border-0 p-0">
-            <legend className="mb-2 font-medium">Renk{colour ? `: ${colour.name}` : ""}</legend>
-            <div className="flex flex-wrap gap-2">
-              {product.colours.map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  title={c.name}
-                  aria-label={c.name}
-                  aria-pressed={c.id === colourId}
-                  onClick={() => pick.setColourId(c.id)}
-                  className={cn(
-                    "size-9 rounded-full border-2 outline-offset-2 focus-visible:outline-2 focus-visible:outline-ring",
-                    c.id === colourId ? "border-primary ring-2 ring-primary/30" : "border-border",
-                  )}
-                  style={{ backgroundColor: c.hex_code }}
-                />
-              ))}
-            </div>
-          </fieldset>
-
-          {/* A one-size colour has nothing to choose. */}
-          {sizes.length > 1 && (
-            <fieldset className="border-0 p-0">
-              <legend className="mb-2 font-medium">Beden</legend>
-              <div className="flex flex-wrap gap-2">
-                {sizes.map((s) => (
-                  <button
-                    key={s.variantId}
-                    type="button"
-                    aria-pressed={s.size === activeSize}
-                    onClick={() => pick.setSize(s.size)}
-                    className={cn(
-                      "min-w-11 rounded-md border px-3 py-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                      s.size === activeSize
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-card",
-                      !s.inStock && "text-muted-foreground line-through",
-                    )}
-                  >
-                    {s.size}
-                    {!s.inStock && <span className="sr-only"> (tükendi)</span>}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-          )}
+          <ColourChips colours={product.colours} colourId={colourId} onSelect={pick.setColourId} />
+          <SizeChips sizes={sizes} size={activeSize} onSelect={pick.setSize} />
           <SizePickerExtras product={product} />
 
           <div className="space-y-2">
             <p aria-live="polite" className="min-h-6 font-medium text-primary">
               {pick.label}
             </p>
-            <Button
-              size="lg"
-              className="w-full"
-              disabled={!pick.canAdd || pick.pending}
-              onClick={() => variant && pick.addVariant(variant.id)}
-            >
-              {variant && !variant.in_stock ? "Tükendi" : needsSize ? "Beden seçin" : "Sepete ekle"}
-            </Button>
+            <div className="flex items-stretch gap-2">
+              <QuantityStepper quantity={pick.quantity} onChange={pick.setQuantity} />
+              <Button
+                size="lg"
+                className="h-12 min-w-0 flex-1"
+                disabled={!pick.canAdd || pick.pending}
+                onClick={() => variant && pick.addVariant(variant.id)}
+              >
+                <ShoppingBag className="size-5" aria-hidden="true" />
+                {addLabel(variant, needsSize)}
+              </Button>
+              <HeartButton
+                productId={product.id}
+                className="size-12 shrink-0 border border-border bg-card shadow-none hover:bg-accent"
+              />
+            </div>
             {variant && !variant.in_stock && (
               <NotifyMe productSlug={product.slug} variantId={variant.id} />
             )}
           </div>
 
-          <p className="rounded-md bg-muted px-3 py-2 text-sm">
+          <p className="flex items-start gap-2 rounded-md bg-rose-soft px-3 py-2 text-sm">
+            <Truck className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
             Kapıda ödeme veya havale ile ödeyebilirsiniz. Kargo ücreti sepette gösterilir.
           </p>
-          {product.is_hygiene && (
-            <p className="rounded-md border border-border px-3 py-2 text-sm">
-              Hijyen nedeniyle bu ürün, ambalajı açıldıktan sonra iade edilemez.
-            </p>
-          )}
+          {product.is_hygiene && <HygieneNotice />}
         </div>
       </div>
       <ProductTabs product={product} />
+      <div id="yorumlar" className="mt-12 scroll-mt-6">
+        <ReviewsSection key={product.slug} slug={product.slug} productId={product.id} />
+      </div>
       <div className="mt-12 empty:hidden">
         <SimilarProducts products={similar} />
       </div>

@@ -15,7 +15,7 @@ export function AnnouncementBar({ messages }: { messages: Announcement[] }) {
   if (!current) return null;
   const many = messages.length > 1;
   const btn =
-    "grid size-7 place-items-center rounded hover:bg-background/20 focus-visible:outline-2";
+    "grid size-7 place-items-center rounded hover:bg-foreground/10 focus-visible:outline-2";
   return (
     <section
       aria-label="Duyurular"
@@ -23,7 +23,7 @@ export function AnnouncementBar({ messages }: { messages: Announcement[] }) {
       onMouseLeave={() => setHold(false)}
       onFocus={() => setHold(true)}
       onBlur={() => setHold(false)}
-      className="flex items-center justify-center gap-2 bg-foreground px-4 py-1.5 text-center text-sm text-background"
+      className="flex items-center justify-center gap-2 bg-rose px-4 py-1.5 text-center text-sm text-rose-foreground"
     >
       {many && (
         <button type="button" onClick={() => go(-1)} aria-label="Önceki duyuru" className={btn}>
