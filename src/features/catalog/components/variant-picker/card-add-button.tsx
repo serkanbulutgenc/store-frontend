@@ -51,7 +51,7 @@ export function CardAddButton({ product }: { product: ProductCard }) {
             aria-label={`${product.title} sepete ekle`}
             aria-busy={busy}
             onClick={() => void onClick()}
-            className="pointer-events-auto absolute bottom-2 right-2 size-10 rounded-full shadow"
+            className="pointer-events-auto absolute bottom-2 right-2 size-10 rounded-md shadow"
           >
             <Icon className={busy ? "size-5 animate-spin" : "size-5"} aria-hidden="true" />
           </Button>

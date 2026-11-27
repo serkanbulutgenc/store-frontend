@@ -43,7 +43,7 @@ function ProductGrid({ section }: { section: HomepageSection }) {
       )}
       <ul
         className={cn(
-          "grid gap-3",
+          "grid gap-4 sm:gap-6",
           section.display === "list" ? "grid-cols-1" : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4",
         )}
       >
