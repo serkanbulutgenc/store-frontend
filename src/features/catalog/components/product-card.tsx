@@ -53,6 +53,35 @@ export function Price({
   );
 }
 
+/** How many Colour dots a card shows before it counts the rest. */
+const MAX_DOTS = 4;
+
+/** The Colours a card can be bought in (the API sends in-stock ones), when there is a choice. */
+function ColourDots({ colours }: { colours: Card["colours"] }) {
+  if (colours.length < 2) return null;
+  const more = colours.length - MAX_DOTS;
+  return (
+    <ul className="flex items-center gap-1" aria-label="Renkler">
+      {colours.slice(0, MAX_DOTS).map((c) => (
+        <li
+          key={c.id}
+          title={c.name}
+          className="size-3.5 rounded-full border border-border"
+          style={{ backgroundColor: c.hex_code }}
+        >
+          <span className="sr-only">{c.name}</span>
+        </li>
+      ))}
+      {more > 0 && (
+        <li className="rounded-full bg-muted px-1.5 text-xs font-semibold leading-5 tabular-nums">
+          <span aria-hidden="true">+{more}</span>
+          <span className="sr-only">{more} renk daha</span>
+        </li>
+      )}
+    </ul>
+  );
+}
+
 export function ProductCard({
   product,
   dimSoldOut,
@@ -64,9 +93,10 @@ export function ProductCard({
   className?: string;
   badge?: ReactNode;
 }) {
+  // The cell stretches to its row; the card fills it, so cards side by side are equally tall.
   return (
-    <li className={className}>
-      <div className="group relative overflow-hidden rounded-md border border-border bg-card transition-shadow hover:shadow-md">
+    <li className={cn("flex flex-col", className)}>
+      <div className="group relative flex-1 overflow-hidden rounded-md border border-border bg-card transition-shadow hover:shadow-md">
         <Link
           to="/urun/$slug"
           params={{ slug: product.slug }}
@@ -98,20 +128,7 @@ export function ProductCard({
               campaignPercentage={product.campaign_percentage}
             />
             <RatingSummary average={product.rating_average} count={product.rating_count} />
-            {product.colours.length > 1 && (
-              <ul className="flex gap-1" aria-label="Renkler">
-                {product.colours.map((c) => (
-                  <li
-                    key={c.id}
-                    title={c.name}
-                    className="size-3 rounded-full border border-border"
-                    style={{ backgroundColor: c.hex_code }}
-                  >
-                    <span className="sr-only">{c.name}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
+            {!product.sold_out && <ColourDots colours={product.colours} />}
           </div>
         </Link>
         {badge}
@@ -122,7 +139,8 @@ export function ProductCard({
   );
 }
 
-const GRID = "grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4";
+// auto-rows-fr: every row is as tall as the tallest, so all cards in a grid match.
+const GRID = "grid auto-rows-fr grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4";
 
 /** Placeholder cards shaped like ProductCard (image, title, price), two rows on desktop. */
 export function ProductGridSkeleton({
