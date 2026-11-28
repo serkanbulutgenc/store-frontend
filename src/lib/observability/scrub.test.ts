@@ -38,3 +38,41 @@ it("drops request body, cookies, headers, query string and user, and scrubs the 
   expect(out.exception.values[0]?.value).toBe("bad [redacted]");
   expect(JSON.stringify(out)).not.toMatch(/@|532/);
 });
+
+it("keeps the query out of the request URL, which can carry what a Shopper searched for", () => {
+  const url = (u: string) =>
+    beforeSend({ type: undefined, request: { url: u } } as ErrorEvent).request?.url;
+  expect(url("https://x.test/api/store/suggestions?q=deri%20canta")).toBe(
+    "https://x.test/api/store/suggestions",
+  );
+  expect(url("/ara?q=elbise#sonuc")).toBe("/ara");
+  expect(url("https://x.test/p")).toBe("https://x.test/p");
+});
+
+it("keeps the query out of request breadcrumbs, the proxy's own calls included", () => {
+  // The shape @sentry/node records for a `fetch`.
+  const event = {
+    type: undefined,
+    breadcrumbs: [
+      {
+        category: "http",
+        data: {
+          url: "http://api:8000/api/store/suggestions?q=canta",
+          "url.query": "q=canta",
+          "url.fragment": "canta",
+          "http.query": "q=canta",
+          "http.fragment": "canta",
+          status_code: 200,
+        },
+      },
+      { category: "console", message: "ready" },
+    ],
+  } as ErrorEvent;
+  expect(beforeSend(event).breadcrumbs).toEqual([
+    {
+      category: "http",
+      data: { url: "http://api:8000/api/store/suggestions", status_code: 200 },
+    },
+    { category: "console", message: "ready" },
+  ]);
+});

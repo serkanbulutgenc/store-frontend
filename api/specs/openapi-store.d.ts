@@ -904,6 +904,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/store/suggestions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Suggestions
+         * @description What to offer under the search box for what has been typed so far.
+         *
+         *     Under 2 characters gives no groups and only the first 100 count. 503
+         *     `suggestions_unavailable` when search is switched off, unreachable or not yet
+         *     indexed: show nothing.
+         */
+        get: operations["search_list_suggestions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/store/tracking": {
         parameters: {
             query?: never;
@@ -2277,6 +2301,30 @@ export interface components {
              */
             status: "confirmed" | "confirmation_sent";
         };
+        /** SuggestionGroupOut */
+        SuggestionGroupOut: {
+            /** Items */
+            items: components["schemas"]["SuggestionOut"][];
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "category" | "brand" | "collection" | "campaign_page" | "product";
+        };
+        /** SuggestionOut */
+        SuggestionOut: {
+            /** Image Url */
+            image_url: string | null;
+            /** Name */
+            name: string;
+            /** Path */
+            path: string;
+        };
+        /** SuggestionsOut */
+        SuggestionsOut: {
+            /** Groups */
+            groups: components["schemas"]["SuggestionGroupOut"][];
+        };
         /** SwatchOut */
         SwatchOut: {
             /** Hex Code */
@@ -3571,6 +3619,28 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    search_list_suggestions: {
+        parameters: {
+            query?: {
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuggestionsOut"];
+                };
             };
         };
     };
