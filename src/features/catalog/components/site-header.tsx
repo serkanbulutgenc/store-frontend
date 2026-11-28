@@ -1,51 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link, useNavigate } from "@tanstack/react-router";
-import { Search, ShoppingBag, User } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Link } from "@tanstack/react-router";
+import { ShoppingBag, User } from "lucide-react";
 import { accountQuery } from "@/features/account/queries";
 import { basketQuery } from "@/features/basket/queries";
+import { SearchBox } from "@/features/catalog/components/search-box";
 import { DesktopHeaderMenu, MobileHeaderMenu } from "@/features/menus/components/header-menu";
 import type { MenuNode } from "@/features/menus/menu-link";
-
-function SearchBox() {
-  const navigate = useNavigate();
-  const [q, setQ] = useState("");
-  return (
-    <search className="w-full">
-      <form
-        className="flex w-full"
-        onSubmit={(e) => {
-          e.preventDefault();
-          const term = q.trim();
-          if (term) void navigate({ to: "/ara", search: { q: term } });
-        }}
-      >
-        <label htmlFor="site-search" className="sr-only">
-          Ürün ara
-        </label>
-        <div className="relative flex-1">
-          <Search
-            className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground"
-            aria-hidden="true"
-          />
-          <Input
-            id="site-search"
-            type="search"
-            placeholder="Elbise, ayakkabı, çanta ara"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            className="h-11 rounded-r-none border-foreground/60 pl-10"
-          />
-        </div>
-        <Button type="submit" size="lg" className="rounded-l-none px-5">
-          Ara
-        </Button>
-      </form>
-    </search>
-  );
-}
 
 function BasketLink() {
   const { data } = useQuery(basketQuery);

@@ -43,6 +43,35 @@ export const categoryPageQuery = (slug: string) =>
     },
   });
 
+export type SuggestionGroup = components["schemas"]["SuggestionGroupOut"];
+
+export const MIN_SUGGESTION_QUERY = 2;
+
+/**
+ * Search suggestions for what is typed. A failure is the answer `null`, "show nothing": it
+ * replaces what was cached for this text, nothing older stands in for it while the next one
+ * loads, and it is asked again next time.
+ */
+export const suggestionsQuery = (q: string) =>
+  queryOptions<SuggestionGroup[] | null>({
+    queryKey: [...ROOT, "suggestions", q],
+    enabled: q.length >= MIN_SUGGESTION_QUERY,
+    placeholderData: keepPreviousData,
+    staleTime: ({ state }) => (state.data === null ? 0 : 30_000),
+    queryFn: async ({ signal }) => {
+      try {
+        const { data } = await storeApi.GET("/api/store/suggestions", {
+          params: { query: { q } },
+          signal,
+        });
+        return data?.groups ?? null;
+      } catch (e) {
+        if (signal.aborted) throw e;
+        return null;
+      }
+    },
+  });
+
 /** One page of a listing. The key holds the full query, so every filter combination caches. */
 export const productsPageQuery = (
   search: BrowseSearch,
